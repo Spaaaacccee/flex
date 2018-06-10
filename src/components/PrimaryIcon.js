@@ -1,16 +1,17 @@
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 export default class PrimaryIcon extends Component {
   props = {
     iconURL,
     icon
-  }
-  defaultIcon = "#EEE"
+  };
+  defaultIcon = "#EEE";
   render() {
     return (
-      <div style={{
-        background:icon||defaultIcon
-      }}
+      <div
+          style={{
+          background: icon || defaultIcon
+        }}
       />
     );
   }
