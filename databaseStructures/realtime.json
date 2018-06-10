@@ -1,0 +1,13 @@
+{
+    "projects": [{
+        "ID": "fuhNls4PqbZhq8sAYpNRb3pRq6r0",
+        "name": "Example Project",
+        "members": [],
+        "events": [],
+        "messages": []
+    }],
+    "users": [{
+        "ID": "N5Mc3eH9BPZDqm0d8jB7swuD8ym1",
+        "relevantProjects": ["fuhNls4PqbZhq8sAYpNRb3pRq6r0"]
+    }]
+}

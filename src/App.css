@@ -1,0 +1,16 @@
+.App {
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  font-size: 14px;
+  overflow: hidden;
+  color: #000;
+}
+
+.ant-layout.ant-layout-has-sider {
+  height: 100%;
+}
+
+.ant-layout-sider-children {
+  white-space: nowrap;
+}

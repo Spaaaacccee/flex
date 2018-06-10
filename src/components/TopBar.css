@@ -1,0 +1,47 @@
+div.top-bar-wrapper {
+    height: 64px;
+}
+
+div.top-bar {
+    display: flex;
+    flex-direction: row;
+    background: #FFF;
+    padding: 10px;
+    height: 56px;
+}
+
+.top-bar>.heading {
+    flex: 1;
+    align-self: center;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
+.top-bar>.left-button,
+.top-bar>.right-button {
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    color: black;
+}
+
+.top-bar>.left-button:hover,
+.top-bar>.right-button:hover,
+.top-bar>.left-button:focus,
+.top-bar>.right-button:focus,
+.top-bar>.left-button:active,
+.top-bar>.right-button:active {
+    background: none;
+    border: none;
+    color: black;
+}
+
+.widescreen div.top-bar {
+    background: none;
+}
+
+.widescreen div.top-bar .left-button {
+    opacity: 0;
+    pointer-events: none;
+}
