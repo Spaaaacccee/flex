@@ -1,0 +1,11 @@
+ul.sider-menu {
+    text-align: left;
+    color:black;
+    background: white;
+    height: 100vh;
+    box-shadow: inset -60px 0px 60px -60px rgba(0,0,0,0.2) !important;
+}
+
+/* .widescreen ul.sider-menu {
+    box-shadow: none !important;
+} */

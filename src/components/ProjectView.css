@@ -3,7 +3,6 @@ div.project-view-sider {
     height: 100vh;
     opacity: 1;
     background:#e7e9eb;
-    box-shadow: inset -50px 0px 50px -50px rgba(0,0,0,0.1);
 }
 
 .project-view-content {
@@ -21,10 +20,6 @@ div.project-view-sider {
 .project-view-inner-content > div {
     height: 1000px;
     text-align: center;
-}
-
-.widescreen div.project-view-sider {
-    box-shadow: none;
 }
 
 .widescreen .project-view-content {

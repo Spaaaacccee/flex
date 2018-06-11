@@ -43,19 +43,35 @@ export default class Main extends Component {
       >
         <Layout>
           <Sider
-              width={this.state.navigationCollapsed ? 0 : this.state.siderWidth}
-              style={{ overflow: "auto", height: "100vh", background: "#d9dbdd" }}
+              width={this.state.siderWidth}
+              style={{ overflow: "auto", height: "100vh", background: "white"}}
           >
             <ProjectNavigation userID="" onProjectChanged={() => {}} />
           </Sider>
           <ProjectView
-              style={{ height: "100%" }}
+              style={{
+              transform:
+                "translateX(" + (this.state.navigationCollapsed
+                  ? this.state.siderWidth * -1
+                  : 0) + "px)",
+              height: "100%"
+            }}
               navigationCollapsed={this.state.navigationCollapsed}
               onNavButtonPress={() => {
               this.setState({
                 navigationCollapsed: !this.state.navigationCollapsed
               });
             }}
+              onContentPress={()=>{
+                this.setState({
+                  navigationCollapsed: this.state.currentlyWidescreen?false:true
+                });
+              }}
+              onNavDrag={()=>{
+                this.setState({
+                  navigationCollapsed: false
+                });
+              }}
               projectID=""
           />
         </Layout>

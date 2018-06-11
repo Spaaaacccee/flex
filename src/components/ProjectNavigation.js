@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import propTypes from "prop-types";
 import { Menu } from "antd";
 
+import ProjectIcon from "./ProjectIcon";
+
 import Firebase from "firebase";
 
 export default class ProjectNavigation extends Component {
@@ -16,11 +18,12 @@ export default class ProjectNavigation extends Component {
   render() {
     return (
       <div>
-        <Menu>
-          {(() => {
+        <Menu style={{height:'100vh'}}>
+          {/*(() => {
             let array = []; //Firebase.database().ref();
-            array.forEach(element => {});
-          })()}
+            array.map(item => <div />);
+          })()*/}
+          <ProjectIcon/><ProjectIcon/><ProjectIcon/><ProjectIcon/><ProjectIcon/>
         </Menu>
       </div>
     );

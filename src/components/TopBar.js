@@ -25,8 +25,9 @@ export default class TopBar extends Component {
       <div className="top-bar-wrapper">
         <Header className="top-bar">
           <Button
-              onTouchStart={() => {
+              onTouchEnd={(e) => {
               this.props.onLeftButtonPress();
+              e.preventDefault();
             }}
               onMouseUp={() => {
               this.props.onLeftButtonPress();
