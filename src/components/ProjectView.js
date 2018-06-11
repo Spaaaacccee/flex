@@ -78,8 +78,9 @@ export default class ProjectView extends Component {
                   this.props.onContentPress();
 
                   //handle touch gesture
-                  var threshold = 50;
+                  var threshold = 70;
                   var leftThreshold = 100;
+                  var timeLimit = 200;
 
                   if (e.touches[0].clientX > leftThreshold) return;
 
@@ -98,6 +99,8 @@ export default class ProjectView extends Component {
 
                   window.addEventListener("touchmove",fn);
                   window.addEventListener("touchend",endFn);
+                  
+                  setTimeout(endFn,timeLimit);
                   }}
                 onMouseUp={()=>{this.props.onContentPress();}}
             >

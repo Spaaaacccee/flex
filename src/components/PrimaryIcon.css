@@ -1,0 +1,14 @@
+span.primary-icon {
+    margin: 5px;
+    border-radius: 54px;
+    width: 54px;
+    height: 54px;
+    background-color: rgb(238, 238, 238);
+    font-size: 23px;
+    color: #CCC;
+    padding-top: 10px;
+}
+
+span.primary-icon span {
+    left:0;
+}

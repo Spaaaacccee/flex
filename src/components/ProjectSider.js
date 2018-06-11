@@ -38,6 +38,7 @@ export default class ProjectSider extends Component {
     return (
       <div onTouchEnd={(e)=>{
         let t = e.target;
+        if (e.target.parentNode === e.currentTarget) return;
         while(t.parentNode.parentNode !== e.currentTarget) t = t.parentNode;
         this.setState({openKey:Array.prototype.indexOf.call(t.parentNode.childNodes,t).toString()});
         this.props.onItemSelected();
