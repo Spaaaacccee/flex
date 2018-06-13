@@ -10,10 +10,12 @@ body {
 }
 
 * {
-  transition: all 0.5s cubic-bezier(0,.65,.27,1) !important;
+  transition: all 0.4s cubic-bezier(0,.65,.27,1) !important;
+  transform: translateZ(0);
 }
 
 #root {
   height: 100%;
   width: 100%;
+  user-select: none;
 }

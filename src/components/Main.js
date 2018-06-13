@@ -9,7 +9,7 @@ const { Header, Footer, Sider, Content } = Layout;
 
 export default class Main extends Component {
   state = {
-    openedProjectID: undefined,
+    openedProjectID: "",
     navigationCollapsed: true,
     siderWidth: 64,
     breakpoint: 1024,
@@ -44,16 +44,45 @@ export default class Main extends Component {
         <Layout>
           <Sider
               width={this.state.siderWidth}
-              style={{ overflow: "auto", height: "100vh", background: "white"}}
+              style={{
+              overflow: "auto",
+              height: "100vh",
+              background: "hsla(216, 20%, 97%, 1)"
+            }}
           >
-            <ProjectNavigation userID="" onProjectChanged={() => {}} />
+            <ProjectNavigation
+                items={[
+                  {
+                    name:"A",
+                    thumbnail:"",
+                    projectID:"aA"
+                  },
+                  {
+                    name:"B",
+                    thumbnail:"",
+                    projectID:"bB"
+                  },
+                  {
+                    name:"C",
+                    thumbnail:"",
+                    projectID:"cC"
+                  }
+                ]}
+                onProjectChanged={projectChangedEvent => {
+                this.setState({
+                  openedProjectID: projectChangedEvent.item.projectID
+                });
+              }}
+            />
           </Sider>
           <ProjectView
               style={{
               transform:
-                "translateX(" + (this.state.navigationCollapsed
+                "translateX(" +
+                (this.state.navigationCollapsed
                   ? this.state.siderWidth * -1
-                  : 0) + "px)",
+                  : 0) +
+                "px)",
               height: "100%"
             }}
               navigationCollapsed={this.state.navigationCollapsed}
@@ -62,17 +91,19 @@ export default class Main extends Component {
                 navigationCollapsed: !this.state.navigationCollapsed
               });
             }}
-              onContentPress={()=>{
-                this.setState({
-                  navigationCollapsed: this.state.currentlyWidescreen?false:true
-                });
-              }}
-              onNavDrag={()=>{
-                this.setState({
-                  navigationCollapsed: false
-                });
-              }}
-              projectID=""
+              onContentPress={() => {
+              this.setState({
+                navigationCollapsed: this.state.currentlyWidescreen
+                  ? false
+                  : true
+              });
+            }}
+              onNavDrag={() => {
+              this.setState({
+                navigationCollapsed: false
+              });
+            }}
+              projectID={this.state.openedProjectID}
           />
         </Layout>
       </div>

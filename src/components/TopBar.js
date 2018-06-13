@@ -5,7 +5,9 @@ import "./TopBar.css";
 const { Header } = Layout;
 
 export default class TopBar extends Component {
-  static propTypes = {};
+  static propTypes = {
+    onLeftButtonPress:propTypes.func
+  };
   static defaultProps = {
     onLeftButtonPress: () => {}
   };
@@ -28,6 +30,7 @@ export default class TopBar extends Component {
               onTouchEnd={(e) => {
               this.props.onLeftButtonPress();
               e.preventDefault();
+              return true;
             }}
               onMouseUp={() => {
               this.props.onLeftButtonPress();
