@@ -1,0 +1,5 @@
+div.project-sider {
+    overflow: auto;
+    height: 100vh;
+    background: hsla(216, 20%, 97%, 1)
+}

@@ -2,7 +2,7 @@ ul.sider-menu {
     text-align: left;
     color:black;
     background: hsla(216, 20%, 99%, 1);
-    height: 100vh;
+    border-right: none;
     /* box-shadow: inset -60px 0px 60px -60px rgba(0,0,0,0.2) !important; */
 }
 

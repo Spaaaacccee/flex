@@ -3,7 +3,7 @@
 }
 
 .project-icon.selected .primary-icon {
-    background:rgb(24, 144, 255);
+    background-color:rgb(24, 144, 255);
     color:white;
     border-radius:20px;
 }

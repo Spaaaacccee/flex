@@ -1,11 +1,36 @@
 import React, { Component } from "react";
-import PrimaryIcon from "./PrimaryIcon";
+import ProjectIcon from "./ProjectIcon";
+import { Icon } from "antd";
 
 export default class UserIcon extends Component {
+  static defaultProps = {
+    onPress: () => {},
+    selected: false,
+    thumbnail: ''
+  };
+  state = {
+    onPress: () => {},
+    selected: false,
+    thumbnail:''
+  };
+  componentWillReceiveProps(props) {
+    this.setState({
+      onPress: props.onPress,
+      selected: props.selected,
+      thumbnail:props.thumbnail
+    });
+  }
   render() {
     return (
       <div>
-        <PrimaryIcon />
+        <ProjectIcon
+          icon={<Icon type="user" />}
+          thumbnail={this.state.thumbnail}
+          onPress={() => {
+            this.state.onPress();
+          }}
+          selected={this.state.selected}
+        />
       </div>
     );
   }

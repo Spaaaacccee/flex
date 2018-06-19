@@ -3,6 +3,12 @@ import propTypes from 'prop-types';
 import { Layout, Card, Icon, Avatar } from "antd";
 const { Meta } = Card;
 
+/**
+ * Simply renders content from properties
+ * @export PageView
+ * @class PageView
+ * @extends Component
+ */
 export default class PageView extends Component {
   static propTypes = {
       content:propTypes.node
@@ -11,7 +17,7 @@ export default class PageView extends Component {
     content:<div />
   }
   state = {
-    content:<div/>
+    content:<div />
   }
 
   componentWillReceiveProps(props) {

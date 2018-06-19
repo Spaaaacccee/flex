@@ -7,8 +7,10 @@ span.primary-icon {
     font-size: 23px;
     color: #CCC;
     padding-top: 10px;
+    background-size: cover;
 }
 
 span.primary-icon span {
     left:0;
+    transform: none !important;
 }

@@ -16,3 +16,7 @@ export const Pages = [
     new Page("Discussion", "message","Discussion"),
     new Page("Files", "file-text","Files")
 ];
+
+export const UserPage = [
+    new Page("User Profile","file","User Page")
+];
