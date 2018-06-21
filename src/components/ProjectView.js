@@ -154,7 +154,7 @@ export default class ProjectView extends Component {
                       Page: {this.state.openedPage.content}
                     </div>
                   ) : (
-                    "User Page"
+                    this.state.openedPage.content
                   )
                 }
               />

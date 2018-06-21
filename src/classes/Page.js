@@ -1,3 +1,7 @@
+import React, { Component } from 'react';
+
+import Page_User from '../pages/User';
+
 export default class Page {
     name;
     icon;
@@ -18,5 +22,5 @@ export const Pages = [
 ];
 
 export const UserPage = [
-    new Page("User Profile","file","User Page")
+    new Page("User Profile","file",<Page_User/>)
 ];

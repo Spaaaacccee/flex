@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import { Icon } from "antd";
 
-import Firebase from "firebase";
+import Fire from "../classes/Fire";
 import * as firebaseui from "firebaseui";
 import "../../node_modules/firebaseui/dist/firebaseui.css";
 
@@ -27,32 +27,44 @@ export default class SignIn extends Component {
   }
 
   componentDidMount() {
-    Firebase.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.handleLogIn(user);
-      } else {
-        Firebase.auth().setPersistence("local");
-        var uiConfig = {
-          signInFlow: "redirect",
-          signInOptions: [
-            // Leave the lines as is for the providers you want to offer your users.
-            Firebase.auth.GoogleAuthProvider.PROVIDER_ID
-          ],
-          callbacks: {
-            signInSuccessWithAuthResult: (authResult, redirectUrl) => {
-              console.log(authResult);
-              this.handleLogIn(authResult.user);
-              return false;
+    Fire.firebase()
+      .auth()
+      .onAuthStateChanged(user => {
+        if (user) {
+          this.handleLogIn(user);
+        } else {
+          Fire.firebase()
+            .auth()
+            .setPersistence("session");
+          var uiConfig = {
+            signInFlow: "redirect",
+            signInOptions: [
+              // Leave the lines as is for the providers you want to offer your users.
+              Fire.firebase().auth.GoogleAuthProvider.PROVIDER_ID
+            ],
+            callbacks: {
+              signInSuccessWithAuthResult: (authResult, redirectUrl) => {
+                console.log(authResult);
+                this.handleLogIn(authResult.user);
+                return false;
+              }
+            },
+            customParameters: {
+              // Forces account selection even when one account
+              // is available.
+              prompt: "select_account"
             }
-          }
-        };
+          };
 
-        // Initialize the FirebaseUI Widget using Firebase.
-        var ui = new firebaseui.auth.AuthUI(Firebase.auth());
-        // The start method will wait until the DOM is loaded.
-        ui.start("#firebaseui-auth-container", uiConfig);
-      }
-    });
+          // Initialize the FirebaseUI Widget using Firebase.
+          var ui = new firebaseui.auth.AuthUI(Fire.firebase().auth());
+          // The start method will wait until the DOM is loaded.
+          ui.start("#firebaseui-auth-container", uiConfig);
+          this.setState({
+            loading: false
+          });
+        }
+      });
   }
   render() {
     return (
@@ -90,7 +102,11 @@ export default class SignIn extends Component {
             style={{ display: this.state.loading ? "none" : "block" }}
             id="firebaseui-auth-container"
           />
-          <a href="https://accounts.google.com/signup" target="_blank">
+          <a
+            href="https://accounts.google.com/signup"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <p
               style={{
                 textAlign: "left",

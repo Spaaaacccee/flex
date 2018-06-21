@@ -1,6 +1,6 @@
 export class IDGen {
     static UIDlength = 28;
-    static UIDChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    static UIDChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
     static generateUID() {
         let uid = "";
         for (var i = 0; i < this.UIDlength; i++)
