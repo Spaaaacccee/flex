@@ -7,3 +7,7 @@
     color:white;
     border-radius:20px;
 }
+
+.project-icon:active .primary-icon {
+    border-radius: 15px;
+}

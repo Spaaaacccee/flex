@@ -5,8 +5,11 @@ import { Menu } from "antd";
 
 import ProjectIcon from "./ProjectIcon";
 import UserIcon from "./UserIcon";
+import AddIcon from "./AddIcon";
 
 import Firebase from "firebase";
+
+import Project from "../classes/Project";
 
 /**
  * Represents a single item that can be displayed by the project navigation sidebar
@@ -58,11 +61,15 @@ class itemChangedArgs {
 export default class ProjectNavigation extends Component {
   static propTypes = {
     onProjectChanged: propTypes.func,
+    onAddIconPress: propTypes.func,
+    onUserProfilePress: propTypes.func,
     items: propTypes.arrayOf(propTypes.instanceOf(ProjectIconItem))
   };
 
   static defaultProps = {
     onProjectChanged: () => {},
+    onAddIconPress: () => {},
+    onUserProfilePress: () => {},
     items: []
   };
 
@@ -70,7 +77,8 @@ export default class ProjectNavigation extends Component {
     items: [],
     openedProject: undefined,
     openedIndex: undefined,
-    user:null
+    user: null,
+    projects: []
   };
 
   /**
@@ -86,13 +94,28 @@ export default class ProjectNavigation extends Component {
         user: props.user
       },
       () => {
-        // If there are items in the collection, and no items are currentnly selected, select the first one
-        if (
-          this.state.items.length &&
-          typeof this.state.openedIndex === "undefined"
-        )
-          this.handlePress(0);
+        this.getProjects().then(() => {
+          // If there are items in the collection, and no items are currentnly selected, select the first one
+          if (
+            this.state.items.length &&
+            typeof this.state.openedIndex === "undefined"
+          )
+            this.handlePress(0);
+        });
       }
+    );
+  }
+
+  async getProjects() {
+    this.state.projects = await Promise.all(
+      this.state.items.map(item => {
+        try {
+          return Project.get(item);
+        } catch(e) {
+          console.log(e);
+          return null;
+        }
+      }).filter(item=>item!==null)
     );
   }
 
@@ -128,19 +151,23 @@ export default class ProjectNavigation extends Component {
     this.props.onUserProfilePress();
   }
 
+  handleAddIconPress() {
+    this.props.onAddIconPress();
+  }
+
   render() {
     return (
       <div>
         <Menu style={{ height: "100vh", background: "hsla(216, 20%, 97%, 1)" }}>
           {
             <UserIcon
-              thumbnail={this.state.user?this.state.user.photoURL:''}
+              thumbnail={this.state.user ? this.state.user.photoURL : ""}
               onPress={this.handleUserProfilePress.bind(this)}
               selected={this.state.openedIndex === -1}
             />
           }
           {//let array = []; //Firebase.database().ref();
-          this.state.items.map((item, index) => (
+          this.state.projects.map((item, index) => (
             <ProjectIcon
               key={index}
               name={item.name}
@@ -149,6 +176,7 @@ export default class ProjectNavigation extends Component {
               selected={index === this.state.openedIndex}
             />
           ))}
+          {<AddIcon onPress={this.handleAddIconPress.bind(this)} />}
         </Menu>
       </div>
     );

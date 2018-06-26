@@ -6,6 +6,7 @@ import ProjectSider from "./ProjectSider";
 import PageView from "./PageView";
 import { Pages, UserPage } from "../classes/Page";
 import Fetch from "../classes/Fetch";
+import Project from "../classes/Project";
 
 import "./ProjectView.css";
 
@@ -37,7 +38,8 @@ export default class ProjectView extends Component {
     projectID: "",
     openedPage: Pages[0],
     hideSideBar: false,
-    style: {}
+    style: {},
+    project:null,
   };
   componentWillReceiveProps(props) {
     this.setState({
@@ -51,6 +53,10 @@ export default class ProjectView extends Component {
     if (!props.projectID) {
       this.setState({
         openedPage: UserPage[0]
+      });
+    } else {
+      Project.get(props.projectID).then((project)=>{
+        this.setState({project:project});
       });
     }
   }
@@ -76,8 +82,8 @@ export default class ProjectView extends Component {
                 fontWeight: "bold"
               }}
             >
-              {this.state.projectID
-                ? Fetch.project(this.state.projectID).name
+              {this.state.project
+                ? this.state.project.name
                 : ""}
             </div>
             <ProjectSider

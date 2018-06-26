@@ -2,8 +2,8 @@ import Firebase from "firebase";
 
 export default class Fire {
   /**
-   * Gets a singleton Firebase instance
-   * @return {Firebase} 
+   * Gets the singleton Firebase instance
+   * @return {Firebase}
    * @memberof Fire
    */
   static firebase() {
@@ -19,5 +19,45 @@ export default class Fire {
       Firebase.initializeApp(config);
     }
     return Firebase;
+  }
+
+  /**
+   * Serialises an object for storage in firestore.
+   * Serialising converts any arrays to a collection.
+   * Currently not in use.
+   * @static
+   * @param  {Object} object
+   * @return {SerialisedObject}
+   * @memberof Fire
+   */
+  static serialise(object) {
+    return new SerialisedObject(object);
+  }
+  static deserialise(serialisedObject) {
+    return new SerialisedObject().deserialise.bind(serialisedObject);
+  }
+}
+
+class SerialisedObject {
+  /**
+   * Creates an instance of SerialisedObject.
+   * @param  {Object} object
+   * @memberof SerialisedObject
+   */
+  constructor(object) {
+    if (object instanceof Object) {
+        
+    }
+  }
+
+  /**
+   * Deserialises a serialised object into an object of a type.
+   * The type's constructor must not require any arguments
+   * @param  {Function} type
+   * @return {Object}
+   * @memberof SerialisedObject
+   */
+  deserialise(type) {
+
   }
 }

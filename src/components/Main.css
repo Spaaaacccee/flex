@@ -3,3 +3,8 @@ div.project-sider {
     height: 100vh;
     background: hsla(216, 20%, 97%, 1)
 }
+
+.main-layout * {
+    transition: all 0.4s cubic-bezier(0,.65,.27,1) !important;
+    transform: translateZ(0);
+  }

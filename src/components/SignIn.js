@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Icon } from "antd";
+import { Icon, Button } from "antd";
 
 import Fire from "../classes/Fire";
 import * as firebaseui from "firebaseui";
@@ -48,11 +48,6 @@ export default class SignIn extends Component {
                 this.handleLogIn(authResult.user);
                 return false;
               }
-            },
-            customParameters: {
-              // Forces account selection even when one account
-              // is available.
-              prompt: "select_account"
             }
           };
 
@@ -102,6 +97,25 @@ export default class SignIn extends Component {
             style={{ display: this.state.loading ? "none" : "block" }}
             id="firebaseui-auth-container"
           />
+          <Button icon="key"
+            style={{
+              textAlign: "left",
+              margin: 31.5,
+              color: "white",
+              width:155
+            }}
+            ghost
+            onClick={() => {
+              this.setState({
+                loading: true
+              });
+              Fire.firebase()
+                .auth()
+                .signInAnonymously();
+            }}
+          >
+            Sign in as guest
+          </Button>
           <a
             href="https://accounts.google.com/signup"
             target="_blank"

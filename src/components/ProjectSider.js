@@ -3,7 +3,7 @@ import propTypes from "prop-types";
 
 import "./ProjectSider.css";
 
-import { Icon, Menu } from "antd";
+import { Icon, Menu, Button } from "antd";
 const { SubMenu } = Menu;
 
 /**
@@ -113,21 +113,29 @@ export default class ProjectSider extends Component {
 
   render() {
     return (
-      <div onTouchEnd={this.handleTouchEnd.bind(this)}>
-        <Menu
-          className="sider-menu"
-          onClick={this.handleClick.bind(this)}
-          defaultSelectedKeys={["0"]}
-          mode="inline"
-          selectedKeys={[String(this.state.openKey) || "0"]}
-        >
-          {this.state.items.map((item, index) => (
-            <Menu.Item key={index}>
-              <Icon type={item.icon} />
-              <span>{item.name}</span>
-            </Menu.Item>
-          ))}
-        </Menu>
+      <div>
+        <Button type="primary" icon="user-add" style={{
+          width:`calc(100% - ${2*22}px)`,
+          margin:'18px 22px',
+          marginTop:0,
+          height:40
+        }}>Invite Users</Button>
+        <div onTouchEnd={this.handleTouchEnd.bind(this)}>
+          <Menu
+            className="sider-menu"
+            onClick={this.handleClick.bind(this)}
+            defaultSelectedKeys={["0"]}
+            mode="inline"
+            selectedKeys={[String(this.state.openKey) || "0"]}
+          >
+            {this.state.items.map((item, index) => (
+              <Menu.Item key={index}>
+                <Icon type={item.icon} />
+                <span>{item.name}</span>
+              </Menu.Item>
+            ))}
+          </Menu>
+        </div>
       </div>
     );
   }

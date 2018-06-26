@@ -1,6 +1,6 @@
 {
-  "short_name": "Flex",
-  "name": "Flex Project Assistant",
+  "short_name": "Bonfire",
+  "name": "Bonfire",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,6 +10,6 @@
   ],
   "start_url": "./index.html",
   "display": "standalone",
-  "theme_color": "#1890FF",
-  "background_color": "#ffffff"
+  "theme_color": "#FFFFFF",
+  "background_color": "#1890FF"
 }
