@@ -9,6 +9,8 @@ div.project-view-sider {
 
 div.project-view-sider .ant-layout-sider-children {
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 div.project-view-content {

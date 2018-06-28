@@ -19,11 +19,13 @@ export default class ProjectIcon extends Component {
 
   state = {
     selected:false,
-    thumbnail:''
+    thumbnail:'',
+    name:''
   }
 
   componentWillReceiveProps(props) {
     this.setState({
+      name:props.name,
       selected:props.selected,
       thumbnail:props.thumbnail
     });

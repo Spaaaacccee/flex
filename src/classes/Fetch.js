@@ -11,9 +11,6 @@ const projects = [
 ];
 
 export default class Fetch {
-  static allProjects() {
-    //return projects;
-  }
   /**
    * Get a project document reference using projectID
    * @static
@@ -45,20 +42,22 @@ export default class Fetch {
    * @static
    * @param  {Firebase.database.Reference} reference
    * @param  {Function} targetType
+   * @param  {Boolean} getDirectly Whether to bypass the cache
    * @return {Object}
    * @memberof Fetch
    */
-  static async getObject(reference, targetType) {
+  static async getObject(reference, targetType, getDirectly) {
     let target = new targetType();
     Object.assign(
       target,
-      (await LocalCache.persist(reference.toString()))
+      getDirectly?(await reference.once('value')).val():(await LocalCache.persist(reference.toString()))
     );
     return target;
   }
 
   /**
-   * Gets an actual project using ID
+   * Gets an actual project using ID.
+   * Projects a fetched using a cache, the resulting object may not be completely up-to-date
    * @static
    * @param  {any} id
    * @return {Project} The project object
@@ -68,43 +67,80 @@ export default class Fetch {
     return await Fetch.getObject(await Fetch.getProjectReference(id), Project);
   }
   /**
-   * Gets an actual user using ID
+   * Gets an actual user using ID.
+   * Users are always fetched realtime from the server and is guaranteed to be up to date
    * @static
    * @param  {any} id
    * @return {User} The user object
    * @memberof Fetch
    */
   static async getUser(id) {
-    return await Fetch.getObject(await Fetch.getUserReference(id), User);
+    return await Fetch.getObject(await Fetch.getUserReference(id), User,true);
   }
 }
 
+/**
+ * Represents a storage of cached data
+ * @class LocalCache
+ */
 class LocalCache {
+  /**
+   * All cached items
+   * @static
+   * @memberof LocalCache
+   */
   static cache = {};
+  /**
+   * Collection representing whether a URL is currently fetching new data. 
+   * @static
+   * @memberof LocalCache
+   */
   static pendingUpdates = {};
 
+  /**
+   * Set an item in the cache 
+   * @static
+   * @param  {Object} request 
+   * @param  {Object} response 
+   * @return {void}
+   * @memberof LocalCache
+   */
   static set(request, response) {
     LocalCache.cache[JSON.stringify(request)] = response;
   }
+  /**
+   * Gets an item in the cache
+   * @static
+   * @param  {Object} request 
+   * @return 
+   * @memberof LocalCache
+   */
   static get(request) {
     return LocalCache.cache[JSON.stringify(request)];
   }
 
+  /**
+   * 
+   * @static
+   * @param  {any} reqURL 
+   * @return 
+   * @memberof LocalCache
+   */
   static async persist(reqURL) {
     let fetchAndUpdate = async () => {
       if(LocalCache.pendingUpdates[reqURL] && LocalCache.get(reqURL)) {
-        console.warn(`Ignoring fetch request for ${reqURL} because there's a request for the same URL that has not yet been fulfilled.`);
+        //console.warn(`Ignoring fetch request for ${reqURL} because there's a request for the same URL that has not yet been fulfilled.`);
         return LocalCache.get(reqURL);
       }
       LocalCache.pendingUpdates[reqURL] = true;
-      console.info(`Getting item ${reqURL}`);
+      //console.info(`Getting item ${reqURL}`);
       let freshItem = (await Fire.firebase()
         .database()
         .refFromURL(reqURL)
         .once("value")).val();
         LocalCache.set(reqURL, freshItem);
         LocalCache.pendingUpdates[reqURL] = false;
-        console.info(`Got item ${reqURL}`);
+        //console.info(`Got item ${reqURL}`);
         return freshItem;
     };
     let cachedItem = LocalCache.get(reqURL);

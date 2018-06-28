@@ -32,8 +32,7 @@ export default class Main extends Component {
     user: null,
     userData: null,
     modal: {
-      visible: false,
-      content: <div />
+      visible: false
     }
   };
 
@@ -44,9 +43,6 @@ export default class Main extends Component {
   componentDidMount() {
     this.relayout();
     window.addEventListener("resize", this.relayout.bind(this)); // Respond to window resize by relayouting
-    setInterval(() => {
-      this.forceUpdate();
-    }, 250);
   }
 
   /**
@@ -69,16 +65,17 @@ export default class Main extends Component {
 
   async handleLogIn(logInargs) {
     if (await User.exists(logInargs.user.uid)) {
-      await User.update(logInargs.user.uid, {
+      await User.forceUpdate(logInargs.user.uid, {
         lastLogInTimestamp: Date.now()
       });
     } else {
-      await User.update(logInargs.user.uid, new User(logInargs.user.uid));
+      await User.forceUpdate(logInargs.user.uid, new User(logInargs.user.uid));
     }
     this.setState({
       user: logInargs.user
     });
     Fetch.getUserReference(logInargs.user.uid).on("value", snapShot => {
+      if(!snapShot.val()) return;
       this.setState({
         userData: snapShot.val()
       });
@@ -112,18 +109,7 @@ export default class Main extends Component {
               onAddIconPress={() => {
                 this.setState({
                   modal: {
-                    visible: true,
-                    content: <CreateProject onSubmit={async (data)=>{
-                      data.projectName = data.projectName || "Untitled Project";
-                      (await User.getCurrentUser()).newProject(new Project(data.projectName)).then(()=>{
-                        this.setState({
-                          modal:{
-                            visible:false
-                          }
-                        });
-                      });
-
-                    }}/>
+                    visible: true
                   }
                 });
               }}
@@ -179,7 +165,21 @@ export default class Main extends Component {
           }}
           footer={null}
         >
-          {this.state.modal.content}
+          <CreateProject
+            opened={this.state.modal.visible}
+            onSubmit={async data => {
+              data.projectName = data.projectName || "Untitled Project";
+              (await User.getCurrentUser())
+                .newProject(new Project(data.projectName))
+                .then(() => {
+                  this.setState({
+                    modal: {
+                      visible: false
+                    }
+                  });
+                });
+            }}
+          />
         </Modal>
       </div>
     );

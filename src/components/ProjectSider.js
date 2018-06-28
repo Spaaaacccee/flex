@@ -42,13 +42,8 @@ class SiderItemDef {
 export default class ProjectSider extends Component {
   static defaultProps = {
     onItemSelected: () => {}, // A callback when an item is selected
-    items: [
-      new SiderItemDef("Feed", "appstore-o"),
-      new SiderItemDef("Members", "team"),
-      new SiderItemDef("Timeline", "calendar"),
-      new SiderItemDef("Discussion", "message"),
-      new SiderItemDef("Files", "file-text")
-    ] // The buttons that will be rendered by default
+    onSettingsPress:()=>{},
+    items: [] // The buttons that will be rendered by default
   };
   state = {
     items: [],
@@ -76,6 +71,11 @@ export default class ProjectSider extends Component {
    */
   handleOpenKeyChange(item, index) {
     this.props.onItemSelected(new itemSelectedArgs(item, index));
+  }
+
+  handleSettingsPress(e) {
+    this.props.onSettingsPress();
+    e.preventDefault();
   }
 
   /**
@@ -113,13 +113,19 @@ export default class ProjectSider extends Component {
 
   render() {
     return (
-      <div>
-        <Button type="primary" icon="user-add" style={{
-          width:`calc(100% - ${2*22}px)`,
-          margin:'18px 22px',
-          marginTop:0,
-          height:40
-        }}>Invite Users</Button>
+      <div className="project-sider">
+        <Button
+          type="primary"
+          icon="user-add"
+          style={{
+            width: `calc(100% - ${2 * 22}px)`,
+            margin: "18px 22px",
+            marginTop: 0,
+            height: 40
+          }}
+        >
+          Invite Users
+        </Button>
         <div onTouchEnd={this.handleTouchEnd.bind(this)}>
           <Menu
             className="sider-menu"
@@ -136,6 +142,16 @@ export default class ProjectSider extends Component {
             ))}
           </Menu>
         </div>
+        <Menu
+          className="sider-menu settings-menu"
+          selectedKeys={null}>
+          <Menu.Item key="settings" style={{paddingLeft:24}}
+          onMouseUp={this.handleSettingsPress.bind(this)}
+          onTouchEnd={this.handleSettingsPress.bind(this)}>
+            <Icon type="setting" />
+            <span>Project Settings</span>
+          </Menu.Item>
+        </Menu>
       </div>
     );
   }

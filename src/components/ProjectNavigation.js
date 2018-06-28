@@ -10,6 +10,7 @@ import AddIcon from "./AddIcon";
 import Firebase from "firebase";
 
 import Project from "../classes/Project";
+import Fetch from "../classes/Fetch";
 
 /**
  * Represents a single item that can be displayed by the project navigation sidebar
@@ -95,7 +96,7 @@ export default class ProjectNavigation extends Component {
       },
       () => {
         this.getProjects().then(() => {
-          // If there are items in the collection, and no items are currentnly selected, select the first one
+          // If there are items in the collection, and no items are currently selected, select the first one
           if (
             this.state.items.length &&
             typeof this.state.openedIndex === "undefined"
@@ -107,16 +108,20 @@ export default class ProjectNavigation extends Component {
   }
 
   async getProjects() {
-    this.state.projects = await Promise.all(
-      this.state.items.map(item => {
-        try {
-          return Project.get(item);
-        } catch(e) {
-          console.log(e);
-          return null;
-        }
-      }).filter(item=>item!==null)
-    );
+    this.setState({
+      projects: await Promise.all(
+        this.state.items
+          .map(item => {
+            try {
+              return Project.get(item);
+            } catch (e) {
+              console.log(e);
+              return null;
+            }
+          })
+          .filter(item => item !== null)
+      )
+    });
   }
 
   /**
@@ -167,15 +172,17 @@ export default class ProjectNavigation extends Component {
             />
           }
           {//let array = []; //Firebase.database().ref();
-          this.state.projects.map((item, index) => (
-            <ProjectIcon
-              key={index}
-              name={item.name}
-              thumbnail={item.thumbnail}
-              onPress={this.handlePress.bind(this, index)}
-              selected={index === this.state.openedIndex}
-            />
-          ))}
+          this.state.projects.map((item, index) => {
+            return (
+              <ProjectIcon
+                key={index}
+                name={item.name}
+                thumbnail={item.thumbnail}
+                onPress={this.handlePress.bind(this, index)}
+                selected={index === this.state.openedIndex}
+              />
+            );
+          })}
           {<AddIcon onPress={this.handleAddIconPress.bind(this)} />}
         </Menu>
       </div>

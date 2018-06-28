@@ -9,3 +9,9 @@ export default class Member {
         this.roles = roles;
     }
 }
+
+export class MemberList extends Array {
+    constructor() {
+        super();
+    }
+}

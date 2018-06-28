@@ -1,32 +1,41 @@
 import Fetch from "./Fetch";
 import Fire from "./Fire";
 import Project from "./Project";
+import Role from "./Role";
+import Member from "./Member";
 
 export default class User {
-
   static async getCurrentUser() {
-      return User.get(Fire.firebase().auth().currentUser.uid);
+    return User.get(Fire.firebase().auth().currentUser.uid);
   }
 
   static async exists(userID) {
-    return (await (await Fetch.getUserReference(userID)).once('value')).exists();
+    return (await (await Fetch.getUserReference(userID)).once(
+      "value"
+    )).exists();
   }
 
   static async get(userID) {
-      return await Fetch.getUser(userID);
+    return await Fetch.getUser(userID);
   }
+
   /**
-   * Updates the details of a user. Creates a new user when specified userID is not found.
+   * Updates the details of a user.
+   * Creates a new user when specified userID is not found.
+   * Use this for initialising new users.
+   * 
+   * Warning: The remote copy of the user is replaced with the local copy regardless whether changes are made from any other locations.
+   * 
    * @static
    * @param  {string} userID
    * @param  {User} user
-   * @return {boolean} whether the action was successful
+   * @return {boolean} Whether the action was successful
    * @memberof User
    */
-  static async update(userID, user) {
+  static async forceUpdate(userID, user) {
     try {
       if (user instanceof User) {
-        user = Object.assign((await User.get(userID)),user);
+        user = Object.assign(await User.get(userID), user);
         user.lastUpdatedTimestamp = Date.now();
         (await Fetch.getUserReference(userID)).set(user);
         return true;
@@ -69,9 +78,11 @@ export default class User {
   async newProject(project) {
     try {
       if (project instanceof Project) {
-        await Project.update(project.projectID, project);
+        project.creator = this.uid;
+        project.owner = this.uid;
+        await Project.forceUpdate(project.projectID, project);
         this.projects.push(project.projectID);
-        await User.update(this.uid, this);
+        await User.forceUpdate(this.uid, this);
       }
     } catch (e) {
       console.log(e);

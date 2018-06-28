@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import propTypes from "prop-types";
-import { Layout, Icon } from "antd";
+import { Layout, Icon, Modal } from "antd";
 import TopBar from "./TopBar";
 import ProjectSider from "./ProjectSider";
 import PageView from "./PageView";
@@ -9,13 +9,14 @@ import Fetch from "../classes/Fetch";
 import Project from "../classes/Project";
 
 import "./ProjectView.css";
+import Settings from "./Settings";
 
 const { Header, Footer, Sider, Content } = Layout;
 
 export default class ProjectView extends Component {
   static propTypes = {
     projectID: propTypes.string,
-    siderWidth:propTypes.number,
+    siderWidth: propTypes.number,
     onNavButtonPress: propTypes.func,
     onContentPress: propTypes.func,
     onNavDrag: propTypes.func,
@@ -25,7 +26,7 @@ export default class ProjectView extends Component {
 
   static defaultProps = {
     projectID: "", // The project ID of the project that should be displayed
-    siderWidth:200,
+    siderWidth: 200,
     onNavButtonPress: () => {}, // A callback for when the expand/collapse navigation button is pressed
     onContentPress: () => {}, // A callback for when the main content area is pressed
     onNavDrag: () => {}, // A callback for when an open navigation gesture is performed
@@ -39,7 +40,8 @@ export default class ProjectView extends Component {
     openedPage: Pages[0],
     hideSideBar: false,
     style: {},
-    project:null,
+    project: null,
+    settingsVisible: false
   };
   componentWillReceiveProps(props) {
     this.setState({
@@ -47,7 +49,7 @@ export default class ProjectView extends Component {
       style: props.style || this.state.style,
       projectID: props.projectID,
       hideSideBar: !!props.hideSideBar, // By inverting the value of hideSideBar twice, the value is guaranteed to be a boolean
-      siderWidth:props.siderWidth
+      siderWidth: props.siderWidth
     });
     // If no project ID is supplied, switch to user page
     if (!props.projectID) {
@@ -55,10 +57,16 @@ export default class ProjectView extends Component {
         openedPage: UserPage[0]
       });
     } else {
-      Project.get(props.projectID).then((project)=>{
-        this.setState({project:project});
+      Project.get(props.projectID).then(project => {
+        this.setState({ project: project });
       });
     }
+  }
+
+  async applySettings(values) {
+    await this.state.project.setName(values.general.name);
+    await this.state.project.setDescription(values.general.description);
+    return true;
   }
 
   render() {
@@ -82,14 +90,15 @@ export default class ProjectView extends Component {
                 fontWeight: "bold"
               }}
             >
-              {this.state.project
-                ? this.state.project.name
-                : ""}
+              {this.state.project ? this.state.project.name : ""}
             </div>
             <ProjectSider
               items={this.state.projectID ? Pages : UserPage}
               onItemSelected={itemSelectedArgs => {
                 this.setState({ openedPage: itemSelectedArgs.item });
+              }}
+              onSettingsPress={() => {
+                this.setState({ settingsVisible: true });
               }}
             />
           </Sider>
@@ -167,6 +176,17 @@ export default class ProjectView extends Component {
             </Content>
           </Layout>
         </Layout>
+        <Settings
+          project={this.state.project}
+          visible={this.state.settingsVisible}
+          onClose={() => {
+            this.setState({ settingsVisible: false });
+          }}
+          onSave={async values => {
+            await this.applySettings(values);
+            this.setState({ settingsVisible: false });
+          }}
+        />
       </div>
     );
   }
