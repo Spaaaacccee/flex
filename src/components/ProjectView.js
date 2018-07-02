@@ -10,6 +10,7 @@ import Project from "../classes/Project";
 
 import "./ProjectView.css";
 import Settings from "./Settings";
+import SendInvite from "./SendInvite";
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -41,7 +42,8 @@ export default class ProjectView extends Component {
     hideSideBar: false,
     style: {},
     project: null,
-    settingsVisible: false
+    settingsVisible: false,
+    inviteUsersVisible: false
   };
   componentWillReceiveProps(props) {
     this.setState({
@@ -64,8 +66,10 @@ export default class ProjectView extends Component {
   }
 
   async applySettings(values) {
-    await this.state.project.setName(values.general.name);
-    await this.state.project.setDescription(values.general.description);
+    let project = this.state.project;
+    await project.setName(values.general.name);
+    await project.setDescription(values.general.description);
+    await project.setRoles(values.roles);
     return true;
   }
 
@@ -99,6 +103,9 @@ export default class ProjectView extends Component {
               }}
               onSettingsPress={() => {
                 this.setState({ settingsVisible: true });
+              }}
+              onInviteUsersPress={() => {
+                this.setState({ inviteUsersVisible: true });
               }}
             />
           </Sider>
@@ -159,19 +166,8 @@ export default class ProjectView extends Component {
               }}
             >
               <PageView
-                content={
-                  this.state.projectID ? (
-                    <div>
-                      <b>Debugging Info</b>
-                      <br />
-                      ProjectID: {this.state.projectID}
-                      <br />
-                      Page: {this.state.openedPage.content}
-                    </div>
-                  ) : (
-                    this.state.openedPage.content
-                  )
-                }
+                project={this.state.project}
+                contentType={this.state.openedPage.content}
               />
             </Content>
           </Layout>
@@ -185,6 +181,16 @@ export default class ProjectView extends Component {
           onSave={async values => {
             await this.applySettings(values);
             this.setState({ settingsVisible: false });
+          }}
+        />
+        <SendInvite
+          project={this.state.project}
+          visible={this.state.inviteUsersVisible}
+          onClose={() => {
+            this.setState({ inviteUsersVisible: false });
+          }}
+          onSend={() => {
+            this.setState({ inviteUsersVisible: false });
           }}
         />
       </div>

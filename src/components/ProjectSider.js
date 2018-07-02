@@ -78,6 +78,10 @@ export default class ProjectSider extends Component {
     e.preventDefault();
   }
 
+  handleInviteUsersPress() {
+    this.props.onInviteUsersPress();
+  }
+
   /**
    * Respond to when a touch event occurs to offer touch compatibility
    * @param  {TouchEvent} e
@@ -115,6 +119,7 @@ export default class ProjectSider extends Component {
     return (
       <div className="project-sider">
         <Button
+        onClick={this.handleInviteUsersPress.bind(this)}
           type="primary"
           icon="user-add"
           style={{

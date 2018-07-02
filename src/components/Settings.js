@@ -1,8 +1,10 @@
 import React, { Component } from "react";
-import { Tabs, Input, Button, Modal } from "antd";
+import { Tabs, Input, Button, Modal, List } from "antd";
 import Project from "../classes/Project";
 import propTypes from "prop-types";
 import { ObjectUtils } from "../classes/Utils";
+import Role from "../classes/Role";
+import RoleEditor from "./RoleEditor";
 const { TabPane } = Tabs;
 
 export default class Settings extends Component {
@@ -14,7 +16,10 @@ export default class Settings extends Component {
   };
   state = {
     sourceProject: undefined,
-    values: { general: { name: "", description: "" } },
+    values: {
+      general: { name: "", description: "" },
+      roles: []
+    },
     visible: false
   };
 
@@ -27,7 +32,13 @@ export default class Settings extends Component {
     this.setState({
       visible: !!props.visible
     });
-    if (props.project && props.project !== this.state.sourceProject) {
+    if (
+      (!this.state.sourceProject && props.project) ||
+      (props.project &&
+        props.project.lastUpdatedTimestamp !==
+          this.state.sourceProject.lastUpdatedTimestamp &&
+        props.project.projectID !== this.state.sourceProject.projectID)
+    ) {
       this.setState(
         {
           sourceProject: props.project
@@ -43,7 +54,8 @@ export default class Settings extends Component {
         general: {
           name: this.state.sourceProject.name,
           description: this.state.sourceProject.description
-        }
+        },
+        roles: this.state.sourceProject.roles || []
       }
     });
   }
@@ -61,9 +73,23 @@ export default class Settings extends Component {
   render() {
     return (
       <Modal
-        footer={null}
+        footer={[
+          <Button
+            key={0}
+            icon="check"
+            loading={this.state.saveLoading}
+            type="primary"
+            onClick={this.handleSave.bind(this)}
+          >
+            Save Settings
+          </Button>,
+          <Button key={1} onClick={this.handleClose.bind(this)}>
+            Cancel
+          </Button>
+        ]}
         visible={this.state.visible}
-        width={1024}
+        width={800}
+        maskClosable={false}
         onCancel={this.handleClose.bind(this)}
       >
         <h2>Project Settings</h2>
@@ -98,7 +124,13 @@ export default class Settings extends Component {
             <br />
           </TabPane>
           <TabPane tab="Roles" key="2">
-            Content of tab 2
+            <RoleEditor
+              values={this.state.values}
+              onChange={newValues => {
+                console.log(newValues);
+                this.setState({ values: newValues });
+              }}
+            />
           </TabPane>
           <TabPane tab="Security" key="3">
             Content of tab 3
@@ -108,16 +140,6 @@ export default class Settings extends Component {
           </TabPane>
         </Tabs>
         <br />
-        <Button
-          icon="check"
-          loading={this.state.saveLoading}
-          type="primary"
-          onClick={this.handleSave.bind(this)}
-        >
-          Save Settings
-        </Button>
-        <span style={{ width: 10, display: "inline-block" }} />
-        <Button onClick={this.handleClose.bind(this)}>Cancel</Button>
       </Modal>
     );
   }

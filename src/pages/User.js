@@ -6,12 +6,15 @@ import UserIcon from "../components/UserIcon";
 
 import User from "../classes/User";
 
-import { Button, Modal } from "antd";
+import { Button, Modal, Icon } from "antd";
 
 export default class Page_User extends Component {
     state= {
         visible:false
     }
+    componentWillReceiveProps(props) {
+      this.setState({project:props.project});
+  }
   render() {
     return (
       <div>
@@ -35,7 +38,7 @@ export default class Page_User extends Component {
             </Button>
           </div>
         ) : (
-          <div>Loading really hard...</div>
+          <div><Icon type="loading" style={{ fontSize: 24 }} spin /></div>
         )}
       </div>
     );

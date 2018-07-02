@@ -4,17 +4,16 @@ import User from "./User";
 import Fire from "./Fire";
 import Firebase from "firebase";
 
-const projects = [
-  new Project("Example Project"),
-  new Project("Another Project"),
-  new Project("3rd Project")
-];
-
+/**
+ * Utilities for getting data from the database
+ * @export
+ * @class Fetch
+ */
 export default class Fetch {
   /**
    * Get a project document reference using projectID
    * @static
-   * @param {string} id projectID
+   * @param {String} id projectID
    * @return {Firebase.database.Reference} The reference to the project document
    * @memberof Fetch
    */
@@ -27,7 +26,7 @@ export default class Fetch {
   /**
    * Get a user document reference using user ID
    * @static
-   * @param {string} id uid
+   * @param {String} id uid
    * @return {Firebase.database.Reference} The reference to the user document
    * @memberof Fetch
    */
@@ -38,28 +37,32 @@ export default class Fetch {
   }
 
   /**
-   *
+   * Gets a user/project with a reference to the database location
    * @static
-   * @param  {Firebase.database.Reference} reference
-   * @param  {Function} targetType
+   * @param  {Firebase.database.Reference} reference The location of the user or project
+   * @param  {Function} targetType The type of object to convert to
    * @param  {Boolean} getDirectly Whether to bypass the cache
    * @return {Object}
    * @memberof Fetch
    */
   static async getObject(reference, targetType, getDirectly) {
+    // Create a new instance of the target type, since targetType is a class.
     let target = new targetType();
-    Object.assign(
-      target,
-      getDirectly?(await reference.once('value')).val():(await LocalCache.persist(reference.toString()))
-    );
-    return target;
+    // Get data properties from either the cache or directly from the database, depending on whether getDirectly is true
+    let source = getDirectly
+      ? (await reference.once("value")).val()
+      : await LocalCache.persist(reference.toString());
+    // If the source doesn't exist then return null to signify that no data was found.
+    if (!source) return null;
+    // Merge the original object with the source object. This would cause the resulting object to have the type and methods of the target object but have the properties of the source.
+    return Object.assign(target, source);
   }
 
   /**
    * Gets an actual project using ID.
    * Projects a fetched using a cache, the resulting object may not be completely up-to-date
    * @static
-   * @param  {any} id
+   * @param  {String} id The projectID of the project to get
    * @return {Project} The project object
    * @memberof Fetch
    */
@@ -70,12 +73,37 @@ export default class Fetch {
    * Gets an actual user using ID.
    * Users are always fetched realtime from the server and is guaranteed to be up to date
    * @static
-   * @param  {any} id
+   * @param  {String} id
    * @return {User} The user object
    * @memberof Fetch
    */
   static async getUser(id) {
-    return await Fetch.getObject(await Fetch.getUserReference(id), User,true);
+    return await Fetch.getObject(await Fetch.getUserReference(id), User, true);
+  }
+
+  /**
+   * Gets a user by their email address.
+   * @static
+   * @param  {String} email The email address to query for
+   * @return {?User} Returns null if not found
+   * @memberof Fetch
+   */
+  static async getUserByEmail(email) {
+    // Query for a user with the matching email address
+    let queryResult = await Fetch.getUserReference("")
+      .orderByChild("email")
+      .equalTo(email)
+      .limitToFirst(1)
+      .once("value");
+    let userResult;
+    // Loop through every match and assigns the uid to userResult. Since the query only looks for at most 1 item, the loop only runs once when a match is found.
+    queryResult.forEach(snapshot => {
+      userResult = snapshot.val().uid;
+      // Returning true stops the loop at after the first iteration.
+      return true;
+    });
+    if (userResult) return Fetch.getUser(userResult); // If there was a match return the user
+    return null; // Return null if no user was found.
   }
 }
 
@@ -91,17 +119,17 @@ class LocalCache {
    */
   static cache = {};
   /**
-   * Collection representing whether a URL is currently fetching new data. 
+   * Collection representing whether a URL is currently fetching new data.
    * @static
    * @memberof LocalCache
    */
   static pendingUpdates = {};
 
   /**
-   * Set an item in the cache 
+   * Set an item in the cache
    * @static
-   * @param  {Object} request 
-   * @param  {Object} response 
+   * @param  {Object} request
+   * @param  {Object} response
    * @return {void}
    * @memberof LocalCache
    */
@@ -111,8 +139,8 @@ class LocalCache {
   /**
    * Gets an item in the cache
    * @static
-   * @param  {Object} request 
-   * @return 
+   * @param  {Object} request
+   * @return
    * @memberof LocalCache
    */
   static get(request) {
@@ -120,35 +148,38 @@ class LocalCache {
   }
 
   /**
-   * 
+   * Completes a request to the database while caching the result locally. Cache is stored in RAM and is cleared upon refresh.
    * @static
-   * @param  {any} reqURL 
-   * @return 
+   * @param  {any} reqURL The URL to perform the request to. This should be a firebase database URL but could be any URL that will respond with the same protocol.
+   * @return
    * @memberof LocalCache
    */
   static async persist(reqURL) {
+    // A function to send a request to the database, return the value, and store it in cache.
     let fetchAndUpdate = async () => {
-      if(LocalCache.pendingUpdates[reqURL] && LocalCache.get(reqURL)) {
-        //console.warn(`Ignoring fetch request for ${reqURL} because there's a request for the same URL that has not yet been fulfilled.`);
+      // If there's already a request that is pending, return the cached version instead. Having multiple requests to the same location at the same time can lead to performance issues.
+      if (LocalCache.pendingUpdates[reqURL] && LocalCache.get(reqURL))
         return LocalCache.get(reqURL);
-      }
+      // Set this a flag for this request URL so that the cache remembers a request is under way.
       LocalCache.pendingUpdates[reqURL] = true;
-      //console.info(`Getting item ${reqURL}`);
+      // Get an up-to-date version of the data from the database.
       let freshItem = (await Fire.firebase()
         .database()
         .refFromURL(reqURL)
         .once("value")).val();
-        LocalCache.set(reqURL, freshItem);
-        LocalCache.pendingUpdates[reqURL] = false;
-        //console.info(`Got item ${reqURL}`);
-        return freshItem;
+      // Update the cache with the fresh item.
+      LocalCache.set(reqURL, freshItem);
+      LocalCache.pendingUpdates[reqURL] = false;
+      // Return the fresh item.
+      return freshItem;
     };
-    let cachedItem = LocalCache.get(reqURL);
-    if(cachedItem) {
-      fetchAndUpdate();
-      return cachedItem;
-    } else {
-      return fetchAndUpdate();
-    }
+    // Return a cached version of the data if it exists. If it doesn't then wait for the data to arrive from the database.
+    return LocalCache.get(reqURL)
+      ? () => {
+          // Request for a fresh copy of the data anyways. Note that there's a lack of the `await` keyword. The method will be called asynchronously and won't block code execution.
+          fetchAndUpdate();
+          return LocalCache.get(reqURL);
+        }
+      : fetchAndUpdate();
   }
 }

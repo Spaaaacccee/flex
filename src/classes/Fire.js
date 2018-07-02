@@ -7,6 +7,7 @@ export default class Fire {
    * @memberof Fire
    */
   static firebase() {
+    // If there's no initialised firebase app, initilise one right now.
     if (Firebase.apps.length === 0) {
       var config = {
         apiKey: "AIzaSyDky75Lh8P3sqMCB3MvUVnRjwfquOcMerE",
@@ -18,46 +19,7 @@ export default class Fire {
       };
       Firebase.initializeApp(config);
     }
+    // Return the current firebase instance.
     return Firebase;
-  }
-
-  /**
-   * Serialises an object for storage in firestore.
-   * Serialising converts any arrays to a collection.
-   * Currently not in use.
-   * @static
-   * @param  {Object} object
-   * @return {SerialisedObject}
-   * @memberof Fire
-   */
-  static serialise(object) {
-    return new SerialisedObject(object);
-  }
-  static deserialise(serialisedObject) {
-    return new SerialisedObject().deserialise.bind(serialisedObject);
-  }
-}
-
-class SerialisedObject {
-  /**
-   * Creates an instance of SerialisedObject.
-   * @param  {Object} object
-   * @memberof SerialisedObject
-   */
-  constructor(object) {
-    if (object instanceof Object) {
-        
-    }
-  }
-
-  /**
-   * Deserialises a serialised object into an object of a type.
-   * The type's constructor must not require any arguments
-   * @param  {Function} type
-   * @return {Object}
-   * @memberof SerialisedObject
-   */
-  deserialise(type) {
-
   }
 }

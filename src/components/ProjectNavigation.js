@@ -109,7 +109,7 @@ export default class ProjectNavigation extends Component {
 
   async getProjects() {
     this.setState({
-      projects: await Promise.all(
+      projects: (await Promise.all(
         this.state.items
           .map(item => {
             try {
@@ -119,8 +119,7 @@ export default class ProjectNavigation extends Component {
               return null;
             }
           })
-          .filter(item => item !== null)
-      )
+      )).filter(item => item)
     });
   }
 

@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
 }
@@ -13,4 +14,33 @@ body {
   height: 100%;
   width: 100%;
   user-select: none;
+}
+
+@media (max-width: 767px) {
+  div.ant-modal {
+    margin: 0px ;
+    top: 0;
+    height: 100vh;
+  }
+
+  .ant-modal-content {
+    box-shadow: none;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+  }
+  .ant-modal-body {
+    flex: 1;
+    overflow: auto;
+  }
+
+  .ant-modal-body h2 {
+    font-size: 14px;
+    margin-top: -8px;
+  }
+
+  .ant-modal-footer {
+    flex: 0 0;
+  }
 }

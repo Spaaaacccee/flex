@@ -5,6 +5,7 @@ div.project-view-sider {
     background:#FCFCFD;
     border-right: 1px solid #e8e8e8;
     box-sizing: border-box;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 20px;
 }
 
 div.project-view-sider .ant-layout-sider-children {
@@ -17,6 +18,7 @@ div.project-view-content {
     min-width: 100vw;
     height: 100%;
     background: white;
+    box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 20px;
 }
 
 .project-view-inner-content {

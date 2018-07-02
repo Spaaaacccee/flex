@@ -20,14 +20,16 @@ export default class ProjectIcon extends Component {
   state = {
     selected:false,
     thumbnail:'',
-    name:''
+    name:'',
+    icon:null
   }
 
   componentWillReceiveProps(props) {
     this.setState({
       name:props.name,
       selected:props.selected,
-      thumbnail:props.thumbnail
+      thumbnail:props.thumbnail,
+      icon:props.icon
     });
   }
   
@@ -61,7 +63,7 @@ export default class ProjectIcon extends Component {
       >
         <PrimaryIcon 
             background={this.thumbnailToCSS()}
-            text={this.props.icon ? this.props.icon : this.props.name.substring(0,1)}
+            text={this.state.icon ? this.state.icon : this.state.name.substring(0,1)}
         />
       </div>
     );

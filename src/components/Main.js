@@ -29,10 +29,10 @@ export default class Main extends Component {
     siderWidth: 64, // The width of the left-most sidebar
     breakpoint: 1024, // The screen-width in which the layout adopt a widescreen format
     currentlyWidescreen: false, // Whether the screen is currently wider than the breakpoint
-    user: null,
-    userData: null,
+    user: null, // The auth data current user
+    userData: null, // The project data of the current user
     modal: {
-      visible: false
+      visible: false // Whether the add project modal is currently visible
     }
   };
 
@@ -43,6 +43,9 @@ export default class Main extends Component {
   componentDidMount() {
     this.relayout();
     window.addEventListener("resize", this.relayout.bind(this)); // Respond to window resize by relayouting
+    setInterval(() => {
+      this.forceUpdate();
+    }, 1000);
   }
 
   /**
@@ -64,18 +67,18 @@ export default class Main extends Component {
   }
 
   async handleLogIn(logInargs) {
-    if (await User.exists(logInargs.user.uid)) {
-      await User.forceUpdate(logInargs.user.uid, {
-        lastLogInTimestamp: Date.now()
-      });
-    } else {
-      await User.forceUpdate(logInargs.user.uid, new User(logInargs.user.uid));
-    }
+    // Update the user in the database with the latest data from the authentication source
+    await User.forceUpdate(logInargs.user.uid, {
+      email: logInargs.user.email || null,
+      name: logInargs.user.displayName || null,
+      profilePhoto: logInargs.user.photoURL || null,
+      lastLogInTimestamp: Date.now()
+    });
     this.setState({
       user: logInargs.user
     });
     Fetch.getUserReference(logInargs.user.uid).on("value", snapShot => {
-      if(!snapShot.val()) return;
+      if (!snapShot.val()) return;
       this.setState({
         userData: snapShot.val()
       });
@@ -164,6 +167,7 @@ export default class Main extends Component {
             });
           }}
           footer={null}
+          maskClosable={false}
         >
           <CreateProject
             opened={this.state.modal.visible}

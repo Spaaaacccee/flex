@@ -11,21 +11,24 @@ const { Meta } = Card;
  * @extends Component
  */
 export default class PageView extends Component {
-  static propTypes = {
-    content: propTypes.node
-  };
   static defaultProps = {
-    content: <div />
+    contentType: undefined
   };
   state = {
-    content: <div />
+    contentType: undefined
   };
 
   componentWillReceiveProps(props) {
-    this.setState({ content: props.content });
+    this.setState({ contentType: props.contentType, project: props.project });
   }
 
   render() {
-    return <div>{this.state.content}</div>;
+    return (
+      <div>
+        {(this.state.contentType && this.state.project)?React.createElement(this.state.contentType, {
+          project: this.state.project
+        }):<Icon type="loading" style={{ fontSize: 24 }} spin />}
+      </div>
+    );
   }
 }
