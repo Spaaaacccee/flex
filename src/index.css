@@ -2,6 +2,7 @@ html,
 body {
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 body {
@@ -10,22 +11,30 @@ body {
   font-family: sans-serif;
 }
 
+h2 {
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: bold !important;
+}
+
 #root {
   height: 100%;
   width: 100%;
   user-select: none;
+  overflow: hidden;
 }
 
 @media (max-width: 767px) {
   div.ant-modal {
     margin: 0px ;
     top: 0;
-    height: 100vh;
+    height: 100%;
+    padding:0;
   }
 
   .ant-modal-content {
     box-shadow: none;
-    height: 100vh;
+    height: 100%;
     display: flex;
     flex-direction: column;
 
@@ -36,11 +45,11 @@ body {
   }
 
   .ant-modal-body h2 {
-    font-size: 14px;
     margin-top: -8px;
   }
 
   .ant-modal-footer {
     flex: 0 0;
+    height: 53px;
   }
 }

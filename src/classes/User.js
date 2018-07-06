@@ -4,6 +4,9 @@ import Project from "./Project";
 import Role from "./Role";
 import Member from "./Member";
 
+import { message } from "antd";
+import { ArrayUtils } from "./Utils";
+
 /**
  * Represents a single user
  * @export
@@ -12,19 +15,22 @@ import Member from "./Member";
 export default class User {
   /**
    * Gets the user that is signed in.
+   *
+   * If no user is signed in then null is returned
    * @static
-   * @return 
+   * @return
    * @memberof User
    */
   static async getCurrentUser() {
-    return User.get(Fire.firebase().auth().currentUser.uid);
+    if (!Fire.firebase().auth().currentUser) return null;
+    return await User.get(Fire.firebase().auth().currentUser.uid);
   }
 
   /**
    * Returns whether a user exists
    * @static
-   * @param  {String} userID 
-   * @return 
+   * @param  {String} userID
+   * @return
    * @memberof User
    */
   static async exists(userID) {
@@ -36,8 +42,8 @@ export default class User {
   /**
    * Gets a user
    * @static
-   * @param  {any} userID 
-   * @return 
+   * @param  {any} userID
+   * @return
    * @memberof User
    */
   static async get(userID) {
@@ -119,7 +125,7 @@ export default class User {
    * @memberof User
    */
   lastUpdatedTimestamp;
-    /**
+  /**
    * @type {Number}
    * @memberof User
    */
@@ -130,10 +136,131 @@ export default class User {
    */
   projects = [];
   /**
-   * A projects that the user has joined
+   * All projects that the user has joined
    * @memberof User
    */
   joinedProjects = [];
+
+  /**
+   * All invites that this user has received
+   * @memberof User
+   */
+  pendingInvites = [];
+
+  /**
+   * Completes an operation on this object while syncing with the server.
+   * Operation is guaranteed to be performed on the most recent version of the object.
+   *
+   * @param  {Function} operation The operation to perform. Use the `this` keyword to refer to this object like usual. Note: The function must be written as a function expression, and not an arrow function due to lexical `this` differences.
+   * @return {Boolean} Whether the operation completed successfully
+   * @memberof User
+   */
+  async transaction(operation) {
+    let dateNow = Date.now();
+    try {
+      // Perform the operation on the database object
+      await Fetch.getUserReference(this.uid).transaction(item => {
+        if (item) {
+          operation.apply(item);
+          item.lastUpdatedTimestamp = dateNow;
+        }
+        return item;
+      });
+    } catch (e) {
+      // Catch any problems with the database request and throw an error.
+      console.log(e);
+      throw new Error("Transaction was not able to be completed");
+    }
+    // Perform the same operation on the local object
+    operation.apply(this);
+    this.lastUpdatedTimestamp = dateNow;
+    // Return true to signify the operation was successful.
+    return true;
+  }
+
+  async rejectInvite(projectID) {
+    await this.transaction(function() {
+      this.pendingInvites = this.pendingInvites || [];
+      ArrayUtils.remove(this.pendingInvites, projectID);
+    });
+  }
+
+  async addInvite(projectID) {
+    await this.transaction(function() {
+      this.pendingInvites = this.pendingInvites || [];
+      if (ArrayUtils.exists(this.pendingInvites, projectID)) {
+        if (this instanceof User) {
+          message.error(
+            `We couldn't send an invite to ${
+              this.name
+            } because there's already a pending invite.`
+          );
+        }
+        return;
+      }
+      if (
+        this.joinedProjects &&
+        ArrayUtils.exists(this.joinedProjects, projectID)
+      ) {
+        if (this instanceof User) {
+          message.error(
+            `We couldn't send an invite to ${
+              this.name
+            } because they're already part of this project.`
+          );
+        }
+        return;
+      }
+      if (this.projects && ArrayUtils.exists(this.projects, projectID)) {
+        if (this instanceof User) {
+          message.error(`Don't send an invite to yourself!`);
+        }
+        return;
+      }
+      this.pendingInvites.push(projectID);
+      if (this instanceof User)
+        message.success(`Invitation sent to ${this.name}!`);
+    });
+  }
+
+  async acceptInvite(projectID) {
+    this.transaction(function() {
+      if (
+        this.pendingInvites &&
+        ArrayUtils.exists(this.pendingInvites, projectID)
+      ) {
+        this.joinedProjects = this.joinedProjects || [];
+        this.projects = this.projects || [];
+        if (
+          !(
+            ArrayUtils.exists(this.projects, projectID) ||
+            ArrayUtils.exists(this.joinedProjects, projectID)
+          )
+        ) {
+          this.joinedProjects.push(projectID);
+          ArrayUtils.remove(this.pendingInvites, projectID);
+          if (this instanceof User) {
+            Project.get(projectID).then(project => {
+              project.setMembers(
+                (() => {
+                  project.members = project.members || [];
+                  project.members.push(new Member(this.uid, []));
+                  return project.members;
+                })()
+              );
+              message.success(`You've successfully joined ${project.name}`);
+            });
+            
+          }
+        } else {
+          if (this instanceof User) {
+            message.error(`You tried to join a project you're already in!`);
+          }
+          return;
+        }
+      }
+    });
+  }
 
   /**
    * Add a new project to this user
@@ -148,6 +275,8 @@ export default class User {
         // Set the owner of the project to this user
         project.creator = this.uid;
         project.owner = this.uid;
+        project.members = project.members || [];
+        project.members.push(new Member(this.uid,[]));
         // Update the database with this project
         await Project.forceUpdate(project.projectID, project);
         this.projects.push(project.projectID);
@@ -159,9 +288,28 @@ export default class User {
     }
     return false;
   }
+
+  async leaveProject(projectID) {
+    if (ArrayUtils.exists(this.joinedProjects, projectID)) {
+      this.transaction(function() {
+        ArrayUtils.remove(this.joinedProjects, projectID);
+        if (this instanceof User) {
+          Project.get(projectID).then(project => {
+            project.setMembers(
+              ArrayUtils.removeIf(
+                project.members,
+                (item, index) => item.uid === this.uid
+              )
+            );
+            message.success(`Successfully left ${project.name}`);
+          });
+        }
+      });
+    }
+  }
   /**
    * Creates an instance of User.
-   * @param  {String} uid 
+   * @param  {String} uid
    * @memberof User
    */
   constructor(uid) {

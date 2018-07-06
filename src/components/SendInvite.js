@@ -1,20 +1,24 @@
 import React, { Component } from "react";
 import { Tabs, Input, Button, Modal, List } from "antd";
 import UserSelector from "./UserSelector";
+import User from "../classes/User";
 
 export default class SendInvite extends Component {
   state = {
-    saveLoading: false
+    saveLoading: false,
+    recipients: [],
+    formInstance: 0,
+    project: {},
   };
   componentWillReceiveProps(props) {
     if (this.state.visible !== !!props.visible) {
       this.setState({
-        saveLoading: false
+        saveLoading: false,
+        visible: !!props.visible
       });
     }
     this.setState({
       project: props.project,
-      visible: !!props.visible
     });
   }
   handleClose() {
@@ -22,8 +26,21 @@ export default class SendInvite extends Component {
   }
 
   handleSend() {
-    this.props.onSend(this.state.values);
-    this.setState({ saveLoading: true });
+    this.setState({
+      saveLoading: true,
+      formInstance: this.state.formInstance + 1
+    });
+    Promise.all(
+      this.state.recipients.map(async (item)=>(await User.get(item.key)).addInvite(this.state.project.projectID))
+    ).then(()=>{
+      this.props.onSend(this.state.values);
+    });
+    
+  }
+  handleUserSelectionChanged(values) {
+    this.setState({
+      recipients: values || []
+    });
   }
   render() {
     return (
@@ -36,8 +53,11 @@ export default class SendInvite extends Component {
               loading={this.state.saveLoading}
               type="primary"
               onClick={this.handleSend.bind(this)}
+              disabled={!this.state.recipients.length}
             >
-              Send Invite
+              {`Send ${this.state.recipients.length} Invite${
+                this.state.recipients.length === 1 ? "" : "s"
+              }`}
             </Button>,
             <Button key={1} onClick={this.handleClose.bind(this)}>
               Cancel
@@ -49,15 +69,9 @@ export default class SendInvite extends Component {
           onCancel={this.handleClose.bind(this)}
         >
           <h2>Invite Users</h2>
-          <UserSelector/>
-          <List
-          size="large"
-          dataSource={this.state.invites}
-          renderItem={(item,index)=>(
-              <List.Item key={index}>
-                
-              </List.Item>
-          )}
+          <UserSelector
+            key={this.state.formInstance}
+            onValueChanged={this.handleUserSelectionChanged.bind(this)}
           />
         </Modal>
       </div>

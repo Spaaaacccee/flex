@@ -6,39 +6,97 @@ import UserIcon from "../components/UserIcon";
 
 import User from "../classes/User";
 
-import { Button, Modal, Icon } from "antd";
+import { Button, Modal, Icon, Popconfirm } from "antd";
+import { Card } from "antd";
+import Project from "../classes/Project";
+import { ObjectUtils } from "../classes/Utils";
+import ProjectIcon from "../components/ProjectIcon";
+import ProjectInvitation from "../components/ProjectInvitation";
 
 export default class Page_User extends Component {
-    state= {
-        visible:false
-    }
-    componentWillReceiveProps(props) {
-      this.setState({project:props.project});
+  state = {
+    visible: false,
+    user: undefined,
+    caches: { pendingInvites: [] }
+  };
+  componentWillReceiveProps(props) {
+    this.setState(
+      {
+        project: props.project,
+        user: props.user
+      },
+      () => {
+        if (this.state.user) {
+          if (this.state.user.pendingInvites) {
+            Promise.all(
+              this.state.user.pendingInvites.map(item => Project.get(item))
+            ).then(items => {
+              this.setState(
+                ObjectUtils.mergeDeep(this.state, {
+                  caches: { pendingInvites: items }
+                })
+              );
+            });
+          }
+        }
+      }
+    );
   }
   render() {
     return (
-      <div>
-        {Fire.firebase().auth().currentUser ? (
+      <div style={{ textAlign: "left" }}>
+        {this.state.user ? (
           <div>
-            <UserIcon thumbnail={Fire.firebase().auth().currentUser.photoURL} />
-            <b>{Fire.firebase().auth().currentUser.displayName||"Guest"}</b>
-            <br/>
-            {Fire.firebase().auth().currentUser.email||"No email address"}
-            <br/>
-            <br/><br/>
-            <Button
-              onClick={() => {
-                Fire.firebase()
-                  .auth()
-                  .signOut();
-                window.location.reload(true);
-              }}
-            >
-              Sign Out
-            </Button>
+            <Card style={{ textAlign: "center" }}>
+              <UserIcon thumbnail={this.state.user.profilePhoto} />
+              <b>{this.state.user.name || "Guest"}</b>
+              <br />
+              {this.state.user.email || "No email address"}
+              <br />
+              <br />
+              <br />
+              <Button
+                onClick={() => {
+                  Fire.firebase()
+                    .auth()
+                    .signOut();
+                  window.location.reload(true);
+                }}
+              >
+                Sign Out
+              </Button>
+              <br />
+            </Card>
+            <br />
+            <Card>
+              <h2>Pending Invites</h2>
+              {this.state.caches.pendingInvites
+                ? this.state.caches.pendingInvites.length
+                  ? this.state.caches.pendingInvites.map((item, index) => (
+                      <ProjectInvitation
+                        project={item}
+                        key={index}
+                        onAcceptInvite={() => {
+                          this.state.user.acceptInvite(item.projectID);
+                        }}
+                        onRejectInvite={() => {
+                          this.state.user.rejectInvite(item.projectID);
+                        }}
+                      />
+                    ))
+                  : "You don't have any pending invites!"
+                : "You don't have any pending invites!"}
+            </Card>
+            <br />
+            <Card>
+              <h2>Debug Info</h2>
+              {JSON.stringify(this.state.user)}
+            </Card>
           </div>
         ) : (
-          <div><Icon type="loading" style={{ fontSize: 24 }} spin /></div>
+          <div>
+            <Icon type="loading" />
+          </div>
         )}
       </div>
     );

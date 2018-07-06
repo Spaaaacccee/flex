@@ -1,5 +1,6 @@
 div.project-sider {
     overflow-x: hidden;
+    background: hsl(218, 20%, 92%);
 }
 
 .main-layout * {

@@ -97,14 +97,14 @@ export default class SignIn extends Component {
             style={{ display: this.state.loading ? "none" : "block" }}
             id="firebaseui-auth-container"
           />
-          <Button icon="key"
+          <Button
+            icon="key"
+            size="large"
             style={{
               textAlign: "left",
               margin: 31.5,
-              color: "white",
-              width:155
+              width: 168
             }}
-            ghost
             onClick={() => {
               this.setState({
                 loading: true
@@ -125,7 +125,7 @@ export default class SignIn extends Component {
               style={{
                 textAlign: "left",
                 margin: 31.5,
-                color: "white"
+                color: "black"
               }}
             >
               <Icon type="link" /> Create a Google account

@@ -10,7 +10,7 @@ export class IDGen {
   /**
    * Generates a random ID
    * @static
-   * @return 
+   * @return
    * @memberof IDGen
    */
   static generateUID() {
@@ -24,9 +24,9 @@ export class IDGen {
   /**
    * Generates a random integer between values (inclusive)
    * @static
-   * @param  {Number} min 
-   * @param  {Number} max 
-   * @return 
+   * @param  {Number} min
+   * @param  {Number} max
+   * @return
    * @memberof IDGen
    */
   static generateInt(min, max) {
@@ -35,6 +35,32 @@ export class IDGen {
 }
 
 export class ArrayUtils {
+  /**
+   * Returns whether an item exists in an array
+   * @static
+   * @param  {any} array
+   * @param  {any} item
+   * @return {Boolean}
+   * @memberof ArrayUtils
+   */
+  static exists(array, item) {
+    return array.indexOf(item) !== -1;
+  }
+  /**
+   * Removes a predetermined item
+   * @static
+   * @param  {any} array
+   * @param  {any} item
+   * @return {Array} Resulting array
+   * @memberof ArrayUtils
+   */
+  static remove(array, item) {
+    if (ArrayUtils.exists(array, item)) {
+      array.splice(array.indexOf(item), 1);
+      return array;
+    }
+  }
+
   /**
    * Removes all instances in an array that match a condition
    * @static
@@ -51,6 +77,24 @@ export class ArrayUtils {
       }
     }
     return array;
+  }
+
+  /**
+   * Selects all items in an array that matches a condition
+   * @static
+   * @param  {any} array
+   * @param  {Function<Object,Number>} condition
+   * @return {Array}
+   * @memberof ArrayUtils
+   */
+  static where(array, condition) {
+    let newArray = [];
+    array.forEach((element, index) => {
+      if (condition(element, index)) {
+        newArray.push(element);
+      }
+    });
+    return newArray;
   }
 }
 
@@ -82,13 +126,12 @@ export class ObjectUtils {
         if (ObjectUtils.isObject(source[key])) {
           if (!target[key]) Object.assign(target, { [key]: {} });
           ObjectUtils.mergeDeep(target[key], source[key]);
-        } 
+        } else {
         /*
         else if (Array.isArray(source[key]) && Array.isArray(target[key])) {
           Object.assign(target, { [key]: target[key].concat(source[key]) });
         } 
         */
-        else {
           Object.assign(target, { [key]: source[key] });
         }
       }

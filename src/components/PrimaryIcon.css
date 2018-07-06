@@ -3,9 +3,9 @@ span.primary-icon {
     border-radius: 54px;
     width: 54px;
     height: 54px;
-    background-color: hsl(216, 20%, 92%);
+    background-color: hsl(216, 20%, 87%);
     font-size: 23px;
-    color: #CCC;
+    color: #BBB;
     padding-top: 10px;
     background-size: cover;
 }

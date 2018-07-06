@@ -28,7 +28,7 @@ export default class Project {
    * Gets a project. Alias to `Fetch.getProject(projectID)`
    * @static
    * @param  {any} projectID
-   * @return {Project}
+   * @return {Promise<Project>}
    * @memberof Project
    */
   static async get(projectID) {
@@ -216,6 +216,12 @@ export default class Project {
   async setRoles(roles) {
     await this.transaction(function() {
       this.roles = roles;
+    });
+  }
+
+  async setMembers(members) {
+    await this.transaction(function() {
+      this.members = members;
     });
   }
 }

@@ -76,9 +76,9 @@ export default class ProjectNavigation extends Component {
 
   state = {
     items: [],
-    openedProject: undefined,
-    openedIndex: undefined,
-    user: null,
+    openedProject: null,
+    openedIndex: null,
+    user: {},
     projects: []
   };
 
@@ -95,14 +95,7 @@ export default class ProjectNavigation extends Component {
         user: props.user
       },
       () => {
-        this.getProjects().then(() => {
-          // If there are items in the collection, and no items are currently selected, select the first one
-          if (
-            this.state.items.length &&
-            typeof this.state.openedIndex === "undefined"
-          )
-            this.handlePress(0);
-        });
+        this.getProjects();
       }
     );
   }
@@ -110,15 +103,14 @@ export default class ProjectNavigation extends Component {
   async getProjects() {
     this.setState({
       projects: (await Promise.all(
-        this.state.items
-          .map(item => {
-            try {
-              return Project.get(item);
-            } catch (e) {
-              console.log(e);
-              return null;
-            }
-          })
+        this.state.items.map(item => {
+          try {
+            return Project.get(item);
+          } catch (e) {
+            console.log(e);
+            return null;
+          }
+        })
       )).filter(item => item)
     });
   }
@@ -162,7 +154,13 @@ export default class ProjectNavigation extends Component {
   render() {
     return (
       <div>
-        <Menu style={{ height: "100vh", background: "hsla(216, 20%, 97%, 1)" }}>
+        <Menu
+          style={{
+            height: "100%",
+            background: "hsla(216, 20%, 92%, 1)",
+            border: "none"
+          }}
+        >
           {
             <UserIcon
               thumbnail={this.state.user ? this.state.user.photoURL : ""}
@@ -171,17 +169,15 @@ export default class ProjectNavigation extends Component {
             />
           }
           {//let array = []; //Firebase.database().ref();
-          this.state.projects.map((item, index) => {
-            return (
-              <ProjectIcon
-                key={index}
-                name={item.name}
-                thumbnail={item.thumbnail}
-                onPress={this.handlePress.bind(this, index)}
-                selected={index === this.state.openedIndex}
-              />
-            );
-          })}
+          this.state.projects.map((item, index) => (
+            <ProjectIcon
+              key={index}
+              name={item.name}
+              thumbnail={item.thumbnail}
+              onPress={this.handlePress.bind(this, index)}
+              selected={index === this.state.openedIndex}
+            />
+          ))}
           {<AddIcon onPress={this.handleAddIconPress.bind(this)} />}
         </Menu>
       </div>

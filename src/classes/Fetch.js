@@ -85,25 +85,23 @@ export default class Fetch {
    * Gets a user by their email address.
    * @static
    * @param  {String} email The email address to query for
+   * @param  {Number} numberOfResults The number of results to return
    * @return {?User} Returns null if not found
    * @memberof Fetch
    */
-  static async getUserByEmail(email) {
+  static async searchUserByEmail(email,numberOfResults) {
     // Query for a user with the matching email address
     let queryResult = await Fetch.getUserReference("")
       .orderByChild("email")
-      .equalTo(email)
-      .limitToFirst(1)
+      .startAt(email)
+      .limitToFirst(numberOfResults)
       .once("value");
-    let userResult;
-    // Loop through every match and assigns the uid to userResult. Since the query only looks for at most 1 item, the loop only runs once when a match is found.
-    queryResult.forEach(snapshot => {
-      userResult = snapshot.val().uid;
-      // Returning true stops the loop at after the first iteration.
-      return true;
+    let userResults = [];
+    // Loop through every match and assigns the uid to userResult.
+    queryResult.forEach(async snapshot => {
+      userResults.push(await Fetch.getUser(snapshot.val().uid));
     });
-    if (userResult) return Fetch.getUser(userResult); // If there was a match return the user
-    return null; // Return null if no user was found.
+    return userResults;
   }
 }
 
@@ -175,11 +173,11 @@ class LocalCache {
     };
     // Return a cached version of the data if it exists. If it doesn't then wait for the data to arrive from the database.
     return LocalCache.get(reqURL)
-      ? () => {
+      ? (() => {
           // Request for a fresh copy of the data anyways. Note that there's a lack of the `await` keyword. The method will be called asynchronously and won't block code execution.
           fetchAndUpdate();
           return LocalCache.get(reqURL);
-        }
+        })()
       : fetchAndUpdate();
   }
 }

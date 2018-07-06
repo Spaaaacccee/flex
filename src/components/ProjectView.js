@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import propTypes from "prop-types";
-import { Layout, Icon, Modal } from "antd";
+import { Layout, Icon, Modal, message } from "antd";
 import TopBar from "./TopBar";
 import ProjectSider from "./ProjectSider";
 import PageView from "./PageView";
@@ -41,7 +41,7 @@ export default class ProjectView extends Component {
     openedPage: Pages[0],
     hideSideBar: false,
     style: {},
-    project: null,
+    project: {},
     settingsVisible: false,
     inviteUsersVisible: false
   };
@@ -181,6 +181,7 @@ export default class ProjectView extends Component {
           onSave={async values => {
             await this.applySettings(values);
             this.setState({ settingsVisible: false });
+            message.success("Your changes were saved.");
           }}
         />
         <SendInvite
@@ -190,7 +191,7 @@ export default class ProjectView extends Component {
             this.setState({ inviteUsersVisible: false });
           }}
           onSend={() => {
-            this.setState({ inviteUsersVisible: false });
+            this.setState({ inviteUsersVisible: false }); 
           }}
         />
       </div>

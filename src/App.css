@@ -5,6 +5,7 @@
   font-size: 14px;
   overflow: hidden;
   color: #000;
+  word-wrap: break-word;
 }
 
 .ant-layout.ant-layout-has-sider {

@@ -29,10 +29,11 @@ export default class Main extends Component {
     siderWidth: 64, // The width of the left-most sidebar
     breakpoint: 1024, // The screen-width in which the layout adopt a widescreen format
     currentlyWidescreen: false, // Whether the screen is currently wider than the breakpoint
-    user: null, // The auth data current user
-    userData: null, // The project data of the current user
+    user: {}, // The auth data current user
+    userData: {}, // The project data of the current user
     modal: {
-      visible: false // Whether the add project modal is currently visible
+      visible: false, // Whether the add project modal is currently visible
+      key: 0 // Tells React when to redraw the modal
     }
   };
 
@@ -69,6 +70,7 @@ export default class Main extends Component {
   async handleLogIn(logInargs) {
     // Update the user in the database with the latest data from the authentication source
     await User.forceUpdate(logInargs.user.uid, {
+      uid: logInargs.user.uid,
       email: logInargs.user.email || null,
       name: logInargs.user.displayName || null,
       profilePhoto: logInargs.user.photoURL || null,
@@ -89,7 +91,7 @@ export default class Main extends Component {
   render() {
     return (
       <div
-        style={{ height: "100%" }}
+        style={{ height: "100%", width: "100vw" }}
         className={this.state.currentlyWidescreen ? "widescreen" : ""}
       >
         <Layout className="main-layout">
@@ -98,7 +100,14 @@ export default class Main extends Component {
             {/* Project navigation items */}
             <ProjectNavigation
               user={this.state.user}
-              items={this.state.userData ? this.state.userData.projects : []}
+              items={(this.state.userData && this.state.userData.projects
+                ? this.state.userData.projects
+                : []
+              ).concat(
+                this.state.userData && this.state.userData.joinedProjects
+                  ? this.state.userData.joinedProjects
+                  : []
+              )}
               onProjectChanged={projectChangedArgs => {
                 this.setState({
                   openedProjectID: projectChangedArgs.item
@@ -128,7 +137,8 @@ export default class Main extends Component {
                   ? this.state.siderWidth * -1
                   : 0) +
                 "px)",
-              height: "100%"
+              height: "100%",
+              width: "100%"
             }}
             // The project view has its own navigation sidebar. Sync that side bar with the main project sidebar.
             navigationCollapsed={this.state.navigationCollapsed}
@@ -178,7 +188,8 @@ export default class Main extends Component {
                 .then(() => {
                   this.setState({
                     modal: {
-                      visible: false
+                      visible: false,
+                      key: this.state.modal.key + 1
                     }
                   });
                 });

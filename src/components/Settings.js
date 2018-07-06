@@ -15,7 +15,7 @@ export default class Settings extends Component {
     onClose: () => {}
   };
   state = {
-    sourceProject: undefined,
+    sourceProject: {},
     values: {
       general: { name: "", description: "" },
       roles: []

@@ -4,27 +4,31 @@ import Fetch from "../classes/Fetch";
 const { Option } = Select;
 
 export default class UserSelector extends Component {
+  static defaultProps = {
+    onValueChanged:()=>{}
+  }
   state = {
     data: [],
-    value:undefined,
+    values: undefined,
     fetching: false
   };
-  fetchUser(value) {
-      this.setState({fetching:true});
-    Fetch.getUserByEmail(value).then((user)=>{
-        console.log(user);
-        this.setState({
-            data:user?[user]:[],
-            fetching:false
-        });
+  fetchUser(values) {
+    this.setState({  data: [], fetching: true });
+    Fetch.searchUserByEmail(values, 5).then(users => {
+      console.log(users);
+      this.setState({
+        data: users || [],
+        fetching: false
+      });
     });
   }
-  handleChange(value) {
-      this.setState({
-          value:value,
-          data: [],
-          fetching: false,
-      });
+  handleChange(values) {
+    this.setState({
+      values: values,
+      data: [],
+      fetching: false
+    });
+    this.props.onValueChanged(values);
   }
   render() {
     return (
@@ -32,15 +36,19 @@ export default class UserSelector extends Component {
         <Select
           mode="multiple"
           labelInValue
-          value={this.state.value}
+          value={this.state.values}
           placeholder="Enter a user's email address"
           onSearch={this.fetchUser.bind(this)}
           onChange={this.handleChange.bind(this)}
           notFoundContent={this.state.fetching ? <Icon type="loading" /> : null}
           filterOption={false}
-          style={{ width: '100%' }}
+          style={{ width: "100%" }}
         >
-        {this.state.data.map(d => <Option key={d.email}>{d.uid}</Option>)}
+          {this.state.data.map(d => (
+            <Option key={d.uid}>
+              <Icon type="user" /> {d.name} {`(${d.email})`}
+            </Option>
+          ))}
         </Select>
       </div>
     );

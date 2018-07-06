@@ -19,6 +19,13 @@ export default class RoleEditor extends Component {
         {this.state.values.roles ? (
           <div style={{ textAlign: "center" }}>
             <List
+              locale={{
+                emptyText: (
+                  <div>
+                    <Icon type="tags" /> <br />No roles here
+                  </div>
+                )
+              }}
               itemLayout="horizontal"
               size="large"
               dataSource={this.state.values.roles}
@@ -40,7 +47,7 @@ export default class RoleEditor extends Component {
                         );
                       }}
                     >
-                      delete
+                      <Icon type="close" />
                     </a>
                   ]}
                   key={index}
