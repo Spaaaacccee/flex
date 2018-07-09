@@ -8,6 +8,6 @@
     border-radius:20px;
 }
 
-.project-icon:active .primary-icon {
-    border-radius: 15px;
+.project-icon span {
+    transition: none !important;
 }

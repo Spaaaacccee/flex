@@ -67,7 +67,7 @@ export default class Fetch {
    * @memberof Fetch
    */
   static async getProject(id) {
-    return await Fetch.getObject(await Fetch.getProjectReference(id), Project);
+    return await Fetch.getObject(await Fetch.getProjectReference(id), Project, true);
   }
   /**
    * Gets an actual user using ID.

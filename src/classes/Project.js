@@ -1,8 +1,10 @@
 import Role from "./Role";
 import { RoleList } from "./Role";
-import { Member, MemberList } from "./Member";
+import Member from "./Member";
+import { MemberList } from "./Member";
+import TimelineEvent from './TimelineEvent';
 
-import { IDGen } from "./Utils";
+import { IDGen, ArrayUtils } from "./Utils";
 import Fetch from "./Fetch";
 
 /**
@@ -125,10 +127,17 @@ export default class Project {
 
   /**
    * The last time this project was updated
-   * @type {Date}
+   * @type {Number}
    * @memberof Project
    */
   lastUpdatedTimestamp;
+
+  /**
+   * The date and time the project was created
+   * @type {Number}
+   * @memberof Project
+   */
+  created;
 
   /**
    * A description of this project
@@ -152,6 +161,13 @@ export default class Project {
   roles;
 
   /**
+   * All events in this project
+   * @type {Array<TimelineEvent>}
+   * @memberof Project
+   */
+  events;
+
+  /**
    * Creates an instance of Project.
    * @param  {any} name Name of the project
    * @memberof Project
@@ -160,6 +176,7 @@ export default class Project {
     this.name = name || null;
     this.projectID = IDGen.generateUID();
     this.lastUpdatedTimestamp = Date.now();
+    this.created = Date.now();
     this.description = "No description.";
   }
 
@@ -219,9 +236,52 @@ export default class Project {
     });
   }
 
+  /**
+   * Immediately set all members of this project
+   * @param  {any} members
+   * @return {void}
+   * @memberof Project
+   */
   async setMembers(members) {
     await this.transaction(function() {
       this.members = members;
     });
   }
+
+  /**
+   * Set the roles of a single member of this project
+   * @param  {any} memberID
+   * @param  {any} roles
+   * @return {void}
+   * @memberof Project
+   */
+  async setMember(memberID, roles) {
+    this.transaction(function() {
+      this.members = this.members || [];
+      if (
+        ArrayUtils.exists(
+          ArrayUtils.select(this.members, item => item.uid),
+          memberID
+        )
+      ) {
+        this.members.splice(
+          ArrayUtils.indexOf(this.members, item => item.uid === memberID),
+          1,
+          new Member(memberID, roles)
+        );
+      }
+    });
+  }
+
+  /**
+   * Immediately set all events of this project
+   * @return {void}
+   * @memberof Project
+   */
+  setEvents(events) {
+    this.transaction(function() {
+      this.events = events;
+    });
+  }
+
 }

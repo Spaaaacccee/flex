@@ -1,0 +1,14 @@
+div.ant-tag {
+    margin-top: 1px;
+    margin-bottom: 8px;
+    padding: 1px 10px;
+    height: 24px
+}
+
+div.ant-select {
+    margin-bottom: 8px;
+}
+
+div.ant-tag.ant-tag-close {
+    padding:1px 0px;
+}

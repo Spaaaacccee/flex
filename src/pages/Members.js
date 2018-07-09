@@ -21,14 +21,14 @@ export default class Page_Members extends Component {
     return (
       <div>
         {this.state.project ? (
-          <List>
+          <div>
             {(() => {
               this.state.project.members = this.state.project.members || [];
               return this.state.project.members.map((member, index) => (
-                <MemberDisplay member={member} project={this.state.project} key={index}/>
+                <MemberDisplay member={member} project={this.state.project} key={member.uid}/>
               ));
             })()}
-          </List>
+          </div>
         ) : (
           ""
         )}

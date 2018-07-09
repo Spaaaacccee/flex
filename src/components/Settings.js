@@ -73,6 +73,7 @@ export default class Settings extends Component {
   render() {
     return (
       <Modal
+        style={{ top: 20 }}
         footer={[
           <Button
             key={0}

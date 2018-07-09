@@ -43,10 +43,12 @@ export default class ProjectView extends Component {
     style: {},
     project: {},
     settingsVisible: false,
-    inviteUsersVisible: false
+    inviteUsersVisible: false,
+    pauseSiderUpdate:false
   };
   componentWillReceiveProps(props) {
     this.setState({
+      pauseSiderUpdate:props.pauseSiderUpdate,
       navigationCollapsed: props.navigationCollapsed ? true : false,
       style: props.style || this.state.style,
       projectID: props.projectID,
@@ -59,9 +61,17 @@ export default class ProjectView extends Component {
         openedPage: UserPage[0]
       });
     } else {
-      Project.get(props.projectID).then(project => {
-        this.setState({ project: project });
-      });
+      // If the project ID from props is different to the projectID from state, that means navigation has occured, reset the project view.
+      if(props.projectID !== this.state.projectID) this.setState({project:{}});
+        // Get fresh copy of the current project from database, then apply it here
+        Project.get(props.projectID).then(project => {
+          // The database sometimes returns null right after data is modified, if so, do nothing.
+          if(!project) return;
+          // Because setting the project is a performance-expensive task, only continue if the project from the database is extrinsically different
+          if(project.lastUpdatedTimestamp === this.state.project.lastUpdatedTimestamp && project.projectID === this.state.project.projectID) return;
+          this.setState({ project });
+        });
+      
     }
   }
 
@@ -94,9 +104,10 @@ export default class ProjectView extends Component {
                 fontWeight: "bold"
               }}
             >
-              {this.state.project ? this.state.project.name : ""}
+              {this.state.project.name || <Icon type="loading" />}
             </div>
             <ProjectSider
+              pauseUpdate={this.state.pauseSiderUpdate}
               items={this.state.projectID ? Pages : UserPage}
               onItemSelected={itemSelectedArgs => {
                 this.setState({ openedPage: itemSelectedArgs.item });

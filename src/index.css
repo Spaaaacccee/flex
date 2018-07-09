@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans:400,400i,700,700i');
+
+* {
+  font-family: '-apple-system', 'Segoe UI', 'BlinkMacSystemFont','Helvetica Neue', 'Noto Sans', 'Roboto', Arial, Helvetica, sans-serif !important;
+}
+
 html,
 body {
   height: 100%;
@@ -17,6 +23,13 @@ h2 {
   font-weight: bold !important;
 }
 
+h3 {
+  font-size:14px;
+  text-transform: uppercase;
+  opacity: 0.65;
+  margin-top:10px !important;
+}
+
 #root {
   height: 100%;
   width: 100%;
@@ -24,7 +37,7 @@ h2 {
   overflow: hidden;
 }
 
-@media (max-width: 767px) {
+/* @media (max-width: 767px) {
   div.ant-modal {
     margin: 0px ;
     top: 0;
@@ -52,4 +65,9 @@ h2 {
     flex: 0 0;
     height: 53px;
   }
+} */
+
+.ant-select-dropdown-menu {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }

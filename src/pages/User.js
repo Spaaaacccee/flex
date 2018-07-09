@@ -6,7 +6,7 @@ import UserIcon from "../components/UserIcon";
 
 import User from "../classes/User";
 
-import { Button, Modal, Icon, Popconfirm } from "antd";
+import { Button, Modal, Icon, Popconfirm, Badge } from "antd";
 import { Card } from "antd";
 import Project from "../classes/Project";
 import { ObjectUtils } from "../classes/Utils";
@@ -69,22 +69,39 @@ export default class Page_User extends Component {
             </Card>
             <br />
             <Card>
-              <h2>Pending Invites</h2>
-              {this.state.caches.pendingInvites
-                ? this.state.caches.pendingInvites.length
-                  ? this.state.caches.pendingInvites.map((item, index) => (
-                      <ProjectInvitation
-                        project={item}
-                        key={index}
-                        onAcceptInvite={() => {
-                          this.state.user.acceptInvite(item.projectID);
-                        }}
-                        onRejectInvite={() => {
-                          this.state.user.rejectInvite(item.projectID);
-                        }}
-                      />
-                    ))
-                  : "You don't have any pending invites!"
+              <h2>Projects</h2>
+              <p>Not implemented yet</p>
+            </Card>
+            <br />
+            <Card>
+              <h2>Joined Projects</h2>
+              <p>Not implemented yet</p>
+            </Card>
+            <br />
+            <Card>
+              <Badge
+                dot={
+                  !!this.state.caches.pendingInvites &&
+                  !!this.state.caches.pendingInvites.length
+                }
+              >
+                <h2>Pending Invites</h2>
+              </Badge>
+              <br />
+              {!!this.state.caches.pendingInvites &&
+              !!this.state.caches.pendingInvites.length
+                ? this.state.caches.pendingInvites.map((item, index) => (
+                    <ProjectInvitation
+                      project={item}
+                      key={index}
+                      onAcceptInvite={() => {
+                        this.state.user.acceptInvite(item.projectID);
+                      }}
+                      onRejectInvite={() => {
+                        this.state.user.rejectInvite(item.projectID);
+                      }}
+                    />
+                  ))
                 : "You don't have any pending invites!"}
             </Card>
             <br />

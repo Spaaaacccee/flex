@@ -39,7 +39,6 @@ export default class SignIn extends Component {
           var uiConfig = {
             signInFlow: "redirect",
             signInOptions: [
-              // Leave the lines as is for the providers you want to offer your users.
               Fire.firebase().auth.GoogleAuthProvider.PROVIDER_ID
             ],
             callbacks: {
@@ -79,58 +78,69 @@ export default class SignIn extends Component {
       >
         <div className="sign-in">
           <div className="sign-in-text">
-            <Icon type="login" style={{ fontSize: 48 }} />
+            <h2>Bonfire</h2>
+            <h1>Sign in</h1>
             <br />
-            <br />
-            <h1>{this.state.loading ? "Signing In..." : "Sign In"}</h1>
-            <p>Sign in with your Google account to continue.</p>
-            <Icon
-              style={{
-                fontSize: 24,
-                display: this.state.loading ? "block" : "none",
-                textAlign: "left"
-              }}
-              type="loading"
-            />
-          </div>
-          <div
-            style={{ display: this.state.loading ? "none" : "block" }}
-            id="firebaseui-auth-container"
-          />
-          <Button
-            icon="key"
-            size="large"
-            style={{
-              textAlign: "left",
-              margin: 31.5,
-              width: 168
-            }}
-            onClick={() => {
-              this.setState({
-                loading: true
-              });
-              Fire.firebase()
-                .auth()
-                .signInAnonymously();
-            }}
-          >
-            Sign in as guest
-          </Button>
-          <a
-            href="https://accounts.google.com/signup"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <p
-              style={{
-                textAlign: "left",
-                margin: 31.5,
-                color: "black"
+            <Button
+              loading={this.state.loading}
+              type="primary"
+              icon="google"
+              onClick={() => {
+                this.setState({ loading: true });
+                let x = setInterval(() => {
+                  if (this.firebaseUIElement.querySelector("button")) {
+                    this.firebaseUIElement.querySelector("button").click();
+                    clearInterval(x);
+                  }
+                }, 250);
               }}
             >
-              <Icon type="link" /> Create a Google account
-            </p>
-          </a>
+              Sign in with Google
+            </Button>
+            <br />
+            <br />
+            <br />
+            <a
+              href="https://accounts.google.com/signup"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <p
+                style={{
+                  textAlign: "left",
+                  color: "black"
+                }}
+              >
+                <Icon type="link" /> Create a Google account
+              </p>
+            </a>
+          </div>
+          <div
+            ref={el => (this.firebaseUIElement = el)}
+            style={{ display: "none", marginTop: -25 }}
+            id="firebaseui-auth-container"
+          />
+          {
+            //   <Button
+            //   icon="key"
+            //   size="large"
+            //   style={{
+            //     textAlign: "left",
+            //     margin: 31.5,
+            //     width: 168
+            //   }}
+            //   onClick={() => {
+            //     this.setState({
+            //       loading: true
+            //     });
+            //     Fire.firebase()
+            //       .auth()
+            //       .signInAnonymously();
+            //   }}
+            // >
+            //   Sign in as guest
+            // </Button>
+          }
         </div>
       </div>
     );

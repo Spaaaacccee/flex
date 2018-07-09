@@ -21,14 +21,22 @@ export default class Member {
    */
   roles;
   /**
+   * The date that this member joined
+   * @type {Date}
+   * @memberof Member
+   */
+  joined;
+  /**
    * Creates an instance of Member.
    * @param  {String} uid
    * @param  {RoleList} roles
+   * @param {Boolean} justJoined Whether to set the `joined` date to now
    * @memberof Member
    */
-  constructor(uid, roles) {
+  constructor(uid, roles, justJoined) {
     this.uid = uid;
     this.roles = roles;
+    justJoined?this.joined = Date.now():false;
   }
 }
 

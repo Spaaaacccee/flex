@@ -106,7 +106,9 @@ export default class RoleEditor extends Component {
             </Button>
           </div>
         ) : (
-          <Icon type="loading" style={{ fontSize: 24 }} spin />
+          <div style={{ textAlign: "center" }}>
+            <Icon type="loading" style={{ fontSize: 24 }} spin />
+          </div>
         )}
       </div>
     );

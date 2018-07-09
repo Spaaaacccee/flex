@@ -14,6 +14,7 @@ export default class SendInvite extends Component {
     if (this.state.visible !== !!props.visible) {
       this.setState({
         saveLoading: false,
+        recipients:[],
         visible: !!props.visible
       });
     }
@@ -28,6 +29,7 @@ export default class SendInvite extends Component {
   handleSend() {
     this.setState({
       saveLoading: true,
+      recipients:[],
       formInstance: this.state.formInstance + 1
     });
     Promise.all(

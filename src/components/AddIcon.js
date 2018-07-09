@@ -30,7 +30,7 @@ export default class AddIcon extends Component {
       <div
         className={"project-icon add-icon"}
         onMouseUp={this.handlePress.bind(this)}
-        onTouchEnd={this.handlePress.bind(this)}
+        onTouchStart={this.handlePress.bind(this)}
       >
         <PrimaryIcon text={<Icon type="plus" />} />
       </div>

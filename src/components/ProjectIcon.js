@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import PrimaryIcon from "./PrimaryIcon";
+import {Icon} from 'antd';
 import "./ProjectIcon.css";
 
 /**
@@ -59,7 +60,7 @@ export default class ProjectIcon extends Component {
       <div
         className={"project-icon " + (this.state.selected ? "selected" : "")}
         onMouseUp={this.handlePress.bind(this)}
-        onTouchEnd={this.handlePress.bind(this)}
+        onTouchStart={this.handlePress.bind(this)}
       >
         <PrimaryIcon
           background={this.thumbnailToCSS()}
@@ -68,7 +69,7 @@ export default class ProjectIcon extends Component {
               ? this.state.icon
               : this.state.name
                 ? this.state.name.substring(0, 1)
-                : ""
+                : <Icon type="loading"/>
           }
         />
       </div>

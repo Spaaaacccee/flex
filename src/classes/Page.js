@@ -4,6 +4,7 @@ import Page_User from "../pages/User";
 import Page_Members from "../pages/Members";
 import Page_Debug from "../pages/Debug";
 import Page_Feed from "../pages/Feed";
+import Page_Timeline from "../pages/Timeline";
 
 /**
  * Represents a single page that can be displayed within the app.
@@ -49,7 +50,7 @@ export default class Page {
 export const Pages = [
   new Page("Feed", "appstore-o", Page_Feed),
   new Page("Members", "team", Page_Members),
-  new Page("Timeline", "calendar", null),
+  new Page("Timeline", "calendar", Page_Timeline),
   new Page("Discussion", "message", null),
   new Page("Files", "file-text", null),
   new Page("Debug", "code-o", Page_Debug)

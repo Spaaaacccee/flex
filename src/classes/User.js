@@ -244,7 +244,7 @@ export default class User {
               project.setMembers(
                 (() => {
                   project.members = project.members || [];
-                  project.members.push(new Member(this.uid, []));
+                  project.members.push(new Member(this.uid, [], true));
                   return project.members;
                 })()
               );

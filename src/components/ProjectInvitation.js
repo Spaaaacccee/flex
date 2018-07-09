@@ -12,13 +12,13 @@ export default class ProjectInvitation extends Component {
     project: {}
   };
   componentWillReceiveProps(props) {
-    this.setState({ project: props.project });
+    this.setState({ project: props.project||this.state.project });
   }
   render() {
     return (
       <div>
         <Card
-          style={{ maxWidth: 300 }}
+          style={{ maxWidth: 300, textAlign:'center' }}
           actions={[
             <Icon type="check" onClick={this.props.onAcceptInvite} />,
             <Popconfirm

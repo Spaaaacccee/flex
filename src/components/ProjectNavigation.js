@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import propTypes from "prop-types";
 
-import { Menu } from "antd";
+import { Menu, Badge } from "antd";
 
 import ProjectIcon from "./ProjectIcon";
 import UserIcon from "./UserIcon";
@@ -11,6 +11,7 @@ import Firebase from "firebase";
 
 import Project from "../classes/Project";
 import Fetch from "../classes/Fetch";
+import User from "../classes/User";
 
 /**
  * Represents a single item that can be displayed by the project navigation sidebar
@@ -79,7 +80,9 @@ export default class ProjectNavigation extends Component {
     openedProject: null,
     openedIndex: null,
     user: {},
-    projects: []
+    userData: {},
+    projects: [],
+    pauseUpdate: false
   };
 
   /**
@@ -89,6 +92,9 @@ export default class ProjectNavigation extends Component {
    * @memberof ProjectNavigation
    */
   componentWillReceiveProps(props) {
+    if (props.pauseUpdate) {
+      this.setState({ pauseUpdate: props.pauseUpdate });
+    }
     this.setState(
       {
         items: props.items,
@@ -96,13 +102,20 @@ export default class ProjectNavigation extends Component {
       },
       () => {
         this.getProjects();
+        User.getCurrentUser().then(user => {
+          this.setState({ userData: user });
+        });
       }
     );
   }
 
+  shouldComponentUpdate(nextProps) {
+    return !nextProps.pauseUpdate;
+  }
+
   async getProjects() {
     this.setState({
-      projects: (await Promise.all(
+      projects: await Promise.all(
         this.state.items.map(item => {
           try {
             return Project.get(item);
@@ -111,7 +124,7 @@ export default class ProjectNavigation extends Component {
             return null;
           }
         })
-      )).filter(item => item)
+      )
     });
   }
 
@@ -154,29 +167,46 @@ export default class ProjectNavigation extends Component {
   render() {
     return (
       <div>
+        <Badge
+          offset={[15, 15]}
+          count={
+            !!this.state.userData && !!this.state.userData.pendingInvites
+              ? this.state.userData.pendingInvites.length
+              : 0
+          }
+        >
+          <UserIcon
+            thumbnail={this.state.user ? this.state.user.photoURL : ""}
+            onPress={this.handleUserProfilePress.bind(this)}
+            selected={this.state.openedIndex === -1}
+          />
+        </Badge>
         <Menu
           style={{
             height: "100%",
-            background: "hsla(216, 20%, 92%, 1)",
+            background: "transparent",
             border: "none"
           }}
         >
-          {
-            <UserIcon
-              thumbnail={this.state.user ? this.state.user.photoURL : ""}
-              onPress={this.handleUserProfilePress.bind(this)}
-              selected={this.state.openedIndex === -1}
-            />
-          }
           {//let array = []; //Firebase.database().ref();
           this.state.projects.map((item, index) => (
-            <ProjectIcon
-              key={index}
-              name={item.name}
-              thumbnail={item.thumbnail}
-              onPress={this.handlePress.bind(this, index)}
-              selected={index === this.state.openedIndex}
-            />
+            <div>
+              {item ? (
+                <ProjectIcon
+                  key={index}
+                  name={item.name}
+                  thumbnail={item.thumbnail}
+                  onPress={this.handlePress.bind(this, index)}
+                  selected={index === this.state.openedIndex}
+                />
+              ) : (
+                <ProjectIcon
+                  selected={index === this.state.openedIndex}
+                  key={index}
+                  icon="loading"
+                />
+              )}
+            </div>
           ))}
           {<AddIcon onPress={this.handleAddIconPress.bind(this)} />}
         </Menu>

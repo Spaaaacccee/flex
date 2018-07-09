@@ -1,6 +1,8 @@
 div.project-sider {
     overflow-x: hidden;
-    background: hsl(218, 20%, 92%);
+    background: #FFF;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .main-layout * {

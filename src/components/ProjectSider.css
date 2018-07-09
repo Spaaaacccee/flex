@@ -10,13 +10,7 @@ ul.sider-menu {
   /* box-shadow: inset -60px 0px 60px -60px rgba(0,0,0,0.2) !important; */
 }
 
-ul.sider-menu.settings-menu {
-  position: absolute;
-  bottom: 24px;
-}
-
 ul.sider-menu > li.ant-menu-item-selected {
-  background-color: transparent !important;
   font-weight: 500;
 }
 

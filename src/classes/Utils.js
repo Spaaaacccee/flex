@@ -96,6 +96,38 @@ export class ArrayUtils {
     });
     return newArray;
   }
+
+  /**
+   * Applies a predicate onto each element of an array and returns the array
+   * @static
+   * @param  {Array} array
+   * @param  {Function<Object,Number>} predicate
+   * @return
+   * @memberof ArrayUtils
+   */
+  static select(array, predicate) {
+    let newArray = [];
+    array.forEach((element, index) => {
+      newArray.push(predicate(element, index));
+    });
+    return newArray;
+  }
+
+  /**
+   * Returns the index of the first instance of an element that fulfills a condition
+   * @static
+   * @param  {Array} array
+   * @param  {Function<Object>} condition
+   * @return {Numer}
+   * @memberof ArrayUtils
+   */
+  static indexOf(array, condition) {
+    let i = -1;
+    array.forEach((element, index) => {
+      if (condition(element)) i = index;
+    });
+    return i;
+  }
 }
 
 export class ObjectUtils {
@@ -127,7 +159,7 @@ export class ObjectUtils {
           if (!target[key]) Object.assign(target, { [key]: {} });
           ObjectUtils.mergeDeep(target[key], source[key]);
         } else {
-        /*
+          /*
         else if (Array.isArray(source[key]) && Array.isArray(target[key])) {
           Object.assign(target, { [key]: target[key].concat(source[key]) });
         } 

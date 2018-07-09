@@ -51,7 +51,8 @@ export default class ProjectSider extends Component {
   };
   componentWillReceiveProps(props) {
     this.setState({
-      items: props.items
+      items: props.items,
+      pauseUpdate:props.pauseUpdate
     });
     if (props.items.length <= parseInt(this.state.openKey)) {
       this.setState({ openKey: props.items.length - 1 });
@@ -60,6 +61,10 @@ export default class ProjectSider extends Component {
     if (props.items && props.items !== this.state.items) {
       this.handleOpenKeyChange(props.items[0], 0);
     }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return !nextProps.pauseUpdate;
   }
 
   /**
