@@ -59,4 +59,4 @@ export const Pages = [
 /**
  * A list of pages that will be used for the user page.
  */
-export const UserPage = [new Page("User Profile", "file", Page_User)];
+export const UserPage = [new Page("Me", "file", Page_User)];

@@ -69,6 +69,38 @@ export default class Page_User extends Component {
             </Card>
             <br />
             <Card>
+              <div style={{display:'flex',alignItems:'center', justifyContent:'center'}}>
+                <div style={{
+                  margin:'0 2.5vw',
+                  textAlign:'center'
+                }}>
+                  <div style={{ fontWeight: 200, fontSize: 36 }}>
+                    {this.state.user.projects ? this.state.user.projects.length : 0}
+                  </div>
+                  <p>Projects</p>
+                </div>
+                <div style={{
+                  margin:'0 2.5vw',
+                  textAlign:'center'
+                }}>
+                  <div style={{ fontWeight: 200, fontSize: 36 }}>
+                    {this.state.user.joinedProjects ? this.state.user.joinedProjects.length : 0}
+                  </div>
+                  <p>Joined Projects</p>
+                </div>
+                <div style={{
+                  margin:'0 2.5vw',
+                  textAlign:'center'
+                }}>
+                  <div style={{ fontWeight: 200, fontSize: 36 }}>
+                    {this.state.user.pendingInvites ? this.state.user.pendingInvites.length : 0}
+                  </div>
+                  <p>Invites</p>
+                </div>
+              </div>
+            </Card>
+            <br />
+            <Card>
               <h2>Projects</h2>
               <p>Not implemented yet</p>
             </Card>

@@ -15,7 +15,7 @@ export default class SignIn extends Component {
 
   state = {
     signedIn: false,
-    loading: true
+    loading: false
   };
 
   handleLogIn(user) {
@@ -27,6 +27,7 @@ export default class SignIn extends Component {
   }
 
   componentDidMount() {
+    if(sessionStorage.getItem("firebaseui::pendingRedirect") === `"pending"`) this.setState({ loading: true });
     Fire.firebase()
       .auth()
       .onAuthStateChanged(user => {
@@ -54,9 +55,6 @@ export default class SignIn extends Component {
           var ui = new firebaseui.auth.AuthUI(Fire.firebase().auth());
           // The start method will wait until the DOM is loaded.
           ui.start("#firebaseui-auth-container", uiConfig);
-          this.setState({
-            loading: false
-          });
         }
       });
   }

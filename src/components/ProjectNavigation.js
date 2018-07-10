@@ -82,7 +82,7 @@ export default class ProjectNavigation extends Component {
     user: {},
     userData: {},
     projects: [],
-    pauseUpdate: false
+    pauseUpdate:false
   };
 
   /**
@@ -92,9 +92,9 @@ export default class ProjectNavigation extends Component {
    * @memberof ProjectNavigation
    */
   componentWillReceiveProps(props) {
-    if (props.pauseUpdate) {
-      this.setState({ pauseUpdate: props.pauseUpdate });
-    }
+    if(props.pauseUpdate) {
+      this.setState({pauseUpdate:props.pauseUpdate});
+    };
     this.setState(
       {
         items: props.items,
@@ -115,7 +115,7 @@ export default class ProjectNavigation extends Component {
 
   async getProjects() {
     this.setState({
-      projects: await Promise.all(
+      projects: (await Promise.all(
         this.state.items.map(item => {
           try {
             return Project.get(item);
@@ -124,7 +124,7 @@ export default class ProjectNavigation extends Component {
             return null;
           }
         })
-      )
+      ))
     });
   }
 
@@ -190,23 +190,14 @@ export default class ProjectNavigation extends Component {
         >
           {//let array = []; //Firebase.database().ref();
           this.state.projects.map((item, index) => (
-            <div>
-              {item ? (
-                <ProjectIcon
-                  key={index}
-                  name={item.name}
-                  thumbnail={item.thumbnail}
-                  onPress={this.handlePress.bind(this, index)}
-                  selected={index === this.state.openedIndex}
-                />
-              ) : (
-                <ProjectIcon
-                  selected={index === this.state.openedIndex}
-                  key={index}
-                  icon="loading"
-                />
-              )}
-            </div>
+            <ProjectIcon
+              key={index}
+              name={item?item.name:null}
+              icon={item?null:'loading'}
+              thumbnail={item?item.thumbnail:null}
+              onPress={item?this.handlePress.bind(this, index):()=>{}}
+              selected={index === this.state.openedIndex}
+            />
           ))}
           {<AddIcon onPress={this.handleAddIconPress.bind(this)} />}
         </Menu>

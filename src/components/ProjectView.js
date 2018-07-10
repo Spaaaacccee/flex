@@ -88,7 +88,8 @@ export default class ProjectView extends Component {
       <div
         style={{
           flex: 1,
-          height: "100%"
+          height: "100%",
+          width:0
         }}
       >
         <Layout className="project-view-wrapper" style={this.state.style}>

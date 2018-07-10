@@ -200,7 +200,9 @@ export default class Main extends Component {
             projectID={this.state.openedProjectID}
           />
         </Layout>
+        {/* The sign in splashscreen. Automatically disappears when the user is logged in*/}
         <SignIn onLogIn={this.handleLogIn.bind(this)} />
+        {/* The settings modal*/}
         <Modal
           visible={this.state.modal.visible}
           onCancel={() => {

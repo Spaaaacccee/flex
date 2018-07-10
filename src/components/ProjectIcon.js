@@ -66,7 +66,7 @@ export default class ProjectIcon extends Component {
           background={this.thumbnailToCSS()}
           text={
             this.state.icon
-              ? this.state.icon
+              ? <Icon type={this.state.icon}/>
               : this.state.name
                 ? this.state.name.substring(0, 1)
                 : <Icon type="loading"/>

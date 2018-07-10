@@ -1,5 +1,6 @@
 div.top-bar-wrapper {
-    height: 64px;
+    height: 54px;
+    flex:none;
 }
 
 div.top-bar {
@@ -7,7 +8,7 @@ div.top-bar {
     flex-direction: row;
     background: #FFF;
     padding: 10px;
-    height: 56px;
+    height: 54px;
 }
 
 .top-bar>.heading {
