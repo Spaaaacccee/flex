@@ -2,4 +2,6 @@
 
 Software development 3/4 project.
 
-[Complex Algorithm & File Management Strategies](./Complex Algorithm & File Management Strategies/Complex Algorithm & File Management Strategies.md)
+## Docs
+
+[Complex Algorithm & File Management Strategies](./Complex%20Algorithm%20&%20File%20Management%20Strategies/Complex%20Algorithm%20&%20File%20Management%20Strategies.md)
