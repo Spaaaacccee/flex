@@ -5,7 +5,7 @@ import { Icon } from "antd";
 import Main from "./Main";
 
 /**
- * A root wrapper
+ * A root wrapper. Also provides the initial loading screen, since the root loads before any other component
  * @export Root
  * @class Root
  * @extends Component

@@ -20,7 +20,7 @@ export default class CreateProject extends Component {
         submitted: false,
       });
     }
-
+    this.setState({opened:props.opened});
   }
 
   render() {

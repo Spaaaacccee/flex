@@ -7,6 +7,12 @@ import Role from "../classes/Role";
 import RoleEditor from "./RoleEditor";
 const { TabPane } = Tabs;
 
+/**
+ * Settings for a project
+ * @export
+ * @class Settings
+ * @extends Component
+ */
 export default class Settings extends Component {
   static propTypes = {
     sourceProject: propTypes.instanceOf(Project)
@@ -134,10 +140,10 @@ export default class Settings extends Component {
             />
           </TabPane>
           <TabPane tab="Security" key="3">
-            Content of tab 3
+            Nothing is here yet
           </TabPane>
           <TabPane tab="Advanced" key="4">
-            Content of tab 4
+            Nothing is here yet
           </TabPane>
         </Tabs>
         <br />

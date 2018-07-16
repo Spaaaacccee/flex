@@ -5,6 +5,12 @@ import Project from "../classes/Project";
 import { ArrayUtils } from "../classes/Utils";
 import RolePicker from "./RolePicker";
 
+/**
+ * Displays member information in a card.
+ * @export
+ * @class MemberDisplay
+ * @extends Component
+ */
 export default class MemberDisplay extends Component {
   state = {
     member: {},

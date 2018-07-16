@@ -2,6 +2,12 @@ import React, { Component } from "react";
 import ProjectIcon from "./ProjectIcon";
 import { Icon } from "antd";
 
+/**
+ * Displays a user as an icon
+ * @export
+ * @class UserIcon
+ * @extends Component
+ */
 export default class UserIcon extends Component {
   static defaultProps = {
     onPress: () => {},

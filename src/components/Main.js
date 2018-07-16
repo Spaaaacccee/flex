@@ -200,9 +200,9 @@ export default class Main extends Component {
             projectID={this.state.openedProjectID}
           />
         </Layout>
-        {/* The sign in splashscreen. Automatically disappears when the user is logged in*/}
+        {/* The sign in splashscreen. Automatically disappears when the user is logged in */}
         <SignIn onLogIn={this.handleLogIn.bind(this)} />
-        {/* The settings modal*/}
+        {/* The create project modal */}
         <Modal
           visible={this.state.modal.visible}
           onCancel={() => {
@@ -215,18 +215,20 @@ export default class Main extends Component {
         >
           <CreateProject
             opened={this.state.modal.visible}
+            // What to do when the user confirms creating a project
             onSubmit={async data => {
+              // Set a default name in case the entered project name is empty.
               data.projectName = data.projectName || "Untitled Project";
-              (await User.getCurrentUser())
-                .newProject(new Project(data.projectName))
-                .then(() => {
-                  this.setState({
-                    modal: {
-                      visible: false,
-                      key: this.state.modal.key + 1
-                    }
-                  });
-                });
+              // Wait for the application to create a new project
+              await (await User.getCurrentUser()).newProject(new Project(data.projectName));
+              // Update the UI to close the form
+              this.setState({
+                modal: {
+                  visible: false,
+                  // Due to the way React works, a new key is required every time we want a new modal. This key increments by 1 every time a project is created.
+                  key: this.state.modal.key + 1
+                }
+              });
             }}
           />
         </Modal>

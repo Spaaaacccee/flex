@@ -3,6 +3,12 @@ import { Select, Icon } from "antd";
 import Fetch from "../classes/Fetch";
 const { Option } = Select;
 
+/**
+ * Find and select users by searching through the database
+ * @export
+ * @class UserSelector
+ * @extends Component
+ */
 export default class UserSelector extends Component {
   static defaultProps = {
     onValueChanged:()=>{}

@@ -1,15 +1,19 @@
 import React, { Component } from "react";
 import propTypes from "prop-types";
-import { Layout, Button } from "antd";
+import { Layout, Button, Popover } from "antd";
 import "./TopBar.css";
 const { Header } = Layout;
 
+/**
+ * A navigation bar situated at the top of the screen
+ * @export
+ * @class TopBar
+ * @extends Component
+ */
 export default class TopBar extends Component {
-  static propTypes = {
-    onLeftButtonPress: propTypes.func
-  };
   static defaultProps = {
-    onLeftButtonPress: () => {}
+    onLeftButtonPress: () => {},
+    onRightButtonPress: () => {},
   };
   state = {
     heading: "Heading",
@@ -42,7 +46,17 @@ export default class TopBar extends Component {
             className="left-button"
           />
           <div className="heading">{this.state.heading}</div>
-          <Button shape="circle" icon="ellipsis" className="right-button" />
+            <Popover placement="bottomRight" content={(<div>Nothing here yet.</div>)} trigger="click">
+            <Button shape="circle" icon="ellipsis" className="right-button" onTouchEnd={e => {
+              this.props.onRightButtonPress();
+              e.preventDefault();
+              return true;
+            }}
+            onMouseUp={() => {
+              this.props.onRightButtonPress();
+            }}/>
+            
+            </Popover>
         </Header>
       </div>
     );

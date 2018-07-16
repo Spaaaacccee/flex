@@ -2,7 +2,7 @@ import Role from "./Role";
 import { RoleList } from "./Role";
 import Member from "./Member";
 import { MemberList } from "./Member";
-import TimelineEvent from './TimelineEvent';
+import TimelineEvent from "./TimelineEvent";
 
 import { IDGen, ArrayUtils } from "./Utils";
 import Fetch from "./Fetch";
@@ -284,4 +284,21 @@ export default class Project {
     });
   }
 
+  /**
+   * Add an event to this project
+   * @param  {any} event
+   * @return {void}
+   * @memberof Project
+   */
+  addEvent(event) {
+    this.transaction(function() {
+      this.events = this.events || [];
+      this.events.push(event);
+    });
+  }
+
+  getEventsByDateOrder() {
+    this.events = this.events || [];
+    return this.events.sort((a,b) => {a.date>b.date;}); 
+  }
 }

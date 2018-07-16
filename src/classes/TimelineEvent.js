@@ -68,11 +68,10 @@ export default class TimelineEvent {
 
   /**
    * Creates an instance of TimelineEvent.
-   * @param  {Object} params any of the aforementioned properties
+   * @param  {TimelineEvent} params any of the supported properties
    * @memberof TimelineEvent
    */
   constructor(params) {
-    this.created = Date.now();
     Object.assign(this, params);
   }
 }

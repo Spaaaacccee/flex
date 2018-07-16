@@ -3,6 +3,12 @@ import { ObjectUtils } from "../classes/Utils";
 import Role from "../classes/Role";
 import { List, Button, Input, Icon } from "antd";
 
+/**
+ * A panel to edit roles of a project
+ * @export
+ * @class RoleEditor
+ * @extends Component
+ */
 export default class RoleEditor extends Component {
   static defaultProps = {
     onChange: () => {}

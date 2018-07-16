@@ -3,6 +3,12 @@ import { Tabs, Input, Button, Modal, List } from "antd";
 import UserSelector from "./UserSelector";
 import User from "../classes/User";
 
+/**
+ * A component that can send invite to other users.
+ * @export
+ * @class SendInvite
+ * @extends Component
+ */
 export default class SendInvite extends Component {
   state = {
     saveLoading: false,

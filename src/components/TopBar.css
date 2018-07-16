@@ -14,7 +14,6 @@ div.top-bar {
 .top-bar>.heading {
     flex: 1;
     align-self: center;
-    text-transform: uppercase;
     font-weight: bold;
 }
 

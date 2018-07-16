@@ -3,6 +3,12 @@ import { Tag, Select, Icon } from "antd";
 import { ArrayUtils } from "../classes/Utils";
 import './RolePicker.css';
 
+/**
+ * A panel to select roles out of supplied array of roles
+ * @export
+ * @class RolePicker
+ * @extends Component
+ */
 export default class RolePicker extends Component {
   static defaultProps = {
     roles: [],
@@ -135,6 +141,7 @@ export default class RolePicker extends Component {
               style={{
                 background: "#fff",
                 borderStyle: "dashed",
+                borderRight:0
               }}
             >
               <Icon type="plus" /> Add Role

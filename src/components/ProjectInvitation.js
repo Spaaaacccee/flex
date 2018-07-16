@@ -2,6 +2,12 @@ import React, { Component } from "react";
 import { Card, Icon, Popconfirm } from "antd";
 import ProjectIcon from "./ProjectIcon";
 
+/**
+ * Displays an invitation in a card
+ * @export
+ * @class ProjectInvitation
+ * @extends Component
+ */
 export default class ProjectInvitation extends Component {
   static defaultProps = {
     onAcceptInvite: () => {},

@@ -44,10 +44,16 @@ export default class Page_User extends Component {
   }
   render() {
     return (
-      <div style={{ textAlign: "left" }}>
-        {this.state.user ? (
-          <div>
-            <Card style={{ textAlign: "center" }}>
+      <div>
+        {this.state.user && this.state.user.uid ? (
+          <div style={{ textAlign: "left" }}>
+            <Card
+              style={{
+                textAlign: "center",
+                background: "#1890FF",
+                color: "#fff"
+              }}
+            >
               <UserIcon thumbnail={this.state.user.profilePhoto} />
               <b>{this.state.user.name || "Guest"}</b>
               <br />
@@ -56,6 +62,7 @@ export default class Page_User extends Component {
               <br />
               <br />
               <Button
+                ghost
                 onClick={() => {
                   Fire.firebase()
                     .auth()
@@ -69,31 +76,49 @@ export default class Page_User extends Component {
             </Card>
             <br />
             <Card>
-              <div style={{display:'flex',alignItems:'center', justifyContent:'center'}}>
-                <div style={{
-                  margin:'0 2.5vw',
-                  textAlign:'center'
-                }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+              >
+                <div
+                  style={{
+                    margin: "0 2.5vw",
+                    textAlign: "center"
+                  }}
+                >
                   <div style={{ fontWeight: 200, fontSize: 36 }}>
-                    {this.state.user.projects ? this.state.user.projects.length : 0}
+                    {this.state.user.projects
+                      ? this.state.user.projects.length
+                      : 0}
                   </div>
                   <p>Projects</p>
                 </div>
-                <div style={{
-                  margin:'0 2.5vw',
-                  textAlign:'center'
-                }}>
+                <div
+                  style={{
+                    margin: "0 2.5vw",
+                    textAlign: "center"
+                  }}
+                >
                   <div style={{ fontWeight: 200, fontSize: 36 }}>
-                    {this.state.user.joinedProjects ? this.state.user.joinedProjects.length : 0}
+                    {this.state.user.joinedProjects
+                      ? this.state.user.joinedProjects.length
+                      : 0}
                   </div>
                   <p>Joined Projects</p>
                 </div>
-                <div style={{
-                  margin:'0 2.5vw',
-                  textAlign:'center'
-                }}>
+                <div
+                  style={{
+                    margin: "0 2.5vw",
+                    textAlign: "center"
+                  }}
+                >
                   <div style={{ fontWeight: 200, fontSize: 36 }}>
-                    {this.state.user.pendingInvites ? this.state.user.pendingInvites.length : 0}
+                    {this.state.user.pendingInvites
+                      ? this.state.user.pendingInvites.length
+                      : 0}
                   </div>
                   <p>Invites</p>
                 </div>

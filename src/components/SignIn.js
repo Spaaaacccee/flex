@@ -8,6 +8,12 @@ import "../../node_modules/firebaseui/dist/firebaseui.css";
 
 import "./SignIn.css";
 
+/**
+ * Sign in screen for signing into the app
+ * @export
+ * @class SignIn
+ * @extends Component
+ */
 export default class SignIn extends Component {
   static defaultProps = {
     onLogIn: () => {}

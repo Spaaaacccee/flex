@@ -11,9 +11,28 @@ export default class CreateEvent extends Component {
       description: "",
       date: Date.now(),
       autoComplete: false,
-      reminder: -1
-    }
+      notify: -1
+    },
+    submitted: false,
+    opened: false
   };
+
+  handleSubmit() {
+    this.setState({
+      submitted: true
+    });
+    this.props.onSubmit(this.state);
+  }
+
+  componentWillReceiveProps(props) {
+    if (!this.state.opened && !!props.opened) {
+      this.setState({
+        submitted: false
+      });
+    }
+    this.setState({ opened: props.opened });
+  }
+
   setValue(obj) {
     update.extend("$mergeDeep", (source, target) => {
       return ObjectUtils.mergeDeep(target, source);
@@ -48,22 +67,33 @@ export default class CreateEvent extends Component {
             }}
           />
         </div>
-        <h3>Reminder</h3>
+        <h3>Notify</h3>
         <Select
           defaultValue={-1}
           style={{ marginBottom: 10, width: 200 }}
           dropdownMatchSelectWidth={false}
           onChange={e => {
-            this.setValue({ values: { reminder: e } });
+            this.setValue({ values: { notify: e } });
           }}
         >
-          <Select.Option value={-1}>Never</Select.Option>
-          <Select.Option value={0}>On the day</Select.Option>
-          <Select.Option value={1}>A day before</Select.Option>
+          <Select.Option key={-1} value={-1}>
+            Never
+          </Select.Option>
+          <Select.Option key={0} value={0}>
+            On the day
+          </Select.Option>
+          <Select.Option key={1} value={1}>
+            A day before
+          </Select.Option>
           {[2, 3, 4, 5, 6].map(i => (
-            <Select.Option value={i}>{`${i} days before`}</Select.Option>
+            <Select.Option
+              key={i}
+              value={i}
+            >{`${i} days before`}</Select.Option>
           ))}
-          <Select.Option value={7}>A week before</Select.Option>
+          <Select.Option key={7} value={7}>
+            A week before
+          </Select.Option>
         </Select>
         <h3>Complete automatically</h3>
         <Switch
@@ -77,7 +107,12 @@ export default class CreateEvent extends Component {
         </p>
         <br />
         <div style={{ textAlign: "right" }}>
-          <Button type="primary" icon="plus">
+          <Button
+            type="primary"
+            loading={this.state.submitted}
+            icon="plus"
+            onClick={this.handleSubmit.bind(this)}
+          >
             Create
           </Button>
         </div>
