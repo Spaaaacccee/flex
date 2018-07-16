@@ -297,8 +297,10 @@ export default class Project {
     });
   }
 
-  getEventsByDateOrder() {
-    this.events = this.events || [];
-    return this.events.sort((a,b) => {a.date>b.date;}); 
+  getEventsInDateOrder() {
+    const events = (this.events || []).slice();
+    return events.sort(
+      (a, b) => (a.date === b.date ? 0 : a.date > b.date ? 1 : -1)
+    );
   }
 }

@@ -23,7 +23,7 @@ export default class Page_Timeline extends Component {
       <div style={{textAlign:'center'}}>
         <Timeline style={{maxWidth:300,textAlign:'left'}}>
           {this.state.project.events &&
-            this.state.project.events.map((item, index) => (
+            this.state.project.getEventsInDateOrder().map((item, index) => (
               <Timeline.Item key={index}>
                 <TimelineItem
                   eventID={item.uid}
