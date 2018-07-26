@@ -143,7 +143,16 @@ export default class Settings extends Component {
             Nothing is here yet
           </TabPane>
           <TabPane tab="Advanced" key="4">
-            Nothing is here yet
+            <Button>Transfer Ownership</Button>
+            <br /><div style={{height:10}} />
+            <p>Make one of the members of this project the owner.</p>
+            <br />
+            <Button type="danger">Delete Project</Button>
+            <br /><div style={{height:10}} />
+            <p>
+              Permanently delete this project, including all files stored here.{" "}
+              <b>This operation is not reversible.</b>
+            </p>
           </TabPane>
         </Tabs>
         <br />

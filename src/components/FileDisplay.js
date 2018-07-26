@@ -97,7 +97,7 @@ class FileDisplay extends Component {
               <br/>
               <List bordered>
                 {this.state.file.files.sort((a, b) => (a.dateModified === b.dateModified ? 0 : a.dateModified > b.dateModified ? 1 : -1)).map((item, index) => (
-                  <List.Item key={index} actions={[<a>Download</a>]}>
+                  <List.Item key={index} actions={[<Icon type="download"/>]}>
                     <List.Item.Meta
                       title={`Version ${index+1}`}
                       description={

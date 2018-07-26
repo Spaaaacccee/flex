@@ -81,7 +81,7 @@ export default class MemberGroupSelector extends Component {
                     <Icon type="tags" />
                     {` ${item.name} (${
                       members.filter(member =>
-                        member.roles.find(role => role === item.uid)
+                        (member.roles||[]).find(role => role === item.uid)
                       ).length
                     } members)`}
                   </div>
