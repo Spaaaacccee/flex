@@ -14,7 +14,7 @@ export default class Fire {
         authDomain: "flex-space.firebaseapp.com",
         databaseURL: "https://flex-space.firebaseio.com",
         projectId: "flex-space",
-        storageBucket: "",
+        storageBucket: "flex-space.appspot.com",
         messagingSenderId: "79879287257"
       };
       Firebase.initializeApp(config);

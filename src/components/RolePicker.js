@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Tag, Select, Icon } from "antd";
 import { ArrayUtils } from "../classes/Utils";
-import './RolePicker.css';
+import "./RolePicker.css";
 
 /**
  * A panel to select roles out of supplied array of roles
@@ -58,9 +58,9 @@ export default class RolePicker extends Component {
               );
             }}
           >
-          {item.name.slice(0, 15) === item.name
-            ? item.name
-            :`${item.name.slice(0, 15)}...`}
+            {item.name.slice(0, 15) === item.name
+              ? item.name
+              : `${item.name.slice(0, 15)}...`}
           </Tag>
         ))}
         <span
@@ -79,7 +79,12 @@ export default class RolePicker extends Component {
               ref={element => {
                 this.input = element;
               }}
-              style={{ width: 85.49 }}
+              style={{
+                width: 85.49,
+                marginTop: 1,
+                marginBottom: 8,
+                marginRight:10
+              }}
               onChange={item => {
                 this.setState(
                   {
@@ -109,12 +114,18 @@ export default class RolePicker extends Component {
                 item =>
                   !this.state.roles.find(compItem => compItem.uid === item.uid)
               ).map((item, index) => (
-                <Select.Option key={item.uid} value={item.uid} style={{color:`hsl(${item.color.hue},${item.color.saturation}%,${
-                  item.color.lightness
-                }%)`}}>
-                {item.name.slice(0, 15) === item.name
-                  ? item.name
-                  :`${item.name.slice(0, 15)}...`}
+                <Select.Option
+                  key={item.uid}
+                  value={item.uid}
+                  style={{
+                    color: `hsl(${item.color.hue},${item.color.saturation}%,${
+                      item.color.lightness
+                    }%)`
+                  }}
+                >
+                  {item.name.slice(0, 15) === item.name
+                    ? item.name
+                    : `${item.name.slice(0, 15)}...`}
                 </Select.Option>
               ))}
             </Select>
@@ -141,7 +152,7 @@ export default class RolePicker extends Component {
               style={{
                 background: "#fff",
                 borderStyle: "dashed",
-                borderRight:0
+                borderRightWidth: 1
               }}
             >
               <Icon type="plus" /> Add Role

@@ -11,26 +11,37 @@ const { Option } = Select;
  */
 export default class UserSelector extends Component {
   static defaultProps = {
-    onValueChanged:()=>{}
-  }
+    onValueChanged: () => {}
+  };
   state = {
     data: [],
     values: undefined,
     fetching: false
   };
-  fetchUser(values) {
-    this.setState({  data: [], fetching: true });
-    Fetch.searchUserByEmail(values, 5).then(users => {
-      console.log(users);
+  lastFetchID = 0;
+  fetchUser(val) {
+    if (val) {
+      this.lastFetchID += 1;
+      const fetchID = this.lastFetchID;
+      this.setState({ fetching: true,data:[] });
+      Fetch.searchUserByEmail(val, 5).then(users => {
+        console.log(users);
+        if (fetchID !== this.lastFetchID) return;
+        this.setState({
+          data: users || [],
+          fetching: false
+        });
+      });
+    } else {
       this.setState({
-        data: users || [],
+        data: [],
         fetching: false
       });
-    });
+    }
   }
   handleChange(values) {
     this.setState({
-      values: values,
+      values,
       data: [],
       fetching: false
     });

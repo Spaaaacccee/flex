@@ -178,6 +178,12 @@ export default class User {
     return true;
   }
 
+  /**
+   * Deletes an invite
+   * @param  {any} projectID
+   * @return {void}
+   * @memberof User
+   */
   async rejectInvite(projectID) {
     await this.transaction(function() {
       this.pendingInvites = this.pendingInvites || [];
@@ -185,10 +191,19 @@ export default class User {
     });
   }
 
+  /**
+   * Adds an invite to this user
+   * @param  {any} projectID
+   * @return {void}
+   * @memberof User
+   */
   async addInvite(projectID) {
     await this.transaction(function() {
+      // Conditionally initialise pendingInvites with an empty array so it is not undefined.
       this.pendingInvites = this.pendingInvites || [];
+      // Test whether the current user already has an invite for the same project.
       if (ArrayUtils.exists(this.pendingInvites, projectID)) {
+        // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
         if (this instanceof User) {
           message.error(
             `We couldn't send an invite to ${
@@ -198,10 +213,11 @@ export default class User {
         }
         return;
       }
-      if (
-        this.joinedProjects &&
-        ArrayUtils.exists(this.joinedProjects, projectID)
-      ) {
+      // Conditionally initialise joinedProjects with an empty array so it is not undefined.
+      this.joinedProjects = this.joinedProjects || [];
+      // Test whether the current user already has joined the project.
+      if (ArrayUtils.exists(this.joinedProjects, projectID)) {
+        // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
         if (this instanceof User) {
           message.error(
             `We couldn't send an invite to ${
@@ -211,46 +227,60 @@ export default class User {
         }
         return;
       }
-      if (this.projects && ArrayUtils.exists(this.projects, projectID)) {
+
+      // Conditionally initialise projects with an empty array so it is not undefined.
+      this.projects = this.projects || [];
+      // Test whether the current user owns the project.
+      if (ArrayUtils.exists(this.projects, projectID)) {
+        // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
         if (this instanceof User) {
           message.error(`Don't send an invite to yourself!`);
         }
         return;
       }
+
+      // Otherwise, add the project into the pendingInvites array of this User.
       this.pendingInvites.push(projectID);
+
       if (this instanceof User)
         message.success(`Invitation sent to ${this.name}!`);
     });
   }
 
+  /**
+   * Accept an invite by adding it into joinedProjects and other necessary tasks
+   * @param  {any} projectID
+   * @return {void}
+   * @memberof User
+   */
   async acceptInvite(projectID) {
     this.transaction(function() {
+      // Check if pendingInvites is not empty and contains the specified project ID.
       if (
         this.pendingInvites &&
         ArrayUtils.exists(this.pendingInvites, projectID)
       ) {
+        // Initialise required properties so they're not undefined.
         this.joinedProjects = this.joinedProjects || [];
         this.projects = this.projects || [];
+        // Check if the user has already joined, or is part of, this project. This check is redundant as adding an invite already has a check for the same thing but this is here just in case.
         if (
           !(
             ArrayUtils.exists(this.projects, projectID) ||
             ArrayUtils.exists(this.joinedProjects, projectID)
           )
         ) {
+          // Add the project to joinedProjects
           this.joinedProjects.push(projectID);
+          // Remove the project invite
           ArrayUtils.remove(this.pendingInvites, projectID);
+          // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
           if (this instanceof User) {
             Project.get(projectID).then(project => {
-              project.setMembers(
-                (() => {
-                  project.members = project.members || [];
-                  project.members.push(new Member(this.uid, [], true));
-                  return project.members;
-                })()
-              );
-              message.success(`You've successfully joined ${project.name}`);
+              project.addMember(this.uid).then(() => {
+                message.success(`You've successfully joined ${project.name}`);
+              });
             });
-            
           }
         } else {
           if (this instanceof User) {
@@ -276,7 +306,7 @@ export default class User {
         project.creator = this.uid;
         project.owner = this.uid;
         project.members = project.members || [];
-        project.members.push(new Member(this.uid,[]));
+        project.members.push(new Member(this.uid, []));
         // Update the database with this project
         await Project.forceUpdate(project.projectID, project);
         this.projects.push(project.projectID);

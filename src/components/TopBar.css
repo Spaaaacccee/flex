@@ -6,9 +6,15 @@ div.top-bar-wrapper {
 div.top-bar {
     display: flex;
     flex-direction: row;
-    background: #FFF;
+    background: rgba(255,255,255,0.9);
     padding: 10px;
     height: 54px;
+    backdrop-filter: blur(5px) saturate(2);
+    line-height: 54px;
+}
+
+.widescreen div.top-bar {
+    backdrop-filter: none;
 }
 
 .top-bar>.heading {

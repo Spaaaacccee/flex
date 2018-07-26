@@ -44,11 +44,11 @@ export default class ProjectView extends Component {
     project: {},
     settingsVisible: false,
     inviteUsersVisible: false,
-    pauseSiderUpdate:false
+    pauseSiderUpdate: false
   };
   componentWillReceiveProps(props) {
     this.setState({
-      pauseSiderUpdate:props.pauseSiderUpdate,
+      pauseSiderUpdate: props.pauseSiderUpdate,
       navigationCollapsed: props.navigationCollapsed ? true : false,
       style: props.style || this.state.style,
       projectID: props.projectID,
@@ -62,16 +62,21 @@ export default class ProjectView extends Component {
       });
     } else {
       // If the project ID from props is different to the projectID from state, that means navigation has occured, reset the project view.
-      if(props.projectID !== this.state.projectID) this.setState({project:{}});
-        // Get fresh copy of the current project from database, then apply it here
-        Project.get(props.projectID).then(project => {
-          // The database sometimes returns null right after data is modified, if so, do nothing.
-          if(!project) return;
-          // Because setting the project is a performance-expensive task, only continue if the project from the database is extrinsically different
-          if(project.lastUpdatedTimestamp === this.state.project.lastUpdatedTimestamp && project.projectID === this.state.project.projectID) return;
-          this.setState({ project });
-        });
-      
+      if (props.projectID !== this.state.projectID)
+        this.setState({ project: {} });
+      // Get fresh copy of the current project from database, then apply it here
+      Project.get(props.projectID).then(project => {
+        // The database sometimes returns null right after data is modified, if so, do nothing.
+        if (!project) return;
+        // Because setting the project is a performance-expensive task, only continue if the project from the database is extrinsically different
+        if (
+          project.lastUpdatedTimestamp ===
+            this.state.project.lastUpdatedTimestamp &&
+          project.projectID === this.state.project.projectID
+        )
+          return;
+        this.setState({ project });
+      });
     }
   }
 
@@ -89,7 +94,7 @@ export default class ProjectView extends Component {
         style={{
           flex: 1,
           height: "100%",
-          width:0
+          width: 0
         }}
       >
         <Layout className="project-view-wrapper" style={this.state.style}>
@@ -132,22 +137,9 @@ export default class ProjectView extends Component {
                 "px)"
             }}
           >
-            <TopBar
-              style={{
-                height: "56px",
-                flex: 0
-              }}
-              onLeftButtonPress={() => {
-                this.props.onNavButtonPress();
-              }}
-              navButtonType="menu"
-              heading={this.state.openedPage.name || "Untitled"}
-            />
             <Content
               className="project-view-inner-content"
               onTouchStart={e => {
-                this.props.onContentPress();
-
                 //handle touch gesture
                 var threshold = 70;
                 var leftThreshold = 100;
@@ -173,13 +165,12 @@ export default class ProjectView extends Component {
 
                 setTimeout(endFn, timeLimit);
               }}
-              onMouseUp={() => {
-                this.props.onContentPress();
-              }}
             >
               <PageView
+                onLeftButtonPress={this.props.onNavButtonPress}
+                onContentPress={this.props.onContentPress}
                 project={this.state.project}
-                contentType={this.state.openedPage.content}
+                page={this.state.openedPage}
               />
             </Content>
           </Layout>
@@ -203,7 +194,7 @@ export default class ProjectView extends Component {
             this.setState({ inviteUsersVisible: false });
           }}
           onSend={() => {
-            this.setState({ inviteUsersVisible: false }); 
+            this.setState({ inviteUsersVisible: false });
           }}
         />
       </div>

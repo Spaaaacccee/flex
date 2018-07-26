@@ -4,6 +4,7 @@ import User from "../classes/User";
 import Project from "../classes/Project";
 import { ArrayUtils } from "../classes/Utils";
 import RolePicker from "./RolePicker";
+import update from 'immutability-helper';
 
 /**
  * Displays member information in a card.
@@ -22,6 +23,7 @@ export default class MemberDisplay extends Component {
   };
 
   componentWillReceiveProps(props) {
+    // If the new properties are not different to the values in the existing state, then don't update anything. 
     if (
       props.member.uid === this.state.member.uid &&
       props.project.projectID === this.state.project.projectID &&
@@ -29,12 +31,14 @@ export default class MemberDisplay extends Component {
         this.state.project.lastUpdatedTimestamp
     )
       return;
+    // Set the member and project information immediately. It is ok if either of these values are null because these are handled later on
     this.setState(
       {
         member: props.member,
         project: props.project
       },
       () => {
+        // Get a fresh copy of the user from the database
         User.get(this.state.member.uid).then(user => {
           this.setState({ userInfo: user });
         });

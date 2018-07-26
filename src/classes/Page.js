@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 
-import Page_User from "../pages/User";
-import Page_Members from "../pages/Members";
-import Page_Debug from "../pages/Debug";
-import Page_Feed from "../pages/Feed";
-import Page_Timeline from "../pages/Timeline";
+import USER from "../pages/User";
+import MEMBERS from "../pages/Members";
+import DEBUG from "../pages/Debug";
+import FEED from "../pages/Feed";
+import TIMELINE from "../pages/Timeline";
+import FILES from "../pages/Files";
 
 /**
  * Represents a single page that can be displayed within the app.
@@ -31,16 +32,18 @@ export default class Page {
    */
   content;
   /**
-   * Creates an instance of Page.
-   * @param  {String} name
-   * @param  {String} icon
-   * @param  {Component} content
+   * Define the antd icon type of the extras button situated on the right side of the top navigation bar.
+   * @type {String}
    * @memberof Page
    */
-  constructor(name, icon, content) {
-    this.name = name;
-    this.icon = icon;
-    this.content = content;
+  extrasButtonType;
+  /**
+   * Creates an instance of Page.
+   * @param {Page} args
+   * @memberof Page
+   */
+  constructor(args) {
+    Object.assign(this, args);
   }
 }
 
@@ -48,15 +51,45 @@ export default class Page {
  * A list of pages that will be used for each project.
  */
 export const Pages = [
-  new Page("Feed", "appstore-o", Page_Feed),
-  new Page("Members", "team", Page_Members),
-  new Page("Timeline", "calendar", Page_Timeline),
-  new Page("Discussion", "message", null),
-  new Page("Files", "file-text", null),
-  new Page("Debug", "code-o", Page_Debug)
+  new Page({
+    name: "Feed",
+    icon: "appstore-o",
+    content: FEED,
+  }),
+  new Page({
+    name: "Members",
+    icon: "team",
+    content: MEMBERS
+  }),
+  new Page({
+    name: "Timeline",
+    icon: "calendar",
+    content: TIMELINE,
+    extrasButtonType: "plus"
+  }),
+  new Page({
+    name: "Discussion",
+    icon: "message",
+    content: null
+  }),
+  new Page({
+    name: "Files",
+    icon: "file-text",
+    content: FILES,
+    extrasButtonType: "plus"
+  }),
+  new Page({
+    name: "Debug",
+    icon: "code-o",
+    content: DEBUG
+  })
 ];
 
 /**
  * A list of pages that will be used for the user page.
  */
-export const UserPage = [new Page("Me", "file", Page_User)];
+export const UserPage = [new Page({
+  name: "Me",
+  icon: "file",
+  content: USER
+})];

@@ -219,8 +219,14 @@ export default class Main extends Component {
             onSubmit={async data => {
               // Set a default name in case the entered project name is empty.
               data.projectName = data.projectName || "Untitled Project";
+              let newProject = new Project(data.projectName);
+              newProject.description = data.description;
               // Wait for the application to create a new project
-              await (await User.getCurrentUser()).newProject(new Project(data.projectName));
+              await (await User.getCurrentUser()).newProject(newProject);
+              // Invite try to invite the selected users
+              await Promise.all(
+                (data.recipients||[]).map(async (item)=>(await User.get(item.key)).addInvite(newProject.projectID))
+              )
               // Update the UI to close the form
               this.setState({
                 modal: {

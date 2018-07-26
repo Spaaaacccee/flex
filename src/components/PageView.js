@@ -3,6 +3,7 @@ import propTypes from "prop-types";
 import { Layout, Card, Icon, Avatar, Button } from "antd";
 import Fire from "../classes/Fire";
 import User from "../classes/User";
+import TopBar from "./TopBar";
 const { Meta } = Card;
 
 /**
@@ -13,16 +14,21 @@ const { Meta } = Card;
  */
 export default class PageView extends Component {
   static defaultProps = {
-    contentType: undefined
+    page: {},
+    onLeftButtonPress: () => {},
+    onContentPress: () => {}
   };
   state = {
-    contentType: undefined,
+    page: {},
     project: {},
     user: {}
   };
 
   componentWillReceiveProps(props) {
-    this.setState({ contentType: props.contentType });
+    if (props.page !== this.state.page) {
+      this.setState({ page: props.page });
+      //props.contentType
+    }
     User.getCurrentUser().then(user => {
       if (user) this.setState({ user });
     });
@@ -39,19 +45,51 @@ export default class PageView extends Component {
   render() {
     return (
       <div>
-        {this.state.contentType ? (
-          <div>
-            {React.createElement(this.state.contentType, {
-              project: this.state.project,
-              user: this.state.user
-            })}
-            <p style={{ marginTop: 20, opacity: 0.5 }}>
-              Nothing else to show :)
-            </p>
-          </div>
-        ) : (
-          <Icon type="loading" style={{ fontSize: 24 }} spin />
-        )}
+        <TopBar
+          style={{
+            height: "56px",
+            flex: 0
+          }}
+          onLeftButtonPress={this.props.onLeftButtonPress}
+          onRightButtonPress={
+            ((this.refs.pageContentElement||{}).onExtrasButtonPress
+              ? (() => {
+                  this.refs.pageContentElement.onExtrasButtonPress();
+                }) || 0
+              : 0) || (() => {})
+          }
+          leftButtonType={"menu"}
+          rightButtonType={this.state.page.extrasButtonType}
+          heading={this.state.page.name || "Untitled"}
+        />
+        <div
+          style={{
+            padding: "20px 10px"
+          }}
+          onMouseUp={this.props.onContentPress}
+          onTouchStart={this.props.onContentPress}
+        >
+          {this.state.page.content ? (
+            <div>
+              {(() => {
+                this.pageContentElement = React.createElement(
+                  this.state.page.content,
+                  {
+                    project: this.state.project,
+                    user: this.state.user,
+                    ref: "pageContentElement"
+                  }
+                );
+                return this.pageContentElement;
+              })()}
+              <p style={{ marginTop: 20, opacity: 0.5 }}>
+                Nothing else to show :)
+              </p>
+            </div>
+          ) : (
+            <Icon type="loading" style={{ fontSize: 24 }} spin />
+          )}
+        </div>
       </div>
     );
   }

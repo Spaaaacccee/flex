@@ -1,3 +1,10 @@
+import ee from 'event-emitter'
+export class EventEmitter {
+  constructor() {
+    ee(EventEmitter.prototype);
+  }
+}
+
 /**
  * Utilities for generating IDs and random values
  * @export

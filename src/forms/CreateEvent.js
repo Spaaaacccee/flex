@@ -3,6 +3,7 @@ import update from "immutability-helper";
 import { Input, DatePicker, Button, Switch, Select } from "antd";
 import React, { Component } from "react";
 import { ObjectUtils } from "../classes/Utils";
+import MemberGroupSelector from "../components/MemberGroupSelector";
 
 export default class CreateEvent extends Component {
   state = {
@@ -11,10 +12,15 @@ export default class CreateEvent extends Component {
       description: "",
       date: Date.now(),
       autoComplete: false,
+      involvedPeople: {
+        members: [],
+        roles: []
+      },
       notify: -1
     },
     submitted: false,
-    opened: false
+    opened: false,
+    project: {}
   };
 
   handleSubmit() {
@@ -31,6 +37,17 @@ export default class CreateEvent extends Component {
       });
     }
     this.setState({ opened: props.opened });
+    this.setState({ user: props.user || {} });
+    if (!props.project) return;
+    if (
+      props.project.projectID === this.state.project.projectID &&
+      props.project.lastUpdatedTimestamp ===
+        this.state.project.lastUpdatedTimestamp
+    )
+      return;
+    this.setState({
+      project: props.project
+    });
   }
 
   setValue(obj) {
@@ -67,6 +84,17 @@ export default class CreateEvent extends Component {
             }}
           />
         </div>
+        <h3>Involved People</h3>
+        <MemberGroupSelector
+          project={this.state.project}
+          onSelectionChanged={selection => {
+            this.setValue({ values: { involvedPeople: selection } });
+          }}
+        />
+        <p>
+          Only people involved will see this event in their feed and receive
+          reminders.
+        </p>
         <h3>Notify</h3>
         <Select
           defaultValue={-1}

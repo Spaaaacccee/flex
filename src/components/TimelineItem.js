@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import { Card, Icon } from "antd";
+import { Card, Icon, Button } from "antd";
 import Project from "../classes/Project";
+import UserGroupDisplay from "./UserGroupDisplay";
 
 /**
- * Displays an timeline event as a card 
+ * Displays an timeline event as a card
  * @export
  * @class TimelineItem
  * @extends Component
@@ -12,26 +13,46 @@ export default class TimelineItem extends Component {
   state = {
     eventID: null, //TimelineEvent uid to display
     projectID: null, //The ID of the project to take the event info from
-    event: {},
+    project: {},
+    event: {}
   };
+
   componentWillReceiveProps(props) {
-    this.setState({ eventID: props.eventID, projectID:props.projectID });
-    if(!props.projectID) return;
-    Project.get(props.projectID).then((project)=>{
-        if(!props.eventID) return;
-        if(!project) return;
-        let event = project.events.find(item=>item.uid===props.eventID);
-        if(event) this.setState({event});
+    this.setState({ eventID: props.eventID, projectID: props.projectID });
+    if (!props.projectID) return;
+    Project.get(props.projectID).then(project => {
+      if (!project) return;
+      this.setState({ project });
+      if (!props.eventID) return;
+      let event = project.events.find(item => item.uid === props.eventID);
+      if (event) this.setState({ event });
     });
   }
+
   render() {
     return (
-      <div style={{textAlign:'left'}}>
-        <Card title={this.state.event.name || <Icon type="loading" />} extra={<Icon type="edit" />} >
+      <div style={{ textAlign: "left" }}>
+        <Card
+          actions={[
+            <Button icon="edit" shape="circle" />,
+            <Button icon="check" shape="circle" type="primary" />
+          ]}
+        >
           <Card.Meta
+            title={this.state.event.name || <Icon type="loading" />}
             description={
-                this.state.event.date ? (
-                new Date(this.state.event.date).toDateString()
+              this.state.event.date ? (
+                <div>
+                  <div>{new Date(this.state.event.date).toDateString()}</div>
+                  <div>{this.state.event.description || ""}</div>
+                  <div>
+                    <br />
+                    <UserGroupDisplay
+                      project={this.state.project}
+                      people={this.state.event.involvedPeople}
+                    />
+                  </div>
+                </div>
               ) : (
                 <Icon type="loading" />
               )

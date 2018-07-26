@@ -13,7 +13,7 @@ import { ObjectUtils } from "../classes/Utils";
 import ProjectIcon from "../components/ProjectIcon";
 import ProjectInvitation from "../components/ProjectInvitation";
 
-export default class Page_User extends Component {
+export default class USER extends Component {
   state = {
     visible: false,
     user: undefined,

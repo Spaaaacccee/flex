@@ -13,17 +13,19 @@ const { Header } = Layout;
 export default class TopBar extends Component {
   static defaultProps = {
     onLeftButtonPress: () => {},
-    onRightButtonPress: () => {},
+    onRightButtonPress: () => {}
   };
   state = {
     heading: "Heading",
-    leftButtonStyle: "menu", //"menu", "back", "hidden"
-    style: "solid" //"solid" or "blended"
+    leftButtonType: "menu", //"menu", "back", "hidden"
+    style: "solid", //"solid" or "blended"
+    rightButtonType: "" //icon type
   };
   componentWillReceiveProps(props) {
     this.setState({
       heading: props.heading,
-      navbuttonStyle: props.leftButtonStyle
+      leftButtonType: props.leftButtonType,
+      rightButtonType: props.rightButtonType
     });
   }
   render() {
@@ -41,22 +43,24 @@ export default class TopBar extends Component {
             }}
             shape="circle"
             icon={
-              this.state.leftButtonStyle === "menu" ? "menu-unfold" : "left"
+              this.state.leftButtonType === "menu" ? "menu-unfold" : "left"
             }
             className="left-button"
           />
           <div className="heading">{this.state.heading}</div>
-            <Popover placement="bottomRight" content={(<div>Nothing here yet.</div>)} trigger="click">
-            <Button shape="circle" icon="ellipsis" className="right-button" onTouchEnd={e => {
-              this.props.onRightButtonPress();
-              e.preventDefault();
-              return true;
-            }}
-            onMouseUp={() => {
-              this.props.onRightButtonPress();
-            }}/>
-            
-            </Popover>
+            <Button
+              shape="circle"
+              icon={this.state.rightButtonType}
+              className="right-button"
+              onTouchEnd={e => {
+                this.props.onRightButtonPress();
+                e.preventDefault();
+                return true;
+              }}
+              onMouseUp={() => {
+                this.props.onRightButtonPress();
+              }}
+            />
         </Header>
       </div>
     );

@@ -1,48 +1,50 @@
 .sign-in-wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100vw;
-    height: 100%;
-    background-color: black;
-    background:url('https://source.unsplash.com/70R6ZJ0XGXg/'), url('https://images.unsplash.com/photo-1531043992167-48bedfe82ece?ixlib=rb-0.3.5&s=c62e42375ecc6dfe1201d539e605d178&dpr=1&auto=format&fit=crop&w=200&q=60&cs=tinysrgb&blur=20') center;
-    background-size: cover;
-    transition: opacity 0.3s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100%;
+  background-color: rgb(247, 247, 247);
+  background: url("https://source.unsplash.com/d3pTF3r_hwY/5472x3648"), url("https://source.unsplash.com/d3pTF3r_hwY"),
+    url("https://images.unsplash.com/photo-1483921020237-2ff51e8e4b22?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=a418aefa3b9a95fc4cfdf344244ba996&dpr=1&auto=format&fit=crop&w=200&q=60&cs=tinysrgb&blur=20")
+      center;
+  background-size: cover;
+  transition: opacity 0.3s ease;
 }
 
 .sign-in-wrapper:after {
-    content:'Photo: Unsplash | Josh Spires';
-    position: absolute;
-    top: 10px;
-    right:10px;
-    color: white;
-    font-size: 10px;
-    opacity: 0.65;
+  content: "Photo: Unsplash | Yang Shuo";
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  color: black;
+  font-size: 10px;
+  opacity: 0.65;
 }
 
 .sign-in {
-    margin: 10px;
-    box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.8);
-    background-color: white;
-    color: black;
-    width: 375px;
-    max-width: 100vw;
-    max-height: 100%;
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-    border-radius: 5px;
+  margin: 10px;
+  box-shadow: 0px 15px 40px rgba(0, 0, 0, 0.3);
+  background-color: white;
+  color: black;
+  width: 375px;
+  max-width: 100vw;
+  max-height: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  border-radius: 5px;
 }
 
 .sign-in-text {
-    width: 100%;
-    text-align: left;
-    padding:31.5px;
+  width: 100%;
+  text-align: left;
+  padding: 31.5px;
 }
 
 .sign-in .firebaseui-list-item {
-    text-align: left
+  text-align: left;
 }

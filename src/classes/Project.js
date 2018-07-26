@@ -1,11 +1,15 @@
+import CryptoJS from "crypto-js";
+
 import Role from "./Role";
 import { RoleList } from "./Role";
 import Member from "./Member";
 import { MemberList } from "./Member";
 import TimelineEvent from "./TimelineEvent";
-
+import { message } from "antd";
 import { IDGen, ArrayUtils } from "./Utils";
 import Fetch from "./Fetch";
+import Document, { DocumentMeta, DocumentArchive, UploadJob } from "./Document";
+import User from "./User";
 
 /**
  * Represents a project
@@ -166,6 +170,11 @@ export default class Project {
    * @memberof Project
    */
   events;
+  /**
+   * @type {Array<DocumentArchive>}
+   * @memberof Project
+   */
+  files;
 
   /**
    * Creates an instance of Project.
@@ -249,6 +258,22 @@ export default class Project {
   }
 
   /**
+   * Adds a member
+   * @param  {any} uid
+   * @param  {any} roles
+   * @return
+   * @memberof Project
+   */
+  async addMember(uid, roles) {
+    if (!uid) return;
+    await this.transaction(function() {
+      this.members = (this.members || []).push(
+        new Member(uid, roles || [], true)
+      );
+    });
+  }
+
+  /**
    * Set the roles of a single member of this project
    * @param  {any} memberID
    * @param  {any} roles
@@ -256,20 +281,10 @@ export default class Project {
    * @memberof Project
    */
   async setMember(memberID, roles) {
-    this.transaction(function() {
-      this.members = this.members || [];
-      if (
-        ArrayUtils.exists(
-          ArrayUtils.select(this.members, item => item.uid),
-          memberID
-        )
-      ) {
-        this.members.splice(
-          ArrayUtils.indexOf(this.members, item => item.uid === memberID),
-          1,
-          new Member(memberID, roles)
-        );
-      }
+    await this.transaction(function() {
+      this.members = (this.members || []).map(
+        item => (item.uid === memberID ? Object.assign(item, { roles }) : item)
+      );
     });
   }
 
@@ -278,9 +293,24 @@ export default class Project {
    * @return {void}
    * @memberof Project
    */
-  setEvents(events) {
-    this.transaction(function() {
+  async setEvents(events) {
+    await this.transaction(function() {
       this.events = events;
+    });
+  }
+
+  /**
+   * Set a single event
+   * @param  {String} uid
+   * @param  {TimelineEvent} eventData
+   * @return {void}
+   * @memberof Project
+   */
+  async setEvent(uid, eventData) {
+    await this.transaction(function() {
+      this.events = (this.events || []).map(
+        item => (item.uid === uid ? Object.assign(eventData, { uid }) : item)
+      );
     });
   }
 
@@ -290,8 +320,8 @@ export default class Project {
    * @return {void}
    * @memberof Project
    */
-  addEvent(event) {
-    this.transaction(function() {
+  async addEvent(event) {
+    await this.transaction(function() {
       this.events = this.events || [];
       this.events.push(event);
     });
@@ -303,4 +333,121 @@ export default class Project {
       (a, b) => (a.date === b.date ? 0 : a.date > b.date ? 1 : -1)
     );
   }
+
+  /**
+   * Add a file to this project
+   * @param  {File} file
+   * @return {void}
+   * @memberof Project
+   */
+  async addFile(file) {
+    const jobID = IDGen.generateUID();
+
+    UploadJob.Jobs.setJob(
+      new UploadJob({
+        uid: jobID,
+        totalBytes: file.size,
+        name: file.name,
+        project: this.projectID
+      })
+    );
+
+    const user = await User.getCurrentUser();
+    const reader = new FileReader();
+    reader.readAsBinaryString(file);
+    const hash = await new Promise((res, rej) => {
+      reader.onloadend = () => {
+        res(CryptoJS.MD5(reader.result).toString());
+      };
+    });
+
+    let meta = new DocumentMeta({
+      dateModifed: file.lastModifiedDate,
+      name: file.name,
+      type: file.type,
+      size: file.size,
+      uploader: user.uid,
+      state: "unavailable",
+      hash
+    });
+
+    let task;
+    await this.transaction(function() {
+      this.files = this.files || [];
+      let existingArchive = ArrayUtils.indexOf(
+        this.files,
+        item => item.name === meta.name && item.type === meta.type
+      );
+      if (existingArchive !== -1) {
+        let existingFile =
+          ArrayUtils.indexOf(
+            this.files[existingArchive].files,
+            item => item.hash === meta.hash
+          ) !== -1;
+        if (existingFile) {
+          if (this instanceof Project)
+            message.error(`A file that's exactly the same already exists`);
+        } else {
+          this.files[existingArchive].files.push(meta);
+          if (this instanceof Project) {
+            task = Document.upload(file, meta);
+          }
+        }
+      } else {
+        this.files.push(
+          new DocumentArchive({
+            files: [meta],
+            name: meta.name,
+            type: meta.type
+          })
+        );
+        if (this instanceof Project) {
+          task = Document.upload(file, meta);
+        }
+      }
+    });
+
+    if (task) {
+      task.on("state_changed", ({ totalBytes, bytesTransferred }) => {
+        UploadJob.Jobs.updateJob(jobID, {
+          status: "uploading",
+          totalBytes,
+          bytesTransferred
+        });
+      });
+      task.then(() => {
+        this.setFileMeta(meta.uid, Object.assign(meta, { state: "available" }));
+        UploadJob.Jobs.updateJob(jobID, { status: "done" });
+      });
+    } else {
+      UploadJob.Jobs.updateJob(jobID, {
+        status: "canceled"
+      })
+    }
+
+    return { task };
+  }
+
+  getFileMeta(fileID) {}
+
+  async setFileMeta(fileID, meta) {
+    await this.transaction(function() {
+      this.files = this.files || [];
+      this.files.forEach((archive, i) => {
+        archive.files = archive.files || [];
+        let j = ArrayUtils.indexOf(archive.files, item => item.uid === fileID);
+        if (j !== -1) {
+          this.files[i].files[j] = meta;
+        }
+      });
+    });
+  }
+
+  /**
+   *
+   * @param  {String} hashString
+   * @return {DocumentMeta}
+   * @memberof Project
+   */
+  getFileMetaByHash(hashString) {}
 }

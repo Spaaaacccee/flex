@@ -2,9 +2,11 @@
 
 ## Complex Algorithm
 
-Nothing here yet.
+Multithreaded quicksort (most likely)
 
 ## File Management
+
+### Local
 
 The file structure of the development environment is as follows.
 
@@ -22,9 +24,14 @@ The `src` folder contains all javascript and css source files.
 
 The `public` folder contains any files that are directly accessible and will not be processed by the React compiler.
 
+### Database & File storage
+
 The application uses Firebase for database and file storage solutions.
 
 - The database stores all data including projects and users in the format of a JSON tree hierachy.
 - Uploaded files are stored in file storage. The files are not categorised into folders, but adopts a timestamp-uid naming system. All file metadata is stored in the database.
+
+### Backup plan
+
 
 The project is synced to GitHub, and Google Drive. It is backed up periodically to a USB flash drive.

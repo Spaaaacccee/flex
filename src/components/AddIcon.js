@@ -29,6 +29,7 @@ export default class AddIcon extends Component {
     return (
       <div
         className={"project-icon add-icon"}
+        // Add mouse up and touch handlers separately to optimise for touch input
         onMouseUp={this.handlePress.bind(this)}
         onTouchStart={this.handlePress.bind(this)}
       >

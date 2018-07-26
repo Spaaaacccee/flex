@@ -67,7 +67,11 @@ export default class Fetch {
    * @memberof Fetch
    */
   static async getProject(id) {
-    return await Fetch.getObject(await Fetch.getProjectReference(id), Project, true);
+    return await Fetch.getObject(
+      await Fetch.getProjectReference(id),
+      Project,
+      true
+    );
   }
   /**
    * Gets an actual user using ID.
@@ -89,19 +93,22 @@ export default class Fetch {
    * @return {?User} Returns null if not found
    * @memberof Fetch
    */
-  static async searchUserByEmail(email,numberOfResults) {
+  static async searchUserByEmail(email, numberOfResults) {
     // Query for a user with the matching email address
     let queryResult = await Fetch.getUserReference("")
       .orderByChild("email")
       .startAt(email)
+      .endAt(email + "\uf8ff")
       .limitToFirst(numberOfResults)
       .once("value");
     let userResults = [];
     // Loop through every match and assigns the uid to userResult.
-    queryResult.forEach(async snapshot => {
-      userResults.push(await Fetch.getUser(snapshot.val().uid));
+    queryResult.forEach(snapshot => {
+      userResults.push(snapshot.val().uid);
     });
-    return userResults;
+    return await Promise.all(
+      userResults.map(item => Fetch.getUser(item))
+    );
   }
 }
 

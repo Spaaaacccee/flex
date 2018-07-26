@@ -29,12 +29,20 @@ div.project-view-content {
     -webkit-overflow-scrolling: touch;
     overflow: auto;
     height: 100%;
-    padding: 20px 10px;
     background: #fff;
 }
 
-.project-view-inner-content > div {
+/* .project-view-inner-content > div {
     text-align: center;
+}*/
+
+.top-bar-wrapper {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 54px;
+    z-index: 100;
 }
 
 .widescreen div.project-view-content {
@@ -48,4 +56,9 @@ div.project-view-content {
 .widescreen .project-view-inner-content {
     height: auto;
     flex:none;
+} 
+
+.widescreen .top-bar-wrapper {
+    width: auto;
+    position: static;
 }
