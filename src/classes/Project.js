@@ -7,8 +7,14 @@ import { MemberList } from "./Member";
 import TimelineEvent from "./TimelineEvent";
 import { message } from "antd";
 import { IDGen, ArrayUtils } from "./Utils";
+import update from "immutability-helper";
 import Fetch from "./Fetch";
-import Document, { DocumentMeta, DocumentArchive, UploadJob } from "./Document";
+import Document, {
+  DocumentMeta,
+  DocumentArchive,
+  UploadJob,
+  CloudDocument
+} from "./Document";
 import User from "./User";
 
 /**
@@ -267,9 +273,9 @@ export default class Project {
   async addMember(uid, roles) {
     if (!uid) return;
     await this.transaction(function() {
-      this.members = (this.members || []).push(
-        new Member(uid, roles || [], true)
-      );
+      this.members = update(this.members || [], {
+        $push: [new Member(uid, roles || [], true)]
+      });
     });
   }
 
@@ -336,11 +342,12 @@ export default class Project {
 
   /**
    * Add a file to this project
-   * @param  {File} file
+   * @param  {File} file The file to add.
+   * @param {Function} callback Adding a file may take a while, so instead of a `Promise`, you can set a callback to execute after this is done to avoid `await`s stopping the execution of the thread.
    * @return {void}
    * @memberof Project
    */
-  async addFile(file) {
+  addFile(file, callback) {
     const jobID = IDGen.generateUID();
 
     UploadJob.Jobs.setJob(
@@ -352,80 +359,115 @@ export default class Project {
       })
     );
 
-    const user = await User.getCurrentUser();
-    const reader = new FileReader();
-    reader.readAsBinaryString(file);
-    const hash = await new Promise((res, rej) => {
-      reader.onloadend = () => {
-        res(CryptoJS.MD5(reader.result).toString());
-      };
-    });
+    const user = User.getCurrentUser().then(user => {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const hash = CryptoJS.MD5(reader.result).toString();
+        let meta = new DocumentMeta({
+          dateModifed: file.lastModifiedDate,
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          uploader: user.uid,
+          state: "unavailable",
+          hash
+        });
 
-    let meta = new DocumentMeta({
-      dateModifed: file.lastModifiedDate,
-      name: file.name,
-      type: file.type,
-      size: file.size,
-      uploader: user.uid,
-      state: "unavailable",
-      hash
-    });
+        let task;
 
-    let task;
-    await this.transaction(function() {
-      this.files = this.files || [];
-      let existingArchive = ArrayUtils.indexOf(
-        this.files,
-        item => item.name === meta.name && item.type === meta.type
-      );
-      if (existingArchive !== -1) {
-        let existingFile =
-          ArrayUtils.indexOf(
-            this.files[existingArchive].files,
-            item => item.hash === meta.hash
-          ) !== -1;
-        if (existingFile) {
-          if (this instanceof Project)
-            message.error(`A file that's exactly the same already exists`);
-        } else {
-          this.files[existingArchive].files.push(meta);
-          if (this instanceof Project) {
-            task = Document.upload(file, meta);
+        await this.transaction(function() {
+          this.files = this.files || [];
+          let existingArchive = ArrayUtils.indexOf(
+            this.files,
+            item => item.name === meta.name && item.type === meta.type
+          );
+          if (existingArchive !== -1) {
+            let existingFile =
+              ArrayUtils.indexOf(
+                this.files[existingArchive].files,
+                item => item.hash === meta.hash
+              ) !== -1;
+            if (existingFile) {
+              if (this instanceof Project)
+                message.error(`A file that's exactly the same already exists`);
+            } else {
+              this.files[existingArchive].files.push(meta);
+              if (this instanceof Project) {
+                message.info(
+                  `We're putting ${file.name} together with an existing copy.`
+                );
+                task = Document.upload(file, meta);
+              }
+            }
+          } else {
+            this.files.push(
+              new DocumentArchive({
+                files: [meta],
+                name: meta.name,
+                type: meta.type
+              })
+            );
+            if (this instanceof Project) {
+              task = Document.upload(file, meta);
+            }
           }
+        });
+
+        if (task) {
+          UploadJob.Jobs.updateJob(jobID, {
+            cancelJob: () => {
+              if (UploadJob.Jobs.getJob(jobID).status !== "done") {
+                task.cancel();
+                UploadJob.Jobs.updateJob(jobID, { status: "canceled" });
+              }
+            }
+          });
+          task.on("state_changed", ({ totalBytes, bytesTransferred }) => {
+            UploadJob.Jobs.updateJob(jobID, {
+              status: "uploading",
+              totalBytes,
+              bytesTransferred
+            });
+          });
+          task.then(() => {
+            this.setFileMeta(
+              meta.uid,
+              Object.assign(meta, { state: "available" })
+            );
+            UploadJob.Jobs.updateJob(jobID, { status: "done" });
+          });
+        } else {
+          UploadJob.Jobs.updateJob(jobID, {
+            status: "canceled"
+          });
+        }
+
+        return callback({
+          jobID,
+          task
+        });
+      };
+      reader.readAsBinaryString(file);
+    });
+  }
+
+  async addCloudFile(file, callback) {
+    await this.transaction(function() {
+      if (
+        this.files.find(
+          item =>
+            item.uploadType === "cloud" &&
+            item.source.id &&
+            item.source.id === file.id
+        )
+      ) {
+        if (this instanceof Project) {
+          message.error(`${file.name} already exists!`);
         }
       } else {
-        this.files.push(
-          new DocumentArchive({
-            files: [meta],
-            name: meta.name,
-            type: meta.type
-          })
-        );
-        if (this instanceof Project) {
-          task = Document.upload(file, meta);
-        }
+        this.files.push(new CloudDocument(file));
       }
     });
-
-    if (task) {
-      task.on("state_changed", ({ totalBytes, bytesTransferred }) => {
-        UploadJob.Jobs.updateJob(jobID, {
-          status: "uploading",
-          totalBytes,
-          bytesTransferred
-        });
-      });
-      task.then(() => {
-        this.setFileMeta(meta.uid, Object.assign(meta, { state: "available" }));
-        UploadJob.Jobs.updateJob(jobID, { status: "done" });
-      });
-    } else {
-      UploadJob.Jobs.updateJob(jobID, {
-        status: "canceled"
-      })
-    }
-
-    return { task };
   }
 
   getFileMeta(fileID) {}

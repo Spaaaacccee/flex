@@ -9,8 +9,8 @@ div.project-sider .project-icon {
     transform: scale(0.9);
 }
 
-.main-layout * {
-    transition: all 0.4s cubic-bezier(0,.65,.27,1) !important;
+.project-view-content, .project-view-wrapper {
+    transition: transform 0.4s cubic-bezier(0,.65,.27,1);
     transform: translateZ(0);
   }
 

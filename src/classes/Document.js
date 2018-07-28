@@ -1,6 +1,6 @@
 import Firebase from "firebase";
 import Fire from "./Fire";
-import { message } from "antd";
+import { message, notification } from "antd";
 import { IDGen, ObjectUtils, EventEmitter } from "./Utils";
 import UploadLoader from "../components/UploadLoader";
 import React from "react";
@@ -17,17 +17,91 @@ export default class Document {
   static upload(file, meta) {
     let uploadTask = Fire.firebase()
       .storage()
-      .ref(`/${meta.uid}`)
+      .ref(`/${meta.uid}/${meta.name}`)
       .put(file);
     return uploadTask;
   }
   static async getURL(meta) {
     return await Fire.firebase()
       .storage()
-      .ref(`/${meta.uid}`)
+      .ref(`/${meta.uid}/${meta.name}`)
       .getDownloadURL();
   }
+  static async tryPreviewWindow(meta) {
+    let url;
+    let msg = message.loading("Getting the download link for your file");
+    if(meta.uploadType) {
+      if (meta.uploadType === "cloud") {
+        url = meta.source.url;
+      } else {
+        url = `${await Document.getURL(meta.files[0])}`;
+      }
+    } else {
+      url = `${await Document.getURL(meta)}`;
+    }
+    window.open(url);
+    msg();
+  }
 }
+
+export class CloudDocument {
+  /**
+   * @type {"local" | "cloud"}
+   * @memberof CloudDocument
+   */
+  uploadType = "cloud";
+  source = {};
+  constructor(file) {
+    this.source = file;
+  }
+}
+
+export class DocumentArchive {
+  /**
+   * @type {"local" | "cloud"}
+   * @memberof DocumentArchive
+   */
+  uploadType = "local";
+  uid = IDGen.generateUID();
+  name;
+  /**
+   * MIME type
+   * @type {String}
+   * @memberof DocumentArchive
+   */
+  type;
+  files = [];
+  constructor(args) {
+    Object.assign(this, args);
+  }
+}
+
+export class DocumentMeta {
+  uid = "" + Date.now() + ":" + IDGen.generateUID();
+  description;
+  name;
+  type;
+  size;
+  dateModifed;
+  dateUploaded = Date.now();
+  uploader;
+  hash;
+  /**
+   * @type {"unavailable" | "available" | "unknown"}
+   * @memberof DocumentMeta
+   */
+  state;
+  /**
+   * Creates an instance of DocumentMeta.
+   * @param  {DocumentMeta} args
+   * @memberof DocumentMeta
+   */
+  constructor(args) {
+    Object.assign(this, args);
+  }
+}
+
+class DocumentType {}
 
 class JobManager extends EventEmitter {
   /**
@@ -81,6 +155,9 @@ export class UploadJob {
    * @memberof UploadJob
    */
   project;
+
+  cancelJob = () => {};
+
   /**
    * Creates an instance of UploadJob.
    * @param  {UploadJob} args
@@ -90,39 +167,3 @@ export class UploadJob {
     Object.assign(this, args);
   }
 }
-
-export class DocumentArchive {
-  uid = IDGen.generateUID();
-  name;
-  type;
-  files = [];
-  constructor(args) {
-    Object.assign(this, args);
-  }
-}
-
-export class DocumentMeta {
-  uid = "" + Date.now() + ":" + IDGen.generateUID();
-  name;
-  type;
-  size;
-  dateModifed;
-  dateUploaded = Date.now();
-  uploader;
-  hash;
-  /**
-   * @type {"unavailable" | "available" | "unknown"}
-   * @memberof DocumentMeta
-   */
-  state;
-  /**
-   * Creates an instance of DocumentMeta.
-   * @param  {DocumentMeta} args
-   * @memberof DocumentMeta
-   */
-  constructor(args) {
-    Object.assign(this, args);
-  }
-}
-
-class DocumentType {}

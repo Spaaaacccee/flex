@@ -84,21 +84,40 @@ h3 {
 .ant-card {
   border: none !important;
   box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.09), 0px 1px 8px rgba(0, 0, 0, 0.05);
-  border-radius: 5px !important;
-  max-width: 600px;
+  border-radius: 7px !important;
+  max-width: 400px;
   margin: auto !important;
 }
 
+.ant-card .ant-card-body {
+  overflow-x: auto;
+}
+
 .ant-card .ant-card-head {
-  border-radius: 10px 10px 0 0;
+  border-radius: 7px 7px 0 0;
 }
 
 .ant-card div.ant-card-extra {
   padding:12px 0;
 }
+.ant-card .ant-card-actions {
+  border-radius: 0px 0px 7px 7px;
+}
 
 .App > div > div > div:not(.widescreen) .ant-card {
   max-width: initial !important;
+}
+
+div.ant-list-item {
+  align-items: flex-start;
+}
+
+.ant-list-item-meta {
+  overflow: hidden;
+}
+
+.ant-list-item-action > li:last-child {
+  padding-right: 0
 }
 
 ul.ant-timeline {

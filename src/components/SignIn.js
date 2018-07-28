@@ -7,6 +7,7 @@ import * as firebaseui from "firebaseui";
 import "../../node_modules/firebaseui/dist/firebaseui.css";
 
 import "./SignIn.css";
+import UserIcon from "./UserIcon";
 
 /**
  * Sign in screen for signing into the app
@@ -33,12 +34,15 @@ export default class SignIn extends Component {
   }
 
   componentDidMount() {
-    if(sessionStorage.getItem("firebaseui::pendingRedirect") === `"pending"`) this.setState({ loading: true });
+    if (sessionStorage.getItem("firebaseui::pendingRedirect") === `"pending"`)
+      this.setState({ loading: true });
     Fire.firebase()
       .auth()
       .onAuthStateChanged(user => {
         if (user) {
-          this.handleLogIn(user);
+          Fire.authenticateGoogleAPIs(()=>{
+            this.handleLogIn(user);
+          })
         } else {
           Fire.firebase()
             .auth()
@@ -51,7 +55,9 @@ export default class SignIn extends Component {
             callbacks: {
               signInSuccessWithAuthResult: (authResult, redirectUrl) => {
                 console.log(authResult);
-                this.handleLogIn(authResult.user);
+                Fire.authenticateGoogleAPIs(()=>{
+                  this.handleLogIn(authResult.user);
+                })
                 return false;
               }
             }
@@ -82,8 +88,9 @@ export default class SignIn extends Component {
       >
         <div className="sign-in">
           <div className="sign-in-text">
-            <h2>Bonfire</h2>
-            <h1>Sign in</h1>
+            <h2>Sign in</h2>
+            <br />
+            <UserIcon />
             <br />
             <Button
               loading={this.state.loading}
@@ -111,7 +118,6 @@ export default class SignIn extends Component {
             >
               <p
                 style={{
-                  textAlign: "left",
                   color: "black"
                 }}
               >

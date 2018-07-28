@@ -35,7 +35,7 @@ export default class Root extends Component {
             height: "100%",
             fontSize: 24,
             flexDirection: "column",
-            background:'#f2f2f2'
+            background:'#f7f7f7f7'
           }}
         >
           <Icon type="loading" />

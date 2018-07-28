@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Tabs, Input, Button, Modal, List } from "antd";
 import Project from "../classes/Project";
-import propTypes from "prop-types";
+
 import { ObjectUtils } from "../classes/Utils";
 import Role from "../classes/Role";
 import RoleEditor from "./RoleEditor";
@@ -14,9 +14,7 @@ const { TabPane } = Tabs;
  * @extends Component
  */
 export default class Settings extends Component {
-  static propTypes = {
-    sourceProject: propTypes.instanceOf(Project)
-  };
+
   static defaultProps = {
     onClose: () => {}
   };

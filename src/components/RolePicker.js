@@ -81,8 +81,8 @@ export default class RolePicker extends Component {
               }}
               style={{
                 width: 85.49,
-                marginTop: 1,
-                marginBottom: 8,
+                marginTop: 0,
+                marginBottom: 7.75,
                 marginRight:10
               }}
               onChange={item => {

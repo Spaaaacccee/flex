@@ -28,6 +28,7 @@ export default class FileUpload extends Component {
   componentWillUnmount() {
     UploadJob.Jobs.off("job_changed", this.updateFiles.bind(this));
   }
+  loadingMessage;
   render() {
     const renderJobs = this.state.jobs.filter(
       item => !this.state.inProgressOnly || item.status === "uploading"
@@ -35,32 +36,59 @@ export default class FileUpload extends Component {
     return (
       <div>
         {!this.state.jobListOnly && (
-          <Upload.Dragger
-            customRequest={({ file }) => {
-              this.state.project.addFile(file).then(() => {
-                this.updateFiles();
-              });
+          <div
+            onClick={() => {
+              if (this.loadingMessage) {
+                this.loadingMessage();
+                this.loadingMessage = null;
+              }
+              this.loadingMessage = message.loading("Waiting for file", 0);
             }}
-            onChange={info => {
-              console.log(info);
-            }}
-            fileList={[]}
           >
-            <p className="ant-upload-drag-icon">
-              <Icon type="plus" />
-            </p>
-            <p className="ant-upload-text">
-              Click or drag file to this area to upload
-            </p>
-          </Upload.Dragger>
+            <Upload.Dragger
+              customRequest={({ file }) => {
+                if (this.loadingMessage) {
+                  this.loadingMessage();
+                  this.loadingMessage = null;
+                }
+                this.state.project.addFile(file, this.updateFiles.bind(this));
+              }}
+              onChange={info => {
+                console.log(info);
+              }}
+              fileList={[]}
+            >
+              <p className="ant-upload-drag-icon">
+                <Icon type="plus" />
+              </p>
+              <p className="ant-upload-text">
+                Click or drag file to this area to upload
+              </p>
+            </Upload.Dragger>
+          </div>
         )}
         <div>
-          <br />
           {!!renderJobs.length && (
             <div>
+              <br />
               <List bordered>
                 {renderJobs.map((item, index) => (
-                  <List.Item key={index}>
+                  <List.Item
+                    key={index}
+                    actions={
+                      item.status === "done" || item.status === "canceled"
+                        ? null
+                        : [
+                            <Icon
+                              type="close"
+                              onClick={() => {
+                                item.cancelJob();
+                                this.updateFiles();
+                              }}
+                            />
+                          ]
+                    }
+                  >
                     <List.Item.Meta
                       avatar={
                         <Icon
@@ -83,7 +111,7 @@ export default class FileUpload extends Component {
                           </span>
                           <span>
                             <Progress
-                              percent={Math.round(item.percent)}
+                              percent={Math.min(Math.round(item.percent), 99)}
                               status={
                                 item.status === "done"
                                   ? "success"

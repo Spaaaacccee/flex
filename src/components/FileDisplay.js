@@ -1,7 +1,9 @@
 import React, { Component } from "react";
-import { Card, Icon, Button, List } from "antd";
+import { Card, Icon, Button, List, Avatar } from "antd";
 import { ArrayUtils } from "../classes/Utils";
 import UserGroupDisplay from "./UserGroupDisplay";
+import Fire from "../classes/Fire";
+import Document from "../classes/Document";
 class FileDisplay extends Component {
   state = {
     project: {},
@@ -17,8 +19,16 @@ class FileDisplay extends Component {
       <div style={{ textAlign: "left" }}>
         {
           <Card
-            style={{ maxWidth: 500 }}
-            cover={
+            style={Object.assign(
+              { maxWidth: 350 },
+              this.state.file.files && !this.state.file.files.find(i => i.state !== "unavailable")
+                ? {
+                    opacity: 0.65,
+                    pointerEvents: 'none'
+                  }
+                : {}
+            )}
+            /*cover={
               <div
                 style={{
                   display: "flex",
@@ -29,97 +39,148 @@ class FileDisplay extends Component {
                   flexDirection: "column"
                 }}
               >
-                <Icon type="file" style={{ fontSize: 24, color: "white" }} />
-                <div style={{ height: 10 }} />
-                <p style={{ color: "white" }}>No preview available.</p>
-              </div>
-            }
-            actions={[<Icon type="download" />, <Icon type="ellipsis" />]}
-          >
-            {this.state.file.uid ? (
-              <Card.Meta
-                title={this.state.file.name}
-                avatar={
-                  <Icon
+                {this.state.file.uploadType === "cloud" ? (
+                  <div
                     style={{
-                      fontSize: 24,
-                      margin: 5,
-                      marginLeft: 0
+                      width: "100%",
+                      height: 200,
+                      overflow: "hidden",
+                      background: "black"
                     }}
-                    type="file"
-                  />
-                }
-                description={
-                  <div>{`${this.state.file.files.length} versions`}</div>
-                }
-                /*
-                description={
-                  <div>
-                    <div>
-                      <h3>Versions</h3>
-                      {` `}
-                      {this.state.file.files.length}
-                    </div>
-                    <div>
-                      <h3>Uploaded</h3>
-                      {` `}
-                      {new Date(
-                        Math.max(
-                          ...ArrayUtils.select(
-                            this.state.file.files,
-                            item => item.dateUploaded
-                          )
-                        )
-                      ).toDateString()}
-                    </div>
-                    <div>
-                      <h3>Uploader</h3>
-                      {` `}
-                      <UserGroupDisplay
-                        project={this.state.project}
-                        people={{
-                          members: ArrayUtils.select(
-                            this.state.file.files,
-                            item => item.uploader
-                          )
-                        }}
-                      />
-                    </div>
+                  >
+                    <iframe
+                      style={{
+                        background: "white",
+                        boxShadow: 'inset 0px -10px 20px -10px rgba(0, 0, 0, 0.1)'
+                      }}
+                      src={this.state.file.source.embedUrl}
+                      width="100%"
+                      height="200px"
+                      frameBorder="0"
+                    />
                   </div>
+                ) : (
+                  <div
+                    style={{
+                      textAlign: "center"
+                    }}
+                  >
+                    <Icon
+                      type="file"
+                      style={{ fontSize: 24, color: "white" }}
+                    />
+                    <div style={{ height: 10 }} />
+                    <p style={{ color: "white" }}>
+                      We could not connect to previews.
+                    </p>
+                  </div>
+                )}
+              </div>
+            } */
+            actions={[
+              <Icon
+                type="export"
+                onClick={() => {
+                  Document.tryPreviewWindow(this.state.file);
+                }}
+              />,
+              <Icon type="ellipsis" />
+            ]}
+          >
+            {this.state.file.uid || this.state.file.source ? (
+              <Card.Meta
+                title={
+                  this.state.file.uploadType === "cloud"
+                    ? this.state.file.source.name
+                    : this.state.file.name
                 }
-              */
+                avatar={
+                  this.state.file.uploadType === "cloud" ? (
+                    <Avatar
+                      shape="square"
+                      style={{
+                        transform: "scale(0.6)",
+                        imageRendering: "pixelated"
+                      }}
+                      src={this.state.file.source.iconUrl}
+                    />
+                  ) : (
+                    <Icon
+                      style={{
+                        fontSize: 24,
+                        margin: 5,
+                        marginLeft: 0
+                      }}
+                      type="file"
+                    />
+                  )
+                }
+                description={
+                  this.state.file.uploadType === "cloud" ? (
+                    <span>
+                      <Icon type="cloud-o" />
+                      {" Stored in the cloud"}
+                    </span>
+                  ) : (
+                    <div>{`${this.state.file.files.length} versions`}</div>
+                  )
+                }
               />
             ) : (
               <Icon type="loading" />
             )}
-            {this.state.file.files ? (
+            {this.state.file.uploadType !== "cloud" &&
+            this.state.file.files &&
+            this.state.file.files.length > 1 ? (
               <div>
-              <br/>
-              <List bordered>
-                {this.state.file.files.sort((a, b) => (a.dateModified === b.dateModified ? 0 : a.dateModified > b.dateModified ? 1 : -1)).map((item, index) => (
-                  <List.Item key={index} actions={[<Icon type="download"/>]}>
-                    <List.Item.Meta
-                      title={`Version ${index+1}`}
-                      description={
-                        <div>
-                          {[
-                            `${new Date(item.dateUploaded).toLocaleDateString()} ${new Date(item.dateUploaded).toLocaleTimeString()}`,
-                            `${item.size} bytes`
-                          ].map((x,i)=> <div key={i}>{x}</div>)}
-                          <div>
-                            <UserGroupDisplay
-                              people={{ members: [item.uploader] }}
-                            />
-                          </div>
-                        </div>
-                      }
-                    />
-                  </List.Item>
-                ))}
-              </List>
+                <br />
+                <List bordered>
+                  {this.state.file.files
+                    .sort(
+                      (a, b) =>
+                        a.dateModified === b.dateModified
+                          ? 0
+                          : a.dateModified > b.dateModified
+                            ? 1
+                            : -1
+                    )
+                    .map((item, index) => (
+                      <List.Item
+                        key={index}
+                        actions={[
+                          <Button
+                            icon="export"
+                            shape="circle"
+                            onClick={() => {
+                              Document.tryPreviewWindow(item);
+                            }}
+                          />
+                        ]}
+                      >
+                        <List.Item.Meta
+                          title={`Version ${index + 1}`}
+                          description={
+                            <div>
+                              {[
+                                `${new Date(
+                                  item.dateUploaded
+                                ).toLocaleString()}`,
+                                `${item.size} bytes`
+                              ].map((x, i) => <div key={i}>{x}</div>)}
+                              <div>
+                                <UserGroupDisplay
+                                  people={{ members: [item.uploader] }}
+                                />
+                              </div>
+                            </div>
+                          }
+                        />
+                      </List.Item>
+                    ))}
+                </List>
               </div>
             ) : (
-              <Icon type="loading" />
+              ""
             )}
           </Card>
         }

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import propTypes from "prop-types";
+
 
 import { Menu, Badge } from "antd";
 
@@ -61,13 +61,6 @@ class itemChangedArgs {
  * @extends Component
  */
 export default class ProjectNavigation extends Component {
-  static propTypes = {
-    onProjectChanged: propTypes.func,
-    onAddIconPress: propTypes.func,
-    onUserProfilePress: propTypes.func,
-    items: propTypes.arrayOf(propTypes.instanceOf(ProjectIconItem))
-  };
-
   static defaultProps = {
     onProjectChanged: () => {},
     onAddIconPress: () => {},

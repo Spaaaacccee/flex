@@ -30,7 +30,7 @@ export default class UserIcon extends Component {
     return (
       <div>
         <ProjectIcon
-          icon={<Icon type="user" />}
+          icon="user"
           thumbnail={this.state.thumbnail}
           onPress={() => {
             this.state.onPress();

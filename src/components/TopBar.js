@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import propTypes from "prop-types";
+
 import { Layout, Button, Popover } from "antd";
 import "./TopBar.css";
 const { Header } = Layout;
@@ -42,25 +42,23 @@ export default class TopBar extends Component {
               this.props.onLeftButtonPress();
             }}
             shape="circle"
-            icon={
-              this.state.leftButtonType === "menu" ? "menu-unfold" : "left"
-            }
+            icon={this.state.leftButtonType === "menu" ? "menu-unfold" : "left"}
             className="left-button"
           />
           <div className="heading">{this.state.heading}</div>
-            <Button
-              shape="circle"
-              icon={this.state.rightButtonType}
-              className="right-button"
-              onTouchEnd={e => {
-                this.props.onRightButtonPress();
-                e.preventDefault();
-                return true;
-              }}
-              onMouseUp={() => {
-                this.props.onRightButtonPress();
-              }}
-            />
+          <Button
+            shape="circle"
+            icon={this.state.rightButtonType}
+            className="right-button"
+            onTouchEnd={e => {
+              this.props.onRightButtonPress();
+              e.preventDefault();
+              return true;
+            }}
+            onMouseUp={() => {
+              this.props.onRightButtonPress();
+            }}
+          />
         </Header>
       </div>
     );

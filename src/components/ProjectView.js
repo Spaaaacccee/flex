@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import propTypes from "prop-types";
+
 import { Layout, Icon, Modal, message } from "antd";
 import TopBar from "./TopBar";
 import ProjectSider from "./ProjectSider";
@@ -15,15 +15,7 @@ import SendInvite from "./SendInvite";
 const { Header, Footer, Sider, Content } = Layout;
 
 export default class ProjectView extends Component {
-  static propTypes = {
-    projectID: propTypes.string,
-    siderWidth: propTypes.number,
-    onNavButtonPress: propTypes.func,
-    onContentPress: propTypes.func,
-    onNavDrag: propTypes.func,
-    navigationCollapsed: propTypes.bool,
-    style: propTypes.any
-  };
+
 
   static defaultProps = {
     projectID: "", // The project ID of the project that should be displayed
@@ -142,7 +134,7 @@ export default class ProjectView extends Component {
               onTouchStart={e => {
                 //handle touch gesture
                 var threshold = 70;
-                var leftThreshold = 100;
+                var leftThreshold = 30;
                 var timeLimit = 200;
 
                 if (e.touches[0].clientX > leftThreshold) return;

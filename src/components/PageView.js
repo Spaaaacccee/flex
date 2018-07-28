@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import propTypes from "prop-types";
 import { Layout, Card, Icon, Avatar, Button } from "antd";
 import Fire from "../classes/Fire";
 import User from "../classes/User";
@@ -82,7 +81,7 @@ export default class PageView extends Component {
                 );
                 return this.pageContentElement;
               })()}
-              <p style={{ marginTop: 20, opacity: 0.5 }}>
+              <p style={{ marginTop: 20, opacity: 0.65 }}>
                 Nothing else to show :)
               </p>
             </div>

@@ -7,9 +7,11 @@ export default class UserGroupDisplay extends Component {
     people: {},
     roleInfo: [],
     userInfo: [],
-    project: {}
+    project: {},
+    style: {}
   };
   componentWillReceiveProps(props) {
+    this.setState({style:props.style})
     let people = props.people || {};
     let project = props.project || {};
     this.setState({ people, project });
@@ -28,7 +30,7 @@ export default class UserGroupDisplay extends Component {
   }
   render() {
     return (
-      <div>
+      <div style={this.state.style}>
         {this.state.roleInfo
           .map((item, index) => (
             <Tag

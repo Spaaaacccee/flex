@@ -8,10 +8,8 @@ import ProjectIcon from "./ProjectIcon";
  * @class ProjectInvitation
  * @extends Component
  */
-export default class ProjectInvitation extends Component {
+export default class ProjectDisplay extends Component {
   static defaultProps = {
-    onAcceptInvite: () => {},
-    onRejectInvite: () => {},
     project: {}
   };
   state = {
@@ -24,19 +22,7 @@ export default class ProjectInvitation extends Component {
     return (
       <div>
         <Card
-          style={{ width: 250, textAlign:'center', display:'inline-block'}}
-          actions={[
-            <Icon type="check" onClick={this.props.onAcceptInvite} />,
-            <Popconfirm
-              title="Are you sure you want to reject this invite?"
-              okText="Yes"
-              cancelText="No"
-              onConfirm={this.props.onRejectInvite}
-            >
-              <Icon type="close" />
-            </Popconfirm>,
-            <Icon type="ellipsis" />
-          ]}
+          style={{ width: 250, textAlign:'center', display:'inline-block' }}
         >
           <ProjectIcon name={this.state.project.name} />
           <br />

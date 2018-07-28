@@ -12,6 +12,7 @@ import Project from "../classes/Project";
 import { ObjectUtils } from "../classes/Utils";
 import ProjectIcon from "../components/ProjectIcon";
 import ProjectInvitation from "../components/ProjectInvitation";
+import ProjectDisplay from "../components/ProjectDisplay";
 
 export default class USER extends Component {
   state = {
@@ -34,6 +35,28 @@ export default class USER extends Component {
               this.setState(
                 ObjectUtils.mergeDeep(this.state, {
                   caches: { pendingInvites: items }
+                })
+              );
+            });
+          }
+          if (this.state.user.projects) {
+            Promise.all(
+              this.state.user.projects.map(item => Project.get(item))
+            ).then(items => {
+              this.setState(
+                ObjectUtils.mergeDeep(this.state, {
+                  caches: { projects: items }
+                })
+              );
+            });
+          }
+          if (this.state.user.joinedProjects) {
+            Promise.all(
+              this.state.user.joinedProjects.map(item => Project.get(item))
+            ).then(items => {
+              this.setState(
+                ObjectUtils.mergeDeep(this.state, {
+                  caches: { joinedProjects: items }
                 })
               );
             });
@@ -63,6 +86,11 @@ export default class USER extends Component {
               <br />
               <Button
                 ghost
+                style={{
+                  fontWeight:500,
+                  boxShadow:
+                    "0px 4px 15px rgba(0, 0, 0, 0.09), 0px 1px 8px rgba(0, 0, 0, 0.05)"
+                }}
                 onClick={() => {
                   Fire.firebase()
                     .auth()
@@ -79,7 +107,7 @@ export default class USER extends Component {
               <div
                 style={{
                   display: "flex",
-                  alignItems: "center",
+                  alignItems: "baseline",
                   justifyContent: "center"
                 }}
               >
@@ -125,41 +153,66 @@ export default class USER extends Component {
               </div>
             </Card>
             <br />
-            <Card>
-              <h2>Projects</h2>
-              <p>Not implemented yet</p>
-            </Card>
-            <br />
-            <Card>
-              <h2>Joined Projects</h2>
-              <p>Not implemented yet</p>
-            </Card>
-            <br />
-            <Card>
-              <Badge
-                dot={
-                  !!this.state.caches.pendingInvites &&
-                  !!this.state.caches.pendingInvites.length
-                }
+            <Card title="Projects">
+              <div
+                style={{
+                  display: "flex"
+                }}
               >
-                <h2>Pending Invites</h2>
-              </Badge>
-              <br />
-              {!!this.state.caches.pendingInvites &&
-              !!this.state.caches.pendingInvites.length
-                ? this.state.caches.pendingInvites.map((item, index) => (
-                    <ProjectInvitation
-                      project={item}
-                      key={index}
-                      onAcceptInvite={() => {
-                        this.state.user.acceptInvite(item.projectID);
-                      }}
-                      onRejectInvite={() => {
-                        this.state.user.rejectInvite(item.projectID);
-                      }}
-                    />
-                  ))
-                : "You don't have any pending invites!"}
+                {!!this.state.caches.projects &&
+                !!this.state.caches.projects.length
+                  ? this.state.caches.projects.map((item, index) => (
+                      <div style={{ paddingRight: 20 }} key={index}>
+                        <ProjectDisplay project={item} />
+                      </div>
+                    ))
+                  : "You don't have any projects!"}
+              </div>
+            </Card>
+            <br />
+            <Card title="Joined Projects">
+              <div
+                style={{
+                  display: "flex"
+                }}
+              >
+                {!!this.state.caches.joinedProjects &&
+                !!this.state.caches.joinedProjects.length
+                  ? this.state.caches.joinedProjects.map((item, index) => (
+                      <div style={{ paddingRight: 20 }} key={index}>
+                        <ProjectDisplay project={item} />
+                      </div>
+                    ))
+                  : "You haven't joined any projects!"}
+              </div>
+            </Card>
+            <br />
+            <Card title="Pending Invites">
+              <div
+                style={{
+                  display: "flex"
+                }}
+              >
+                {!!this.state.caches.pendingInvites &&
+                !!this.state.caches.pendingInvites.length
+                  ? this.state.caches.pendingInvites.map((item, index) => (
+                      <div style={{ paddingRight: 20 }} key={index}>
+                        {" "}
+                        <Badge dot>
+                          <ProjectInvitation
+                            project={item}
+                            onAcceptInvite={() => {
+                              this.state.user.acceptInvite(item.projectID);
+                            }}
+                            onRejectInvite={() => {
+                              this.state.user.rejectInvite(item.projectID);
+                            }}
+                          />
+                        </Badge>
+                      </div>
+                    ))
+                  : "You don't have any pending invites!"}
+              </div>
             </Card>
             <br />
             <Card>
