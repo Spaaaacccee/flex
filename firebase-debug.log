@@ -1,0 +1,60 @@
+[debug] [2018-07-28T15:22:44.692Z] ----------------------------------------------------------------------
+[debug] [2018-07-28T15:22:44.695Z] Command:       C:\node-v8.9.1-win-x64\node.exe C:\node-v8.9.1-win-x64\node_modules\firebase-tools\bin\firebase deploy
+[debug] [2018-07-28T15:22:44.695Z] CLI Version:   4.0.0
+[debug] [2018-07-28T15:22:44.695Z] Platform:      win32
+[debug] [2018-07-28T15:22:44.695Z] Node Version:  v8.9.1
+[debug] [2018-07-28T15:22:44.697Z] Time:          Sun Jul 29 2018 01:22:44 GMT+1000 (AUS Eastern Standard Time)
+[debug] [2018-07-28T15:22:44.697Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-07-28T15:22:44.742Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-07-28T15:22:44.742Z] > authorizing via signed-in user
+[debug] [2018-07-28T15:22:44.744Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/flex-space  
+  
+ Sun Jul 29 2018 01:22:44 GMT+1000 (AUS Eastern Standard Time)
+[debug] [2018-07-28T15:22:46.221Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-28T15:22:46.222Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/flex-space/tokens  
+  
+ Sun Jul 29 2018 01:22:46 GMT+1000 (AUS Eastern Standard Time)
+[debug] [2018-07-28T15:22:47.046Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'flex-space'...
+[info] 
+[info] i  deploying database, storage, hosting
+[info] i  database: checking rules syntax...
+[debug] [2018-07-28T15:22:48.439Z] >>> HTTP REQUEST PUT https://flex-space.firebaseio.com/.settings/rules.json?dryRun=true  
+ {
+  "rules": {
+    ".read": "auth !=null",
+    ".write": "auth != null",
+    "users": {
+      ".indexOn": "email",
+      "$uid": {
+        ".write": "$uid===auth.uid"
+      }
+    }
+  }
+}
+ 
+ Sun Jul 29 2018 01:22:48 GMT+1000 (AUS Eastern Standard Time)
+[debug] [2018-07-28T15:22:49.341Z] <<< HTTP RESPONSE 200
+[info] +  database: rules syntax for database flex-space is valid
+[debug] [2018-07-28T15:22:49.343Z] >>> HTTP REQUEST GET https://appengine.googleapis.com/v1/apps/flex-space  
+  
+ Sun Jul 29 2018 01:22:49 GMT+1000 (AUS Eastern Standard Time)
+[debug] [2018-07-28T15:22:52.110Z] <<< HTTP RESPONSE 200
+[info] i  storage: checking storage.rules for compilation errors...
+[debug] [2018-07-28T15:22:52.113Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/flex-space:test  
+ { source: { files: [ [Object] ] } } 
+ Sun Jul 29 2018 01:22:52 GMT+1000 (AUS Eastern Standard Time)
+[debug] [2018-07-28T15:22:55.199Z] <<< HTTP RESPONSE 200
+[info] +  storage: rules file storage.rules compiled successfully
+[info] i  storage: uploading rules storage.rules...
+[debug] [2018-07-28T15:22:55.205Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/flex-space/rulesets  
+ { source: { files: [ [Object] ] } } 
+ Sun Jul 29 2018 01:22:55 GMT+1000 (AUS Eastern Standard Time)
+[debug] [2018-07-28T15:22:56.580Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-28T15:22:56.580Z] [rules] created ruleset projects/flex-space/rulesets/bceefc98-bb1c-422c-9eaa-b4f873472451
+[info] i  hosting: preparing build directory for upload...
+[debug] [2018-07-28T15:22:57.711Z] >>> HTTP REQUEST PUT https://deploy.firebase.com/v1/hosting/flex-space/uploads/-LIWU3gbaamVd1JaUokb?fileCount=35&message=  
+  
+ Sun Jul 29 2018 01:22:57 GMT+1000 (AUS Eastern Standard Time)

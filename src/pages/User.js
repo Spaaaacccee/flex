@@ -162,7 +162,7 @@ export default class USER extends Component {
                 {!!this.state.caches.projects &&
                 !!this.state.caches.projects.length
                   ? this.state.caches.projects.map((item, index) => (
-                      <div style={{ paddingRight: 20 }} key={index}>
+                      <div style={{ paddingRight: 20,flex:'none' }} key={index}>
                         <ProjectDisplay project={item} />
                       </div>
                     ))
@@ -179,7 +179,7 @@ export default class USER extends Component {
                 {!!this.state.caches.joinedProjects &&
                 !!this.state.caches.joinedProjects.length
                   ? this.state.caches.joinedProjects.map((item, index) => (
-                      <div style={{ paddingRight: 20 }} key={index}>
+                      <div style={{ paddingRight: 20,flex:'none' }} key={index}>
                         <ProjectDisplay project={item} />
                       </div>
                     ))
@@ -196,7 +196,7 @@ export default class USER extends Component {
                 {!!this.state.caches.pendingInvites &&
                 !!this.state.caches.pendingInvites.length
                   ? this.state.caches.pendingInvites.map((item, index) => (
-                      <div style={{ paddingRight: 20 }} key={index}>
+                      <div style={{ paddingRight: 20,flex:'none' }} key={index}>
                         {" "}
                         <Badge dot>
                           <ProjectInvitation

@@ -1,0 +1,12 @@
+{
+  "rules": {
+    ".read": "auth !=null",
+    ".write": "auth != null",
+    "users": {
+      ".indexOn": "email",
+      "$uid": {
+        ".write": "$uid===auth.uid"
+      }
+    }
+  }
+}
