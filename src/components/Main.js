@@ -36,7 +36,7 @@ export default class Main extends Component {
       key: 0 // Tells React when to redraw the modal
     },
     useUpdateLoop: true, // An update loop is used to periodically pull data from the database and update the UI. To disable it, set this to false
-    updateLoopSleepTime: 100, // The coefficent of the time to wait between each update. Higher means better performance at the cost of a slower update rate
+    updateLoopSleepTime: 50, // The coefficent of the time to wait between each update. Higher means better performance at the cost of a slower update rate
     updateLoopSleeptimeMaximum: 10000 // the maximum time to wait between each update.
   };
 

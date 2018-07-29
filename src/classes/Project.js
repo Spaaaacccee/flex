@@ -453,6 +453,7 @@ export default class Project {
 
   async addCloudFile(file, callback) {
     await this.transaction(function() {
+      this.files = this.files || [];
       if (
         this.files.find(
           item =>

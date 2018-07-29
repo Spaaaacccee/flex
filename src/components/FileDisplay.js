@@ -100,7 +100,7 @@ class FileDisplay extends Component {
                       shape="square"
                       style={{
                         transform: "scale(0.6)",
-                        imageRendering: "pixelated"
+                        imageRendering: "crisp-edges"
                       }}
                       src={this.state.file.source.iconUrl}
                     />

@@ -61,7 +61,7 @@ export default class FileUploadModal extends Component {
                       {this.state.drivePickedFiles.map((item, index) => (
                         <List.Item key={index}>
                           <List.Item.Meta
-                            avatar={<Avatar src={item.iconUrl} style={{imageRendering:'pixelated'}}/>}
+                            avatar={<Avatar src={item.iconUrl} style={{imageRendering:'crisp-edges'}}/>}
                             title={item.name}
                             description={
                               <div>

@@ -51,7 +51,7 @@ export default class PageView extends Component {
           }}
           onLeftButtonPress={this.props.onLeftButtonPress}
           onRightButtonPress={
-            ((this.refs.pageContentElement||{}).onExtrasButtonPress
+            ((this.refs.pageContentElement || {}).onExtrasButtonPress
               ? (() => {
                   this.refs.pageContentElement.onExtrasButtonPress();
                 }) || 0
@@ -81,8 +81,9 @@ export default class PageView extends Component {
                 );
                 return this.pageContentElement;
               })()}
-              <p style={{ marginTop: 20, opacity: 0.65 }}>
-                Nothing else to show :)
+              <p style={{ marginTop: 20, opacity: 0.4 }}>
+                <p>That's all there is</p>
+                <Icon type="smile" />
               </p>
             </div>
           ) : (

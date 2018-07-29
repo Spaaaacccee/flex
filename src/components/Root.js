@@ -38,9 +38,11 @@ export default class Root extends Component {
             background:'#f7f7f7f7'
           }}
         >
+          <div style={{opacity:0.4}}>
           <Icon type="loading" />
-          <br />
+          <br /><br />
           <h2>Bonfire</h2>
+          </div>
         </div>
         <div style={{ height: "100%", opacity: this.state.loaded ? 1 : 0 }}>
           <Main ref={this.main} />

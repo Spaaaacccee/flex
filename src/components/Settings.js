@@ -5,6 +5,8 @@ import Project from "../classes/Project";
 import { ObjectUtils } from "../classes/Utils";
 import Role from "../classes/Role";
 import RoleEditor from "./RoleEditor";
+import formatJSON from "format-json-pretty";
+
 const { TabPane } = Tabs;
 
 /**
@@ -14,7 +16,6 @@ const { TabPane } = Tabs;
  * @extends Component
  */
 export default class Settings extends Component {
-
   static defaultProps = {
     onClose: () => {}
   };
@@ -142,15 +143,22 @@ export default class Settings extends Component {
           </TabPane>
           <TabPane tab="Advanced" key="4">
             <Button>Transfer Ownership</Button>
-            <br /><div style={{height:10}} />
+            <br />
+            <div style={{ height: 10 }} />
             <p>Make one of the members of this project the owner.</p>
             <br />
             <Button type="danger">Delete Project</Button>
-            <br /><div style={{height:10}} />
+            <br />
+            <div style={{ height: 10 }} />
             <p>
               Permanently delete this project, including all files stored here.{" "}
               <b>This operation is not reversible.</b>
             </p>
+          </TabPane>
+          <TabPane tab="Debug" key="5">
+            <pre>
+              {formatJSON(this.state.sourceProject)}
+            </pre>
           </TabPane>
         </Tabs>
         <br />

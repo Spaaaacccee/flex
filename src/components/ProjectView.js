@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Layout, Icon, Modal, message } from "antd";
+import { Layout, Icon, Modal, message, Popover } from "antd";
 import TopBar from "./TopBar";
 import ProjectSider from "./ProjectSider";
 import PageView from "./PageView";
@@ -15,8 +15,6 @@ import SendInvite from "./SendInvite";
 const { Header, Footer, Sider, Content } = Layout;
 
 export default class ProjectView extends Component {
-
-
   static defaultProps = {
     projectID: "", // The project ID of the project that should be displayed
     siderWidth: 200,
@@ -98,11 +96,25 @@ export default class ProjectView extends Component {
             <div
               style={{
                 textAlign: "left",
-                padding: "18px 22px",
-                fontWeight: "bold"
+                padding: "18px 22px"
               }}
             >
-              {this.state.project.name || <Icon type="loading" />}
+              <b>{this.state.project.name || <Icon type="loading" />}</b>
+              {!!this.state.project.description && (
+                <Popover placement="bottomLeft" content={this.state.project.description}>
+                  <p
+                    style={{
+                      opacity: 0.65,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      marginTop: 5,
+                      marginBottom: 0
+                    }}
+                  >
+                    {this.state.project.description}
+                  </p>
+                </Popover>
+              )}
             </div>
             <ProjectSider
               pauseUpdate={this.state.pauseSiderUpdate}

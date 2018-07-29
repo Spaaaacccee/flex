@@ -8,6 +8,7 @@ import FileUploadModal from "../components/FileUploadModal";
 import FileDisplay from "../components/FileDisplay";
 import UserGroupDisplay from "../components/UserGroupDisplay";
 import Document from "../classes/Document";
+import { ArrayUtils } from "../classes/Utils";
 const { Meta } = Card;
 
 export default class FILES extends Component {
@@ -18,16 +19,23 @@ export default class FILES extends Component {
   state = {
     project: {},
     user: {},
+    searchResults: null,
     uploadModalVisible: false,
     view: "thumbnail"
   };
   componentWillReceiveProps(props) {
+    if (
+      props.project &&
+      props.project.projectID !== this.state.project.projectID
+    )
+      this.setState({ searchResults: null });
     this.setState({ project: props.project, user: props.user });
   }
   onExtrasButtonPress() {
     this.setState({ uploadModalVisible: true });
   }
   render() {
+    let filesToRender = this.state.searchResults || this.state.project.files;
     return (
       <div>
         {this.state.project ? (
@@ -47,8 +55,22 @@ export default class FILES extends Component {
               }}
             >
               <Input.Search
+                key={this.state.project.projectID || "1"}
                 placeholder="Search for a file"
                 style={{ marginRight: 10 }}
+                onChange={(e => {
+                  if (e.target.value) {
+                    let files = this.state.project.files || [];
+                    let results = ArrayUtils.searchString(
+                      files,
+                      item => (item.name || item.source.name).toLowerCase(),
+                      e.target.value
+                    );
+                    this.setState({ searchResults: results });
+                  } else {
+                    this.setState({ searchResults: null });
+                  }
+                }).bind(this)}
               />
               <Radio.Group
                 style={{
@@ -68,10 +90,10 @@ export default class FILES extends Component {
               </Radio.Group>
             </div>
             <br />
-            {this.state.project.files && this.state.project.files.length ? (
+            {filesToRender && filesToRender.length ? (
               <div>
                 {this.state.view === "thumbnail" ? (
-                  (this.state.project.files || []).map((item, index) => (
+                  (filesToRender || []).map((item, index) => (
                     <div key={index}>
                       <FileDisplay project={this.state.project} file={item} />
                     </div>
@@ -83,7 +105,7 @@ export default class FILES extends Component {
                       margin: "0 2vw"
                     }}
                   >
-                    {(this.state.project.files || []).map((item, index) => (
+                    {(filesToRender || []).map((item, index) => (
                       <List.Item
                         style={
                           item.files &&
@@ -114,7 +136,7 @@ export default class FILES extends Component {
                                 shape="square"
                                 style={{
                                   transform: "scale(0.7)",
-                                  imageRendering: "pixelated"
+                                  imageRendering: "crisp-edges"
                                 }}
                                 src={item.source.iconUrl}
                               />
@@ -185,9 +207,13 @@ export default class FILES extends Component {
                 )}
               </div>
             ) : (
-              <div style={{ opacity: 0.65 }}>
+              <div style={{ opacity: 0.65, margin: 50 }}>
                 <Icon type="file" />
-                <br />This project has no files.<br />
+                <br />
+                {this.state.searchResults === null
+                  ? `The files you've added to this project will show up here.`
+                  : `No files match your search`}
+                <br />
                 <br />
               </div>
             )}

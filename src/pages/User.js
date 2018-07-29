@@ -13,6 +13,7 @@ import { ObjectUtils } from "../classes/Utils";
 import ProjectIcon from "../components/ProjectIcon";
 import ProjectInvitation from "../components/ProjectInvitation";
 import ProjectDisplay from "../components/ProjectDisplay";
+import formatJSON from "format-json-pretty";
 
 export default class USER extends Component {
   state = {
@@ -87,7 +88,7 @@ export default class USER extends Component {
               <Button
                 ghost
                 style={{
-                  fontWeight:500,
+                  fontWeight: 500,
                   boxShadow:
                     "0px 4px 15px rgba(0, 0, 0, 0.09), 0px 1px 8px rgba(0, 0, 0, 0.05)"
                 }}
@@ -162,7 +163,10 @@ export default class USER extends Component {
                 {!!this.state.caches.projects &&
                 !!this.state.caches.projects.length
                   ? this.state.caches.projects.map((item, index) => (
-                      <div style={{ paddingRight: 20,flex:'none' }} key={index}>
+                      <div
+                        style={{ paddingRight: 20, flex: "none" }}
+                        key={index}
+                      >
                         <ProjectDisplay project={item} />
                       </div>
                     ))
@@ -179,7 +183,10 @@ export default class USER extends Component {
                 {!!this.state.caches.joinedProjects &&
                 !!this.state.caches.joinedProjects.length
                   ? this.state.caches.joinedProjects.map((item, index) => (
-                      <div style={{ paddingRight: 20,flex:'none' }} key={index}>
+                      <div
+                        style={{ paddingRight: 20, flex: "none" }}
+                        key={index}
+                      >
                         <ProjectDisplay project={item} />
                       </div>
                     ))
@@ -196,7 +203,10 @@ export default class USER extends Component {
                 {!!this.state.caches.pendingInvites &&
                 !!this.state.caches.pendingInvites.length
                   ? this.state.caches.pendingInvites.map((item, index) => (
-                      <div style={{ paddingRight: 20,flex:'none' }} key={index}>
+                      <div
+                        style={{ paddingRight: 20, flex: "none" }}
+                        key={index}
+                      >
                         {" "}
                         <Badge dot>
                           <ProjectInvitation
@@ -217,7 +227,7 @@ export default class USER extends Component {
             <br />
             <Card>
               <h2>Debug Info</h2>
-              {JSON.stringify(this.state.user)}
+              <pre>{formatJSON(this.state.user)}</pre>
             </Card>
           </div>
         ) : (

@@ -68,7 +68,7 @@ export const Pages = [
     extrasButtonType: "plus"
   }),
   new Page({
-    name: "Discussion",
+    name: "Discuss",
     icon: "message",
     content: null
   }),
@@ -78,11 +78,11 @@ export const Pages = [
     content: FILES,
     extrasButtonType: "plus"
   }),
-  new Page({
-    name: "Debug",
-    icon: "code-o",
-    content: DEBUG
-  })
+  // new Page({
+  //   name: "Debug",
+  //   icon: "code-o",
+  //   content: DEBUG
+  // })
 ];
 
 /**

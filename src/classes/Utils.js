@@ -1,4 +1,4 @@
-import ee from 'event-emitter'
+import ee from "event-emitter";
 export class EventEmitter {
   constructor() {
     ee(EventEmitter.prototype);
@@ -134,6 +134,12 @@ export class ArrayUtils {
       if (condition(element)) i = index;
     });
     return i;
+  }
+
+  static searchString(array, getString, value) {
+    return array.filter(
+      item => getString(item).includes(value.toLowerCase()) !== false
+    );
   }
 }
 
