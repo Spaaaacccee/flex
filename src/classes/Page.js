@@ -6,6 +6,7 @@ import DEBUG from "../pages/Debug";
 import FEED from "../pages/Feed";
 import TIMELINE from "../pages/Timeline";
 import FILES from "../pages/Files";
+import MESSAGES from "../pages/Messages";
 
 /**
  * Represents a single page that can be displayed within the app.
@@ -54,7 +55,7 @@ export const Pages = [
   new Page({
     name: "Feed",
     icon: "appstore-o",
-    content: FEED,
+    content: FEED
   }),
   new Page({
     name: "Members",
@@ -70,14 +71,14 @@ export const Pages = [
   new Page({
     name: "Discuss",
     icon: "message",
-    content: null
+    content: MESSAGES
   }),
   new Page({
     name: "Files",
     icon: "file-text",
     content: FILES,
     extrasButtonType: "plus"
-  }),
+  })
   // new Page({
   //   name: "Debug",
   //   icon: "code-o",
@@ -88,8 +89,11 @@ export const Pages = [
 /**
  * A list of pages that will be used for the user page.
  */
-export const UserPage = [new Page({
-  name: "Me",
-  icon: "file",
-  content: USER
-})];
+export const UserPage = [
+  new Page({
+    name: "Me",
+    icon: "file",
+    content: USER,
+    requireProject: false
+  })
+];

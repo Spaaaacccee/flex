@@ -78,9 +78,11 @@ export default class ProjectView extends Component {
     return true;
   }
 
+  scrollContainer;
   render() {
     return (
       <div
+        className={this.state.openedPage.name}
         style={{
           flex: 1,
           height: "100%",
@@ -101,7 +103,10 @@ export default class ProjectView extends Component {
             >
               <b>{this.state.project.name || <Icon type="loading" />}</b>
               {!!this.state.project.description && (
-                <Popover placement="bottomLeft" content={this.state.project.description}>
+                <Popover
+                  placement="bottomLeft"
+                  content={this.state.project.description}
+                >
                   <p
                     style={{
                       opacity: 0.65,
@@ -141,7 +146,10 @@ export default class ProjectView extends Component {
                 "px)"
             }}
           >
-            <Content
+            <div
+              ref={e => {
+                this.scrollContainer = e;
+              }}
               className="project-view-inner-content"
               onTouchStart={e => {
                 //handle touch gesture
@@ -175,8 +183,17 @@ export default class ProjectView extends Component {
                 onContentPress={this.props.onContentPress}
                 project={this.state.project}
                 page={this.state.openedPage}
+                onMessage={msg => {
+                  switch (msg) {
+                    case "scroll-bottom":
+                      this.scrollContainer.scrollTop = this.scrollContainer.scrollHeight
+                      break;
+                    default:
+                      break;
+                  }
+                }}
               />
-            </Content>
+            </div>
           </Layout>
         </Layout>
         <Settings

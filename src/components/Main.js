@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Layout, Modal } from "antd";
+import { Layout, Modal, Icon } from "antd";
 
 import ProjectView from "./ProjectView";
 import ProjectNavigation from "./ProjectNavigation";
@@ -36,8 +36,9 @@ export default class Main extends Component {
       key: 0 // Tells React when to redraw the modal
     },
     useUpdateLoop: true, // An update loop is used to periodically pull data from the database and update the UI. To disable it, set this to false
-    updateLoopSleepTime: 50, // The coefficent of the time to wait between each update. Higher means better performance at the cost of a slower update rate
-    updateLoopSleeptimeMaximum: 10000 // the maximum time to wait between each update.
+    updateLoopSleepTime: 75, // The coefficent of the time to wait between each update. Higher means better performance at the cost of a slower update rate
+    updateLoopSleeptimeMaximum: 10000, // the maximum time to wait between each update.
+    offline: false // Whether the app is currently offline
   };
 
   /**
@@ -47,7 +48,7 @@ export default class Main extends Component {
   componentDidMount() {
     this.relayout();
     // Respond to window resize by relayouting
-    window.addEventListener("resize", this.relayout.bind(this)); 
+    window.addEventListener("resize", this.relayout.bind(this));
     // Initiate the update loop
     this.updateLoop();
   }
@@ -111,6 +112,14 @@ export default class Main extends Component {
         userData: snapShot.val()
       });
     });
+    // Initialise offline/online indicator, in response to a special register in the firebase database API
+    Fire.firebase()
+      .database()
+      .ref(".info/connected")
+      .on("value", snapshot => {
+        console.log(snapshot.val());
+        this.setState({ offline: !snapshot.val() });
+      });
   }
 
   render() {
@@ -225,8 +234,10 @@ export default class Main extends Component {
               await (await User.getCurrentUser()).newProject(newProject);
               // Invite try to invite the selected users
               await Promise.all(
-                (data.recipients||[]).map(async (item)=>(await User.get(item.key)).addInvite(newProject.projectID))
-              )
+                (data.recipients || []).map(async item =>
+                  (await User.get(item.key)).addInvite(newProject.projectID)
+                )
+              );
               // Update the UI to close the form
               this.setState({
                 modal: {
@@ -237,6 +248,22 @@ export default class Main extends Component {
               });
             }}
           />
+        </Modal>
+        {/*The modal that appears when the user is offline*/}
+        <Modal
+          closable={false}
+          footer={null}
+          maskClosable={false}
+          visible={this.state.offline}
+          style={{ textAlign: "center", maxWidth: 300, margin:'auto' }}
+        >
+          <Icon type="loading" style={{ color: "#1890FF", fontSize: 24 }} />
+          <br />
+          <br />
+          <h2>You seem to be offline.</h2>
+          <p>
+            We'll let you resume as soon as we can reconnect to the internet.
+          </p>
         </Modal>
       </div>
     );

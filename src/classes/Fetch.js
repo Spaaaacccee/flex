@@ -3,6 +3,7 @@ import User from "./User";
 
 import Fire from "./Fire";
 import Firebase from "firebase";
+import Messages from "./Messages";
 
 /**
  * Utilities for getting data from the database
@@ -10,6 +11,19 @@ import Firebase from "firebase";
  * @class Fetch
  */
 export default class Fetch {
+  /**
+   * Get a collection document reference using collection ID
+   * @static
+   * @param  {String} id 
+  * @return {Firebase.database.Reference} The reference to the collection document
+   * @memberof Fetch
+   */
+  static getMessagesReference(id) {
+    return Fire.firebase()
+      .database()
+      .ref("messages/" + id);
+  }
+
   /**
    * Get a project document reference using projectID
    * @static
@@ -58,9 +72,23 @@ export default class Fetch {
     return Object.assign(target, source);
   }
 
+/**
+ * Gets an actual message collection using ID
+ * @static
+ * @param  {String} id The collectionID of the project to get
+ * @return {Messages} The messages collection
+ * @memberof Fetch
+ */
+static async getMessages(id) {
+  return await Fetch.getObject(
+    await Fetch.getMessagesReference(id),
+    Messages,
+    true
+  )
+}
+
   /**
    * Gets an actual project using ID.
-   * Projects a fetched using a cache, the resulting object may not be completely up-to-date
    * @static
    * @param  {String} id The projectID of the project to get
    * @return {Project} The project object
@@ -86,11 +114,11 @@ export default class Fetch {
   }
 
   /**
-   * Gets a user by their email address.
+   * Gets users by their email address.
    * @static
    * @param  {String} email The email address to query for
    * @param  {Number} numberOfResults The number of results to return
-   * @return {?User} Returns null if not found
+   * @return {User[]}
    * @memberof Fetch
    */
   static async searchUserByEmail(email, numberOfResults) {
@@ -106,9 +134,7 @@ export default class Fetch {
     queryResult.forEach(snapshot => {
       userResults.push(snapshot.val().uid);
     });
-    return await Promise.all(
-      userResults.map(item => Fetch.getUser(item))
-    );
+    return await Promise.all(userResults.map(item => Fetch.getUser(item)));
   }
 }
 

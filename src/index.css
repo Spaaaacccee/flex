@@ -123,7 +123,7 @@ ul.ant-timeline {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   overflow: hidden !important;
   background: #fff !important;
-  animation: fade-in-up 0.8s cubic-bezier(0,.65,.27,1) forwards !important;
+  animation: fade-in-up 0.3s cubic-bezier(0,.65,.27,1) forwards !important;
 }
 
 .picker-dialog-content:after {

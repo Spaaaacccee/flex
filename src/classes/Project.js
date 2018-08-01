@@ -16,6 +16,7 @@ import Document, {
   CloudDocument
 } from "./Document";
 import User from "./User";
+import Messages from "./Messages";
 
 /**
  * Represents a project
@@ -99,14 +100,14 @@ export default class Project {
    * @type {String}
    * @memberof Project
    */
-  projectID;
+  projectID = IDGen.generateUID();
 
   /**
    * A user-friendly display name for the project
    * @type {String}
    * @memberof Project
    */
-  name;
+  name = "Untitled Project";
 
   /**
    * Uid of the project creator
@@ -140,21 +141,21 @@ export default class Project {
    * @type {Number}
    * @memberof Project
    */
-  lastUpdatedTimestamp;
+  lastUpdatedTimestamp = Date.now();
 
   /**
    * The date and time the project was created
    * @type {Number}
    * @memberof Project
    */
-  created;
+  created = Date.now();;
 
   /**
    * A description of this project
    * @type {String}
    * @memberof Project
    */
-  description;
+  description = "";
 
   /**
    * The members of the project
@@ -182,17 +183,15 @@ export default class Project {
    */
   files;
 
+  messengerID = null;
+
   /**
    * Creates an instance of Project.
    * @param  {any} name Name of the project
    * @memberof Project
    */
   constructor(name) {
-    this.name = name || null;
-    this.projectID = IDGen.generateUID();
-    this.lastUpdatedTimestamp = Date.now();
-    this.created = Date.now();
-    this.description = "No description.";
+    this.name = name || this.name;
   }
 
   /**
@@ -487,10 +486,16 @@ export default class Project {
   }
 
   /**
-   *
+   * 
    * @param  {String} hashString
    * @return {DocumentMeta}
    * @memberof Project
    */
   getFileMetaByHash(hashString) {}
+
+  async setMessenger(messengerID) {
+    await this.transaction(function() {
+      this.messengerID = messengerID;
+    })
+  }
 }

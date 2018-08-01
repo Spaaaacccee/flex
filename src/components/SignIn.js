@@ -40,9 +40,9 @@ export default class SignIn extends Component {
       .auth()
       .onAuthStateChanged(user => {
         if (user) {
-          Fire.authenticateGoogleAPIs(()=>{
+          Fire.authenticateGoogleAPIs(() => {
             this.handleLogIn(user);
-          })
+          });
         } else {
           Fire.firebase()
             .auth()
@@ -55,9 +55,9 @@ export default class SignIn extends Component {
             callbacks: {
               signInSuccessWithAuthResult: (authResult, redirectUrl) => {
                 console.log(authResult);
-                Fire.authenticateGoogleAPIs(()=>{
+                Fire.authenticateGoogleAPIs(() => {
                   this.handleLogIn(authResult.user);
-                })
+                });
                 return false;
               }
             }
@@ -90,10 +90,12 @@ export default class SignIn extends Component {
           <div className="sign-in-text">
             <h2>Sign in</h2>
             <br />
-            <UserIcon />
+            <UserIcon
+              thumbnail={(Fire.firebase().auth().currentUser || {}).photoURL}
+            />
             <br />
             <Button
-              loading={this.state.loading}
+              loading={this.state.loading || Fire.firebase().auth().currentUser}
               type="primary"
               icon="google"
               onClick={() => {
