@@ -101,7 +101,12 @@ export default class ProjectView extends Component {
                 padding: "18px 22px"
               }}
             >
-              <b>{this.state.project.name || <Icon type="loading" />}</b>
+              <b style={{
+                textOverflow:'ellipsis',
+                overflow:'hidden',
+                width:'100%',
+                display:'block'
+              }}>{this.state.project.name || <Icon type="loading" />}</b>
               {!!this.state.project.description && (
                 <Popover
                   placement="bottomLeft"
