@@ -28,7 +28,6 @@ export default class PageView extends Component {
   componentWillReceiveProps(props) {
     if (props.page !== this.state.page) {
       this.setState({ page: props.page });
-      //props.contentType
     }
     User.getCurrentUser().then(user => {
       if (user) this.setState({ user });
@@ -37,22 +36,23 @@ export default class PageView extends Component {
       this.setState({ loading: true });
       return;
     }
+    this.setState({ loading: false });
     if (
       this.state.project.projectID === props.project.projectID &&
       this.state.project.lastUpdatedTimestamp ===
         props.project.lastUpdatedTimestamp
     )
       return;
-    this.setState({ project: props.project, loading: false });
+    this.setState({ project: props.project });
   }
 
   render() {
     return (
-      <div>
+      <div style={{flex:1, display:'flex',flexDirection:'column', width:'100%'}}>
         <TopBar
           style={{
-            height: "56px",
-            flex: 0
+            height: "54px",
+            flex: 'none'
           }}
           onLeftButtonPress={this.props.onLeftButtonPress}
           onRightButtonPress={
@@ -68,13 +68,14 @@ export default class PageView extends Component {
         />
         <div
           style={{
-            padding: "20px 10px"
+            padding: "20px 10px",
+            flex:1
           }}
           onMouseUp={this.props.onContentPress}
           onTouchStart={this.props.onContentPress}
         >
-          {!!this.state.page.content && (!this.state.loading ||
-          this.state.page.requireProject === false) ? (
+          {!!this.state.page.content &&
+          (!this.state.loading || this.state.page.requireProject === false) ? (
             <div>
               {(() => {
                 this.pageContentElement = React.createElement(
@@ -98,7 +99,14 @@ export default class PageView extends Component {
               }
             </div>
           ) : (
-            <Icon type="loading" style={{ fontSize: 24 }} spin />
+            <div style={{ opacity: 0.65, margin: 50 }}>
+              <Icon
+                type="loading"
+                style={{ marginTop: '10vh', marginBottom: 50 }}
+                spin
+              />
+              <p>We're working really hard to load this content.</p>
+            </div>
           )}
         </div>
       </div>

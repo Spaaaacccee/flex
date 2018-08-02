@@ -10,7 +10,7 @@ export default class FEED extends Component {
   render() {
     return (
       <div style={{textAlign:'center'}}>
-        
+        Feed is not available right now.
       </div>
     );
   }

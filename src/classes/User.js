@@ -6,6 +6,7 @@ import Member from "./Member";
 
 import { message } from "antd";
 import { ArrayUtils } from "./Utils";
+import Messages from "./Messages";
 
 /**
  * Represents a single user
@@ -307,6 +308,11 @@ export default class User {
         project.owner = this.uid;
         project.members = project.members || [];
         project.members.push(new Member(this.uid, []));
+        // Create a new messages instance in the database
+        await Messages.forceUpdate(
+          project.projectID,
+          new Messages()
+        )
         // Update the database with this project
         await Project.forceUpdate(project.projectID, project);
         this.projects.push(project.projectID);

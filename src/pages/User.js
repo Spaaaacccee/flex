@@ -225,8 +225,7 @@ export default class USER extends Component {
               </div>
             </Card>
             <br />
-            <Card>
-              <h2>Debug Info</h2>
+            <Card title="Debug Info">
               <pre>{formatJSON(this.state.user)}</pre>
             </Card>
           </div>

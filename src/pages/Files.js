@@ -210,6 +210,7 @@ export default class FILES extends Component {
               <div style={{ opacity: 0.65, margin: 50 }}>
                 <Icon type="file" />
                 <br />
+                <br />
                 {this.state.searchResults === null
                   ? `The files you've added to this project will show up here.`
                   : `No files match your search`}
@@ -219,6 +220,7 @@ export default class FILES extends Component {
             )}
             <Button
               icon="plus"
+              type="primary"
               onClick={() => {
                 this.setState({ uploadModalVisible: true });
               }}

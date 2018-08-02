@@ -14,7 +14,7 @@ export default class TIMELINE extends Component {
     project: {},
     user: {},
     eventCreatorVisible: false,
-    eventCreatorKey:0
+    eventCreatorKey: 0
   };
   componentWillReceiveProps(props) {
     this.setState({ project: props.project, user: props.user });
@@ -25,9 +25,9 @@ export default class TIMELINE extends Component {
   render() {
     return (
       <div style={{ textAlign: "center" }}>
-        <Timeline style={{ maxWidth: 300, textAlign: "left" }}>
-          {this.state.project.events &&
-            (() => {
+        {this.state.project.events && !!this.state.project.events.length ? (
+          <Timeline style={{ maxWidth: 300, textAlign: "left" }}>
+            {(() => {
               let events = this.state.project
                 .getEventsInDateOrder()
                 .map(item => ({ date: item.date, item, type: "card" }));
@@ -64,7 +64,17 @@ export default class TIMELINE extends Component {
                 </Timeline.Item>
               ));
             })()}
-        </Timeline>
+          </Timeline>
+        ) : (
+          <div style={{ opacity: 0.65, margin: 50, marginTop: "10vh" }}>
+            <Icon type="calendar"/>
+            <br />
+            <br />
+            Your team's events will appear here.
+            <br />
+            <br />
+          </div>
+        )}
         <Button
           type="primary"
           icon="plus"
@@ -83,14 +93,18 @@ export default class TIMELINE extends Component {
           }}
         >
           <CreateEvent
-          key={this.state.eventCreatorKey}
+            key={this.state.eventCreatorKey}
             project={this.state.project}
             opened={this.state.eventCreatorVisible}
             onSubmit={e => {
-              this.state.project.addEvent(new TimelineEvent(e.values)).then(()=>{
-                this.setState({ eventCreatorVisible: false,eventCreatorKey:this.state.eventCreatorKey+1 });
-              });
-              
+              this.state.project
+                .addEvent(new TimelineEvent(e.values))
+                .then(() => {
+                  this.setState({
+                    eventCreatorVisible: false,
+                    eventCreatorKey: this.state.eventCreatorKey + 1
+                  });
+                });
             }}
           />
         </Modal>

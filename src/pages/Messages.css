@@ -39,3 +39,7 @@ Div.Discuss div.top-bar-wrapper:after {
 .widescreen .messages {
     margin-top:54px;
 }
+
+textarea.input {
+    resize:none;
+}

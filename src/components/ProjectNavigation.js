@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 
-
-import { Menu, Badge } from "antd";
+import { Menu, Badge, Icon } from "antd";
 
 import ProjectIcon from "./ProjectIcon";
 import UserIcon from "./UserIcon";
@@ -74,8 +73,8 @@ export default class ProjectNavigation extends Component {
     openedIndex: null,
     user: {},
     userData: {},
-    projects: [],
-    pauseUpdate:false
+    projects: null,
+    pauseUpdate: false
   };
 
   /**
@@ -85,9 +84,9 @@ export default class ProjectNavigation extends Component {
    * @memberof ProjectNavigation
    */
   componentWillReceiveProps(props) {
-    if(props.pauseUpdate) {
-      this.setState({pauseUpdate:props.pauseUpdate});
-    };
+    if (props.pauseUpdate) {
+      this.setState({ pauseUpdate: props.pauseUpdate });
+    }
     this.setState(
       {
         items: props.items,
@@ -106,19 +105,22 @@ export default class ProjectNavigation extends Component {
     return !nextProps.pauseUpdate;
   }
 
-  async getProjects() {
-    this.setState({
-      projects: (await Promise.all(
-        this.state.items.map(item => {
-          try {
-            return Project.get(item);
-          } catch (e) {
-            console.log(e);
-            return null;
-          }
-        })
-      ))
-    });
+  getProjects() {
+    Promise.all(
+      this.state.items.map(item => {
+        try {
+          return Project.get(item);
+        } catch (e) {
+          console.log(e);
+          return null;
+        }
+      })
+    ).then((projects)=>{
+      this.setState({
+        projects
+      });
+    })
+
   }
 
   /**
@@ -174,26 +176,29 @@ export default class ProjectNavigation extends Component {
             selected={this.state.openedIndex === -1}
           />
         </Badge>
-        <Menu
-          style={{
-            height: "100%",
-            background: "transparent",
-            border: "none"
-          }}
-        >
-          {//let array = []; //Firebase.database().ref();
-          this.state.projects.map((item, index) => (
-            <ProjectIcon
-              key={index}
-              name={item?item.name:null}
-              icon={item?null:'loading'}
-              thumbnail={item?item.thumbnail:null}
-              onPress={item?this.handlePress.bind(this, index):()=>{}}
-              selected={index === this.state.openedIndex}
-            />
-          ))}
-          {<AddIcon onPress={this.handleAddIconPress.bind(this)} />}
-        </Menu>
+        {this.state.projects ? (
+          <Menu
+            style={{
+              height: "100%",
+              background: "transparent",
+              border: "none"
+            }}
+          >
+            {this.state.projects.map((item, index) => (
+              <ProjectIcon
+                key={index}
+                name={item ? item.name : null}
+                icon={item ? null : "loading"}
+                thumbnail={item ? item.thumbnail : null}
+                onPress={item ? this.handlePress.bind(this, index) : () => {}}
+                selected={index === this.state.openedIndex}
+              />
+            ))}
+            {<AddIcon onPress={this.handleAddIconPress.bind(this)} />}
+          </Menu>
+        ) : (
+          <ProjectIcon icon={"loading"} />
+        )}
       </div>
     );
   }
