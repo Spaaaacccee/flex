@@ -6,4 +6,4 @@
 
 ## Complex Algorithm
 
-Multithreaded quicksort (most likely)
+[Asynchronous quicksort](../src/classes/Algorithm.js)

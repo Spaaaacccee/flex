@@ -75,6 +75,7 @@ class MESSAGES extends Component {
         },
         () => {
           this.scrollBottom();
+          this.cacheUsers();
         }
       );
     }
@@ -204,47 +205,47 @@ class MESSAGES extends Component {
         </div>
         <div className="message-console">
           <div>
-          <Button
-            shape="circle"
-            icon="paper-clip"
-            style={{ flex: "none" }}
-            disabled={!this.state.messenger}
-          />
-          <Input.TextArea
-            ref={e=>this.inputElement=e}
-            value={this.state.inputValue}
-            autosize={{ minRows: 1, maxRows: 5 }}
-            className="input"
-            onChange={e => {
-              this.setState({
-                inputValue: StringUtils.trimLeft(e.target.value)
-              });
-            }}
-            onPressEnter={(e => {
-              console.log(e);
-              if (e.shiftKey) {
-                this.handleSend();
+            <Button
+              shape="circle"
+              icon="paper-clip"
+              style={{ flex: "none" }}
+              disabled={!this.state.messenger}
+            />
+            <Input.TextArea
+              ref={e => (this.inputElement = e)}
+              value={this.state.inputValue}
+              autosize={{ minRows: 1, maxRows: 5 }}
+              className="input"
+              onChange={e => {
+                this.setState({
+                  inputValue: StringUtils.trimLeft(e.target.value)
+                });
+              }}
+              onPressEnter={(e => {
+                console.log(e);
+                if (e.shiftKey) {
+                  this.handleSend();
+                }
+              }).bind(this)}
+              placeholder={
+                !this.state.messenger ? "Connecting" : "Enter a message"
               }
-            }).bind(this)}
-            placeholder={
-              !this.state.messenger ? "Connecting" : "Enter a message"
-            }
-            style={{
-              maxWidth: "100%",
-              margin: 10
-            }}
-            disabled={!this.state.messenger}
-          />
-          <Button
-            style={{ flex: "none" }}
-            onClick={() => {
-              this.handleSend();
-            }}
-            type="primary"
-            disabled={!this.state.messenger || !this.state.inputValue}
-          >
-            Send
-          </Button>
+              style={{
+                maxWidth: "100%",
+                margin: 10
+              }}
+              disabled={!this.state.messenger}
+            />
+            <Button
+              style={{ flex: "none" }}
+              onClick={() => {
+                this.handleSend();
+              }}
+              type="primary"
+              disabled={!this.state.messenger || !this.state.inputValue}
+            >
+              Send
+            </Button>
           </div>
         </div>
       </div>
