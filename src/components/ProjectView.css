@@ -41,7 +41,7 @@ div.project-view-content {
   top: 0;
   left: 0;
   width: 100vw;
-  height: 54px;
+  height: 52px;
   z-index: 100;
   -webkit-transform: translateZ(0);
   -webkit-backface-visibility: hidden;
@@ -49,7 +49,7 @@ div.project-view-content {
 }
 
 .top-bar-wrapper + div {
-  margin-top: 54px;
+  margin-top: 52px;
 }
 
 .widescreen .top-bar-wrapper + div {

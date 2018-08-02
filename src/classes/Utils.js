@@ -1,7 +1,49 @@
-import ee from "event-emitter";
+/**
+ * Class for implementing event functionality in classes
+ * @export
+ * @class EventEmitter
+ */
 export class EventEmitter {
-  constructor() {
-    ee(EventEmitter.prototype);
+  all = {};
+  /**
+   * Registers an event handler
+   * @param  {any} eventName
+   * @param  {any} action
+   * @return {void}
+   * @memberof EventEmitter
+   */
+  on(eventName, action) {
+    this.all[eventName] = this.all[eventName] || [];
+    this.all[eventName].push(action);
+  }
+  /**
+   * Removes an event handler
+   * @param  {any} eventName
+   * @param  {any} action
+   * @return {void}
+   * @memberof EventEmitter
+   */
+  off(eventName, action) {
+    this.all[eventName] = this.all[eventName] || [];
+    if (action) {
+      this.all[eventName] = this.all[eventName].filter(item => item !== action);
+    } else {
+      this.all[eventName] = [];
+    }
+  }
+
+  /**
+   * Triggers an event
+   * @param  {any} eventName
+   * @param  {any} e
+   * @return {void}
+   * @memberof EventEmitter
+   */
+  emit(eventName, e) {
+    this.all[eventName] = this.all[eventName] || [];
+    this.all[eventName].forEach(element => {
+      element(e);
+    });
   }
 }
 
@@ -143,6 +185,12 @@ export class ArrayUtils {
   }
 }
 
+export class StringUtils {
+  static trimLeft(string) {
+    return string.replace(/^\s+/,"");
+  }
+}
+
 export class ObjectUtils {
   /**
    * Simple object check.
@@ -151,6 +199,10 @@ export class ObjectUtils {
    */
   static isObject(item) {
     return item && typeof item === "object" && !Array.isArray(item);
+  }
+
+  static values(item) {
+    return Object.keys(item).map(key => item[key]);
   }
 
   /**

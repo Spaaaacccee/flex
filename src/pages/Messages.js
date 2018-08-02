@@ -2,11 +2,10 @@ import React, { Component } from "react";
 import { Input, Button, Icon, List, Affix, message } from "antd";
 import Messages, { Message } from "../classes/Messages";
 import update from "immutability-helper";
-import { IDGen } from "../classes/Utils";
+import { IDGen, ObjectUtils, StringUtils } from "../classes/Utils";
 import UserGroupDisplay from "../components/UserGroupDisplay";
 import "./Messages.css";
 import User from "../classes/User";
-import allOff from "event-emitter/all-off";
 
 class MESSAGES extends Component {
   state = {
@@ -35,12 +34,13 @@ class MESSAGES extends Component {
     if (!props.project.messengerID) {
       props.project.setMessenger(props.project.projectID);
     }
-    if (this.state.messenger) allOff(this.state.messenger);
+    if (this.state.messenger) this.state.messenger.off();
     this.receivedMessages = {};
     this.setState({ messenger: null, orderedMessages: [] }, () => {
       Messages.get(props.project.messengerID || props.project.projectID).then(
         messenger => {
           if (messenger) {
+            this.setState({ messenger });
             this.receivedMessages = Object.assign({}, messenger.messages);
             messenger.on("message", x => {
               this.handleReceive(x);
@@ -49,7 +49,6 @@ class MESSAGES extends Component {
             this.setState({ cachedUsers: { [props.user.uid]: props.user } });
             this.cacheUsers();
             this.cacheItems();
-            this.setState({ messenger });
           } else {
             Messages.forceUpdate(
               props.project.messengerID || props.project.projectID,
@@ -82,6 +81,7 @@ class MESSAGES extends Component {
   }
 
   handleSend() {
+    this.inputElement.focus();
     const maxChars = 2000;
     let val = this.state.inputValue.trim();
     if (this.state.messenger) {
@@ -119,7 +119,7 @@ class MESSAGES extends Component {
   }
 
   cacheItems() {
-    let orderedMessages = Object.values(this.receivedMessages).sort(
+    let orderedMessages = ObjectUtils.values(this.receivedMessages).sort(
       (a, b) =>
         a.timeSent === b.timeSent ? 0 : a.timeSent > b.timeSent ? 1 : -1
     );
@@ -132,7 +132,7 @@ class MESSAGES extends Component {
 
   cacheUsers() {
     let users = {};
-    let msgs = Object.values(this.receivedMessages);
+    let msgs = ObjectUtils.values(this.receivedMessages);
     for (let i = 0; i < msgs.length; i++) {
       if (users[msgs[i].sender]) continue;
       users[msgs[i].sender] = User.get(msgs[i].sender);
@@ -145,10 +145,10 @@ class MESSAGES extends Component {
       });
     }
   }
-
+  inputElement;
   render() {
     return (
-      <div style={{ position: "relative" }}>
+      <div>
         <div className="messages">
           {!!this.state.orderedMessages.length ? (
             <List itemLayout="vertical">
@@ -193,31 +193,17 @@ class MESSAGES extends Component {
                 </div>
               ) : (
                 <div>
-                We're getting Messages ready.<br />
-                It won't take too long.
-              </div>
+                  We're getting Messages ready.<br />
+                  It won't take too long.
+                </div>
               )}
               <br />
               <br />
             </div>
           )}
         </div>
-        <div
-          style={{
-            alignItems: "baseline",
-            justifyContent: "center",
-            background: "white",
-            zIndex: 1,
-            display: "flex",
-            position: "fixed",
-            width: "calc(100% - 20px)",
-            maxWidth: 600,
-            left: "50%",
-            transform: "translateX(-50%)",
-            bottom: 0,
-            margin: "auto"
-          }}
-        >
+        <div className="message-console">
+          <div>
           <Button
             shape="circle"
             icon="paper-clip"
@@ -225,11 +211,14 @@ class MESSAGES extends Component {
             disabled={!this.state.messenger}
           />
           <Input.TextArea
+            ref={e=>this.inputElement=e}
             value={this.state.inputValue}
             autosize={{ minRows: 1, maxRows: 5 }}
             className="input"
             onChange={e => {
-              this.setState({ inputValue: e.target.value.trimStart() });
+              this.setState({
+                inputValue: StringUtils.trimLeft(e.target.value)
+              });
             }}
             onPressEnter={(e => {
               console.log(e);
@@ -238,9 +227,7 @@ class MESSAGES extends Component {
               }
             }).bind(this)}
             placeholder={
-              !this.state.messenger
-                ? "Connecting to messages"
-                : "Enter a message"
+              !this.state.messenger ? "Connecting" : "Enter a message"
             }
             style={{
               maxWidth: "100%",
@@ -254,10 +241,11 @@ class MESSAGES extends Component {
               this.handleSend();
             }}
             type="primary"
-            disabled={!this.state.messenger}
+            disabled={!this.state.messenger || !this.state.inputValue}
           >
             Send
           </Button>
+          </div>
         </div>
       </div>
     );

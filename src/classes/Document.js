@@ -111,7 +111,7 @@ class JobManager extends EventEmitter {
   _uploadJobs = {};
 
   get allJobs() {
-    return Object.values(this._uploadJobs);
+    return ObjectUtils.values(this._uploadJobs);
   }
 
   getJob(jobID) {

@@ -51,7 +51,7 @@ export default class PageView extends Component {
       <div style={{flex:1, display:'flex',flexDirection:'column', width:'100%'}}>
         <TopBar
           style={{
-            height: "54px",
+            height: "52px",
             flex: 'none'
           }}
           onLeftButtonPress={this.props.onLeftButtonPress}
