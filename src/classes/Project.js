@@ -148,7 +148,7 @@ export default class Project {
    * @type {Number}
    * @memberof Project
    */
-  created = Date.now();;
+  created = Date.now();
 
   /**
    * A description of this project
@@ -208,7 +208,7 @@ export default class Project {
       // Perform the operation on the database object
       await Fetch.getProjectReference(this.projectID).transaction(item => {
         if (item) {
-          operation.apply(item);
+          operation(item);
           item.lastUpdatedTimestamp = dateNow;
         }
         return item;
@@ -219,7 +219,7 @@ export default class Project {
       throw new Error("Transaction was not able to be completed");
     }
     // Perform the same operation on the local object
-    operation.apply(this);
+    operation(this);
     this.lastUpdatedTimestamp = dateNow;
     // Return true to signify the operation was successful.
     return true;
@@ -227,14 +227,14 @@ export default class Project {
 
   // Set the name of this project, both locally and in the database
   async setName(newName) {
-    await this.transaction(function() {
-      this.name = newName;
+    await this.transaction(project => {
+      project.name = newName;
     });
   }
   // Set the description of this project, both locally and in the database
   async setDescription(newDescription) {
-    await this.transaction(function() {
-      this.description = newDescription;
+    await this.transaction(project => {
+      project.description = newDescription;
     });
   }
 
@@ -245,8 +245,8 @@ export default class Project {
    * @memberof Project
    */
   async setRoles(roles) {
-    await this.transaction(function() {
-      this.roles = roles;
+    await this.transaction(project => {
+      project.roles = roles;
     });
   }
 
@@ -257,8 +257,8 @@ export default class Project {
    * @memberof Project
    */
   async setMembers(members) {
-    await this.transaction(function() {
-      this.members = members;
+    await this.transaction(project => {
+      project.members = members;
     });
   }
 
@@ -271,8 +271,8 @@ export default class Project {
    */
   async addMember(uid, roles) {
     if (!uid) return;
-    await this.transaction(function() {
-      this.members = update(this.members || [], {
+    await this.transaction(project => {
+      project.members = update(project.members || [], {
         $push: [new Member(uid, roles || [], true)]
       });
     });
@@ -286,8 +286,8 @@ export default class Project {
    * @memberof Project
    */
   async setMember(memberID, roles) {
-    await this.transaction(function() {
-      this.members = (this.members || []).map(
+    await this.transaction(project => {
+      project.members = (project.members || []).map(
         item => (item.uid === memberID ? Object.assign(item, { roles }) : item)
       );
     });
@@ -299,7 +299,7 @@ export default class Project {
    * @memberof Project
    */
   async setEvents(events) {
-    await this.transaction(function() {
+    await this.transaction(project => {
       this.events = events;
     });
   }
@@ -312,8 +312,8 @@ export default class Project {
    * @memberof Project
    */
   async setEvent(uid, eventData) {
-    await this.transaction(function() {
-      this.events = (this.events || []).map(
+    await this.transaction(project => {
+      project.events = (project.events || []).map(
         item => (item.uid === uid ? Object.assign(eventData, { uid }) : item)
       );
     });
@@ -326,9 +326,9 @@ export default class Project {
    * @memberof Project
    */
   async addEvent(event) {
-    await this.transaction(function() {
-      this.events = this.events || [];
-      this.events.push(event);
+    await this.transaction(project => {
+      project.events = project.events || [];
+      project.events.push(event);
     });
   }
 
@@ -374,24 +374,24 @@ export default class Project {
 
         let task;
 
-        await this.transaction(function() {
-          this.files = this.files || [];
+        await this.transaction(project => {
+          project.files = project.files || [];
           let existingArchive = ArrayUtils.indexOf(
-            this.files,
+            project.files,
             item => item.name === meta.name && item.type === meta.type
           );
           if (existingArchive !== -1) {
             let existingFile =
               ArrayUtils.indexOf(
-                this.files[existingArchive].files,
+                project.files[existingArchive].files,
                 item => item.hash === meta.hash
               ) !== -1;
             if (existingFile) {
-              if (this instanceof Project)
+              if (project instanceof Project)
                 message.error(`A file that's exactly the same already exists`);
             } else {
-              this.files[existingArchive].files.push(meta);
-              if (this instanceof Project) {
+              project.files[existingArchive].files.push(meta);
+              if (project instanceof Project) {
                 message.info(
                   `We're putting ${file.name} together with an existing copy.`
                 );
@@ -451,21 +451,21 @@ export default class Project {
   }
 
   async addCloudFile(file, callback) {
-    await this.transaction(function() {
-      this.files = this.files || [];
+    await this.transaction(project => {
+      project.files = project.files || [];
       if (
-        this.files.find(
+        project.files.find(
           item =>
             item.uploadType === "cloud" &&
             item.source.id &&
             item.source.id === file.id
         )
       ) {
-        if (this instanceof Project) {
+        if (project instanceof Project) {
           message.error(`${file.name} already exists!`);
         }
       } else {
-        this.files.push(new CloudDocument(file));
+        project.files.push(new CloudDocument(file));
       }
     });
   }
@@ -473,20 +473,20 @@ export default class Project {
   getFileMeta(fileID) {}
 
   async setFileMeta(fileID, meta) {
-    await this.transaction(function() {
-      this.files = this.files || [];
-      this.files.forEach((archive, i) => {
+    await this.transaction(project => {
+      project.files = project.files || [];
+      project.files.forEach((archive, i) => {
         archive.files = archive.files || [];
         let j = ArrayUtils.indexOf(archive.files, item => item.uid === fileID);
         if (j !== -1) {
-          this.files[i].files[j] = meta;
+          project.files[i].files[j] = meta;
         }
       });
     });
   }
 
   /**
-   * 
+   *
    * @param  {String} hashString
    * @return {DocumentMeta}
    * @memberof Project
@@ -494,8 +494,8 @@ export default class Project {
   getFileMetaByHash(hashString) {}
 
   async setMessenger(messengerID) {
-    await this.transaction(function() {
-      this.messengerID = messengerID;
-    })
+    await this.transaction(project => {
+      project.messengerID = messengerID;
+    });
   }
 }

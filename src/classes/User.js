@@ -162,7 +162,7 @@ export default class User {
       // Perform the operation on the database object
       await Fetch.getUserReference(this.uid).transaction(item => {
         if (item) {
-          operation.apply(item);
+          operation(item);
           item.lastUpdatedTimestamp = dateNow;
         }
         return item;
@@ -173,7 +173,7 @@ export default class User {
       throw new Error("Transaction was not able to be completed");
     }
     // Perform the same operation on the local object
-    operation.apply(this);
+    operation(this);
     this.lastUpdatedTimestamp = dateNow;
     // Return true to signify the operation was successful.
     return true;
@@ -186,9 +186,9 @@ export default class User {
    * @memberof User
    */
   async rejectInvite(projectID) {
-    await this.transaction(function() {
-      this.pendingInvites = this.pendingInvites || [];
-      ArrayUtils.remove(this.pendingInvites, projectID);
+    await this.transaction(user => {
+      user.pendingInvites = user.pendingInvites || [];
+      ArrayUtils.remove(user.pendingInvites, projectID);
     });
   }
 
@@ -199,16 +199,16 @@ export default class User {
    * @memberof User
    */
   async addInvite(projectID) {
-    await this.transaction(function() {
+    await this.transaction(user => {
       // Conditionally initialise pendingInvites with an empty array so it is not undefined.
-      this.pendingInvites = this.pendingInvites || [];
+      user.pendingInvites = user.pendingInvites || [];
       // Test whether the current user already has an invite for the same project.
-      if (ArrayUtils.exists(this.pendingInvites, projectID)) {
+      if (ArrayUtils.exists(user.pendingInvites, projectID)) {
         // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
-        if (this instanceof User) {
+        if (user instanceof User) {
           message.error(
             `We couldn't send an invite to ${
-              this.name
+              user.name
             } because there's already a pending invite.`
           );
         }
@@ -255,30 +255,30 @@ export default class User {
    * @memberof User
    */
   async acceptInvite(projectID) {
-    this.transaction(function() {
+    this.transaction(user => {
       // Check if pendingInvites is not empty and contains the specified project ID.
       if (
-        this.pendingInvites &&
-        ArrayUtils.exists(this.pendingInvites, projectID)
+        user.pendingInvites &&
+        ArrayUtils.exists(user.pendingInvites, projectID)
       ) {
         // Initialise required properties so they're not undefined.
-        this.joinedProjects = this.joinedProjects || [];
-        this.projects = this.projects || [];
+        user.joinedProjects = user.joinedProjects || [];
+        user.projects = user.projects || [];
         // Check if the user has already joined, or is part of, this project. This check is redundant as adding an invite already has a check for the same thing but this is here just in case.
         if (
           !(
-            ArrayUtils.exists(this.projects, projectID) ||
-            ArrayUtils.exists(this.joinedProjects, projectID)
+            ArrayUtils.exists(user.projects, projectID) ||
+            ArrayUtils.exists(user.joinedProjects, projectID)
           )
         ) {
           // Add the project to joinedProjects
-          this.joinedProjects.push(projectID);
+          user.joinedProjects.push(projectID);
           // Remove the project invite
-          ArrayUtils.remove(this.pendingInvites, projectID);
+          ArrayUtils.remove(user.pendingInvites, projectID);
           // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
-          if (this instanceof User) {
+          if (user instanceof User) {
             Project.get(projectID).then(project => {
-              project.addMember(this.uid).then(() => {
+              project.addMember(user.uid).then(() => {
                 message.success(`You've successfully joined ${project.name}`);
               });
             });
@@ -309,10 +309,7 @@ export default class User {
         project.members = project.members || [];
         project.members.push(new Member(this.uid, []));
         // Create a new messages instance in the database
-        await Messages.forceUpdate(
-          project.projectID,
-          new Messages()
-        )
+        await Messages.forceUpdate(project.projectID, new Messages());
         // Update the database with this project
         await Project.forceUpdate(project.projectID, project);
         this.projects.push(project.projectID);
@@ -327,14 +324,14 @@ export default class User {
 
   async leaveProject(projectID) {
     if (ArrayUtils.exists(this.joinedProjects, projectID)) {
-      this.transaction(function() {
-        ArrayUtils.remove(this.joinedProjects, projectID);
-        if (this instanceof User) {
+      this.transaction(user => {
+        ArrayUtils.remove(user.joinedProjects, projectID);
+        if (user instanceof User) {
           Project.get(projectID).then(project => {
             project.setMembers(
               ArrayUtils.removeIf(
                 project.members,
-                (item, index) => item.uid === this.uid
+                (item, index) => item.uid === user.uid
               )
             );
             message.success(`Successfully left ${project.name}`);

@@ -70,7 +70,7 @@ export default class Messages extends EventEmitter {
       // Perform the operation on the database object
       await Fetch.getMessagesReference(this.uid).transaction(item => {
         if (item) {
-          operation.apply(item);
+          operation.item;
           item.lastUpdatedTimestamp = dateNow;
         }
         return item;
@@ -81,16 +81,16 @@ export default class Messages extends EventEmitter {
       throw new Error("Transaction was not able to be completed");
     }
     // Perform the same operation on the local object
-    operation.apply(this);
+    operation(this);
     this.lastUpdatedTimestamp = dateNow;
     // Return true to signify the operation was successful.
     return true;
   }
 
   async addMessage(message) {
-    await this.transaction(function() {
-      this.messages = this.messages || [];
-      this.messages[message.uid] = message;
+    await this.transaction((project) => {
+      project.messages = project.messages || [];
+      project.messages[message.uid] = message;
     });
   }
 
