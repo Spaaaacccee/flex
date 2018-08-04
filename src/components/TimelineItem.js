@@ -38,25 +38,30 @@ export default class TimelineItem extends Component {
     return (
       <div style={{ textAlign: "left" }}>
         <Card
-          actions={[
-            <Icon
-              type="edit"
-              onClick={() => {
-                this.props.onEdit();
-              }}
-            />,
-            <Icon
-              type="check"
-              onClick={() => {
-                this.props.onComplete();
-                this.setState(
-                  update(this.state, {
-                    event: { markedAsCompleted: { $set: true } }
-                  })
-                );
-              }}
-            />
-          ]}
+          style={this.state.event.markedAsCompleted ? { opacity: 0.65 } : {}}
+          actions={
+            this.state.event.markedAsCompleted
+              ? null
+              : [
+                <Icon
+                  type="edit"
+                  onClick={() => {
+                    this.props.onEdit();
+                  }}
+                />,
+                <Icon
+                  type="check"
+                  onClick={() => {
+                    this.props.onComplete();
+                    this.setState(
+                      update(this.state, {
+                        event: { markedAsCompleted: { $set: true } }
+                      })
+                    );
+                  }}
+                />
+              ]
+          }
         >
           <Card.Meta
             style={
