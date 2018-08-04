@@ -215,14 +215,14 @@ export default class User {
         return;
       }
       // Conditionally initialise joinedProjects with an empty array so it is not undefined.
-      this.joinedProjects = this.joinedProjects || [];
+      user.joinedProjects = user.joinedProjects || [];
       // Test whether the current user already has joined the project.
-      if (ArrayUtils.exists(this.joinedProjects, projectID)) {
+      if (ArrayUtils.exists(user.joinedProjects, projectID)) {
         // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
-        if (this instanceof User) {
+        if (user instanceof User) {
           message.error(
             `We couldn't send an invite to ${
-              this.name
+              user.name
             } because they're already part of this project.`
           );
         }
@@ -230,21 +230,21 @@ export default class User {
       }
 
       // Conditionally initialise projects with an empty array so it is not undefined.
-      this.projects = this.projects || [];
+      user.projects = user.projects || [];
       // Test whether the current user owns the project.
-      if (ArrayUtils.exists(this.projects, projectID)) {
+      if (ArrayUtils.exists(user.projects, projectID)) {
         // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
-        if (this instanceof User) {
+        if (user instanceof User) {
           message.error(`Don't send an invite to yourself!`);
         }
         return;
       }
 
       // Otherwise, add the project into the pendingInvites array of this User.
-      this.pendingInvites.push(projectID);
+      user.pendingInvites.push(projectID);
 
-      if (this instanceof User)
-        message.success(`Invitation sent to ${this.name}!`);
+      if (user instanceof User)
+        message.success(`Invitation sent to ${user.name}!`);
     });
   }
 
@@ -284,7 +284,7 @@ export default class User {
             });
           }
         } else {
-          if (this instanceof User) {
+          if (user instanceof User) {
             message.error(`You tried to join a project you're already in!`);
           }
           return;

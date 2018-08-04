@@ -83,6 +83,7 @@ class MESSAGES extends Component {
     this.inputElement.focus();
     const maxChars = 2000;
     let val = this.state.inputValue.trim();
+    if(!val) return;
     if (this.state.messenger) {
       if (val.length > maxChars) {
         message.warn(
@@ -94,14 +95,14 @@ class MESSAGES extends Component {
         content: { bodyText: val },
         sender: this.state.user.uid
       });
-      this.setState({ inputValue: "" });
       this.receivedMessages[msg.uid] = msg;
       this.setState(
         update(this.state, {
           messageStatus: {
             $merge: { [msg.uid]: "sending" }
           },
-          orderedMessages: { $push: [msg] }
+          orderedMessages: { $push: [msg] },
+          inputValue: { $set: "" }
         }),
         () => {
           this.scrollBottom();

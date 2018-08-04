@@ -317,7 +317,7 @@ export default class Project {
    */
   async setEvents(events) {
     await this.transaction(project => {
-      this.events = events;
+      project.events = events;
     });
   }
 
@@ -416,14 +416,14 @@ export default class Project {
               }
             }
           } else {
-            this.files.push(
+            project.files.push(
               new DocumentArchive({
                 files: [meta],
                 name: meta.name,
                 type: meta.type
               })
             );
-            if (this instanceof Project) {
+            if (project instanceof Project) {
               task = Document.upload(file, meta);
             }
           }
@@ -446,7 +446,7 @@ export default class Project {
             });
           });
           task.then(() => {
-            this.setFileMeta(
+            project.setFileMeta(
               meta.uid,
               Object.assign(meta, { state: "available" })
             );
