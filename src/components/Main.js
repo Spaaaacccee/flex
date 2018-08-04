@@ -255,7 +255,7 @@ export default class Main extends Component {
           footer={null}
           maskClosable={false}
           visible={this.state.offline}
-          style={{ textAlign: "center", maxWidth: 300, margin:'auto' }}
+          style={{ textAlign: "center", maxWidth: 300, margin: "auto" }}
         >
           <Icon type="loading" style={{ color: "#1890FF", fontSize: 24 }} />
           <br />

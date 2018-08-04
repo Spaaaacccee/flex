@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import ProjectIcon from "./ProjectIcon";
+import './UserIcon.css';
 import { Icon } from "antd";
 
 /**
@@ -28,7 +29,7 @@ export default class UserIcon extends Component {
   }
   render() {
     return (
-      <div>
+      <div className="user-icon">
         <ProjectIcon
           icon="user"
           thumbnail={this.state.thumbnail}

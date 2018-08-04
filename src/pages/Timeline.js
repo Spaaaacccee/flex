@@ -5,6 +5,7 @@ import { Modal } from "antd";
 import CreateEvent from "../forms/CreateEvent";
 import TimelineItem from "../components/TimelineItem";
 import Project from "../classes/Project";
+import update from "immutability-helper";
 
 export default class TIMELINE extends Component {
   static defaultProps = {
@@ -55,6 +56,15 @@ export default class TIMELINE extends Component {
                           <TimelineItem
                             onEdit={() => {}}
                             onComplete={() => {
+                              this.setState(
+                                update(this.state, {
+                                  events: {
+                                    [index]: {
+                                      $merge: { markedAsCompleted: true }
+                                    }
+                                  }
+                                })
+                              );
                               this.state.project.setEvent(
                                 data.item.uid,
                                 Object.assign(data.item, {

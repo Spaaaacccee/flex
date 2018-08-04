@@ -1,13 +1,28 @@
-.project-icon {
-    cursor: pointer;
-}
-
 .project-icon.selected .primary-icon {
-    background-color:rgb(24, 144, 255);
-    color:white;
-    border-radius:20px;
+  background-color: rgb(24, 144, 255);
+  box-shadow: 0 5px 20px #046fd23d;
+  color: white;
+  border-radius: 20px;
 }
 
 .project-icon span {
-    transition: none !important;
+  transition: 0.4s cubic-bezier(0, 0.65, 0.27, 1);
+  transition-property: border-radius, background-color;
+  cursor: pointer;
+}
+
+.project-icon span.primary-icon:hover {
+    background-color: #f7f7f7;
+}
+
+.project-icon span.primary-icon:active {
+    background-color: #eeeeee;
+}
+
+.project-icon.selected span.primary-icon:hover {
+    background-color: #40a9ff;
+}
+
+.project-icon.selected span.primary-icon:active {
+    background-color: #096dd9;
 }

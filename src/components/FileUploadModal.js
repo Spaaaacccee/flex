@@ -21,7 +21,16 @@ export default class FileUploadModal extends Component {
         visible={this.state.visible}
         onCancel={this.props.onClose}
         onOk={this.props.onClose}
-        footer={[<Button type="primary" key="0" onClick={this.props.onClose.bind(this)} icon="check">Done</Button>]}
+        footer={[
+          <Button
+            type="primary"
+            key="0"
+            onClick={this.props.onClose.bind(this)}
+            icon="check"
+          >
+            Done
+          </Button>
+        ]}
       >
         <div>
           <h2>File Upload</h2>
@@ -40,12 +49,11 @@ export default class FileUploadModal extends Component {
                   onChange={data => {
                     if (data.docs && data.docs[0]) {
                       this.state.project.addCloudFile(data.docs[0]).then(() => {
-                        this.setState({
-                          drivePickedFiles: update(
-                            this.state.drivePickedFiles,
-                            { $push: [data.docs[0]] }
-                          )
-                        });
+                        this.setState(
+                          update(this.state, {
+                            drivePickedFiles: { $push: [data.docs[0]] }
+                          })
+                        );
                       });
                     }
                   }}
@@ -56,12 +64,17 @@ export default class FileUploadModal extends Component {
                 </GooglePicker>
                 {!!this.state.drivePickedFiles.length && (
                   <div>
-                  <br/>
-                    <List bordered style={{textAlign:'left'}}>
+                    <br />
+                    <List bordered style={{ textAlign: "left" }}>
                       {this.state.drivePickedFiles.map((item, index) => (
                         <List.Item key={index}>
                           <List.Item.Meta
-                            avatar={<Avatar src={item.iconUrl} style={{imageRendering:'crisp-edges'}}/>}
+                            avatar={
+                              <Avatar
+                                src={item.iconUrl}
+                                style={{ imageRendering: "crisp-edges" }}
+                              />
+                            }
                             title={item.name}
                             description={
                               <div>

@@ -14,18 +14,18 @@ export default class SendInvite extends Component {
     saveLoading: false,
     recipients: [],
     formInstance: 0,
-    project: {},
+    project: {}
   };
   componentWillReceiveProps(props) {
     if (this.state.visible !== !!props.visible) {
       this.setState({
         saveLoading: false,
-        recipients:[],
+        recipients: [],
         visible: !!props.visible
       });
     }
     this.setState({
-      project: props.project,
+      project: props.project
     });
   }
   handleClose() {
@@ -35,15 +35,16 @@ export default class SendInvite extends Component {
   handleSend() {
     this.setState({
       saveLoading: true,
-      recipients:[],
+      recipients: [],
       formInstance: this.state.formInstance + 1
     });
     Promise.all(
-      this.state.recipients.map(async (item)=>(await User.get(item.key)).addInvite(this.state.project.projectID))
-    ).then(()=>{
+      this.state.recipients.map(async item =>
+        (await User.get(item.key)).addInvite(this.state.project.projectID)
+      )
+    ).then(() => {
       this.props.onSend(this.state.values);
     });
-    
   }
   handleUserSelectionChanged(values) {
     this.setState({
@@ -77,6 +78,11 @@ export default class SendInvite extends Component {
           onCancel={this.handleClose.bind(this)}
         >
           <h2>Invite Users</h2>
+          <p>
+            Give people access to this project so they too can contribute
+            alongside you.
+          </p>
+          <h3>People to invite</h3>
           <UserSelector
             key={this.state.formInstance}
             onValueChanged={this.handleUserSelectionChanged.bind(this)}

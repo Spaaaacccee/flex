@@ -5,6 +5,7 @@ import User from "../classes/User";
 import TopBar from "./TopBar";
 import { ObjectUtils } from "../classes/Utils";
 import Project from "../classes/Project";
+import "./PageView.css";
 const { Meta } = Card;
 
 /**
@@ -23,12 +24,15 @@ export default class PageView extends Component {
     page: {},
     project: {},
     user: {},
-    loading: false
+    loading: false,
+    animation: false
   };
 
   componentWillReceiveProps(props) {
     if (props.page !== this.state.page) {
-      this.setState({ page: props.page });
+      this.setState({ animation: false }, () => {
+        this.setState({ page: props.page, animation: true });
+      });
     }
     User.getCurrentUser().then(user => {
       if (user) this.setState({ user });
@@ -38,17 +42,29 @@ export default class PageView extends Component {
       return;
     }
     this.setState({ loading: false });
-    if(Project.equal(props.project,this.state.project)) return;
+    if (Project.equal(props.project, this.state.project)) return;
     this.setState({ project: props.project });
   }
 
   render() {
+    const displayContent =
+      !!this.state.page.content &&
+      (!this.state.loading || this.state.page.requireProject === false);
+    const firstTimeDisplayed = !this.contentDisplayed && displayContent;
+    this.contentDisplayed = displayContent;
     return (
-      <div style={{flex:1, display:'flex',flexDirection:'column', width:'100%'}}>
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          width: "100%"
+        }}
+      >
         <TopBar
           style={{
             height: "52px",
-            flex: 'none'
+            flex: "none"
           }}
           onLeftButtonPress={this.props.onLeftButtonPress}
           onRightButtonPress={
@@ -65,14 +81,13 @@ export default class PageView extends Component {
         <div
           style={{
             padding: "20px 10px",
-            flex:1
+            flex: 1
           }}
           onMouseUp={this.props.onContentPress}
           onTouchStart={this.props.onContentPress}
         >
-          {!!this.state.page.content &&
-          (!this.state.loading || this.state.page.requireProject === false) ? (
-            <div>
+          {displayContent ? (
+            <div className={this.state.animation ? "content-fade-in-up" : ""}>
               {(() => {
                 this.pageContentElement = React.createElement(
                   this.state.page.content,
@@ -98,7 +113,7 @@ export default class PageView extends Component {
             <div style={{ opacity: 0.65, margin: 50 }}>
               <Icon
                 type="loading"
-                style={{ marginTop: '10vh', marginBottom: 50 }}
+                style={{ marginTop: "10vh", marginBottom: 50 }}
                 spin
               />
               <p>We're working really hard to load this content.</p>

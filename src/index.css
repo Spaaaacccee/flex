@@ -54,10 +54,15 @@ h3 {
 
 .ant-card {
   border: none !important;
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.09), 0px 1px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.09),
+    0px 1px 18px rgba(0, 0, 0, 0.02);
   border-radius: 7px !important;
   max-width: 400px;
   margin: auto !important;
+}
+
+.ant-card:hover {
+  box-shadow: 0px 20px 50px rgba(0, 0, 0, 0.09), 0px 5px 20px rgba(0, 0, 0, 0.05)
 }
 
 .ant-card .ant-card-body {
@@ -109,7 +114,7 @@ ul.ant-timeline {
   border: none !important;
   outline: none !important;
   background: rgba(0, 0, 0, 0.4) !important;
-  animation: fade-in 0.4s cubic-bezier(0,.65,.27,1) forwards !important;
+  animation: fade-in 0.4s cubic-bezier(0, 0.65, 0.27, 1) forwards !important;
 }
 
 .picker-dialog-content {
@@ -125,7 +130,7 @@ ul.ant-timeline {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   overflow: hidden !important;
   background: #fff !important;
-  animation: fade-in-up 0.3s cubic-bezier(0,.65,.27,1) forwards !important;
+  animation: fade-in-up 0.3s cubic-bezier(0, 0.65, 0.27, 1) forwards !important;
 }
 
 .picker-dialog-content:after {
@@ -159,7 +164,6 @@ ul.ant-timeline {
     transform: translateY(-50%) translateX(-50%);
   }
 }
-
 
 @keyframes fade-in {
   from {

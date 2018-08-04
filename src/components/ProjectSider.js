@@ -131,7 +131,8 @@ export default class ProjectSider extends Component {
             width: `calc(100% - ${2 * 22}px)`,
             margin: "18px 22px",
             marginTop: 0,
-            height: 40
+            height: 40,
+            boxShadow: '0 5px 20px #046fd23d'
           }}
         >
           Invite Users

@@ -11,10 +11,12 @@
     "format-json-pretty": "^1.0.1",
     "googleapis": "^27.0.0",
     "immutability-helper": "^2.7.1",
+    "popmotion-pose": "^2.1.0",
     "prop-types": "^15.6.1",
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "react-google-picker": "0.0.8",
+    "react-pose": "^2.2.0",
     "react-scripts": "1.1.4"
   },
   "scripts": {

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Card, Icon, Button } from "antd";
 import Project from "../classes/Project";
 import UserGroupDisplay from "./UserGroupDisplay";
+import update from "immutability-helper";
 
 /**
  * Displays an timeline event as a card
@@ -11,9 +12,9 @@ import UserGroupDisplay from "./UserGroupDisplay";
  */
 export default class TimelineItem extends Component {
   static defaultProps = {
-    onComplete:()=>{},
-    onEdit:()=>{}
-  }
+    onComplete: () => {},
+    onEdit: () => {}
+  };
   state = {
     eventID: null, //TimelineEvent uid to display
     projectID: null, //The ID of the project to take the event info from
@@ -48,11 +49,21 @@ export default class TimelineItem extends Component {
               type="check"
               onClick={() => {
                 this.props.onComplete();
+                this.setState(
+                  update(this.state, {
+                    event: { markedAsCompleted: { $set: true } }
+                  })
+                );
               }}
             />
           ]}
         >
           <Card.Meta
+            style={
+              this.state.event.markedAsCompleted
+                ? { textDecoration: "line-through" }
+                : {}
+            }
             title={this.state.event.name || <Icon type="loading" />}
             description={
               this.state.event.date ? (

@@ -70,9 +70,7 @@ class MESSAGES extends Component {
     if (!this.receivedMessages[msg.uid]) {
       this.receivedMessages[msg.uid] = msg;
       this.setState(
-        {
-          orderedMessages: update(this.state.orderedMessages, { $push: [msg] })
-        },
+        update(this.state, { orderedMessages: { $push: [msg] } }),
         () => {
           this.scrollBottom();
           this.cacheUsers();
@@ -99,20 +97,20 @@ class MESSAGES extends Component {
       this.setState({ inputValue: "" });
       this.receivedMessages[msg.uid] = msg;
       this.setState(
-        {
-          messageStatus: update(this.state.messageStatus, {
+        update(this.state, {
+          messageStatus: {
             $merge: { [msg.uid]: "sending" }
-          }),
-          orderedMessages: update(this.state.orderedMessages, { $push: [msg] })
-        },
+          },
+          orderedMessages: { $push: [msg] }
+        }),
         () => {
           this.scrollBottom();
           this.state.messenger.addMessage(msg).then(() => {
-            this.setState({
-              messageStatus: update(this.state.messageStatus, {
-                $merge: { [msg.uid]: "sent" }
+            this.setState(
+              update(this.state, {
+                messageStatus: { $merge: { [msg.uid]: "sent" } }
               })
-            });
+            );
           });
         }
       );
@@ -203,7 +201,10 @@ class MESSAGES extends Component {
             </div>
           )}
         </div>
-        <div className="message-console">
+        <div
+          className="message-console"
+          style={{ opacity: this.state.messenger ? 1 : 0 }}
+        >
           <div>
             <Button
               shape="circle"

@@ -1,0 +1,14 @@
+.content-fade-in-up {
+    animation: c-fade-in-up 0.4s both cubic-bezier(0, 0.65, 0.27, 1);
+}
+
+@keyframes c-fade-in-up {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
