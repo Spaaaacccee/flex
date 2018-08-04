@@ -446,7 +446,7 @@ export default class Project {
             });
           });
           task.then(() => {
-            project.setFileMeta(
+            this.setFileMeta(
               meta.uid,
               Object.assign(meta, { state: "available" })
             );
