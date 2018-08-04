@@ -62,6 +62,12 @@ class MESSAGES extends Component {
     });
   }
 
+  componentWillUnmount() {
+    if(this.state.messenger) {
+      this.state.messenger.stopListening();
+    }
+  }
+
   scrollBottom() {
     this.props.passMessage("scroll-bottom");
   }

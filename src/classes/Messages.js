@@ -70,7 +70,7 @@ export default class Messages extends EventEmitter {
       // Perform the operation on the database object
       await Fetch.getMessagesReference(this.uid).transaction(item => {
         if (item) {
-          operation.item;
+          operation(item);
           item.lastUpdatedTimestamp = dateNow;
         }
         return item;
@@ -88,9 +88,9 @@ export default class Messages extends EventEmitter {
   }
 
   async addMessage(message) {
-    await this.transaction((project) => {
-      project.messages = project.messages || [];
-      project.messages[message.uid] = message;
+    await this.transaction((obj) => {
+      obj.messages = obj.messages || [];
+      obj.messages[message.uid] = message;
     });
   }
 
