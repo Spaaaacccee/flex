@@ -56,7 +56,7 @@ export default class RoleEditor extends Component {
                       <Icon type="close" />
                     </a>
                   ]}
-                  key={index}
+                  key={item.uid + index}
                 >
                   <div
                     style={{

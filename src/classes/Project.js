@@ -34,8 +34,8 @@ export default class Project {
    * @memberof Project
    */
   static equal(a, b) {
+    if(!(a && b)) return false;
     let inequality = 0;
-    inequality += !(a && b);
     inequality += a.projectID !== b.projectID;
     inequality += a.lastUpdatedTimestamp !== b.lastUpdatedTimestamp;
     return !inequality;

@@ -61,7 +61,6 @@ All tests are verified in both environments
 ## 4 Pages
 
 > Pages are displayed by the PageView component, which supplies each page with Project and User information, along with other functionalities.
-
 > The user page is an exception and does not expect Project information to be supplied to it.
 
 ### 4.1 User Page

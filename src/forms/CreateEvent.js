@@ -5,30 +5,39 @@ import React, { Component } from "react";
 import { ObjectUtils } from "../classes/Utils";
 import MemberGroupSelector from "../components/MemberGroupSelector";
 import Project from "../classes/Project";
+import Moment from "moment";
 
 export default class CreateEvent extends Component {
+  /**
+   * @type {{mode:"create"|"edit"}}
+   * @memberof CreateEvent
+   */
   state = {
     values: {
       name: "",
       description: "",
-      date: Date.now(),
+      date: new Moment(Moment.now()),
       autoComplete: false,
       involvedPeople: {
         members: [],
         roles: []
       },
-      notify: -1
+      notify: -1,
+      markedAsCompleted: false
     },
     submitted: false,
     opened: false,
-    project: {}
+    project: {},
+    mode: "create"
   };
 
   handleSubmit() {
     this.setState({
       submitted: true
     });
-    this.props.onSubmit(this.state);
+    this.props.onSubmit(
+      update(this.state, { values: { date: { $apply: x => x.valueOf() } } })
+    );
   }
 
   componentWillReceiveProps(props) {
@@ -36,39 +45,52 @@ export default class CreateEvent extends Component {
       this.setState({
         submitted: false
       });
+      if (props.mode === "edit" && props.values) {
+        this.setState({
+          values: Object.assign(props.values, {
+            date: new Moment(props.values.date)
+          })
+        });
+      }
     }
-    this.setState({ opened: props.opened });
-    this.setState({ user: props.user || {} });
-    if (!props.project) return;
-    if(Project.equal(props.project,this.state.project)) return;
+    this.setState({
+      mode: props.mode || "create",
+      opened: props.opened,
+      user: props.user || {}
+    });
+    if (Project.equal(props.project, this.state.project)) return;
     this.setState({
       project: props.project
     });
   }
 
-  setValue(obj) {
-    update.extend("$mergeDeep", (source, target) => {
-      return ObjectUtils.mergeDeep(target, source);
-    });
-    this.setState(update(this.state, { $mergeDeep: obj }));
-  }
   render() {
     return (
       <div>
-        <h2 style={{ marginBottom: 20 }}>New Event</h2>
+        <h2 style={{ marginBottom: 20 }}>
+          {this.state.mode === "edit" ? "Edit Event" : "New Event"}
+        </h2>
         <h3>Name</h3>
         <Input
           style={{ marginBottom: 10 }}
           onChange={e => {
-            this.setValue({ values: { name: e.target.value } });
+            this.setState(
+              update(this.state, { values: { name: { $set: e.target.value } } })
+            );
           }}
+          value={this.state.values.name}
         />
         <h3>Description</h3>
         <Input.TextArea
           style={{ marginBottom: 10 }}
           onChange={e => {
-            this.setValue({ values: { description: e.target.value } });
+            this.setState(
+              update(this.state, {
+                values: { description: { $set: e.target.value } }
+              })
+            );
           }}
+          value={this.state.values.description}
         />
         <h3>Date</h3>
         <div>
@@ -76,16 +98,24 @@ export default class CreateEvent extends Component {
             allowClear={false}
             style={{ marginBottom: 10 }}
             onChange={date => {
-              this.setValue({ values: { date: date ? date.valueOf() : null } });
+              this.setState(
+                update(this.state, { values: { date: { $set: date } } })
+              );
             }}
+            value={this.state.values.date}
           />
         </div>
         <h3>Involved People</h3>
         <MemberGroupSelector
           project={this.state.project}
-          onSelectionChanged={selection => {
-            this.setValue({ values: { involvedPeople: selection } });
+          onSelectionChanged={people => {
+            this.setState(
+              update(this.state, {
+                values: { involvedPeople: { $set: people } }
+              })
+            );
           }}
+          values={this.state.values.involvedPeople}
         />
         <p>
           Only people involved will see this event in their feed and receive
@@ -97,8 +127,11 @@ export default class CreateEvent extends Component {
           style={{ marginBottom: 10, width: 200 }}
           dropdownMatchSelectWidth={false}
           onChange={e => {
-            this.setValue({ values: { notify: e } });
+            this.setState(
+              update(this.state, { values: { notify: { $set: e } } })
+            );
           }}
+          value={this.state.values.notify}
         >
           <Select.Option key={-1} value={-1}>
             Never
@@ -122,22 +155,41 @@ export default class CreateEvent extends Component {
         <h3>Complete automatically</h3>
         <Switch
           style={{ marginBottom: 10 }}
-          onChange={isTrue => {
-            this.setValue({ values: { autoComplete: isTrue } });
+          onChange={value => {
+            this.setState(
+              update(this.state, { values: { autoComplete: { $set: value } } })
+            );
           }}
+          checked={this.state.values.autoComplete}
         />
         <p>
           Automatically set this event to be completed after the date passes.
         </p>
+        {this.state.mode === "edit" && (
+          <div>
+            <h3>Marked as completed</h3>
+            <Switch
+              style={{ marginBottom: 10 }}
+              onChange={value => {
+                this.setState(
+                  update(this.state, {
+                    values: { markedAsCompleted: { $set: value } }
+                  })
+                );
+              }}
+              checked={this.state.values.markedAsCompleted}
+            />
+          </div>
+        )}
         <br />
         <div style={{ textAlign: "right" }}>
           <Button
             type="primary"
             loading={this.state.submitted}
-            icon="plus"
+            icon={this.state.mode === "edit" ? "check" : "plus"}
             onClick={this.handleSubmit.bind(this)}
           >
-            Create
+            {this.state.mode === "edit" ? "Done" : "Create"}
           </Button>
         </div>
       </div>

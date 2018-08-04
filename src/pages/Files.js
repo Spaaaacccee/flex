@@ -26,8 +26,11 @@ export default class FILES extends Component {
   };
   componentWillReceiveProps(props) {
     if (Project.equal(props.project, this.state.project)) return;
-    this.setState({ searchResults: null });
-    this.setState({ project: props.project, user: props.user });
+    this.setState({
+      searchResults: null,
+      project: props.project,
+      user: props.user
+    });
   }
   onExtrasButtonPress() {
     this.setState({ uploadModalVisible: true });
@@ -92,7 +95,7 @@ export default class FILES extends Component {
               <div>
                 {this.state.view === "thumbnail" ? (
                   (filesToRender || []).map((item, index) => (
-                    <div key={index}>
+                    <div key={item.uid||""+index}>
                       <FileDisplay project={this.state.project} file={item} />
                     </div>
                   ))

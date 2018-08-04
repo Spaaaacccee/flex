@@ -20,9 +20,8 @@ export default class TIMELINE extends Component {
     events: []
   };
   componentWillReceiveProps(props) {
-    this.setState({ user: props.user });
-    if (Project.equal(props.project, this.state.project)) return;
     this.setState({
+      user: props.user,
       project: props.project,
       events: props.project.getEventsInDateOrder()
     });
@@ -48,13 +47,14 @@ export default class TIMELINE extends Component {
                 { date: dateNow, item: { name: "Today" }, type: "marker" }
               );
               return events.map((data, index) => (
-                <Timeline.Item key={index}>
+                <Timeline.Item
+                  key={data.item.name + (data.item.uid || "") + index}
+                >
                   {(() => {
                     switch (data.type) {
                       case "card":
                         return (
                           <TimelineItem
-                            onEdit={() => {}}
                             onComplete={() => {
                               this.setState(
                                 update(this.state, {
@@ -125,6 +125,22 @@ export default class TIMELINE extends Component {
             project={this.state.project}
             opened={this.state.eventCreatorVisible}
             onSubmit={e => {
+              let newEvent = new TimelineEvent(e.values);
+              this.setState(
+                update(this.state, {
+                  events: {
+                    $splice: [
+                      [
+                        this.state.events
+                          .map(item => item.date <= Date.now())
+                          .lastIndexOf(true) + 1,
+                        0,
+                        newEvent
+                      ]
+                    ]
+                  }
+                })
+              );
               this.state.project
                 .addEvent(new TimelineEvent(e.values))
                 .then(() => {

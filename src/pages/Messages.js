@@ -152,7 +152,7 @@ class MESSAGES extends Component {
           {!!this.state.orderedMessages.length ? (
             <List itemLayout="vertical" style={{ userSelect: "text" }}>
               {this.state.orderedMessages.map((item, index) => (
-                <List.Item key={index} style={{ textAlign: "left" }}>
+                <List.Item key={item.uid + index} style={{ textAlign: "left" }}>
                   <List.Item.Meta
                     title={
                       (this.state.cachedUsers[item.sender] || {}).name ||

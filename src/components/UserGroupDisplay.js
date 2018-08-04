@@ -41,7 +41,9 @@ export default class UserGroupDisplay extends Component {
             >
               {<Icon type="tags" />}
               {` `}
-              {item.name}
+              {item.name.slice(0, 15) === item.name
+                ? item.name
+                : `${item.name.slice(0, 15)}...`}
             </Tag>
           ))
           .concat(

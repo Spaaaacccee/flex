@@ -1,8 +1,10 @@
 import React, { Component } from "react";
-import { Card, Icon, Button } from "antd";
+import { Card, Icon, Button, Modal } from "antd";
 import Project from "../classes/Project";
 import UserGroupDisplay from "./UserGroupDisplay";
 import update from "immutability-helper";
+import CreateEvent from "../forms/CreateEvent";
+import TimelineEvent from "../classes/TimelineEvent";
 
 /**
  * Displays an timeline event as a card
@@ -19,7 +21,8 @@ export default class TimelineItem extends Component {
     eventID: null, //TimelineEvent uid to display
     projectID: null, //The ID of the project to take the event info from
     project: {},
-    event: {}
+    event: {},
+    eventEditorVisible: false
   };
 
   componentWillReceiveProps(props) {
@@ -40,27 +43,38 @@ export default class TimelineItem extends Component {
         <Card
           style={this.state.event.markedAsCompleted ? { opacity: 0.65 } : {}}
           actions={
-            this.state.event.markedAsCompleted
-              ? null
-              : [
-                <Icon
-                  type="edit"
-                  onClick={() => {
-                    this.props.onEdit();
-                  }}
-                />,
-                <Icon
-                  type="check"
-                  onClick={() => {
-                    this.props.onComplete();
-                    this.setState(
-                      update(this.state, {
-                        event: { markedAsCompleted: { $set: true } }
-                      })
-                    );
-                  }}
-                />
-              ]
+            this.state.event.name
+              ? this.state.event.markedAsCompleted
+                ? [
+                    <Icon
+                      type="edit"
+                      onClick={() => {
+                        this.setState({ eventEditorVisible: true });
+                        this.props.onEdit();
+                      }}
+                    />
+                  ]
+                : [
+                    <Icon
+                      type="edit"
+                      onClick={() => {
+                        this.setState({ eventEditorVisible: true });
+                        this.props.onEdit();
+                      }}
+                    />,
+                    <Icon
+                      type="check"
+                      onClick={() => {
+                        this.props.onComplete();
+                        this.setState(
+                          update(this.state, {
+                            event: { markedAsCompleted: { $set: true } }
+                          })
+                        );
+                      }}
+                    />
+                  ]
+              : null
           }
         >
           <Card.Meta
@@ -89,6 +103,28 @@ export default class TimelineItem extends Component {
             }
           />
         </Card>
+        <Modal
+          footer={null}
+          style={{ top: 20 }}
+          visible={this.state.eventEditorVisible}
+          onCancel={() => {
+            this.setState({ eventEditorVisible: false });
+          }}
+        >
+          <CreateEvent
+            project={this.state.project}
+            opened={this.state.eventEditorVisible}
+            mode="edit"
+            onSubmit={event => {
+              this.setState({ event: event.values, eventEditorVisible: false });
+              this.state.project.setEvent(
+                this.state.event.uid,
+                new TimelineEvent(event.values)
+              );
+            }}
+            values={this.state.event}
+          />
+        </Modal>
       </div>
     );
   }

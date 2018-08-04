@@ -11,26 +11,55 @@ export default class MemberGroupSelector extends Component {
     project: {},
     userInfo: {},
     roles: [],
-    members: []
+    members: [],
+    values: []
   };
 
   componentWillReceiveProps(props) {
     if (!props.project) return;
-    if(Project.equal(props.project,this.state.project)) return;
     this.setState({
       project: props.project
     });
-    this.fetchUserInfo(props.project.members || []);
+    this.fetchUserInfo(props.project.members || []).then(() => {
+      if (props.values) {
+        let members = props.values.members || [];
+        let roles = props.values.roles || [];
+        this.setState({
+          values: [
+            ...members.map(x => `M:${x}:${this.state.userInfo[x].name}`),
+            ...roles.map(
+              x =>
+                `R:${x}:${this.state.project.roles.find(i => i.uid === x).name}`
+            )
+          ]
+        });
+      }
+    });
   }
 
-  fetchUserInfo(members) {
-    members.forEach(item => {
-      User.get(item.uid).then(user => {
-        this.setState({
-          userInfo: Object.assign(this.state.userInfo, { [item.uid]: user })
+  async fetchUserInfo(members) {
+    await Promise.all(
+      members.map(item => {
+        return new Promise((res, rej) => {
+          if (this.state.userInfo[item.uid]) {
+            res();
+            return;
+          }
+          User.get(item.uid).then(user => {
+            this.setState(
+              {
+                userInfo: Object.assign(this.state.userInfo, {
+                  [item.uid]: user
+                })
+              },
+              () => {
+                res();
+              }
+            );
+          });
         });
-      });
-    });
+      })
+    );
   }
 
   selectionChanged(values) {
@@ -50,7 +79,7 @@ export default class MemberGroupSelector extends Component {
           break;
       }
     });
-    this.setState({ roles, members });
+    this.setState({ roles, members, values });
     this.props.onSelectionChanged({ roles, members });
   }
 
@@ -65,6 +94,7 @@ export default class MemberGroupSelector extends Component {
           style={{ minWidth: 200, maxWidth: "100%" }}
           mode="multiple"
           onChange={this.selectionChanged.bind(this)}
+          value={this.state.values}
         >
           {roles.length && (
             <Select.OptGroup label="Roles">
@@ -75,9 +105,13 @@ export default class MemberGroupSelector extends Component {
                 >
                   <div>
                     <Icon type="tags" />
-                    {` ${item.name} (${
+                    {` ${
+                      item.name.slice(0, 15) === item.name
+                        ? item.name
+                        : `${item.name.slice(0, 15)}...`
+                    } (${
                       members.filter(member =>
-                        (member.roles||[]).find(role => role === item.uid)
+                        (member.roles || []).find(role => role === item.uid)
                       ).length
                     } members)`}
                   </div>
@@ -92,7 +126,7 @@ export default class MemberGroupSelector extends Component {
                   key={item.uid}
                   value={`M:${item.uid}:${
                     this.state.userInfo[item.uid]
-                      ? ` ${this.state.userInfo[item.uid].name}`
+                      ? `${this.state.userInfo[item.uid].name}`
                       : ""
                   }`}
                 >
