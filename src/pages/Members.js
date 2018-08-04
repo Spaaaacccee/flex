@@ -3,10 +3,6 @@ import { Tabs, List, Icon } from "antd";
 import MemberDisplay from "../components/MemberDisplay";
 
 export default class MEMBERS extends Component {
-  static defaultProps = {
-    project: undefined,
-    user: undefined
-  };
   state = {
     user: {},
     project: {}

@@ -58,13 +58,8 @@ export default class ProjectView extends Component {
       Project.get(props.projectID).then(project => {
         // The database sometimes returns null right after data is modified, if so, do nothing.
         if (!project) return;
-        // Because setting the project is a performance-expensive task, only continue if the project from the database is extrinsically different
-        if (
-          project.lastUpdatedTimestamp ===
-            this.state.project.lastUpdatedTimestamp &&
-          project.projectID === this.state.project.projectID
-        )
-          return;
+        // Because setting the project is a performance-expensive task, only continue if the project from the database is different
+        Project.equal(this.state.project, project);
         this.setState({ project });
       });
     }

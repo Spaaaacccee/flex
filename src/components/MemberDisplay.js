@@ -24,7 +24,6 @@ export default class MemberDisplay extends Component {
 
   componentWillReceiveProps(props) {
     // If the new properties are not different to the values in the existing state, then don't update anything.
-    if (props.member.uid === this.state.member.uid) return;
     if(Project.equal(props.project,this.state.project)) return;
     // Set the member and project information immediately. It is ok if either of these values are null because these are handled later on
     this.setState(
