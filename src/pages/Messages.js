@@ -6,6 +6,7 @@ import { IDGen, ObjectUtils, StringUtils } from "../classes/Utils";
 import UserGroupDisplay from "../components/UserGroupDisplay";
 import "./Messages.css";
 import User from "../classes/User";
+import Project from "../classes/Project";
 
 class MESSAGES extends Component {
   state = {
@@ -22,14 +23,7 @@ class MESSAGES extends Component {
 
   componentWillReceiveProps(props) {
     this.setState({ user: props.user });
-    if (!props.project.projectID) return;
-    if (
-      props.project.projectID === this.state.project.projectID &&
-      props.project.lastUpdatedTimestamp ===
-        this.state.project.lastUpdatedTimestamp &&
-      props.project.messengerID === this.state.project.messengerID
-    )
-      return;
+    if (Project.equal(props.project, this.state.project)) return;
     this.setState({ project: props.project });
     if (!props.project.messengerID) {
       props.project.setMessenger(props.project.projectID);
@@ -63,7 +57,7 @@ class MESSAGES extends Component {
   }
 
   componentWillUnmount() {
-    if(this.state.messenger) {
+    if (this.state.messenger) {
       this.state.messenger.stopListening();
     }
   }
@@ -158,7 +152,7 @@ class MESSAGES extends Component {
       <div>
         <div className="messages">
           {!!this.state.orderedMessages.length ? (
-            <List itemLayout="vertical">
+            <List itemLayout="vertical" style={{ userSelect: "text" }}>
               {this.state.orderedMessages.map((item, index) => (
                 <List.Item key={index} style={{ textAlign: "left" }}>
                   <List.Item.Meta

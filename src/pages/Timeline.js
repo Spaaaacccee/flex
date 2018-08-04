@@ -4,6 +4,7 @@ import TimelineEvent from "../classes/TimelineEvent";
 import { Modal } from "antd";
 import CreateEvent from "../forms/CreateEvent";
 import TimelineItem from "../components/TimelineItem";
+import Project from "../classes/Project";
 
 export default class TIMELINE extends Component {
   static defaultProps = {
@@ -14,10 +15,16 @@ export default class TIMELINE extends Component {
     project: {},
     user: {},
     eventCreatorVisible: false,
-    eventCreatorKey: 0
+    eventCreatorKey: 0,
+    events: []
   };
   componentWillReceiveProps(props) {
-    this.setState({ project: props.project, user: props.user });
+    this.setState({ user: props.user });
+    if (Project.equal(props.project, this.state.project)) return;
+    this.setState({
+      project: props.project,
+      events: props.project.getEventsInDateOrder()
+    });
   }
   onExtrasButtonPress() {
     this.setState({ eventCreatorVisible: true });
@@ -25,12 +32,14 @@ export default class TIMELINE extends Component {
   render() {
     return (
       <div style={{ textAlign: "center" }}>
-        {this.state.project.events && !!this.state.project.events.length ? (
+        {this.state.events && !!this.state.events.length ? (
           <Timeline style={{ maxWidth: 300, textAlign: "left" }}>
             {(() => {
-              let events = this.state.project
-                .getEventsInDateOrder()
-                .map(item => ({ date: item.date, item, type: "card" }));
+              let events = this.state.events.map(item => ({
+                date: item.date,
+                item,
+                type: "card"
+              }));
               let dateNow = Date.now();
               events.splice(
                 events.map(item => item.date <= dateNow).lastIndexOf(true) + 1,
@@ -44,6 +53,15 @@ export default class TIMELINE extends Component {
                       case "card":
                         return (
                           <TimelineItem
+                            onEdit={() => {}}
+                            onComplete={() => {
+                              this.state.project.setEvent(
+                                data.item.uid,
+                                Object.assign(data.item, {
+                                  markedAsCompleted: true
+                                })
+                              );
+                            }}
                             eventID={data.item.uid}
                             projectID={this.state.project.projectID}
                           />
@@ -67,7 +85,7 @@ export default class TIMELINE extends Component {
           </Timeline>
         ) : (
           <div style={{ opacity: 0.65, margin: 50, marginTop: "10vh" }}>
-            <Icon type="calendar"/>
+            <Icon type="calendar" />
             <br />
             <br />
             Your team's events will appear here.

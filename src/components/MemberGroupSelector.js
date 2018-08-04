@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Select, Icon } from "antd";
 import User from "../classes/User";
+import Project from "../classes/Project";
 
 export default class MemberGroupSelector extends Component {
   static defaultProps = {
@@ -15,12 +16,7 @@ export default class MemberGroupSelector extends Component {
 
   componentWillReceiveProps(props) {
     if (!props.project) return;
-    if (
-      props.project.projectID === this.state.project.projectID &&
-      props.project.lastUpdatedTimestamp ===
-        this.state.project.lastUpdatedTimestamp
-    )
-      return;
+    if(Project.equal(props.project,this.state.project)) return;
     this.setState({
       project: props.project
     });

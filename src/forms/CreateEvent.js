@@ -4,6 +4,7 @@ import { Input, DatePicker, Button, Switch, Select } from "antd";
 import React, { Component } from "react";
 import { ObjectUtils } from "../classes/Utils";
 import MemberGroupSelector from "../components/MemberGroupSelector";
+import Project from "../classes/Project";
 
 export default class CreateEvent extends Component {
   state = {
@@ -39,12 +40,7 @@ export default class CreateEvent extends Component {
     this.setState({ opened: props.opened });
     this.setState({ user: props.user || {} });
     if (!props.project) return;
-    if (
-      props.project.projectID === this.state.project.projectID &&
-      props.project.lastUpdatedTimestamp ===
-        this.state.project.lastUpdatedTimestamp
-    )
-      return;
+    if(Project.equal(props.project,this.state.project)) return;
     this.setState({
       project: props.project
     });

@@ -17,6 +17,7 @@ import Document, {
 } from "./Document";
 import User from "./User";
 import Messages from "./Messages";
+import Firebase from "firebase";
 
 /**
  * Represents a project
@@ -24,6 +25,22 @@ import Messages from "./Messages";
  * @class Project
  */
 export default class Project {
+  /**
+   * Checks whether two projects are exactly the same
+   * @static
+   * @param  {Project} a
+   * @param  {Project} b
+   * @return {Boolean}
+   * @memberof Project
+   */
+  static equal(a, b) {
+    let inequality = 0;
+    inequality += !(a && b);
+    inequality += a.projectID !== b.projectID;
+    inequality += a.lastUpdatedTimestamp !== b.lastUpdatedTimestamp;
+    return !inequality;
+  }
+
   /**
    * Check if a project is registered in the database
    * @static
@@ -198,7 +215,7 @@ export default class Project {
    * Completes an operation on this object while syncing with the server.
    * Operation is guaranteed to be performed on the most recent version of the object.
    *
-   * @param  {Function} operation The operation to perform. Use the `this` keyword to refer to this object like usual. Note: The function must be written as a function expression, and not an arrow function due to lexical `this` differences.
+   * @param  {(this:Project)=>void} operation The operation to perform.
    * @return {Boolean} Whether the operation completed successfully
    * @memberof Project
    */
@@ -342,7 +359,7 @@ export default class Project {
   /**
    * Add a file to this project
    * @param  {File} file The file to add.
-   * @param {Function} callback Adding a file may take a while, so instead of a `Promise`, you can set a callback to execute after this is done to avoid `await`s stopping the execution of the thread.
+   * @param {(e:{jobID:String, task:Firebase.storage.UploadTask})=>void} callback Adding a file may take a while, so instead of a `Promise`, you can set a callback to execute after this is done to avoid `await`s stopping the execution of the thread.
    * @return {void}
    * @memberof Project
    */

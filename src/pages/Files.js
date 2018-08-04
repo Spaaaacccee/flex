@@ -9,6 +9,7 @@ import FileDisplay from "../components/FileDisplay";
 import UserGroupDisplay from "../components/UserGroupDisplay";
 import Document from "../classes/Document";
 import { ArrayUtils } from "../classes/Utils";
+import Project from "../classes/Project";
 const { Meta } = Card;
 
 export default class FILES extends Component {
@@ -24,11 +25,8 @@ export default class FILES extends Component {
     view: "thumbnail"
   };
   componentWillReceiveProps(props) {
-    if (
-      props.project &&
-      props.project.projectID !== this.state.project.projectID
-    )
-      this.setState({ searchResults: null });
+    if (Project.equal(props.project, this.state.project)) return;
+    this.setState({ searchResults: null });
     this.setState({ project: props.project, user: props.user });
   }
   onExtrasButtonPress() {

@@ -4,6 +4,7 @@ import Fire from "../classes/Fire";
 import User from "../classes/User";
 import TopBar from "./TopBar";
 import { ObjectUtils } from "../classes/Utils";
+import Project from "../classes/Project";
 const { Meta } = Card;
 
 /**
@@ -37,12 +38,7 @@ export default class PageView extends Component {
       return;
     }
     this.setState({ loading: false });
-    if (
-      this.state.project.projectID === props.project.projectID &&
-      this.state.project.lastUpdatedTimestamp ===
-        props.project.lastUpdatedTimestamp
-    )
-      return;
+    if(Project.equal(props.project,this.state.project)) return;
     this.setState({ project: props.project });
   }
 

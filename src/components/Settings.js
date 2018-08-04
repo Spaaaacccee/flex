@@ -37,20 +37,13 @@ export default class Settings extends Component {
     this.setState({
       visible: !!props.visible
     });
-    if (
-      (!this.state.sourceProject && props.project) ||
-      (props.project &&
-        props.project.lastUpdatedTimestamp !==
-          this.state.sourceProject.lastUpdatedTimestamp &&
-        props.project.projectID !== this.state.sourceProject.projectID)
-    ) {
-      this.setState(
-        {
-          sourceProject: props.project
-        },
-        this.resetToMatchProject
-      );
-    }
+    if (Project.equal(props.project, this.state.sourceProject)) return;
+    this.setState(
+      {
+        sourceProject: props.project
+      },
+      this.resetToMatchProject
+    );
   }
 
   resetToMatchProject() {
@@ -156,9 +149,7 @@ export default class Settings extends Component {
             </p>
           </TabPane>
           <TabPane tab="Debug" key="5">
-            <pre>
-              {formatJSON(this.state.sourceProject)}
-            </pre>
+            <pre>{formatJSON(this.state.sourceProject)}</pre>
           </TabPane>
         </Tabs>
         <br />

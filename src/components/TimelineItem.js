@@ -10,6 +10,10 @@ import UserGroupDisplay from "./UserGroupDisplay";
  * @extends Component
  */
 export default class TimelineItem extends Component {
+  static defaultProps = {
+    onComplete:()=>{},
+    onEdit:()=>{}
+  }
   state = {
     eventID: null, //TimelineEvent uid to display
     projectID: null, //The ID of the project to take the event info from
@@ -34,8 +38,18 @@ export default class TimelineItem extends Component {
       <div style={{ textAlign: "left" }}>
         <Card
           actions={[
-            <Button icon="edit" shape="circle" />,
-            <Button icon="check" shape="circle" type="primary" />
+            <Icon
+              type="edit"
+              onClick={() => {
+                this.props.onEdit();
+              }}
+            />,
+            <Icon
+              type="check"
+              onClick={() => {
+                this.props.onComplete();
+              }}
+            />
           ]}
         >
           <Card.Meta
