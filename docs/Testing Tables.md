@@ -93,20 +93,20 @@ All tests are verified in both environments
 
 > Tests for adding and setting data to users and projects are avaible in Section 7
 
-| ID  | Element              | Data                                                            | Expected             | Actual      | Fix |
-| --- | -------------------- | --------------------------------------------------------------- | -------------------- | ----------- | --- |
-| 6.1 | User Fetcher         | userID=null                                                     | return null          | As expected | -   |
-| 6.2 | User Fetcher         | userID="x", database.users=["x","y","z"]                        | return "x"           | As expected | -   |
-| 6.3 | User Fetcher         | userID="x", database.users=["a","b","c"]                        | return null          | As expected | -   |
-| 6.4 | Project Fetcher      | projectID=null                                                  | return null          | As expected | -   |
-| 6.5 | Project Fetcher      | projectID="x", database.projects=["x","y","z"]                  | return "x"           | As expected | -   |
-| 6.6 | Project Fetcher      | projectID="x", database.projects=["a","b","c"]                  | return null          | As expected | -   |
-| 6.7 | Fetch Project Events | database.projects.a={events:["x","y","z"]}, openedProjectID="a" | return ["x","y","z"] | As expected | -   |
-| 6.8 | Fetch Project Events | database.projects.a={events:null}, openedProjectID="a"          | return null          | As expected | -   |
-| 6.9 | Fetch Project Events | database.projects.a={events:[]}, openedProjectID="a"            | return []            | As expected | -   |
-| 6.7 | Fetch Project members | database.projects.a={members:["x","y","z"]}, openedProjectID="a" | return ["x","y","z"] | As expected | -   |
-| 6.8 | Fetch Project members | database.projects.a={members:null}, openedProjectID="a"          | return null          | As expected | -   |
-| 6.9 | Fetch Project members | database.projects.a={members:[]}, openedProjectID="a"            | return []            | As expected | -   |
+| ID   | Element               | Data                                                             | Expected             | Actual      | Fix |
+| ---- | --------------------- | ---------------------------------------------------------------- | -------------------- | ----------- | --- |
+| 6.1  | User Fetcher          | userID=null                                                      | return null          | As expected | -   |
+| 6.2  | User Fetcher          | userID="x", database.users=["x","y","z"]                         | return "x"           | As expected | -   |
+| 6.3  | User Fetcher          | userID="x", database.users=["a","b","c"]                         | return null          | As expected | -   |
+| 6.4  | Project Fetcher       | projectID=null                                                   | return null          | As expected | -   |
+| 6.5  | Project Fetcher       | projectID="x", database.projects=["x","y","z"]                   | return "x"           | As expected | -   |
+| 6.6  | Project Fetcher       | projectID="x", database.projects=["a","b","c"]                   | return null          | As expected | -   |
+| 6.7  | Fetch Project events  | database.projects.a={events:["x","y","z"]}, openedProjectID="a"  | return ["x","y","z"] | As expected | -   |
+| 6.8  | Fetch Project events  | database.projects.a={events:null}, openedProjectID="a"           | return null          | As expected | -   |
+| 6.9  | Fetch Project events  | database.projects.a={events:[]}, openedProjectID="a"             | return []            | As expected | -   |
+| 6.10 | Fetch Project members | database.projects.a={members:["x","y","z"]}, openedProjectID="a" | return ["x","y","z"] | As expected | -   |
+| 6.11 | Fetch Project members | database.projects.a={members:null}, openedProjectID="a"          | return null          | As expected | -   |
+| 6.12 | Fetch Project members | database.projects.a={members:[]}, openedProjectID="a"            | return []            | As expected | -   |
 
 ## 7 Core Objects
 

@@ -101,7 +101,7 @@ export default class Settings extends Component {
         <h2>Project Settings</h2>
         <Tabs defaultActiveKey="1">
           <TabPane tab="General" key="1">
-            <p>Project Name</p>
+            <h3>Project Name</h3>
             <Input
               value={this.state.values.general.name}
               onChange={e => {
@@ -114,7 +114,7 @@ export default class Settings extends Component {
             />
             <br />
             <br />
-            <p>Project Description</p>
+            <h3>Project Description</h3>
             <Input.TextArea
               autosize={{ minRows: 2, maxRows: 6 }}
               value={this.state.values.general.description}

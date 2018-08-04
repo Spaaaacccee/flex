@@ -46,18 +46,22 @@ export default class Algorithm {
     array.forEach(element => {
       // Determine if each element in the array is greater than 0 and place them in either `partitions.left` or `partitions.right`.
       // Whether `>` or `>=` is used does not matter.
-      partitions[comparator(pivot, element) > 0 ? "left" : "right"].push(element);
+      partitions[comparator(pivot, element) > 0 ? "left" : "right"].push(
+        element
+      );
     });
+    
+    // `Promise.all` runs both the left and right sort asynchronously, instead of one after the other (non-blocking) , which can potentially offer performance improvements
+    let results = await Promise.all([
+      Algorithm.quicksortPartition(partitions.left, comparator),
+      Algorithm.quicksortPartition(partitions.right, comparator)
+    ]);
 
     // Prepend a quicksorted version of the left partition to the result
-    result.unshift(
-      ...(await Algorithm.quicksortPartition(partitions.left, comparator))
-    );
+    result.unshift(...results[0]);
 
     // Append a quicksorted version of the right partition to the result
-    result.push(
-      ...(await Algorithm.quicksortPartition(partitions.right, comparator))
-    );
+    result.push(...results[1]);
 
     // Return the sorted array
     return result;

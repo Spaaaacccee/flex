@@ -79,7 +79,9 @@ FileStorage
 
 - Database operations are protected via security configurations that permits only relevant authenticated users from making specific changes.
 
-- The file storage is configured so that while creating and manipulating files require athentication, fetching files do not. The timestamp:uid component of a file path enables security as a file can only be accessed if an individual can access the uid and timestamp of a file (e.g. The member of a project). This enables easy file sharing as long as an individual knows the link to it, while ensuring that outsiders can not directly access any files. This strategy, or a version of it, is used by many only services, including Discord, Google Docs etc.
+The file storage is configured so that while creating and manipulating files require athentication, fetching files do not. The timestamp:uid component of a file path enables security as a file can only be accessed if an individual can access the uid and timestamp of a file (e.g. The member of a project). This enables easy file sharing as long as an individual knows the link to it, while ensuring that outsiders can not directly access any files. This strategy, or a version of it, is used by many only services, including Discord, Google Docs etc.
+
+Files that are hosted on Google Drive still have Google Drive's own sharing permissions .
 
 ## Backups
 
