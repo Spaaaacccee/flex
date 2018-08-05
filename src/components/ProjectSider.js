@@ -132,7 +132,7 @@ export default class ProjectSider extends Component {
             margin: "18px 22px",
             marginTop: 0,
             height: 40,
-            boxShadow: '0 5px 20px #046fd23d'
+            boxShadow: '0 5px 20px rgba(4, 111, 210, 0.239)'
           }}
         >
           Invite Users

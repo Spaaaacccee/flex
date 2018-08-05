@@ -54,7 +54,6 @@ export default class SignIn extends Component {
             ],
             callbacks: {
               signInSuccessWithAuthResult: (authResult, redirectUrl) => {
-
                 Fire.authenticateGoogleAPIs(() => {
                   this.handleLogIn(authResult.user);
                 });
@@ -95,6 +94,7 @@ export default class SignIn extends Component {
             />
             <br />
             <Button
+              style={{ boxShadow: "0 5px 20px rgba(107, 107, 107, 0.239)" }}
               loading={this.state.loading || Fire.firebase().auth().currentUser}
               type="primary"
               icon="google"

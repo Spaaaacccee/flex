@@ -1,6 +1,6 @@
 .project-icon.selected .primary-icon {
   background-color: rgb(24, 144, 255);
-  box-shadow: 0 5px 20px #046fd23d;
+  box-shadow: 0 5px 20px rgba(4, 111, 210, 0.239);
   color: white;
   border-radius: 20px;
 }

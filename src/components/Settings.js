@@ -6,6 +6,7 @@ import { ObjectUtils } from "../classes/Utils";
 import Role from "../classes/Role";
 import RoleEditor from "./RoleEditor";
 import formatJSON from "format-json-pretty";
+import update from "immutability-helper";
 
 const { TabPane } = Tabs;
 
@@ -25,25 +26,35 @@ export default class Settings extends Component {
       general: { name: "", description: "" },
       roles: []
     },
-    visible: false
+    visible: false,
+    saving: false
   };
 
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
   componentWillReceiveProps(props) {
-    if (this.state.visible !== !!props.visible) {
-      this.setState({
-        saveLoading: false
-      });
+    if (!this.state.visible && props.visible) {
+      this.setState(
+        {
+          sourceProject: props.project,
+          saving:false,
+          visible: true
+        },
+        this.resetToMatchProject
+      );
+    } else {
+      this.setState({ visible: props.visible });
     }
-    this.setState({
-      visible: !!props.visible
-    });
-    if (Project.equal(props.project, this.state.sourceProject)) return;
-    this.setState(
-      {
-        sourceProject: props.project
-      },
-      this.resetToMatchProject
-    );
+  }
+
+  shouldComponentUpdate(props, state) {
+    if (props.visible !== this.state.visible) return true;
+    if (this.state.visible !== state.visible) return true;
+    if (this.state.values !== state.values) return true;
+    if(this.state.saving !== state.saving) return true;
+    return false;
   }
 
   resetToMatchProject() {
@@ -65,7 +76,7 @@ export default class Settings extends Component {
 
   handleSave() {
     this.props.onSave(this.state.values);
-    this.setState({ saveLoading: true });
+    this.setState({ saving: true });
   }
 
   render() {
@@ -76,7 +87,7 @@ export default class Settings extends Component {
           <Button
             key={0}
             icon="check"
-            loading={this.state.saveLoading}
+            loading={this.state.saving}
             type="primary"
             onClick={this.handleSave.bind(this)}
           >
@@ -124,9 +135,11 @@ export default class Settings extends Component {
           </TabPane>
           <TabPane tab="Roles" key="2">
             <RoleEditor
-              values={this.state.values}
-              onChange={newValues => {
-                this.setState({ values: newValues });
+              values={this.state.values.roles}
+              onChange={roles => {
+                this.setState(
+                  update(this.state, { values: { roles: { $set: roles } } })
+                );
               }}
             />
           </TabPane>

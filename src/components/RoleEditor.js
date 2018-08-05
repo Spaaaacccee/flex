@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { ObjectUtils } from "../classes/Utils";
 import Role from "../classes/Role";
 import { List, Button, Input, Icon } from "antd";
+import update from "immutability-helper";
 
 /**
  * A panel to edit roles of a project
@@ -16,40 +17,42 @@ export default class RoleEditor extends Component {
   state = {
     values: {}
   };
+
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
   componentWillReceiveProps(props) {
     this.setState({ values: props.values });
   }
   render() {
     return (
       <div>
-        {this.state.values.roles ? (
+        {this.state.values ? (
           <div style={{ textAlign: "center" }}>
             <List
               locale={{
                 emptyText: (
                   <div>
-                    <Icon type="tags" /> <br />No roles here
+                    <Icon type="tags" /> <br />This project has no roles.
                   </div>
                 )
               }}
               itemLayout="horizontal"
               size="large"
-              dataSource={this.state.values.roles}
+              dataSource={this.state.values}
               renderItem={(item, index) => (
                 <List.Item
                   actions={[
                     <a
                       onClick={() => {
                         this.setState(
-                          ObjectUtils.mergeDeep(this.state, {
-                            values: {
-                              roles: (() => {
-                                this.state.values.roles.splice(index, 1);
-                                return this.state.values.roles;
-                              })()
-                            }
+                          update(this.state, {
+                            values: { $splice: [[index, 1]] }
                           }),
-                          this.props.onChange(this.state.values)
+                          () => {
+                            this.props.onChange(this.state.values);
+                          }
                         );
                       }}
                     >
@@ -70,19 +73,20 @@ export default class RoleEditor extends Component {
                     }}
                   />
                   <Input
-                    value={this.state.values.roles[index].name}
+                    value={this.state.values[index].name}
+                    placeholder="New Role"
                     onChange={e => {
                       this.setState(
-                        ObjectUtils.mergeDeep(this.state, {
+                        update(this.state, {
                           values: {
-                            roles: (() => {
-                              let roles = this.state.values.roles;
-                              roles[index].name = e.target.value;
-                              return roles;
-                            })()
+                            [index]: {
+                              name: { $set: e.target.value || "New Role" }
+                            }
                           }
                         }),
-                        this.props.onChange(this.state.values)
+                        () => {
+                          this.props.onChange(this.state.values);
+                        }
                       );
                     }}
                   />
@@ -94,13 +98,8 @@ export default class RoleEditor extends Component {
               icon="plus"
               onClick={() => {
                 this.setState(
-                  ObjectUtils.mergeDeep(this.state, {
-                    values: {
-                      roles: (() => {
-                        this.state.values.roles.push(new Role("New Role"));
-                        return this.state.values.roles;
-                      })()
-                    }
+                  update(this.state, {
+                    values: { $push: [new Role("New Role")] }
                   }),
                   () => {
                     this.props.onChange(this.state.values);
