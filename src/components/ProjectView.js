@@ -38,31 +38,22 @@ export default class ProjectView extends Component {
   };
   componentWillReceiveProps(props) {
     this.setState({
+      style: props.style || this.state.style,
       pauseSiderUpdate: props.pauseSiderUpdate,
       navigationCollapsed: props.navigationCollapsed ? true : false,
-      style: props.style || this.state.style,
       projectID: props.projectID,
       hideSideBar: !!props.hideSideBar, // By inverting the value of hideSideBar twice, the value is guaranteed to be a boolean
       siderWidth: props.siderWidth
     });
-    // If no project ID is supplied, switch to user page
-    if (!props.projectID) {
-      this.setState({
-        openedPage: UserPage[0]
-      });
-    } else {
-      // If the project ID from props is different to the projectID from state, that means navigation has occured, reset the project view.
-      if (props.projectID !== this.state.projectID)
-        this.setState({ project: {} });
-      // Get fresh copy of the current project from database, then apply it here
-      Project.get(props.projectID).then(project => {
-        // The database sometimes returns null right after data is modified, if so, do nothing.
-        if (!project) return;
-        // Because setting the project is a performance-expensive task, only continue if the project from the database is different
-        Project.equal(this.state.project, project);
-        this.setState({ project });
-      });
+    if (props.projectID === this.state.projectID) return;
+    if (this.state.project.projectID) {
+      Fetch.getProjectReference(this.state.projectID).off();
+      this.setState({project:{}});
     }
+    Fetch.getProjectReference(props.projectID).on('value',(snapshot)=>{
+      if(snapshot.val()===null) return;
+      this.setState({project:Object.assign(new Project(),snapshot.val())});
+    })
   }
 
   async applySettings(values) {
@@ -96,12 +87,16 @@ export default class ProjectView extends Component {
                 padding: "18px 22px"
               }}
             >
-              <b style={{
-                textOverflow:'ellipsis',
-                overflow:'hidden',
-                width:'100%',
-                display:'block'
-              }}>{this.state.project.name || <Icon type="loading" />}</b>
+              <b
+                style={{
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  width: "100%",
+                  display: "block"
+                }}
+              >
+                {this.state.project.name || <Icon type="loading" />}
+              </b>
               {!!this.state.project.description && (
                 <Popover
                   placement="bottomLeft"
@@ -186,7 +181,7 @@ export default class ProjectView extends Component {
                 onMessage={msg => {
                   switch (msg) {
                     case "scroll-bottom":
-                      this.scrollContainer.scrollTop = this.scrollContainer.scrollHeight
+                      this.scrollContainer.scrollTop = this.scrollContainer.scrollHeight;
                       break;
                     default:
                       break;

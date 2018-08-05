@@ -5,6 +5,7 @@ import UserGroupDisplay from "./UserGroupDisplay";
 import update from "immutability-helper";
 import CreateEvent from "../forms/CreateEvent";
 import TimelineEvent from "../classes/TimelineEvent";
+import { ObjectUtils } from "../classes/Utils";
 
 /**
  * Displays an timeline event as a card
@@ -18,33 +19,48 @@ export default class TimelineItem extends Component {
     onEdit: () => {}
   };
   state = {
-    eventID: null, //TimelineEvent uid to display
-    projectID: null, //The ID of the project to take the event info from
     project: {},
     event: {},
-    eventEditorVisible: false
+    eventEditorVisible: false,
+    frozen: false
   };
 
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
   componentWillReceiveProps(props) {
-    this.setState({ eventID: props.eventID, projectID: props.projectID });
-    if (!props.projectID) return;
-    Project.get(props.projectID).then(project => {
-      if (!project) return;
-      this.setState({ project });
-      if (!props.eventID) return;
-      let event = project.events.find(item => item.uid === props.eventID);
-      if (event) this.setState({ event });
-    });
+    this.setState({ event: props.event, project: props.project });
+  }
+
+  shouldComponentUpdate(props, state) {
+    // If the new properties are not different to the values in the existing state, then don't update anything.
+    if (this.state.frozen !== state.frozen) return true;
+    if (this.state.project !== state.project) return true;
+    if (this.state.event !== state.event) return true;
+    if (this.state.eventEditorVisible !== state.eventEditorVisible) return true;
+    if (!Project.equal(props.project, this.state.project)) return true;
+    if (JSON.stringify(props.event) !== JSON.stringify(this.state.event))
+      return true;
+    return false;
   }
 
   render() {
+    const isComplete =
+      this.state.event.markedAsCompleted ||
+      (this.state.event.autoComplete && this.state.event.date <= Date.now());
     return (
-      <div style={{ textAlign: "left" }}>
+      <div
+        style={{
+          textAlign: "left",
+          pointerEvents: this.state.frozen ? "none" : "all"
+        }}
+      >
         <Card
-          style={this.state.event.markedAsCompleted ? { opacity: 0.65 } : {}}
+          style={isComplete ? { opacity: 0.65 } : {}}
           actions={
-            this.state.event.name
-              ? this.state.event.markedAsCompleted
+            this.state.event.uid
+              ? isComplete
                 ? [
                     <Icon
                       type="edit"
@@ -78,11 +94,7 @@ export default class TimelineItem extends Component {
           }
         >
           <Card.Meta
-            style={
-              this.state.event.markedAsCompleted
-                ? { textDecoration: "line-through" }
-                : {}
-            }
+            style={isComplete ? { textDecoration: "line-through" } : {}}
             title={this.state.event.name || <Icon type="loading" />}
             description={
               this.state.event.date ? (
@@ -116,10 +128,27 @@ export default class TimelineItem extends Component {
             opened={this.state.eventEditorVisible}
             mode="edit"
             onSubmit={event => {
-              this.setState({ event: event.values, eventEditorVisible: false });
-              this.state.project.setEvent(
-                this.state.event.uid,
-                new TimelineEvent(event.values)
+              this.state.project
+                .setEvent(this.state.event.uid, new TimelineEvent(event.values))
+                .then(() => {
+                  this.setState({
+                    event: event.values,
+                    eventEditorVisible: false
+                  });
+                });
+            }}
+            onDelete={() => {
+              this.setState(
+                {
+                  frozen: true,
+                  event: update(this.state.event, {
+                    markedAsCompleted: { $set: true }
+                  }),
+                  eventEditorVisible: false
+                },
+                () => {
+                  this.state.project.deleteEvent(this.state.event.uid);
+                }
               );
             }}
             values={this.state.event}

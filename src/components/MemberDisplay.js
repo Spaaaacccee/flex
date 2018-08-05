@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { List, Icon, Card, Avatar, Popover, Button } from "antd";
 import User from "../classes/User";
 import Project from "../classes/Project";
-import { ArrayUtils } from "../classes/Utils";
+import { ArrayUtils, ObjectUtils } from "../classes/Utils";
 import RolePicker from "./RolePicker";
 import update from "immutability-helper";
 
@@ -16,55 +16,36 @@ export default class MemberDisplay extends Component {
   state = {
     member: {},
     project: {},
-    userInfo: {},
-    roleInfo: {},
-    roles: [],
-    availableRoles: []
+    user: {}
   };
 
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
   componentWillReceiveProps(props) {
-    // If the new properties are not different to the values in the existing state, then don't update anything.
-    if(Project.equal(props.project,this.state.project)) return;
+    // Get a fresh copy of the user from the database
+    if (props.member.uid !== this.state.member.uid) {
+      User.get(props.member.uid).then(user => {
+        this.setState({ user });
+      });
+    }
     // Set the member and project information immediately. It is ok if either of these values are null because these are handled later on
-    this.setState(
-      {
-        member: props.member,
-        project: props.project
-      },
-      () => {
-        // Get a fresh copy of the user from the database
-        User.get(this.state.member.uid).then(user => {
-          this.setState({ userInfo: user });
-        });
-        this.setState(
-          {
-            roleInfo: (() => {
-              let collection = {};
-              let userRoles = this.state.member.roles || [];
-              userRoles.forEach(element => {
-                collection[element] = this.state.project.roles.filter(
-                  item => item.uid === element
-                )[0];
-              });
-              return collection;
-            })()
-          },
-          () => {
-            this.setState({
-              availableRoles: this.state.project.roles,
-              roles: (() => {
-                let roles = [];
-                for (let prop in this.state.roleInfo) {
-                  roles.push(this.state.roleInfo[prop]);
-                }
-                roles = roles.filter(item => !!item);
-                return roles;
-              })()
-            });
-          }
-        );
-      }
-    );
+    this.setState({
+      member: props.member,
+      project: props.project
+    });
+  }
+
+  shouldComponentUpdate(props, state) {
+    if(this.state.user !== state.user) return true;
+    if(this.state.member !== state.member) return true;
+    if(this.state.project !== state.project) return true;
+    // If the new properties are not different to the values in the existing state, then don't update anything.
+    if (!Project.equal(props.project, this.state.project)) return true;
+    if (User.equal(this.state.user, state.user)) return true;
+    if (JSON.stringify(props.member) !== JSON.stringify(this.state.member))
+      return true;
+    return false;
   }
 
   render() {
@@ -72,12 +53,12 @@ export default class MemberDisplay extends Component {
       <div>
         <Card style={{ textAlign: "left" }}>
           <Card.Meta
-            avatar={<Avatar src={this.state.userInfo.profilePhoto} />}
+            avatar={<Avatar src={this.state.user.profilePhoto} />}
             title={
               <div>
-                {this.state.userInfo.name || <Icon type="loading" />}{" "}
-                {this.state.userInfo.uid &&
-                  this.state.userInfo.uid === this.state.project.owner && (
+                {this.state.user.name || <Icon type="loading" />}{" "}
+                {this.state.user.uid &&
+                  this.state.user.uid === this.state.project.owner && (
                     <Popover content="Owner">
                       <Icon type="star" />
                     </Popover>
@@ -86,19 +67,31 @@ export default class MemberDisplay extends Component {
             }
             description={
               <div>
-                {this.state.userInfo.email || <Icon type="loading" />}
+                {this.state.user.email || <Icon type="loading" />}
                 <br />
                 <br />
                 <RolePicker
-                  roles={this.state.roles}
-                  availableRoles={this.state.availableRoles}
+                  roles={(this.state.project.roles || []).filter(item =>
+                    ArrayUtils.existsIf(
+                      this.state.member.roles || [],
+                      x => x === item.uid
+                    )
+                  )}
+                  availableRoles={(this.state.project.roles || []).filter(
+                    item =>
+                      !ArrayUtils.exists(
+                        this.state.member.roles || [],
+                        x => x === item.uid
+                      )
+                  )}
                   onRolesChange={roles => {
-                    this.setState({ roles }, () => {
-                      this.state.project.setMember(
-                        this.state.member.uid,
-                        ArrayUtils.select(roles, item => item.uid)
-                      );
-                    });
+                    this.setState(
+                      update(this.state, { member: { roles: { $set: roles } } })
+                    );
+                    this.state.project.setMember(
+                      this.state.member.uid,
+                      ArrayUtils.select(roles, item => item.uid)
+                    );
                   }}
                 />
               </div>

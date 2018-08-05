@@ -1,6 +1,6 @@
 import TimelineEvent from "../classes/TimelineEvent";
 import update from "immutability-helper";
-import { Input, DatePicker, Button, Switch, Select } from "antd";
+import { Input, DatePicker, Button, Switch, Select, Popconfirm } from "antd";
 import React, { Component } from "react";
 import { ObjectUtils } from "../classes/Utils";
 import MemberGroupSelector from "../components/MemberGroupSelector";
@@ -14,9 +14,9 @@ export default class CreateEvent extends Component {
    */
   state = {
     values: {
-      name: "",
+      name: "Untitled Event",
       description: "",
-      date: new Moment(Moment.now()),
+      date: Moment.now(),
       autoComplete: false,
       involvedPeople: {
         members: [],
@@ -32,37 +32,77 @@ export default class CreateEvent extends Component {
   };
 
   handleSubmit() {
-    this.setState({
-      submitted: true
-    });
-    this.props.onSubmit(
-      update(this.state, { values: { date: { $apply: x => x.valueOf() } } })
+    this.setState(
+      {
+        submitted: true
+      },
+      () => {
+        this.props.onSubmit(this.state);
+      }
     );
+  }
+
+  handleDelete() {
+    this.setState({ submitted: true }, () => {
+      setTimeout(() => {
+        this.props.onDelete();
+      }, 250);
+    });
+  }
+
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
+  shouldComponentUpdate(props, state) {
+    if (this.state.submitted !== state.submitted) return true;
+    if (!this.state.opened && !!props.opened) return true;
+    return false;
   }
 
   componentWillReceiveProps(props) {
     if (!this.state.opened && !!props.opened) {
-      this.setState({
-        submitted: false
-      });
-      if (props.mode === "edit" && props.values) {
-        this.setState({
-          values: Object.assign(props.values, {
-            date: new Moment(props.values.date)
-          })
-        });
-      }
+      this.setState({ submitted: false });
     }
-    this.setState({
-      mode: props.mode || "create",
-      opened: props.opened,
-      user: props.user || {}
-    });
-    if (Project.equal(props.project, this.state.project)) return;
-    this.setState({
-      project: props.project
-    });
+    this.setState(
+      {
+        mode: props.mode || "create",
+        opened: props.opened,
+        user: props.user || {},
+        project: props.project || {}
+      },
+      () => {
+        if (props.mode === "edit" && props.values) {
+          this.setValues(props.values);
+        }
+      }
+    );
   }
+
+  setValues(values) {
+    values.name = values.name || "";
+    values.description = values.description || "";
+    values.date = values.date || Moment.now();
+    this.nameField.input.value = values.name;
+    this.descriptionField.textAreaRef.value = values.description;
+    this.dateField.picker.setState({ value: new Moment(values.date) });
+    this.notifyField.rcSelect.setState({ value: [values.notify] });
+    this.peopleField.setValues(values.involvedPeople);
+    this.autoCompleteField.rcSwitch.setChecked(values.autoComplete);
+    this.markedAsCompletedField.rcSwitch.setChecked(
+      values.markedAsCompleted ||
+        (values.autoComplete && values.date <= Date.now())
+    );
+    this.setState({ values });
+  }
+
+  nameField;
+  descriptionField;
+  dateField;
+  peopleField;
+  notifyField;
+  autoCompleteField;
+  markedAsCompletedField;
 
   render() {
     return (
@@ -70,15 +110,32 @@ export default class CreateEvent extends Component {
         <h2 style={{ marginBottom: 20 }}>
           {this.state.mode === "edit" ? "Edit Event" : "New Event"}
         </h2>
+        <div style={{ display: this.state.mode === "edit" ? "block" : "none" }}>
+          <h3>Marked as completed</h3>
+          <Switch
+            style={{ marginBottom: 10 }}
+            onChange={value => {
+              this.setState(
+                update(this.state, {
+                  values: { markedAsCompleted: { $set: value } }
+                })
+              );
+            }}
+            ref={e => (this.markedAsCompletedField = e)}
+          />
+          <br />
+        </div>
+
         <h3>Name</h3>
         <Input
           style={{ marginBottom: 10 }}
           onChange={e => {
             this.setState(
-              update(this.state, { values: { name: { $set: e.target.value } } })
+              update(this.state, { values: { name: { $set: e.target.value||"Untitled Event" } } })
             );
           }}
-          value={this.state.values.name}
+          placeholder="Untitled Event"
+          ref={e => (this.nameField = e)}
         />
         <h3>Description</h3>
         <Input.TextArea
@@ -90,7 +147,7 @@ export default class CreateEvent extends Component {
               })
             );
           }}
-          value={this.state.values.description}
+          ref={e => (this.descriptionField = e)}
         />
         <h3>Date</h3>
         <div>
@@ -99,10 +156,12 @@ export default class CreateEvent extends Component {
             style={{ marginBottom: 10 }}
             onChange={date => {
               this.setState(
-                update(this.state, { values: { date: { $set: date } } })
+                update(this.state, {
+                  values: { date: { $set: date.valueOf() } }
+                })
               );
             }}
-            value={this.state.values.date}
+            ref={e => (this.dateField = e)}
           />
         </div>
         <h3>Involved People</h3>
@@ -115,7 +174,7 @@ export default class CreateEvent extends Component {
               })
             );
           }}
-          values={this.state.values.involvedPeople}
+          ref={e => (this.peopleField = e)}
         />
         <p>
           Only people involved will see this event in their feed and receive
@@ -131,7 +190,7 @@ export default class CreateEvent extends Component {
               update(this.state, { values: { notify: { $set: e } } })
             );
           }}
-          value={this.state.values.notify}
+          ref={e => (this.notifyField = e)}
         >
           <Select.Option key={-1} value={-1}>
             Never
@@ -160,29 +219,28 @@ export default class CreateEvent extends Component {
               update(this.state, { values: { autoComplete: { $set: value } } })
             );
           }}
-          checked={this.state.values.autoComplete}
+          ref={e => (this.autoCompleteField = e)}
         />
         <p>
           Automatically set this event to be completed after the date passes.
         </p>
-        {this.state.mode === "edit" && (
-          <div>
-            <h3>Marked as completed</h3>
-            <Switch
-              style={{ marginBottom: 10 }}
-              onChange={value => {
-                this.setState(
-                  update(this.state, {
-                    values: { markedAsCompleted: { $set: value } }
-                  })
-                );
-              }}
-              checked={this.state.values.markedAsCompleted}
-            />
-          </div>
-        )}
         <br />
         <div style={{ textAlign: "right" }}>
+          <span
+            style={{
+              display: this.state.mode === "edit" ? "inline-block" : "none",
+              marginRight: 10
+            }}
+          >
+            <Popconfirm
+              title="Are you sure you want to delete this event?"
+              onConfirm={this.handleDelete.bind(this)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button type="danger">Delete</Button>
+            </Popconfirm>
+          </span>
           <Button
             type="primary"
             loading={this.state.submitted}

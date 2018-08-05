@@ -25,7 +25,6 @@ export default class UserSelector extends Component {
       const fetchID = this.lastFetchID;
       this.setState({ fetching: true,data:[] });
       Fetch.searchUserByEmail(val, 5).then(users => {
-        console.log(users);
         if (fetchID !== this.lastFetchID) return;
         this.setState({
           data: users || [],

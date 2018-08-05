@@ -95,6 +95,11 @@ export class ArrayUtils {
   static exists(array, item) {
     return array.indexOf(item) !== -1;
   }
+
+  static existsIf(array, predicate) {
+    return ArrayUtils.indexOf(array, predicate) !== -1;
+  }
+
   /**
    * Removes a predetermined item
    * @static
@@ -236,4 +241,19 @@ export class ObjectUtils {
 
     return ObjectUtils.mergeDeep(target, ...sources);
   }
+
+  static shallowEqual(a, b) {
+    for(var key in a) {
+        if(!(key in b) || a[key] !== b[key]) {
+            return false;
+        }
+    }
+    for(var key in b) {
+        if(!(key in a) || a[key] !== b[key]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 }

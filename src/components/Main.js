@@ -35,7 +35,7 @@ export default class Main extends Component {
       visible: false, // Whether the add project modal is currently visible
       key: 0 // Tells React when to redraw the modal
     },
-    useUpdateLoop: true, // An update loop is used to periodically pull data from the database and update the UI. To disable it, set this to false
+    useUpdateLoop: false, // An update loop is used to periodically pull data from the database and update the UI. To disable it, set this to false
     updateLoopSleepTime: 75, // The coefficent of the time to wait between each update. Higher means better performance at the cost of a slower update rate
     updateLoopSleeptimeMaximum: 10000, // the maximum time to wait between each update.
     offline: false // Whether the app is currently offline
@@ -117,7 +117,6 @@ export default class Main extends Component {
       .database()
       .ref(".info/connected")
       .on("value", snapshot => {
-        console.log(snapshot.val());
         this.setState({ offline: !snapshot.val() });
       });
   }

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Select, Icon } from "antd";
 import User from "../classes/User";
 import Project from "../classes/Project";
+import update from "immutability-helper";
 
 export default class MemberGroupSelector extends Component {
   static defaultProps = {
@@ -14,6 +15,10 @@ export default class MemberGroupSelector extends Component {
     members: [],
     values: []
   };
+
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
 
   componentWillReceiveProps(props) {
     if (!props.project) return;
@@ -35,6 +40,12 @@ export default class MemberGroupSelector extends Component {
         });
       }
     });
+  }
+
+  setValues(values) {
+    this.componentWillReceiveProps(
+      update(this.props, { values: { $set: values } })
+    );
   }
 
   async fetchUserInfo(members) {

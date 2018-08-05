@@ -53,9 +53,6 @@ export default class FileUpload extends Component {
                 }
                 this.state.project.addFile(file, this.updateFiles.bind(this));
               }}
-              onChange={info => {
-                console.log(info);
-              }}
               fileList={[]}
             >
               <p className="ant-upload-drag-icon">

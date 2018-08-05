@@ -6,6 +6,7 @@ import CreateEvent from "../forms/CreateEvent";
 import TimelineItem from "../components/TimelineItem";
 import Project from "../classes/Project";
 import update from "immutability-helper";
+import { ObjectUtils } from "../classes/Utils";
 
 export default class TIMELINE extends Component {
   static defaultProps = {
@@ -19,6 +20,11 @@ export default class TIMELINE extends Component {
     eventCreatorKey: 0,
     events: []
   };
+
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
   componentWillReceiveProps(props) {
     this.setState({
       user: props.user,
@@ -26,6 +32,22 @@ export default class TIMELINE extends Component {
       events: props.project.getEventsInDateOrder()
     });
   }
+
+  shouldComponentUpdate(props, state) {
+    if (this.state.eventCreatorVisible !== state.eventCreatorVisible)
+      return true;
+    if (this.state.eventCreatorKey !== this.state.eventCreatorKey) return true;
+    if (this.state.project !== state.project) return true;
+    if (this.state.user !== state.user) return true;
+    if (!Project.equal(props.project, this.state.project)) return true;
+    if (
+      JSON.stringify(props.project.getEventsInDateOrder()) !==
+      JSON.stringify(this.state.project.events)
+    )
+      return true;
+    return false;
+  }
+
   onExtrasButtonPress() {
     this.setState({ eventCreatorVisible: true });
   }
@@ -35,10 +57,11 @@ export default class TIMELINE extends Component {
         {this.state.events && !!this.state.events.length ? (
           <Timeline style={{ maxWidth: 300, textAlign: "left" }}>
             {(() => {
-              let events = this.state.events.map(item => ({
+              let events = this.state.events.map((item, index) => ({
                 date: item.date,
                 item,
-                type: "card"
+                type: "card",
+                index
               }));
               let dateNow = Date.now();
               events.splice(
@@ -47,9 +70,7 @@ export default class TIMELINE extends Component {
                 { date: dateNow, item: { name: "Today" }, type: "marker" }
               );
               return events.map((data, index) => (
-                <Timeline.Item
-                  key={data.item.name + (data.item.uid || "") + index}
-                >
+                <Timeline.Item key={data.item.uid + index}>
                   {(() => {
                     switch (data.type) {
                       case "card":
@@ -59,7 +80,7 @@ export default class TIMELINE extends Component {
                               this.setState(
                                 update(this.state, {
                                   events: {
-                                    [index]: {
+                                    [data.index]: {
                                       $merge: { markedAsCompleted: true }
                                     }
                                   }
@@ -72,11 +93,10 @@ export default class TIMELINE extends Component {
                                 })
                               );
                             }}
-                            eventID={data.item.uid}
-                            projectID={this.state.project.projectID}
+                            event={data.item}
+                            project={this.state.project}
                           />
                         );
-                        break;
                       case "marker":
                         return (
                           <div>

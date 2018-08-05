@@ -7,6 +7,7 @@ export default class MEMBERS extends Component {
     user: {},
     project: {}
   };
+  
   componentWillReceiveProps(props) {
     this.setState({
       user: props.user,
@@ -18,16 +19,13 @@ export default class MEMBERS extends Component {
       <div>
         {this.state.project ? (
           <div>
-            {(() => {
-              this.state.project.members = this.state.project.members || [];
-              return this.state.project.members.map((member, index) => (
-                <MemberDisplay
-                  member={member}
-                  project={this.state.project}
-                  key={member.uid}
-                />
-              ));
-            })()}
+            {(this.state.project.members || []).map((member, index) => (
+              <MemberDisplay
+                member={member}
+                project={this.state.project}
+                key={JSON.stringify(member)}
+              />
+            ))}
           </div>
         ) : (
           ""

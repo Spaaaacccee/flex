@@ -54,7 +54,7 @@ export default class SignIn extends Component {
             ],
             callbacks: {
               signInSuccessWithAuthResult: (authResult, redirectUrl) => {
-                console.log(authResult);
+
                 Fire.authenticateGoogleAPIs(() => {
                   this.handleLogIn(authResult.user);
                 });

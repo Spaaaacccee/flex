@@ -126,7 +126,6 @@ export default class Settings extends Component {
             <RoleEditor
               values={this.state.values}
               onChange={newValues => {
-                console.log(newValues);
                 this.setState({ values: newValues });
               }}
             />

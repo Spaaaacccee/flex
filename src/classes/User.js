@@ -14,6 +14,23 @@ import Messages from "./Messages";
  * @class User
  */
 export default class User {
+
+  /**
+   * Checks whether two users are exactly the same
+   * @static
+   * @param  {User} a
+   * @param  {User} b
+   * @return {Boolean}
+   * @memberof Project
+   */
+  static equal(a, b) {
+    if(!(a && b)) return false;
+    let inequality = 0;
+    inequality += a.uid !== b.uid;
+    inequality += a.lastUpdatedTimestamp !== b.lastUpdatedTimestamp;
+    return !inequality;
+  }
+
   /**
    * Gets the user that is signed in.
    *

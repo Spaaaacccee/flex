@@ -34,7 +34,7 @@ export default class Project {
    * @memberof Project
    */
   static equal(a, b) {
-    if(!(a && b)) return false;
+    if (!(a && b)) return false;
     let inequality = 0;
     inequality += a.projectID !== b.projectID;
     inequality += a.lastUpdatedTimestamp !== b.lastUpdatedTimestamp;
@@ -338,7 +338,7 @@ export default class Project {
 
   /**
    * Add an event to this project
-   * @param  {any} event
+   * @param  {TimelineEvent} event
    * @return {void}
    * @memberof Project
    */
@@ -346,6 +346,18 @@ export default class Project {
     await this.transaction(project => {
       project.events = project.events || [];
       project.events.push(event);
+    });
+  }
+
+  /**
+   * Deletes an event
+   * @param  {String} uid 
+   * @return {void}
+   * @memberof Project
+   */
+  async deleteEvent(uid) {
+    await this.transaction(project => {
+      project.events = (project.events || []).filter(item => item.uid !== uid);
     });
   }
 

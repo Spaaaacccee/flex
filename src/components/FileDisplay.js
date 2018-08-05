@@ -9,6 +9,10 @@ class FileDisplay extends Component {
     project: {},
     file: {}
   };
+  
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
 
   componentWillReceiveProps(props) {
     this.setState({ project: props.project, file: props.file });

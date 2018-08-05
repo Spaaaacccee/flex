@@ -10,6 +10,11 @@ export default class UserGroupDisplay extends Component {
     project: {},
     style: {}
   };
+
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
   componentWillReceiveProps(props) {
     this.setState({style:props.style})
     let people = props.people || {};
