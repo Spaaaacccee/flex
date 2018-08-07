@@ -29,7 +29,7 @@ export default class Role {
     this.uid = $.id().generateUID();
     this.name = name;
     // Generate a random colour for this role
-    this.color = new HSL($.id.generateInt(0, 360), 80, 50);
+    this.color = new HSL($.id().generateInt(0, 360), 80, 50);
   }
 }
 

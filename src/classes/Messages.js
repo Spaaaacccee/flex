@@ -87,26 +87,26 @@ export default class Messages extends EventEmitter {
     return true;
   }
 
+  async setData(id, newData) {
+    await Fetch.getMessagesReference(this.uid).child('messages')
+      .child(id)
+      .set(newData);
+  }
+
   async addMessage(message) {
-    await this.transaction(obj => {
-      obj.messages = obj.messages || {};
-      obj.messages[message.uid] = message;
-    });
+    await this.setData(message.uid, message);
+    this.messages[message.uid] = message;
   }
 
   async deleteMessage(messageID) {
-    await this.transaction(obj => {
-      obj.messages = obj.messages || {};
-      obj.messages[messageID] = null;
-      delete obj.messages[messageID];
-    });
+    await this.setData(messageID, null);
+    this.messages[messageID] = null;
+    delete this.messages[messageID];
   }
 
   async setMessage(messageID, message) {
-    await this.transaction(obj => {
-      obj.messages = obj.messages || {};
-      obj.messages[messageID] = Object.assign(message, { uid: messageID });
-    });
+    await this.setData(messageID, message);
+    this.messages[messageID] = Object.assign(message, { uid: messageID });
   }
 
   startListening() {
@@ -150,7 +150,7 @@ export class Message {
    * @type {String}
    * @memberof Message
    */
-  uid =$.id().generateUID();
+  uid = $.id().generateUID();
   /**
    * The user ID of the user who sent this message
    * @type {String}

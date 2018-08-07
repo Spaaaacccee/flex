@@ -18,6 +18,10 @@ import User from "../classes/User";
 import Project from "../classes/Project";
 
 class MESSAGES extends Component {
+  /**
+   * @type {{messenger:Messages}}
+   * @memberof MESSAGES
+   */
   state = {
     project: {},
     user: {},
@@ -25,7 +29,9 @@ class MESSAGES extends Component {
     messenger: null,
     messageStatus: {},
     orderedMessages: [],
-    cachedUsers: {}
+    cachedUsers: {},
+    consoleStatus: "ready",
+    consoleEditTarget: null
   };
 
   receivedMessages = {};
@@ -42,15 +48,16 @@ class MESSAGES extends Component {
       this.state.messenger.stopListening();
     }
     this.receivedMessages = {};
+    console.log("received props");
     this.setState({ messenger: null, orderedMessages: [] }, () => {
       Messages.get(props.project.messengerID || props.project.projectID).then(
         messenger => {
           if (messenger) {
             this.setState({ messenger });
             this.receivedMessages = Object.assign({}, messenger.messages);
-            messenger.on("message", x => this.handleReceive(x));
-            messenger.on("edit", x => this.handleEdit(x));
-            messenger.on("remove", x => this.handleDelete(x));
+            messenger.on("message", x => this.handleOnReceive(x));
+            messenger.on("edit", x => this.handleOnEdit(x));
+            messenger.on("delete", x => this.handleOnDelete(x.uid));
             messenger.startListening();
             this.setState({ cachedUsers: { [props.user.uid]: props.user } });
             this.cacheUsers();
@@ -78,12 +85,13 @@ class MESSAGES extends Component {
     this.props.passMessage("scroll-bottom");
   }
 
-  handleDelete(msg) {
-    if (this.receivedMessages[msg.uid]) {
-      delete this.receivedMessages[msg.uid];
+  handleOnDelete(msgID) {
+    console.log("got delete event");
+    if (this.receivedMessages[msgID]) {
+      delete this.receivedMessages[msgID];
       const i = $
         .array(this.state.orderedMessages)
-        .indexOf(x => x.uid === msg.uid);
+        .indexOf(x => x.uid === msgID);
       if (i !== -1) {
         this.setState(
           update(this.state, {
@@ -94,23 +102,25 @@ class MESSAGES extends Component {
     }
   }
 
-  handleEdit(msg) {
+  handleOnEdit(msg) {
+    console.log("got edit event");
     if (this.receivedMessages[msg.uid]) {
       this.receivedMessages[msg.uid] = msg;
-      const i = $.array(this.state.orderedMessages).indexOf(
-        x => x.uid === msg.uid
-      );
+      const i = $
+        .array(this.state.orderedMessages)
+        .indexOf(x => x.uid === msg.uid);
       if (i !== -1) {
         this.setState(
           update(this.state, {
-            orderedMessages: { [i]: { $set: { msg } } }
+            orderedMessages: { $splice: [[i, 1, msg]] }
           })
         );
       }
     }
   }
 
-  handleReceive(msg) {
+  handleOnReceive(msg) {
+    console.log("got receive event");
     if (!this.receivedMessages[msg.uid]) {
       this.receivedMessages[msg.uid] = msg;
       this.setState(
@@ -121,6 +131,47 @@ class MESSAGES extends Component {
         }
       );
     }
+  }
+
+  handleDelete(msgID) {
+    this.setState(
+      update(this.state, { messageStatus: { [msgID]: { $set: "processing" } } })
+    );
+    this.state.messenger.deleteMessage(msgID).then(() => {
+      this.handleOnDelete(msgID);
+    });
+  }
+
+  handleEdit() {
+    this.inputElement.focus();
+    const maxChars = 2000;
+    let val = this.state.inputValue.trim();
+    if (!val) return;
+    if (val.length > maxChars) {
+      message.warn(
+        `We limited your message to ${maxChars} characters. We have this restriction for other users as well.`
+      );
+      val = val.substring(0, maxChars);
+    }
+    let target = Object.assign({}, this.state.consoleEditTarget);
+    this.setState(
+      update(this.state, {
+        inputValue: { $set: "" },
+        consoleStatus: { $set: "ready" },
+        messageStatus: { [target.uid]: { $set: "processing" } }
+      })
+    );
+    let res = update(target, {
+      content: { bodyText: { $set: val } }
+    });
+    this.state.messenger.setMessage(target.uid, res).then(() => {
+      this.setState(
+        update(this.state, {
+          messageStatus: { [target.uid]: { $set: "sent" } }
+        })
+      );
+      this.handleOnEdit(res);
+    });
   }
 
   handleSend() {
@@ -143,7 +194,7 @@ class MESSAGES extends Component {
       this.setState(
         update(this.state, {
           messageStatus: {
-            $merge: { [msg.uid]: "sending" }
+            $merge: { [msg.uid]: "processing" }
           },
           orderedMessages: { $push: [msg] },
           inputValue: { $set: "" }
@@ -163,10 +214,13 @@ class MESSAGES extends Component {
   }
 
   cacheItems() {
-    let orderedMessages = $.object(this.receivedMessages).values().sort(
-      (a, b) =>
-        a.timeSent === b.timeSent ? 0 : a.timeSent > b.timeSent ? 1 : -1
-    );
+    let orderedMessages = $
+      .object(this.receivedMessages)
+      .values()
+      .sort(
+        (a, b) =>
+          a.timeSent === b.timeSent ? 0 : a.timeSent > b.timeSent ? 1 : -1
+      );
     if (orderedMessages.length) {
       this.setState({ orderedMessages }, () => {
         this.scrollBottom();
@@ -199,41 +253,72 @@ class MESSAGES extends Component {
               {this.state.orderedMessages.map((item, index) => (
                 <List.Item
                   key={item.uid + index}
-                  style={{ textAlign: "left" }}
+                  style={Object.assign(
+                    { textAlign: "left" },
+                    this.state.messageStatus[item.uid] === "processing"
+                      ? { opacity: 0.65, pointerEvents: "none" }
+                      : {}
+                  )}
                   extra={[
-                    <Popover
-                      placement="topRight"
-                      trigger="click"
-                      key={0}
-                      content={
-                        <div>
-                          <p>
-                            <a>
-                              <Icon type="message" />
-                              {" Quote"}
-                            </a>
-                          </p>
-                          <p>
-                            <a>
-                              <Icon type="edit" />
-                              {" Edit"}
-                            </a>
-                          </p>
-                          <Popconfirm
-                            title="Delete this message?"
-                            okText="Yes"
-                            cancelText="No"
-                          >
-                            <a>
-                              <Icon type="delete" />
-                              {" Delete"}
-                            </a>
-                          </Popconfirm>
-                        </div>
-                      }
-                    >
-                      <Icon type="ellipsis" style={{ cursor: "pointer" }} />
-                    </Popover>
+                    (() => {
+                      let ref;
+                      return (
+                        <Popover
+                          ref={e => (ref = e)}
+                          placement="topRight"
+                          trigger="click"
+                          key={0}
+                          content={
+                            <div>
+                              <p>
+                                <a>
+                                  <Icon type="message" />
+                                  {" Quote"}
+                                </a>
+                              </p>
+                              {item.sender === this.state.user.uid && (
+                                <div>
+                                  <p>
+                                    <a
+                                      onClick={() => {
+                                        this.setState({
+                                          consoleStatus: "editing",
+                                          consoleEditTarget: item,
+                                          inputValue: item.content.bodyText
+                                        });
+                                        this.inputElement.focus();
+                                        ref.tooltip.setState({
+                                          visible: false
+                                        });
+                                      }}
+                                    >
+                                      <Icon type="edit" />
+                                      {" Edit"}
+                                    </a>
+                                  </p>
+                                  <Popconfirm
+                                    placement="topRight"
+                                    title="Delete this message?"
+                                    okText="Yes"
+                                    cancelText="No"
+                                    onConfirm={() => {
+                                      this.handleDelete(item.uid);
+                                    }}
+                                  >
+                                    <a>
+                                      <Icon type="delete" />
+                                      {" Delete"}
+                                    </a>
+                                  </Popconfirm>
+                                </div>
+                              )}
+                            </div>
+                          }
+                        >
+                          <Icon type="ellipsis" style={{ cursor: "pointer" }} />
+                        </Popover>
+                      );
+                    })()
                   ]}
                 >
                   <List.Item.Meta
@@ -254,7 +339,7 @@ class MESSAGES extends Component {
                   >
                     {item.content.bodyText}
                   </pre>{" "}
-                  {this.state.messageStatus[item.uid] === "sending" && (
+                  {this.state.messageStatus[item.uid] === "processing" && (
                     <Icon type="loading" />
                   )}{" "}
                   {this.state.messageStatus[item.uid] === "sent" && (
@@ -289,13 +374,23 @@ class MESSAGES extends Component {
           style={{ opacity: this.state.messenger ? 1 : 0 }}
         >
           <div>
-            <Button
-              shape="circle"
-              icon="paper-clip"
-              style={{ flex: "none" }}
-              disabled={!this.state.messenger}
-            />
+            {this.state.consoleStatus !== "editing" && (
+              <Button
+                shape="circle"
+                icon="paper-clip"
+                style={{ flex: "none" }}
+                disabled={!this.state.messenger}
+              />
+            )}
             <Input.TextArea
+              onKeyUp={e => {
+                if (
+                  e.keyCode === 27 &&
+                  this.state.consoleStatus === "editing"
+                ) {
+                  this.setState({ consoleStatus: "ready", inputValue: "" });
+                }
+              }}
               ref={e => (this.inputElement = e)}
               value={this.state.inputValue}
               autosize={{ minRows: 1, maxRows: 5 }}
@@ -307,8 +402,21 @@ class MESSAGES extends Component {
               }}
               onPressEnter={(e => {
                 console.log(e);
+                e.preventDefault();
                 if (e.shiftKey) {
-                  this.handleSend();
+                  this.setState(
+                    update(this.state, {
+                      inputValue: {
+                        $set: $.string(e.target.value + "\n").trimLeft()
+                      }
+                    })
+                  );
+                } else {
+                  if (this.state.consoleStatus === "editing") {
+                    this.handleEdit();
+                  } else {
+                    this.handleSend();
+                  }
                 }
               }).bind(this)}
               placeholder={
@@ -321,15 +429,26 @@ class MESSAGES extends Component {
               disabled={!this.state.messenger}
             />
             <Button
+              icon={this.state.consoleStatus === "editing" ? "check" : null}
               style={{ flex: "none" }}
-              onClick={() => {
-                this.handleSend();
-              }}
+              onClick={(this.state.consoleStatus === "editing"
+                ? this.handleEdit
+                : this.handleSend
+              ).bind(this)}
               type="primary"
               disabled={!this.state.messenger || !this.state.inputValue}
             >
-              Send
+              {this.state.consoleStatus === "editing" ? "" : "Send"}
             </Button>
+            {this.state.consoleStatus === "editing" && (
+              <Button
+                icon="close"
+                style={{ flex: "none", marginLeft: 10 }}
+                onClick={() => {
+                  this.setState({ consoleStatus: "ready", inputValue: "" });
+                }}
+              />
+            )}
           </div>
         </div>
       </div>

@@ -25,10 +25,11 @@ export class EventEmitter {
    */
   off(eventName, action) {
     this.all[eventName] = this.all[eventName] || [];
-    if (action) {
+    if (action && eventName) {
       this.all[eventName] = this.all[eventName].filter(item => item !== action);
     } else {
-      this.all[eventName] = [];
+      if(eventName) this.all[eventName] = [];
+      else this.all = {};
     }
   }
 
@@ -47,14 +48,9 @@ export class EventEmitter {
   }
 }
 
-/**
- * Utilities for generating IDs and random values
- * @export
- * @class IDGen
- */
 class IDGen {
-  static UIDlength = 28;
-  static UIDChars =
+  UIDlength = 28;
+  UIDChars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
   /**
    * Generates a random ID
