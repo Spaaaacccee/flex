@@ -277,41 +277,39 @@ class MESSAGES extends Component {
                                 </a>
                               </p>
                               {item.sender === this.state.user.uid && (
-                                <div>
-                                  <p>
-                                    <a
-                                      onClick={() => {
-                                        this.setState({
-                                          consoleStatus: "editing",
-                                          consoleEditTarget: item,
-                                          inputValue: item.content.bodyText
-                                        });
-                                        this.inputElement.focus();
-                                        ref.tooltip.setState({
-                                          visible: false
-                                        });
-                                      }}
-                                    >
-                                      <Icon type="edit" />
-                                      {" Edit"}
-                                    </a>
-                                  </p>
-                                  <Popconfirm
-                                    placement="topRight"
-                                    title="Delete this message?"
-                                    okText="Yes"
-                                    cancelText="No"
-                                    onConfirm={() => {
-                                      this.handleDelete(item.uid);
+                                <p>
+                                  <a
+                                    onClick={() => {
+                                      this.setState({
+                                        consoleStatus: "editing",
+                                        consoleEditTarget: item,
+                                        inputValue: item.content.bodyText
+                                      });
+                                      this.inputElement.focus();
+                                      ref.tooltip.setState({
+                                        visible: false
+                                      });
                                     }}
                                   >
-                                    <a>
-                                      <Icon type="delete" />
-                                      {" Delete"}
-                                    </a>
-                                  </Popconfirm>
-                                </div>
+                                    <Icon type="edit" />
+                                    {" Edit"}
+                                  </a>
+                                </p>
                               )}
+                              <Popconfirm
+                                placement="topRight"
+                                title="Delete this message?"
+                                okText="Yes"
+                                cancelText="No"
+                                onConfirm={() => {
+                                  this.handleDelete(item.uid);
+                                }}
+                              >
+                                <a>
+                                  <Icon type="delete" />
+                                  {" Delete"}
+                                </a>
+                              </Popconfirm>
                             </div>
                           }
                         >
