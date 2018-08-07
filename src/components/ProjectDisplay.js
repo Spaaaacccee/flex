@@ -9,9 +9,6 @@ import ProjectIcon from "./ProjectIcon";
  * @extends Component
  */
 export default class ProjectDisplay extends Component {
-  static defaultProps = {
-    project: {}
-  };
   state = {
     project: {}
   };

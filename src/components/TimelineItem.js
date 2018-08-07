@@ -5,7 +5,6 @@ import UserGroupDisplay from "./UserGroupDisplay";
 import update from "immutability-helper";
 import CreateEvent from "../forms/CreateEvent";
 import TimelineEvent from "../classes/TimelineEvent";
-import { ObjectUtils } from "../classes/Utils";
 
 /**
  * Displays an timeline event as a card

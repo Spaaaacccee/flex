@@ -5,7 +5,7 @@ import Role from "./Role";
 import Member from "./Member";
 
 import { message } from "antd";
-import { ArrayUtils } from "./Utils";
+import $ from "./Utils";
 import Messages from "./Messages";
 
 /**
@@ -205,7 +205,7 @@ export default class User {
   async rejectInvite(projectID) {
     await this.transaction(user => {
       user.pendingInvites = user.pendingInvites || [];
-      ArrayUtils.remove(user.pendingInvites, projectID);
+      $.array(user.pendingInvites).remove(projectID);
     });
   }
 
@@ -220,7 +220,7 @@ export default class User {
       // Conditionally initialise pendingInvites with an empty array so it is not undefined.
       user.pendingInvites = user.pendingInvites || [];
       // Test whether the current user already has an invite for the same project.
-      if (ArrayUtils.exists(user.pendingInvites, projectID)) {
+      if ($.array(user.pendingInvites).exists(projectID)) {
         // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
         if (user instanceof User) {
           message.error(
@@ -234,7 +234,7 @@ export default class User {
       // Conditionally initialise joinedProjects with an empty array so it is not undefined.
       user.joinedProjects = user.joinedProjects || [];
       // Test whether the current user already has joined the project.
-      if (ArrayUtils.exists(user.joinedProjects, projectID)) {
+      if ($.array(user.joinedProjects).exists(projectID)) {
         // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
         if (user instanceof User) {
           message.error(
@@ -249,7 +249,7 @@ export default class User {
       // Conditionally initialise projects with an empty array so it is not undefined.
       user.projects = user.projects || [];
       // Test whether the current user owns the project.
-      if (ArrayUtils.exists(user.projects, projectID)) {
+      if ($.array(user.projects).exists(projectID)) {
         // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
         if (user instanceof User) {
           message.error(`Don't send an invite to yourself!`);
@@ -276,7 +276,7 @@ export default class User {
       // Check if pendingInvites is not empty and contains the specified project ID.
       if (
         user.pendingInvites &&
-        ArrayUtils.exists(user.pendingInvites, projectID)
+        $.array(user.pendingInvites).exists(projectID)
       ) {
         // Initialise required properties so they're not undefined.
         user.joinedProjects = user.joinedProjects || [];
@@ -284,14 +284,14 @@ export default class User {
         // Check if the user has already joined, or is part of, this project. This check is redundant as adding an invite already has a check for the same thing but this is here just in case.
         if (
           !(
-            ArrayUtils.exists(user.projects, projectID) ||
-            ArrayUtils.exists(user.joinedProjects, projectID)
+            $.array(user.projects).exists(projectID) ||
+            $.array(user.joinedProjects).exists(projectID)
           )
         ) {
           // Add the project to joinedProjects
           user.joinedProjects.push(projectID);
           // Remove the project invite
-          ArrayUtils.remove(user.pendingInvites, projectID);
+          $.array(user.pendingInvites).remove(projectID)
           // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
           if (user instanceof User) {
             Project.get(projectID).then(project => {
@@ -340,16 +340,13 @@ export default class User {
   }
 
   async leaveProject(projectID) {
-    if (ArrayUtils.exists(this.joinedProjects, projectID)) {
+    if ($.array(this.joinedProjects).exists(projectID)) {
       this.transaction(user => {
-        ArrayUtils.remove(user.joinedProjects, projectID);
+        $.array(user.joinedProjects).remove(projectID)
         if (user instanceof User) {
           Project.get(projectID).then(project => {
             project.setMembers(
-              ArrayUtils.removeIf(
-                project.members,
-                (item, index) => item.uid === user.uid
-              )
+              $.array(project.members).removeIf((item, index) => item.uid === user.uid)
             );
             message.success(`Successfully left ${project.name}`);
           });

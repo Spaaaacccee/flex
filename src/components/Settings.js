@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 import { Tabs, Input, Button, Modal, List } from "antd";
 import Project from "../classes/Project";
-
-import { ObjectUtils } from "../classes/Utils";
 import Role from "../classes/Role";
 import RoleEditor from "./RoleEditor";
 import formatJSON from "format-json-pretty";
@@ -39,7 +37,7 @@ export default class Settings extends Component {
       this.setState(
         {
           sourceProject: props.project,
-          saving:false,
+          saving: false,
           visible: true
         },
         this.resetToMatchProject
@@ -53,7 +51,7 @@ export default class Settings extends Component {
     if (props.visible !== this.state.visible) return true;
     if (this.state.visible !== state.visible) return true;
     if (this.state.values !== state.values) return true;
-    if(this.state.saving !== state.saving) return true;
+    if (this.state.saving !== state.saving) return true;
     return false;
   }
 
@@ -110,8 +108,8 @@ export default class Settings extends Component {
               value={this.state.values.general.name}
               onChange={e => {
                 this.setState(
-                  ObjectUtils.mergeDeep(this.state, {
-                    values: { general: { name: e.target.value } }
+                  update(this.state, {
+                    values: { general: { name: { $set: e.target.value } } }
                   })
                 );
               }}
@@ -124,8 +122,10 @@ export default class Settings extends Component {
               value={this.state.values.general.description}
               onChange={e => {
                 this.setState(
-                  ObjectUtils.mergeDeep(this.state, {
-                    values: { general: { description: e.target.value } }
+                  update(this.state, {
+                    values: {
+                      general: { description: { $set: e.target.value } }
+                    }
                   })
                 );
               }}

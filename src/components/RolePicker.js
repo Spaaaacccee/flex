@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Tag, Select, Icon } from "antd";
-import { ArrayUtils } from "../classes/Utils";
+import $ from "../classes/Utils";
 import "./RolePicker.css";
 
 /**
@@ -81,9 +81,9 @@ export default class RolePicker extends Component {
               }}
               style={{
                 width: 85.49,
-                marginTop:1,
+                marginTop: 1,
                 marginBottom: 8,
-                marginRight:8
+                marginRight: 8
               }}
               onChange={item => {
                 this.setState(
@@ -109,25 +109,28 @@ export default class RolePicker extends Component {
                 this.setState({ inputVisible: false, selectorIsOpen: false });
               }}
             >
-              {ArrayUtils.where(
-                this.state.availableRoles,
-                item =>
-                  !this.state.roles.find(compItem => compItem.uid === item.uid)
-              ).map((item, index) => (
-                <Select.Option
-                  key={item.uid}
-                  value={item.uid}
-                  style={{
-                    color: `hsl(${item.color.hue},${item.color.saturation}%,${
-                      item.color.lightness
-                    }%)`
-                  }}
-                >
-                  {item.name.slice(0, 15) === item.name
-                    ? item.name
-                    : `${item.name.slice(0, 15)}...`}
-                </Select.Option>
-              ))}
+              {this.state.availableRoles
+                .filter(
+                  item =>
+                    !this.state.roles.find(
+                      compItem => compItem.uid === item.uid
+                    )
+                )
+                .map((item, index) => (
+                  <Select.Option
+                    key={item.uid}
+                    value={item.uid}
+                    style={{
+                      color: `hsl(${item.color.hue},${item.color.saturation}%,${
+                        item.color.lightness
+                      }%)`
+                    }}
+                  >
+                    {item.name.slice(0, 15) === item.name
+                      ? item.name
+                      : `${item.name.slice(0, 15)}...`}
+                  </Select.Option>
+                ))}
             </Select>
           )}
         </span>

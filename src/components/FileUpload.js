@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Upload, Icon, message, Button, List, Progress } from "antd";
 import update from "immutability-helper";
 import Document, { UploadJob } from "../classes/Document";
-import { IDGen } from "../classes/Utils";
 
 export default class FileUpload extends Component {
   state = {

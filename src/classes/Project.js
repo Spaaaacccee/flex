@@ -1,12 +1,12 @@
 import CryptoJS from "crypto-js";
 
+import $ from "./Utils";
 import Role from "./Role";
 import { RoleList } from "./Role";
 import Member from "./Member";
 import { MemberList } from "./Member";
 import TimelineEvent from "./TimelineEvent";
 import { message } from "antd";
-import { IDGen, ArrayUtils } from "./Utils";
 import update from "immutability-helper";
 import Fetch from "./Fetch";
 import Document, {
@@ -117,7 +117,7 @@ export default class Project {
    * @type {String}
    * @memberof Project
    */
-  projectID = IDGen.generateUID();
+  projectID = $.id().generateUID();
 
   /**
    * A user-friendly display name for the project
@@ -351,7 +351,7 @@ export default class Project {
 
   /**
    * Deletes an event
-   * @param  {String} uid 
+   * @param  {String} uid
    * @return {void}
    * @memberof Project
    */
@@ -376,7 +376,7 @@ export default class Project {
    * @memberof Project
    */
   addFile(file, callback) {
-    const jobID = IDGen.generateUID();
+    const jobID = $.id().generateUID();
 
     UploadJob.Jobs.setJob(
       new UploadJob({
@@ -405,16 +405,16 @@ export default class Project {
 
         await this.transaction(project => {
           project.files = project.files || [];
-          let existingArchive = ArrayUtils.indexOf(
-            project.files,
-            item => item.name === meta.name && item.type === meta.type
-          );
+          let existingArchive = $
+            .array(project.files)
+            .indexOf(
+              item => item.name === meta.name && item.type === meta.type
+            );
           if (existingArchive !== -1) {
             let existingFile =
-              ArrayUtils.indexOf(
-                project.files[existingArchive].files,
-                item => item.hash === meta.hash
-              ) !== -1;
+              $
+                .array(project.files[existingArchive].files)
+                .indexOf(item => item.hash === meta.hash) !== -1;
             if (existingFile) {
               if (project instanceof Project)
                 message.error(`A file that's exactly the same already exists`);
@@ -506,7 +506,7 @@ export default class Project {
       project.files = project.files || [];
       project.files.forEach((archive, i) => {
         archive.files = archive.files || [];
-        let j = ArrayUtils.indexOf(archive.files, item => item.uid === fileID);
+        let j = $.array(archive.files).indexOf(item => item.uid === fileID);
         if (j !== -1) {
           project.files[i].files[j] = meta;
         }

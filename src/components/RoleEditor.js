@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { ObjectUtils } from "../classes/Utils";
 import Role from "../classes/Role";
 import { List, Button, Input, Icon } from "antd";
 import update from "immutability-helper";

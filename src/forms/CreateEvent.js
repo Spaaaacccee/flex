@@ -2,7 +2,6 @@ import TimelineEvent from "../classes/TimelineEvent";
 import update from "immutability-helper";
 import { Input, DatePicker, Button, Switch, Select, Popconfirm } from "antd";
 import React, { Component } from "react";
-import { ObjectUtils } from "../classes/Utils";
 import MemberGroupSelector from "../components/MemberGroupSelector";
 import Project from "../classes/Project";
 import Moment from "moment";

@@ -1,4 +1,4 @@
-import { IDGen, EventEmitter } from "./Utils";
+import $, { EventEmitter } from "./Utils";
 import React, { Component } from "react";
 import Fetch from "./Fetch";
 
@@ -11,8 +11,8 @@ export default class Messages extends EventEmitter {
   /**
    * Gets a message collection, alias to `Fetch.getMessages`
    * @static
-   * @param  {any} collectionID
-   * @return
+   * @param  {String} collectionID
+   * @return {Promise<Messages>}
    * @memberof Messages
    */
   static async get(collectionID) {
@@ -48,7 +48,7 @@ export default class Messages extends EventEmitter {
     }
   }
 
-  uid = IDGen.generateUID();
+  uid = $.id().generateUID();
 
   lastUpdatedTimestamp = Date.now();
 
@@ -60,7 +60,7 @@ export default class Messages extends EventEmitter {
   messages = {};
 
   /**
-   * @param {{<Function>}} operation
+   * @param {{(messages:Messages)=>Void}} operation
    * @return {Promise<Boolean>}
    * @memberof Messages
    */
@@ -88,19 +88,47 @@ export default class Messages extends EventEmitter {
   }
 
   async addMessage(message) {
-    await this.transaction((obj) => {
-      obj.messages = obj.messages || [];
+    await this.transaction(obj => {
+      obj.messages = obj.messages || {};
       obj.messages[message.uid] = message;
+    });
+  }
+
+  async deleteMessage(messageID) {
+    await this.transaction(obj => {
+      obj.messages = obj.messages || {};
+      obj.messages[messageID] = null;
+      delete obj.messages[messageID];
+    });
+  }
+
+  async setMessage(messageID, message) {
+    await this.transaction(obj => {
+      obj.messages = obj.messages || {};
+      obj.messages[messageID] = Object.assign(message, { uid: messageID });
     });
   }
 
   startListening() {
     if (this.uid === undefined) return;
-    Fetch.getMessagesReference(this.uid).child('messages').on("child_added", snapshot => {
+    const ref = Fetch.getMessagesReference(this.uid).child("messages");
+    ref.on("child_added", snapshot => {
       const message = snapshot.val();
       this.messages = this.messages || {};
       this.messages[message.uid] = message;
       this.emit("message", message);
+    });
+    ref.on("child_changed", snapshot => {
+      const message = snapshot.val();
+      this.messages = this.messages || {};
+      this.messages[message.uid] = message;
+      this.emit("edit", message);
+    });
+    ref.on("child_removed", snapshot => {
+      const message = snapshot.val();
+      this.messages[message.uid] = null;
+      delete this.messages[message.uid];
+      this.emit("delete", message);
     });
   }
 
@@ -122,7 +150,7 @@ export class Message {
    * @type {String}
    * @memberof Message
    */
-  uid = IDGen.generateUID();
+  uid =$.id().generateUID();
   /**
    * The user ID of the user who sent this message
    * @type {String}

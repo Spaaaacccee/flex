@@ -1,4 +1,4 @@
-import { IDGen } from "./Utils";
+import $ from "./Utils";
 import Fetch from "./Fetch";
 import { RoleList } from "./Role";
 
@@ -13,7 +13,7 @@ export default class Member {
    * @type {String}
    * @memberof Member
    */
-  uid;
+  uid = $.id().generateUID();
   /**
    * The roles this member should take on
    * @type {RoleList}

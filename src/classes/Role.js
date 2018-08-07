@@ -1,4 +1,4 @@
-import { IDGen, ArrayUtils } from "./Utils";
+import $ from "./Utils";
 import Fetch from "./Fetch";
 
 export default class Role {
@@ -26,10 +26,10 @@ export default class Role {
    * @memberof Role
    */
   constructor(name) {
-    this.uid = IDGen.generateUID();
+    this.uid = $.id().generateUID();
     this.name = name;
     // Generate a random colour for this role
-    this.color = new HSL(IDGen.generateInt(0, 360), 80, 50);
+    this.color = new HSL($.id.generateInt(0, 360), 80, 50);
   }
 }
 
@@ -56,7 +56,7 @@ export class RoleList extends Array {
    * @memberof RoleList
    */
   remove(uid) {
-    ArrayUtils.removeIf(this, (item, index) => item.uid && item.uid === uid);
+    $.array(this).removeIf((item, index) => item.uid && item.uid === uid);
   }
 }
 

@@ -94,7 +94,7 @@ export default class SignIn extends Component {
             />
             <br />
             <Button
-              style={{ boxShadow: "0 5px 20px rgba(107, 107, 107, 0.239)" }}
+              style={{ boxShadow: "0 5px 20px rgba(4, 111, 210, 0.239)" }}
               loading={this.state.loading || Fire.firebase().auth().currentUser}
               type="primary"
               icon="google"

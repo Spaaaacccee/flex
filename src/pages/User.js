@@ -9,63 +9,52 @@ import User from "../classes/User";
 import { Button, Modal, Icon, Popconfirm, Badge } from "antd";
 import { Card } from "antd";
 import Project from "../classes/Project";
-import { ObjectUtils } from "../classes/Utils";
 import ProjectIcon from "../components/ProjectIcon";
 import ProjectInvitation from "../components/ProjectInvitation";
 import ProjectDisplay from "../components/ProjectDisplay";
 import formatJSON from "format-json-pretty";
+import ContextProvider from "../components/ContextProvider";
 
 export default class USER extends Component {
   state = {
-    visible: false,
-    user: undefined,
-    caches: { pendingInvites: [] }
+    user: {}
   };
+
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
   componentWillReceiveProps(props) {
-    this.setState(
-      {
-        project: props.project,
-        user: props.user
-      },
-      () => {
-        if (this.state.user) {
-          if (this.state.user.pendingInvites) {
-            Promise.all(
-              this.state.user.pendingInvites.map(item => Project.get(item))
-            ).then(items => {
-              this.setState(
-                ObjectUtils.mergeDeep(this.state, {
-                  caches: { pendingInvites: items }
-                })
-              );
-            });
-          }
-          if (this.state.user.projects) {
-            Promise.all(
-              this.state.user.projects.map(item => Project.get(item))
-            ).then(items => {
-              this.setState(
-                ObjectUtils.mergeDeep(this.state, {
-                  caches: { projects: items }
-                })
-              );
-            });
-          }
-          if (this.state.user.joinedProjects) {
-            Promise.all(
-              this.state.user.joinedProjects.map(item => Project.get(item))
-            ).then(items => {
-              this.setState(
-                ObjectUtils.mergeDeep(this.state, {
-                  caches: { joinedProjects: items }
-                })
-              );
-            });
-          }
-        }
-      }
+    this.setState({ user: props.user });
+  }
+
+  shouldComponentUpdate(props, state) {
+    if (!User.equal(this.state.user, props.user)) return true;
+    if (!User.equal(this.state.user, state.user)) return true;
+    return false;
+  }
+
+  generateProjectCards(name, notFoundMessage, data, renderComponent) {
+    return (
+      <Card title={name}>
+        <div style={{ display: "flex" }}>
+          {!!data && !!data.length
+            ? data.map((item, index) => (
+                <div style={{ paddingRight: 20, flex: "none" }} key={index}>
+                  <ContextProvider
+                    projectID={item}
+                    userID={this.state.user.uid}
+                  >
+                    {renderComponent(item)}
+                  </ContextProvider>
+                </div>
+              ))
+            : notFoundMessage}
+        </div>
+      </Card>
     );
   }
+
   render() {
     return (
       <div>
@@ -154,76 +143,35 @@ export default class USER extends Component {
               </div>
             </Card>
             <br />
-            <Card title="Projects">
-              <div
-                style={{
-                  display: "flex"
-                }}
-              >
-                {!!this.state.caches.projects &&
-                !!this.state.caches.projects.length
-                  ? this.state.caches.projects.map((item, index) => (
-                      <div
-                        style={{ paddingRight: 20, flex: "none" }}
-                        key={index}
-                      >
-                        <ProjectDisplay project={item} />
-                      </div>
-                    ))
-                  : "You don't have any projects!"}
-              </div>
-            </Card>
+            {this.generateProjectCards(
+              "My Projects",
+              "Create a project by selecting the + icon on the navigation bar.",
+              this.state.user.projects,
+              data => <ProjectDisplay />
+            )}
             <br />
-            <Card title="Joined Projects">
-              <div
-                style={{
-                  display: "flex"
-                }}
-              >
-                {!!this.state.caches.joinedProjects &&
-                !!this.state.caches.joinedProjects.length
-                  ? this.state.caches.joinedProjects.map((item, index) => (
-                      <div
-                        style={{ paddingRight: 20, flex: "none" }}
-                        key={index}
-                      >
-                        <ProjectDisplay project={item} />
-                      </div>
-                    ))
-                  : "You haven't joined any projects!"}
-              </div>
-            </Card>
+            {this.generateProjectCards(
+              "Joined Projects",
+              "You haven't joined any projects.",
+              this.state.user.joinedProjects,
+              data => <ProjectDisplay />
+            )}
             <br />
-            <Card title="Pending Invites">
-              <div
-                style={{
-                  display: "flex"
-                }}
-              >
-                {!!this.state.caches.pendingInvites &&
-                !!this.state.caches.pendingInvites.length
-                  ? this.state.caches.pendingInvites.map((item, index) => (
-                      <div
-                        style={{ paddingRight: 20, flex: "none" }}
-                        key={index}
-                      >
-                        {" "}
-                        <Badge dot>
-                          <ProjectInvitation
-                            project={item}
-                            onAcceptInvite={() => {
-                              this.state.user.acceptInvite(item.projectID);
-                            }}
-                            onRejectInvite={() => {
-                              this.state.user.rejectInvite(item.projectID);
-                            }}
-                          />
-                        </Badge>
-                      </div>
-                    ))
-                  : "You don't have any pending invites!"}
-              </div>
-            </Card>
+            {this.generateProjectCards(
+              "Invites",
+              "You haven't been invited to any project",
+              this.state.user.pendingInvites,
+              data => (
+                <ProjectInvitation
+                  onAcceptInvite={() => {
+                    this.state.user.acceptInvite(data);
+                  }}
+                  onRejectInvite={() => {
+                    this.state.user.rejectInvite(data);
+                  }}
+                />
+              )
+            )}
             <br />
             <Card title="Debug Info">
               <pre>{formatJSON(this.state.user)}</pre>

@@ -52,17 +52,17 @@ export class EventEmitter {
  * @export
  * @class IDGen
  */
-export class IDGen {
+class IDGen {
   static UIDlength = 28;
   static UIDChars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
   /**
    * Generates a random ID
-   * @static
+
    * @return
    * @memberof IDGen
    */
-  static generateUID() {
+  generateUID(target) {
     let uid = "";
     for (var i = 0; i < this.UIDlength; i++)
       uid += this.UIDChars.charAt(
@@ -72,44 +72,44 @@ export class IDGen {
   }
   /**
    * Generates a random integer between values (inclusive)
-   * @static
+
    * @param  {Number} min
    * @param  {Number} max
    * @return
    * @memberof IDGen
    */
-  static generateInt(min, max) {
+  generateInt(target, min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 }
 
-export class ArrayUtils {
+class ArrayUtils {
   /**
    * Returns whether an item exists in an array
-   * @static
+
    * @param  {any} array
    * @param  {any} item
    * @return {Boolean}
    * @memberof ArrayUtils
    */
-  static exists(array, item) {
+  exists(array, item) {
     return array.indexOf(item) !== -1;
   }
 
-  static existsIf(array, predicate) {
-    return ArrayUtils.indexOf(array, predicate) !== -1;
+  existsIf(array, predicate) {
+    return this.indexOf(array, predicate) !== -1;
   }
 
   /**
    * Removes a predetermined item
-   * @static
+
    * @param  {any} array
    * @param  {any} item
    * @return {Array} Resulting array
    * @memberof ArrayUtils
    */
-  static remove(array, item) {
-    if (ArrayUtils.exists(array, item)) {
+  remove(array, item) {
+    if (this.exists(array, item)) {
       array.splice(array.indexOf(item), 1);
       return array;
     }
@@ -117,13 +117,13 @@ export class ArrayUtils {
 
   /**
    * Removes all instances in an array that match a condition
-   * @static
+
    * @param  {Array} array
    * @param  {Function<Object,Number>} condition
    * @return {Array}
    * @memberof ArrayUtils
    */
-  static removeIf(array, condition) {
+  removeIf(array, condition) {
     var i = array.length;
     while (i--) {
       if (condition(array[i], i)) {
@@ -134,48 +134,14 @@ export class ArrayUtils {
   }
 
   /**
-   * Selects all items in an array that matches a condition
-   * @static
-   * @param  {any} array
-   * @param  {Function<Object,Number>} condition
-   * @return {Array}
-   * @memberof ArrayUtils
-   */
-  static where(array, condition) {
-    let newArray = [];
-    array.forEach((element, index) => {
-      if (condition(element, index)) {
-        newArray.push(element);
-      }
-    });
-    return newArray;
-  }
-
-  /**
-   * Applies a predicate onto each element of an array and returns the array
-   * @static
-   * @param  {Array} array
-   * @param  {Function<Object,Number>} predicate
-   * @return
-   * @memberof ArrayUtils
-   */
-  static select(array, predicate) {
-    let newArray = [];
-    array.forEach((element, index) => {
-      newArray.push(predicate(element, index));
-    });
-    return newArray;
-  }
-
-  /**
    * Returns the index of the first instance of an element that fulfills a condition
-   * @static
+
    * @param  {Array} array
    * @param  {Function<Object>} condition
    * @return {Numer}
    * @memberof ArrayUtils
    */
-  static indexOf(array, condition) {
+  indexOf(array, condition) {
     let i = -1;
     array.forEach((element, index) => {
       if (condition(element)) i = index;
@@ -183,30 +149,30 @@ export class ArrayUtils {
     return i;
   }
 
-  static searchString(array, getString, value) {
+  searchString(array, getString, value) {
     return array.filter(
       item => getString(item).includes(value.toLowerCase()) !== false
     );
   }
 }
 
-export class StringUtils {
-  static trimLeft(string) {
-    return string.replace(/^\s+/,"");
+class StringUtils {
+  trimLeft(string) {
+    return string.replace(/^\s+/, "");
   }
 }
 
-export class ObjectUtils {
+class ObjectUtils {
   /**
    * Simple object check.
    * @param item
    * @returns {boolean}
    */
-  static isObject(item) {
+  isObject(item) {
     return item && typeof item === "object" && !Array.isArray(item);
   }
 
-  static values(item) {
+  values(item) {
     return Object.keys(item).map(key => item[key]);
   }
 
@@ -219,15 +185,15 @@ export class ObjectUtils {
    * @param target
    * @param sources
    */
-  static mergeDeep(target, ...sources) {
+  mergeDeep(target, ...sources) {
     if (!sources.length) return target;
     const source = sources.shift();
 
-    if (ObjectUtils.isObject(target) && ObjectUtils.isObject(source)) {
+    if (this.isObject(target) && this.isObject(source)) {
       for (const key in source) {
-        if (ObjectUtils.isObject(source[key])) {
+        if (this.isObject(source[key])) {
           if (!target[key]) Object.assign(target, { [key]: {} });
-          ObjectUtils.mergeDeep(target[key], source[key]);
+          this.mergeDeep(target[key], source[key]);
         } else {
           /*
         else if (Array.isArray(source[key]) && Array.isArray(target[key])) {
@@ -239,21 +205,95 @@ export class ObjectUtils {
       }
     }
 
-    return ObjectUtils.mergeDeep(target, ...sources);
+    return this.mergeDeep(target, ...sources);
   }
-
-  static shallowEqual(a, b) {
-    for(var key in a) {
-        if(!(key in b) || a[key] !== b[key]) {
-            return false;
-        }
-    }
-    for(var key in b) {
-        if(!(key in a) || a[key] !== b[key]) {
-            return false;
-        }
-    }
-    return true;
 }
 
+class $ {
+  /**
+   * @typedef arrayUtils
+   * @type {Object}
+   * @property {(item)=>boolean} exists - Checks if an item exists in this array.
+   * @property {(condition:(item)=>boolean)=>boolean} existsIf - Checks if any item matches a condition in this array.
+   * @property {(item)=>array} remove - Removes an item from this array.
+   * @property {(predicate:(item)=>boolean)=>array} removeIf - Removes any items that match a condition from this array.
+   * @property {(condition:(item)=>boolean)=>number} indexOf - Gets the index of the first item that matches the condition in this array.
+   * @property {(getString:(item)=>string,query: string)=>array} searchString - Gets all items in this array that matches a search string.
+   */
+
+  /**
+   * Utilities for manipulating arrays.
+   * @type {(target:array)=>arrayUtils}
+   * @memberof
+   */
+  array = this.make(new ArrayUtils());
+
+  /**
+   * @typedef objectUtils
+   * @type {Object}
+   * @property {(item)=>boolean} isObject
+   * @property {(item)=>array} values
+   * @property {(...sources)=>object} mergeDeep
+   */
+
+  /**
+   * Utilities for manipulating objects
+   * @type {(target)=>objectUtils}
+   * @memberof
+   */
+  object = this.make(new ObjectUtils());
+
+  /**
+   * @typedef stringUtils
+   * @type {Object}
+   * @property {(str:string)=>string} trimLeft
+   */
+
+  /**
+   * Utilities for manipulating strings
+   * @type {(target:string)=>stringUtils}
+   * @memberof $
+   */
+  string = this.make(new StringUtils());
+
+  /**
+   * @typedef idGen
+   * @property {()=>string} generateUID
+   * @property {(min:number,max:number)=>number} generateInt
+   */
+
+  /**
+   * Utilities for generating IDs
+   * @type {()=>idGen}
+   * @memberof $
+   */
+  id = this.make(new IDGen());
+
+  /**
+   * Create a utility set
+   * @param  {Object} obj
+   * @return {(target)=>({})}
+   * @memberof
+   */
+  make(obj) {
+    let currentTarget;
+    return Object.assign(newTarget => {
+      currentTarget = newTarget;
+      return Object.getOwnPropertyNames(obj.__proto__).reduce(
+        (accumulation, nextKey) =>
+          Object.assign(
+            accumulation,
+            typeof obj[nextKey] === "function" && nextKey !== "constructor"
+              ? {
+                  [nextKey]: (...params) =>
+                    obj[nextKey](currentTarget, ...params)
+                }
+              : {}
+          ),
+        {}
+      );
+    });
+  }
 }
+
+export default new $();

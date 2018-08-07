@@ -1,4 +1,4 @@
-import { IDGen } from "./Utils";
+import $ from "./Utils";
 
 export default class TimelineEvent {
   /**
@@ -12,7 +12,7 @@ export default class TimelineEvent {
    * @type {String}
    * @memberof TimelineEvent
    */
-  uid = IDGen.generateUID();
+  uid = $.id().generateUID();
   /**
    * A simple description of this event
    * @type {String}

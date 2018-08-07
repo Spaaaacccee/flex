@@ -1,8 +1,17 @@
 import React, { Component } from "react";
-import { Input, Button, Icon, List, Affix, message } from "antd";
+import {
+  Input,
+  Button,
+  Icon,
+  List,
+  Affix,
+  message,
+  Popover,
+  Popconfirm
+} from "antd";
 import Messages, { Message } from "../classes/Messages";
 import update from "immutability-helper";
-import { IDGen, ObjectUtils, StringUtils } from "../classes/Utils";
+import $ from "../classes/Utils";
 import UserGroupDisplay from "../components/UserGroupDisplay";
 import "./Messages.css";
 import User from "../classes/User";
@@ -28,7 +37,10 @@ class MESSAGES extends Component {
     if (!props.project.messengerID) {
       props.project.setMessenger(props.project.projectID);
     }
-    if (this.state.messenger) this.state.messenger.off();
+    if (this.state.messenger) {
+      this.state.messenger.off();
+      this.state.messenger.stopListening();
+    }
     this.receivedMessages = {};
     this.setState({ messenger: null, orderedMessages: [] }, () => {
       Messages.get(props.project.messengerID || props.project.projectID).then(
@@ -36,9 +48,9 @@ class MESSAGES extends Component {
           if (messenger) {
             this.setState({ messenger });
             this.receivedMessages = Object.assign({}, messenger.messages);
-            messenger.on("message", x => {
-              this.handleReceive(x);
-            });
+            messenger.on("message", x => this.handleReceive(x));
+            messenger.on("edit", x => this.handleEdit(x));
+            messenger.on("remove", x => this.handleDelete(x));
             messenger.startListening();
             this.setState({ cachedUsers: { [props.user.uid]: props.user } });
             this.cacheUsers();
@@ -66,6 +78,38 @@ class MESSAGES extends Component {
     this.props.passMessage("scroll-bottom");
   }
 
+  handleDelete(msg) {
+    if (this.receivedMessages[msg.uid]) {
+      delete this.receivedMessages[msg.uid];
+      const i = $
+        .array(this.state.orderedMessages)
+        .indexOf(x => x.uid === msg.uid);
+      if (i !== -1) {
+        this.setState(
+          update(this.state, {
+            orderedMessages: { $splice: [[i, 1]] }
+          })
+        );
+      }
+    }
+  }
+
+  handleEdit(msg) {
+    if (this.receivedMessages[msg.uid]) {
+      this.receivedMessages[msg.uid] = msg;
+      const i = $.array(this.state.orderedMessages).indexOf(
+        x => x.uid === msg.uid
+      );
+      if (i !== -1) {
+        this.setState(
+          update(this.state, {
+            orderedMessages: { [i]: { $set: { msg } } }
+          })
+        );
+      }
+    }
+  }
+
   handleReceive(msg) {
     if (!this.receivedMessages[msg.uid]) {
       this.receivedMessages[msg.uid] = msg;
@@ -83,7 +127,7 @@ class MESSAGES extends Component {
     this.inputElement.focus();
     const maxChars = 2000;
     let val = this.state.inputValue.trim();
-    if(!val) return;
+    if (!val) return;
     if (this.state.messenger) {
       if (val.length > maxChars) {
         message.warn(
@@ -119,7 +163,7 @@ class MESSAGES extends Component {
   }
 
   cacheItems() {
-    let orderedMessages = ObjectUtils.values(this.receivedMessages).sort(
+    let orderedMessages = $.object(this.receivedMessages).values().sort(
       (a, b) =>
         a.timeSent === b.timeSent ? 0 : a.timeSent > b.timeSent ? 1 : -1
     );
@@ -132,7 +176,7 @@ class MESSAGES extends Component {
 
   cacheUsers() {
     let users = {};
-    let msgs = ObjectUtils.values(this.receivedMessages);
+    let msgs = $.object(this.receivedMessages).values();
     for (let i = 0; i < msgs.length; i++) {
       if (users[msgs[i].sender]) continue;
       users[msgs[i].sender] = User.get(msgs[i].sender);
@@ -153,7 +197,45 @@ class MESSAGES extends Component {
           {!!this.state.orderedMessages.length ? (
             <List itemLayout="vertical" style={{ userSelect: "text" }}>
               {this.state.orderedMessages.map((item, index) => (
-                <List.Item key={item.uid + index} style={{ textAlign: "left" }}>
+                <List.Item
+                  key={item.uid + index}
+                  style={{ textAlign: "left" }}
+                  extra={[
+                    <Popover
+                      placement="topRight"
+                      trigger="click"
+                      key={0}
+                      content={
+                        <div>
+                          <p>
+                            <a>
+                              <Icon type="message" />
+                              {" Quote"}
+                            </a>
+                          </p>
+                          <p>
+                            <a>
+                              <Icon type="edit" />
+                              {" Edit"}
+                            </a>
+                          </p>
+                          <Popconfirm
+                            title="Delete this message?"
+                            okText="Yes"
+                            cancelText="No"
+                          >
+                            <a>
+                              <Icon type="delete" />
+                              {" Delete"}
+                            </a>
+                          </Popconfirm>
+                        </div>
+                      }
+                    >
+                      <Icon type="ellipsis" style={{ cursor: "pointer" }} />
+                    </Popover>
+                  ]}
+                >
                   <List.Item.Meta
                     title={
                       (this.state.cachedUsers[item.sender] || {}).name ||
@@ -220,7 +302,7 @@ class MESSAGES extends Component {
               className="input"
               onChange={e => {
                 this.setState({
-                  inputValue: StringUtils.trimLeft(e.target.value)
+                  inputValue: $.string(e.target.value).trimLeft()
                 });
               }}
               onPressEnter={(e => {

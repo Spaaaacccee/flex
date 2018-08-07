@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Card, Icon, Button, List, Avatar } from "antd";
-import { ArrayUtils } from "../classes/Utils";
 import UserGroupDisplay from "./UserGroupDisplay";
 import Fire from "../classes/Fire";
 import Document from "../classes/Document";

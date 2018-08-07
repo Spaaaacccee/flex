@@ -8,7 +8,7 @@ import FileUploadModal from "../components/FileUploadModal";
 import FileDisplay from "../components/FileDisplay";
 import UserGroupDisplay from "../components/UserGroupDisplay";
 import Document from "../classes/Document";
-import { ArrayUtils } from "../classes/Utils";
+import $ from "../classes/Utils";
 import Project from "../classes/Project";
 const { Meta } = Card;
 
@@ -62,11 +62,12 @@ export default class FILES extends Component {
                 onChange={(e => {
                   if (e.target.value) {
                     let files = this.state.project.files || [];
-                    let results = ArrayUtils.searchString(
-                      files,
-                      item => (item.name || item.source.name).toLowerCase(),
-                      e.target.value
-                    );
+                    let results = $
+                      .array(files)
+                      .searchString(
+                        item => (item.name || item.source.name).toLowerCase(),
+                        e.target.value
+                      );
                     this.setState({ searchResults: results });
                   } else {
                     this.setState({ searchResults: null });
@@ -95,7 +96,7 @@ export default class FILES extends Component {
               <div>
                 {this.state.view === "thumbnail" ? (
                   (filesToRender || []).map((item, index) => (
-                    <div key={item.uid||""+index}>
+                    <div key={item.uid || "" + index}>
                       <FileDisplay project={this.state.project} file={item} />
                     </div>
                   ))

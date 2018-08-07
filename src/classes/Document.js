@@ -1,7 +1,7 @@
 import Firebase from "firebase";
 import Fire from "./Fire";
 import { message, notification } from "antd";
-import { IDGen, ObjectUtils, EventEmitter } from "./Utils";
+import  $, { EventEmitter } from "./Utils";
 import UploadLoader from "../components/UploadLoader";
 import React from "react";
 
@@ -62,7 +62,7 @@ export class DocumentArchive {
    * @memberof DocumentArchive
    */
   uploadType = "local";
-  uid = IDGen.generateUID();
+  uid = $.id().generateUID();
   name;
   /**
    * MIME type
@@ -77,7 +77,7 @@ export class DocumentArchive {
 }
 
 export class DocumentMeta {
-  uid = "" + Date.now() + ":" + IDGen.generateUID();
+  uid = "" + Date.now() + ":" + $.id().generateUID();
   description;
   name;
   type;
@@ -111,7 +111,7 @@ class JobManager extends EventEmitter {
   _uploadJobs = {};
 
   get allJobs() {
-    return ObjectUtils.values(this._uploadJobs);
+    return $.object(this._uploadJobs).values();
   }
 
   getJob(jobID) {
@@ -149,7 +149,7 @@ export class UploadJob {
    * @memberof UploadJob
    */
   name;
-  uid = IDGen.generateUID();
+  uid = $.id().generateUID();
   /**
    * @type {String}
    * @memberof UploadJob

@@ -6,7 +6,6 @@ import CreateEvent from "../forms/CreateEvent";
 import TimelineItem from "../components/TimelineItem";
 import Project from "../classes/Project";
 import update from "immutability-helper";
-import { ObjectUtils } from "../classes/Utils";
 
 export default class TIMELINE extends Component {
   static defaultProps = {

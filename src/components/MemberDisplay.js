@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { List, Icon, Card, Avatar, Popover, Button } from "antd";
 import User from "../classes/User";
 import Project from "../classes/Project";
-import { ArrayUtils, ObjectUtils } from "../classes/Utils";
+import $ from "../classes/Utils";
 import RolePicker from "./RolePicker";
 import update from "immutability-helper";
 
@@ -37,9 +37,9 @@ export default class MemberDisplay extends Component {
   }
 
   shouldComponentUpdate(props, state) {
-    if(this.state.user !== state.user) return true;
-    if(this.state.member !== state.member) return true;
-    if(this.state.project !== state.project) return true;
+    if (this.state.user !== state.user) return true;
+    if (this.state.member !== state.member) return true;
+    if (this.state.project !== state.project) return true;
     // If the new properties are not different to the values in the existing state, then don't update anything.
     if (!Project.equal(props.project, this.state.project)) return true;
     if (User.equal(this.state.user, state.user)) return true;
@@ -72,17 +72,15 @@ export default class MemberDisplay extends Component {
                 <br />
                 <RolePicker
                   roles={(this.state.project.roles || []).filter(item =>
-                    ArrayUtils.existsIf(
-                      this.state.member.roles || [],
-                      x => x === item.uid
-                    )
+                    $
+                      .array(this.state.member.roles || [])
+                      .existsIf(x => x === item.uid)
                   )}
                   availableRoles={(this.state.project.roles || []).filter(
                     item =>
-                      !ArrayUtils.exists(
-                        this.state.member.roles || [],
-                        x => x === item.uid
-                      )
+                      !$
+                        .array(this.state.member.roles || [])
+                        .exists(x => x === item.uid)
                   )}
                   onRolesChange={roles => {
                     this.setState(
@@ -90,7 +88,7 @@ export default class MemberDisplay extends Component {
                     );
                     this.state.project.setMember(
                       this.state.member.uid,
-                      ArrayUtils.select(roles, item => item.uid)
+                      roles.map(item=>item.uid)
                     );
                   }}
                 />

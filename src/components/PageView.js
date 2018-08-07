@@ -3,7 +3,6 @@ import { Layout, Card, Icon, Avatar, Button } from "antd";
 import Fire from "../classes/Fire";
 import User from "../classes/User";
 import TopBar from "./TopBar";
-import { ObjectUtils } from "../classes/Utils";
 import Project from "../classes/Project";
 import "./PageView.css";
 const { Meta } = Card;
