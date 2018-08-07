@@ -61,9 +61,9 @@ h3 {
   margin: auto !important;
 }
 
-.ant-card:hover {
+/* .ant-card:hover {
   box-shadow: 0px 30px 50px rgba(0, 0, 0, 0.12), 0px 10px 20px rgba(0, 0, 0, 0.05)
-}
+} */
 
 .ant-card .ant-card-body {
   overflow-x: auto;
