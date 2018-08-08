@@ -35,13 +35,13 @@ export default class Root extends Component {
             height: "100%",
             fontSize: 24,
             flexDirection: "column",
-            background:'#f7f7f7'
+            background: "#fff"
           }}
         >
-          <div style={{opacity:0.4}}>
-          <Icon type="loading" />
-          <br /><br />
-          <h2>Bonfire</h2>
+          <div>
+            <img src="/icons/android-icon-192x192.png" style={{width:72,height:72}}/>
+            <br /><br/>
+            <Icon style={{ color: "#3BC9F4" }} type="loading" />
           </div>
         </div>
         <div style={{ height: "100%", opacity: this.state.loaded ? 1 : 0 }}>

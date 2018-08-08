@@ -3,6 +3,10 @@ div.top-bar-wrapper {
   flex: none;
 }
 
+div.top-bar-wrapper:after, div.top-bar-wrapper .heading {
+  transition: opacity 0.2s ease;
+}
+
 div.top-bar {
   display: flex;
   flex-direction: row;
@@ -22,6 +26,19 @@ div.top-bar-wrapper:after {
   box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.1);
   pointer-events: none;
   transform: translateY(-52px);
+}
+
+div.transparent.top-bar-wrapper:after {
+  opacity: 0;
+}
+
+.transparent div.top-bar {
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.transparent div.top-bar > .heading {
+  opacity: 0;
 }
 
 .widescreen div.top-bar {

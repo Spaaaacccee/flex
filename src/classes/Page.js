@@ -38,6 +38,13 @@ export default class Page {
    * @memberof Page
    */
   extrasButtonType;
+
+  /**
+   * Define the way the top bar interacts with the content
+   * @type {"default" | "adaptive"}
+   * @memberof Page
+   */
+  topBarMode;
   /**
    * Creates an instance of Page.
    * @param {Page} args
@@ -94,6 +101,7 @@ export const UserPage = [
     name: "Me",
     icon: "file",
     content: USER,
-    requireProject: false
+    requireProject: false,
+    topBarMode: "adaptive"
   })
 ];

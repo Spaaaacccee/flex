@@ -24,7 +24,8 @@ export default class PageView extends Component {
     project: {},
     user: {},
     loading: false,
-    animation: false
+    animation: false,
+    scrollPosition:0
   };
 
   componentWillReceiveProps(props) {
@@ -53,13 +54,16 @@ export default class PageView extends Component {
     this.contentDisplayed = displayContent;
     return (
       <div
+        ref={e => e?e.parentNode.onscroll=()=>{this.setState({scrollPosition:e.parentNode.scrollTop})}:false}
         style={{
           flex: 1,
           width: "100%",
-          height:"100%"
+          height: "100%"
         }}
       >
         <TopBar
+          visibilityMode={this.state.page.topBarMode}
+          scrollPosition={this.state.scrollPosition}
           style={{
             height: "52px",
             flex: "none"

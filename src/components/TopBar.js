@@ -19,19 +19,31 @@ export default class TopBar extends Component {
     heading: "Heading",
     leftButtonType: "menu", //"menu", "back", "hidden"
     style: "solid", //"solid" or "blended"
-    rightButtonType: "" //icon type
+    rightButtonType: "", //icon type
+    visibilityMode: "default",
+    scrollPosition: 0
   };
   componentWillReceiveProps(props) {
     this.setState({
       heading: props.heading,
       leftButtonType: props.leftButtonType,
-      rightButtonType: props.rightButtonType
+      rightButtonType: props.rightButtonType,
+      visibilityMode: props.visibilityMode,
+      scrollPosition: props.scrollPosition
     });
   }
+
   render() {
     return (
-      <div className="top-bar-wrapper">
-        <Header className="top-bar">
+      <div className={`top-bar-wrapper ${
+        this.state.visibilityMode === "adaptive" &&
+        this.state.scrollPosition === 0
+          ? "transparent"
+          : ""
+      }`}>
+        <Header
+          className={`top-bar`}
+        >
           <Button
             onTouchEnd={e => {
               this.props.onLeftButtonPress();

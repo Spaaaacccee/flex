@@ -5,10 +5,10 @@ import UserSelector from "../components/UserSelector";
 export default class CreateProject extends Component {
   state = {
     projectName: "",
-    description:"",
-    recipients:[],
+    description: "",
+    recipients: [],
     submitted: false,
-    opened:false
+    opened: false
   };
   handleSubmit() {
     this.setState({
@@ -18,12 +18,12 @@ export default class CreateProject extends Component {
   }
 
   componentWillReceiveProps(props) {
-    if(!this.state.opened && !!props.opened) {
+    if (!this.state.opened && !!props.opened) {
       this.setState({
-        submitted: false,
+        submitted: false
       });
     }
-    this.setState({opened:props.opened});
+    this.setState({ opened: props.opened });
   }
 
   render() {
@@ -48,21 +48,23 @@ export default class CreateProject extends Component {
           }}
         />
         <h3>Invite some people and get things started</h3>
-        <UserSelector onValueChanged={(values)=>{
-          this.setState({recipients:values})
-        }}/>
+        <UserSelector
+          onValueChanged={values => {
+            this.setState({ recipients: values });
+          }}
+        />
         <br />
         <br />
-<div style={{textAlign:'right'}}>
-<Button
-type="primary"
-onClick={this.handleSubmit.bind(this)}
-loading={this.state.submitted}
-icon="check" 
->
-Create
-</Button>
-</div>
+        <div style={{ textAlign: "right" }}>
+          <Button
+            type="primary"
+            onClick={this.handleSubmit.bind(this)}
+            loading={this.state.submitted}
+            icon="check"
+          >
+            Create
+          </Button>
+        </div>
       </div>
     );
   }

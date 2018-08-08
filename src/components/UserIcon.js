@@ -20,6 +20,11 @@ export default class UserIcon extends Component {
     selected: false,
     thumbnail:''
   };
+
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
   componentWillReceiveProps(props) {
     this.setState({
       onPress: props.onPress,

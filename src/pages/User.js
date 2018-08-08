@@ -60,39 +60,31 @@ export default class USER extends Component {
       <div>
         {this.state.user && this.state.user.uid ? (
           <div style={{ textAlign: "left" }}>
-            <Card
-              style={{
-                textAlign: "center",
-                background: "#1890FF",
-                color: "#fff"
-              }}
-            >
-              <UserIcon thumbnail={this.state.user.profilePhoto} />
-              <b>{this.state.user.name || "Guest"}</b>
+            <div style={{ textAlign: "center" }}>
+              <div>
+                <UserIcon thumbnail={this.state.user.profilePhoto} />
+              </div>
+              <div style={{ marginBottom: 4 }}>
+                <b>{this.state.user.name || "Guest"}</b>
+              </div>
+              <div style={{ marginBottom: 20 }}>
+                {this.state.user.email || "No email address"}
+              </div>
+              <div>
+                <Button
+                  onClick={() => {
+                    Fire.firebase()
+                      .auth()
+                      .signOut();
+                    window.location.reload(true);
+                  }}
+                >
+                  Sign Out
+                </Button>
+              </div>
               <br />
-              {this.state.user.email || "No email address"}
               <br />
-              <br />
-              <br />
-              <Button
-                ghost
-                style={{
-                  fontWeight: 500,
-                  boxShadow:
-                    "0px 4px 15px rgba(0, 0, 0, 0.09), 0px 1px 8px rgba(0, 0, 0, 0.05)"
-                }}
-                onClick={() => {
-                  Fire.firebase()
-                    .auth()
-                    .signOut();
-                  window.location.reload(true);
-                }}
-              >
-                Sign Out
-              </Button>
-              <br />
-            </Card>
-            <br />
+            </div>
             <Card>
               <div
                 style={{
@@ -144,14 +136,14 @@ export default class USER extends Component {
             </Card>
             <br />
             {this.generateProjectCards(
-              "My Projects",
+              "Projects",
               "Create a project by selecting the + icon on the navigation bar.",
               this.state.user.projects,
               data => <ProjectDisplay />
             )}
             <br />
             {this.generateProjectCards(
-              "Joined Projects",
+              "Joined",
               "You haven't joined any projects.",
               this.state.user.joinedProjects,
               data => <ProjectDisplay />
