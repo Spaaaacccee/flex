@@ -9,6 +9,9 @@ import ProjectIcon from "./ProjectIcon";
  * @extends Component
  */
 export default class ProjectDisplay extends Component {
+  static defaultProps = {
+    onOpenPressed:()=>{}
+  }
   state = {
     project: {}
   };
@@ -19,6 +22,7 @@ export default class ProjectDisplay extends Component {
     return (
       <div>
         <Card
+        actions={[<span onClick={()=>{this.props.onOpenPressed()}}><Icon type="export"/>{" Open"}</span>]}
           style={{ width: 250, textAlign:'center', display:'inline-block' }}
         >
           <ProjectIcon name={this.state.project.name} />

@@ -80,10 +80,6 @@ h3 {
   border-radius: 0px 0px 7px 7px;
 }
 
-.App > div > div > div:not(.widescreen) .ant-card {
-  max-width: initial !important;
-}
-
 div.ant-list-item {
   align-items: flex-start;
 }

@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import Fire from "../classes/Fire";
 
 import UserIcon from "../components/UserIcon";
-
+import "./User.css";
 import User from "../classes/User";
 
 import { Button, Modal, Icon, Popconfirm, Badge } from "antd";
@@ -139,14 +139,26 @@ export default class USER extends Component {
               "Projects",
               "Create a project by selecting the + icon on the navigation bar.",
               this.state.user.projects,
-              data => <ProjectDisplay />
+              data => (
+                <ProjectDisplay
+                  onOpenPressed={() => {
+                    this.props.passMessage({ type: "switchTo", content: data });
+                  }}
+                />
+              )
             )}
             <br />
             {this.generateProjectCards(
               "Joined",
               "You haven't joined any projects.",
               this.state.user.joinedProjects,
-              data => <ProjectDisplay />
+              data => (
+                <ProjectDisplay
+                  onOpenPressed={() => {
+                    this.props.passMessage({ type: "switchTo", content: data });
+                  }}
+                />
+              )
             )}
             <br />
             {this.generateProjectCards(

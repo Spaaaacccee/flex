@@ -22,7 +22,8 @@ export default class ProjectView extends Component {
     onContentPress: () => {}, // A callback for when the main content area is pressed
     onNavDrag: () => {}, // A callback for when an open navigation gesture is performed
     navigationCollapsed: true, // Whether or not the in-project navigation bar should be collapsed
-    style: {} // Pass the style attribute from the Component to the DOM element
+    style: {}, // Pass the style attribute from the Component to the DOM element
+    onMessage:()=>{}
   };
 
   state = {
@@ -174,6 +175,15 @@ export default class ProjectView extends Component {
                 onContentPress={this.props.onContentPress}
                 project={this.state.project}
                 page={this.state.openedPage}
+                onMessage={(msg)=>{
+                  switch(msg.type) {
+                    case "switchTo":
+                    this.props.onMessage(msg);
+                    break;
+                    default:
+                    break;
+                  }
+                }}
               />
             </div>
           </Layout>

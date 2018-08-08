@@ -39,7 +39,7 @@ export default class Root extends Component {
           }}
         >
           <div>
-            <img src="/icons/android-icon-192x192.png" style={{width:72,height:72}}/>
+            <img src="/icons/icon.png" style={{width:72,height:72}}/>
             <br /><br/>
             <Icon style={{ color: "#3BC9F4" }} type="loading" />
           </div>

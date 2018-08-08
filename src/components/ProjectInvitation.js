@@ -26,16 +26,15 @@ export default class ProjectInvitation extends Component {
         <Card
           style={{ width: 250, textAlign:'center', display:'inline-block'}}
           actions={[
-            <Icon type="check" onClick={this.props.onAcceptInvite} />,
+            <span onClick={this.props.onAcceptInvite}><Icon type="check" />{" Accept"}</span>,
             <Popconfirm
               title="Are you sure you want to reject this invite?"
               okText="Yes"
               cancelText="No"
               onConfirm={this.props.onRejectInvite}
             >
-              <Icon type="close" />
-            </Popconfirm>,
-            <Icon type="ellipsis" />
+              <span><Icon type="close" />{" Reject"}</span>
+            </Popconfirm>
           ]}
         >
           <ProjectIcon name={this.state.project.name} />

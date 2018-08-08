@@ -135,15 +135,8 @@ export default class Main extends Component {
               pauseUpdate={this.state.navigationCollapsed}
               user={this.state.user}
               // Here we're displaying all user projects, only if they exist
-              items={(this.state.userData && this.state.userData.projects
-                ? this.state.userData.projects
-                : []
-              ).concat(
-                // Appending all projects that the user has joined, if they exist
-                this.state.userData && this.state.userData.joinedProjects
-                  ? this.state.userData.joinedProjects
-                  : []
-              )}
+              items={this.state.userData?[...(this.state.userData.projects||[]),...(this.state.userData.joinedProjects||[])]:[]}
+              openedProject={this.state.openedProjectID}
               onProjectChanged={projectChangedArgs => {
                 // Respond to when the selected project changes by setting the selected item in the component state
                 this.setState({
@@ -168,6 +161,15 @@ export default class Main extends Component {
           </Sider>
           {/* Secondary navigation bar and main content */}
           <ProjectView
+            onMessage={msg => {
+              switch (msg.type) {
+                case "switchTo":
+                  this.setState({openedProjectID:msg.content})
+                  break;
+                default:
+                  break;
+              }
+            }}
             pauseSiderUpdate={this.state.navigationCollapsed}
             style={{
               // Move the project view left by the sider width when the screen is too narrow to achieve an effect as if the navigation sidebar collapses. This ensures smooth 60fps animation performance on most devices.

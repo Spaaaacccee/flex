@@ -70,12 +70,16 @@ export default class ProjectNavigation extends Component {
   state = {
     items: [],
     openedProject: null,
-    openedIndex: null,
+    openedIndex: -1,
     user: {},
     userData: {},
     projects: null,
     pauseUpdate: false
   };
+
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
 
   /**
    * Sync the state of the component with the properties.
@@ -89,8 +93,12 @@ export default class ProjectNavigation extends Component {
     }
     this.setState(
       {
+        openedProject: props.openedProject,
         items: props.items,
-        user: props.user
+        user: props.user,
+        openedIndex: props.openedProject
+          ? props.items.indexOf(props.openedProject)
+          : -1
       },
       () => {
         this.getProjects();
@@ -115,12 +123,11 @@ export default class ProjectNavigation extends Component {
           return null;
         }
       })
-    ).then((projects)=>{
+    ).then(projects => {
       this.setState({
         projects
       });
-    })
-
+    });
   }
 
   /**

@@ -35,15 +35,15 @@ export default class TopBar extends Component {
 
   render() {
     return (
-      <div className={`top-bar-wrapper ${
-        this.state.visibilityMode === "adaptive" &&
-        this.state.scrollPosition === 0
-          ? "transparent"
-          : ""
-      }`}>
-        <Header
-          className={`top-bar`}
-        >
+      <div
+        className={`top-bar-wrapper ${
+          this.state.visibilityMode === "adaptive" &&
+          this.state.scrollPosition <= 0
+            ? "transparent"
+            : ""
+        }`}
+      >
+        <Header className={`top-bar`}>
           <Button
             onTouchEnd={e => {
               this.props.onLeftButtonPress();
@@ -60,7 +60,11 @@ export default class TopBar extends Component {
           <div className="heading">{this.state.heading}</div>
           <Button
             shape="circle"
-            icon={this.state.rightButtonType}
+            icon={
+              typeof this.state.rightButtonType === "string"
+                ? this.state.rightButtonType
+                : null
+            }
             className="right-button"
             onTouchEnd={e => {
               this.props.onRightButtonPress();
@@ -70,7 +74,10 @@ export default class TopBar extends Component {
             onMouseUp={() => {
               this.props.onRightButtonPress();
             }}
-          />
+          >
+            {typeof this.state.rightButtonType !== "string" &&
+              this.state.rightButtonType}
+          </Button>
         </Header>
       </div>
     );

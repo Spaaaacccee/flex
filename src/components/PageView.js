@@ -25,11 +25,14 @@ export default class PageView extends Component {
     user: {},
     loading: false,
     animation: false,
-    scrollPosition:0
+    scrollPosition: 0
   };
 
   componentWillReceiveProps(props) {
-    if (props.page !== this.state.page) {
+    if (
+      props.page !== this.state.page ||
+      props.project.projectID !== this.state.project.projectID
+    ) {
       this.setState({ animation: false }, () => {
         this.setState({ page: props.page, animation: true });
       });
@@ -38,7 +41,7 @@ export default class PageView extends Component {
       if (user) this.setState({ user });
     });
     if (!props.project || Object.keys(props.project).length === 0) {
-      this.setState({ loading: true });
+      this.setState({ loading: true, project: {} });
       return;
     }
     this.setState({ loading: false });
@@ -54,7 +57,13 @@ export default class PageView extends Component {
     this.contentDisplayed = displayContent;
     return (
       <div
-        ref={e => e?e.parentNode.onscroll=()=>{this.setState({scrollPosition:e.parentNode.scrollTop})}:false}
+        ref={e =>
+          e
+            ? (e.parentNode.onscroll = () => {
+                this.setState({ scrollPosition: e.parentNode.scrollTop });
+              })
+            : false
+        }
         style={{
           flex: 1,
           width: "100%",
