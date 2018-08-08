@@ -1,5 +1,8 @@
 .content-fade-in-up {
     animation: c-fade-in-up 0.4s both cubic-bezier(0, 0.65, 0.27, 1);
+    overflow: auto;
+    padding:20px 10px;
+    height: 100%;
 }
 
 @keyframes c-fade-in-up {

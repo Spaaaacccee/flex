@@ -55,9 +55,8 @@ export default class PageView extends Component {
       <div
         style={{
           flex: 1,
-          display: "flex",
-          flexDirection: "column",
-          width: "100%"
+          width: "100%",
+          height:"100%"
         }}
       >
         <TopBar
@@ -78,10 +77,6 @@ export default class PageView extends Component {
           heading={this.state.page.name || "Untitled"}
         />
         <div
-          style={{
-            padding: "20px 10px",
-            flex: 1
-          }}
           onMouseUp={this.props.onContentPress}
           onTouchStart={this.props.onContentPress}
         >

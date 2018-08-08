@@ -82,7 +82,7 @@ class MESSAGES extends Component {
   }
 
   scrollBottom() {
-    this.props.passMessage("scroll-bottom");
+    this.scrollElement.scrollTop = this.scrollElement.scrollHeight;
   }
 
   handleOnDelete(msgID) {
@@ -244,10 +244,18 @@ class MESSAGES extends Component {
     }
   }
   inputElement;
+  scrollElement;
   render() {
     return (
-      <div>
-        <div className="messages">
+      <div
+        style={{
+          height: "100%",
+          display: "flex",
+          flexDirection: "column",
+          overflow: "hidden"
+        }}
+      >
+        <div className="messages" ref={e => (this.scrollElement = e)}>
           {!!this.state.orderedMessages.length ? (
             <List itemLayout="vertical" style={{ userSelect: "text" }}>
               {this.state.orderedMessages.map((item, index) => (
@@ -271,7 +279,24 @@ class MESSAGES extends Component {
                           content={
                             <div>
                               <p>
-                                <a>
+                                <a
+                                  onClick={() => {
+                                    this.setState({
+                                      inputValue: `${(
+                                        this.state.cachedUsers[item.sender] ||
+                                        {}
+                                      ).name || item.sender} at ${new Date(
+                                        item.timeSent
+                                      ).toLocaleString()}:\n${
+                                        item.content.bodyText
+                                      }\n`
+                                    });
+                                    this.inputElement.focus();
+                                    ref.tooltip.setState({
+                                      visible: false
+                                    });
+                                  }}
+                                >
                                   <Icon type="message" />
                                   {" Quote"}
                                 </a>
@@ -381,6 +406,7 @@ class MESSAGES extends Component {
               />
             )}
             <Input.TextArea
+              type="email"
               onKeyUp={e => {
                 if (
                   e.keyCode === 27 &&

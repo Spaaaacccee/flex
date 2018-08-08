@@ -64,7 +64,6 @@ export default class ProjectView extends Component {
     return true;
   }
 
-  scrollContainer;
   render() {
     return (
       <div
@@ -142,9 +141,6 @@ export default class ProjectView extends Component {
             }}
           >
             <div
-              ref={e => {
-                this.scrollContainer = e;
-              }}
               className="project-view-inner-content"
               onTouchStart={e => {
                 //handle touch gesture
@@ -178,15 +174,6 @@ export default class ProjectView extends Component {
                 onContentPress={this.props.onContentPress}
                 project={this.state.project}
                 page={this.state.openedPage}
-                onMessage={msg => {
-                  switch (msg) {
-                    case "scroll-bottom":
-                      this.scrollContainer.scrollTop = this.scrollContainer.scrollHeight;
-                      break;
-                    default:
-                      break;
-                  }
-                }}
               />
             </div>
           </Layout>
