@@ -86,7 +86,7 @@ class MESSAGES extends Component {
   }
 
   trySetRead() {
-    if ((this.scrollElement.scrollTop = this.scrollElement.scrollHeight)) {
+    if ((this.scrollElement.scrollTop === this.scrollElement.scrollHeight)) {
       $.object(this.receivedMessages)
         .values()
         .forEach(item => this.state.messenger.setRead(item.uid, true));
