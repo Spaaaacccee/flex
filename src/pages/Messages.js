@@ -85,13 +85,21 @@ class MESSAGES extends Component {
     this.scrollElement.scrollTop = this.scrollElement.scrollHeight;
   }
 
+  trySetRead() {
+    if ((this.scrollElement.scrollTop = this.scrollElement.scrollHeight)) {
+      $.object(this.receivedMessages)
+        .values()
+        .forEach(item => this.state.messenger.setRead(item.uid, true));
+    }
+  }
+
   handleOnDelete(msgID) {
     console.log("got delete event");
     if (this.receivedMessages[msgID]) {
       delete this.receivedMessages[msgID];
-      const i = $
-        .array(this.state.orderedMessages)
-        .indexOf(x => x.uid === msgID);
+      const i = $.array(this.state.orderedMessages).indexOf(
+        x => x.uid === msgID
+      );
       if (i !== -1) {
         this.setState(
           update(this.state, {
@@ -106,9 +114,9 @@ class MESSAGES extends Component {
     console.log("got edit event");
     if (this.receivedMessages[msg.uid]) {
       this.receivedMessages[msg.uid] = msg;
-      const i = $
-        .array(this.state.orderedMessages)
-        .indexOf(x => x.uid === msg.uid);
+      const i = $.array(this.state.orderedMessages).indexOf(
+        x => x.uid === msg.uid
+      );
       if (i !== -1) {
         this.setState(
           update(this.state, {
@@ -135,11 +143,20 @@ class MESSAGES extends Component {
 
   handleDelete(msgID) {
     this.setState(
-      update(this.state, { messageStatus: { [msgID]: { $set: "processing" } } })
+      Object.assign(
+        update(this.state, {
+          messageStatus: { [msgID]: { $set: "processing" } }
+        }),
+        msgID === this.state.consoleEditTarget.uid
+          ? { inputValue: "", consoleStatus: "ready", consoleEditTarget: null }
+          : {}
+      ),
+      () => {
+        this.state.messenger.deleteMessage(msgID).then(() => {
+          this.handleOnDelete(msgID);
+        });
+      }
     );
-    this.state.messenger.deleteMessage(msgID).then(() => {
-      this.handleOnDelete(msgID);
-    });
   }
 
   handleEdit() {
@@ -214,8 +231,7 @@ class MESSAGES extends Component {
   }
 
   cacheItems() {
-    let orderedMessages = $
-      .object(this.receivedMessages)
+    let orderedMessages = $.object(this.receivedMessages)
       .values()
       .sort(
         (a, b) =>
@@ -255,7 +271,13 @@ class MESSAGES extends Component {
           overflow: "hidden"
         }}
       >
-        <div className="messages" ref={e => (this.scrollElement = e)}>
+        <div
+          className="messages"
+          ref={e => (this.scrollElement = e)}
+          onScroll={e => {
+            this.trySetRead();
+          }}
+        >
           {!!this.state.orderedMessages.length ? (
             <List itemLayout="vertical" style={{ userSelect: "text" }}>
               {this.state.orderedMessages.map((item, index) => (
@@ -378,12 +400,14 @@ class MESSAGES extends Component {
               <br />
               {this.state.messenger ? (
                 <div>
-                  You and your team's messages will appear here.<br />
+                  You and your team's messages will appear here.
+                  <br />
                   Why don't you start a conversation?
                 </div>
               ) : (
                 <div>
-                  We're getting Messages ready.<br />
+                  We're getting Messages ready.
+                  <br />
                   It won't take too long.
                 </div>
               )}

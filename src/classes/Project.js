@@ -18,6 +18,7 @@ import Document, {
 import User from "./User";
 import Messages from "./Messages";
 import Firebase from "firebase";
+import { HistoryItem, HistoryItemContent } from "./History";
 
 /**
  * Represents a project
@@ -200,6 +201,12 @@ export default class Project {
    */
   files;
 
+  /**
+   * @type {Array<HistoryItem>}
+   * @memberof Project
+   */
+  history;
+
   messengerID = null;
 
   /**
@@ -215,7 +222,7 @@ export default class Project {
    * Completes an operation on this object while syncing with the server.
    * Operation is guaranteed to be performed on the most recent version of the object.
    *
-   * @param  {(this:Project)=>void} operation The operation to perform.
+   * @param  {(project:Project)=>void} operation The operation to perform.
    * @return {Boolean} Whether the operation completed successfully
    * @memberof Project
    */
@@ -246,12 +253,34 @@ export default class Project {
   async setName(newName) {
     await this.transaction(project => {
       project.name = newName;
+      if (project instanceof Project) {
+        User.getCurrentUser().then(user => {
+          project.addHistory(
+            new HistoryItem({
+              action: "edited",
+              doneBy: user.uid,
+              type: "name"
+            })
+          );
+        });
+      }
     });
   }
   // Set the description of this project, both locally and in the database
   async setDescription(newDescription) {
     await this.transaction(project => {
       project.description = newDescription;
+      if (project instanceof Project) {
+        User.getCurrentUser().then(user => {
+          project.addHistory(
+            new HistoryItem({
+              action: "edited",
+              doneBy: user.uid,
+              type: "description"
+            })
+          );
+        });
+      }
     });
   }
 
@@ -311,17 +340,6 @@ export default class Project {
   }
 
   /**
-   * Immediately set all events of this project
-   * @return {void}
-   * @memberof Project
-   */
-  async setEvents(events) {
-    await this.transaction(project => {
-      project.events = events;
-    });
-  }
-
-  /**
    * Set a single event
    * @param  {String} uid
    * @param  {TimelineEvent} eventData
@@ -333,6 +351,18 @@ export default class Project {
       project.events = (project.events || []).map(
         item => (item.uid === uid ? Object.assign(eventData, { uid }) : item)
       );
+      if (project instanceof Project) {
+        User.getCurrentUser().then(user => {
+          project.addHistory(
+            new HistoryItem({
+              action: "edited",
+              doneBy: user.uid,
+              type: "event",
+              content: new HistoryItemContent({ uid })
+            })
+          );
+        });
+      }
     });
   }
 
@@ -346,6 +376,18 @@ export default class Project {
     await this.transaction(project => {
       project.events = project.events || [];
       project.events.push(event);
+      if (project instanceof Project) {
+        User.getCurrentUser().then(user => {
+          project.addHistory(
+            new HistoryItem({
+              action: "added",
+              type: "event",
+              doneBy: user.uid,
+              content: new HistoryItemContent({ uid: event.uid })
+            })
+          );
+        });
+      }
     });
   }
 
@@ -405,16 +447,14 @@ export default class Project {
 
         await this.transaction(project => {
           project.files = project.files || [];
-          let existingArchive = $
-            .array(project.files)
-            .indexOf(
-              item => item.name === meta.name && item.type === meta.type
-            );
+          let existingArchive = $.array(project.files).indexOf(
+            item => item.name === meta.name && item.type === meta.type
+          );
           if (existingArchive !== -1) {
             let existingFile =
-              $
-                .array(project.files[existingArchive].files)
-                .indexOf(item => item.hash === meta.hash) !== -1;
+              $.array(project.files[existingArchive].files).indexOf(
+                item => item.hash === meta.hash
+              ) !== -1;
             if (existingFile) {
               if (project instanceof Project)
                 message.error(`A file that's exactly the same already exists`);
@@ -462,6 +502,17 @@ export default class Project {
               meta.uid,
               Object.assign(meta, { state: "available" })
             );
+            User.getCurrentUser().then(user => {
+              this.addHistory(
+                new HistoryItem({
+                  action: "added",
+                  type: "file",
+                  doneBy: user.uid,
+                  content: new HistoryItemContent({ uid: meta.uid })
+                })
+              );
+            });
+
             UploadJob.Jobs.updateJob(jobID, { status: "done" });
           });
         } else {
@@ -494,6 +545,19 @@ export default class Project {
           message.error(`${file.name} already exists!`);
         }
       } else {
+        if (project instanceof Project) {
+          User.getCurrentUser().then(user => {
+            project.addHistory(
+              new HistoryItem({
+                action: "added",
+                type: "file",
+                doneBy: user.uid,
+                content: new HistoryItemContent({ uid: file.id })
+              })
+            );
+          });
+        }
+
         project.files.push(new CloudDocument(file));
       }
     });
@@ -525,6 +589,19 @@ export default class Project {
   async setMessenger(messengerID) {
     await this.transaction(project => {
       project.messengerID = messengerID;
+    });
+  }
+
+  /**
+   * Adds an event to history
+   * @param {HistoryItem} historyItem
+   * @return {void}
+   * @memberof Project
+   */
+  async addHistory(historyItem) {
+    await this.transaction(project => {
+      project.history = project.history || [];
+      project.history.push(historyItem);
     });
   }
 }

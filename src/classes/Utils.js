@@ -156,6 +156,9 @@ class StringUtils {
   trimLeft(string) {
     return string.replace(/^\s+/, "");
   }
+  isVowel(char) {
+    return ['a', 'e', 'i', 'o', 'u'].indexOf(char.toLowerCase()) !== -1
+  }
 }
 
 class ObjectUtils {
@@ -227,8 +230,8 @@ class $ {
   /**
    * @typedef objectUtils
    * @type {Object}
-   * @property {(item)=>boolean} isObject
-   * @property {(item)=>array} values
+   * @property {()=>boolean} isObject
+   * @property {()=>array} values
    * @property {(...sources)=>object} mergeDeep
    */
 
@@ -243,6 +246,7 @@ class $ {
    * @typedef stringUtils
    * @type {Object}
    * @property {(str:string)=>string} trimLeft
+   * @property {(char:string)=>boolean} isVowel
    */
 
   /**

@@ -1,6 +1,7 @@
 import $, { EventEmitter } from "./Utils";
 import React, { Component } from "react";
 import Fetch from "./Fetch";
+import User from "./User";
 
 /**
  * A collection of messages
@@ -88,9 +89,26 @@ export default class Messages extends EventEmitter {
   }
 
   async setData(id, newData) {
-    await Fetch.getMessagesReference(this.uid).child('messages')
+    await Fetch.getMessagesReference(this.uid)
+      .child("messages")
       .child(id)
       .set(newData);
+  }
+
+  /**
+   * 
+   * @param  {String} id 
+   * @param  {Boolean} isRead 
+   * @return {void}
+   * @memberof Messages
+   */
+  async setRead(id, isRead) {
+    await Fetch.getMessagesReference(this.uid)
+      .child("messages")
+      .child(id)
+      .child("readBy")
+      .child((await User.getCurrentUser()).uid)
+      .set(isRead);
   }
 
   async addMessage(message) {
@@ -163,6 +181,11 @@ export class Message {
    * @memberof Message
    */
   timeSent = Date.now();
+  /**
+   * A collection of people who have read this message.
+   * @memberof Message
+   */
+  readBy = {};
   /**
    * Creates an instance of Message.
    * @param  {Message} args
