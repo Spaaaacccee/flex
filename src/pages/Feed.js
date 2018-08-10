@@ -11,7 +11,7 @@ import User from "../classes/User";
 import UserGroupDisplay from "../components/UserGroupDisplay";
 import MessageDisplay from "../components/MessageDisplay";
 import TimelineItem from "../components/TimelineItem";
-import FileDisplay from '../components/FileDisplay';
+import FileDisplay from "../components/FileDisplay";
 import Moment from "moment";
 
 const { Meta } = Card;
@@ -36,20 +36,25 @@ export default class FEED extends Component {
       project: props.project,
       user: props.user
     });
-    Messages.get(props.project.messengerID).then(messenger => {
-      if (messenger) {
-        this.setState({ messenger });
-        messenger
-          .getMessagesByDateOrder(10)
-          .then(messages => this.setState({ messages }));
-      }
-    });
+    if (
+      !this.state.mesenger ||
+      this.state.messenger.uid !== props.project.messengerID
+    ) {
+      Messages.get(props.project.messengerID).then(messenger => {
+        if (messenger) {
+          this.setState({ messenger });
+          messenger
+            .getMessagesByDateOrder(10)
+            .then(messages => this.setState({ messages }));
+        }
+      });
+    }
   }
 
   shouldComponentUpdate(props, state) {
     if (!Project.equal(props.project, this.state.project)) return true;
     if (state.messages !== this.state.messages) return true;
-    if (state.messenger !== this.state.messenger) return true;
+    if (!Messages.equal(state.messenger, this.state.messenger)) return true;
     return false;
   }
 
@@ -90,11 +95,11 @@ export default class FEED extends Component {
               ))}
             </List>
           </div>
-          <br/>
+          <br />
         </Card>
       ) : null;
     } else {
-      return null
+      return null;
     }
   }
 
@@ -183,26 +188,33 @@ export default class FEED extends Component {
                           }
                         />
                       ) : (
-                        <span style={{opacity:0.65}}>{"We can not display this event because it has been deleted."}</span>
+                        <span style={{ opacity: 0.65 }}>
+                          {
+                            "We can not display this event because it has been deleted."
+                          }
+                        </span>
                       );
                       break;
                     case "file":
-                    
-                    return (this.state.project.files || []).filter(
-                      x => x.uid === item.content.uid
-                    )[0] ? (
-                      <FileDisplay
-                        readOnly
-                        project={this.state.project}
-                        file={
-                          this.state.project.files.filter(
-                            x => x.uid === item.content.uid
-                          )[0]
-                        }
-                      />
-                    ) : (
-                      <span style={{opacity:0.65}}>{"We can not display this file because it has been deleted."}</span>
-                    );
+                      return (this.state.project.files || []).filter(
+                        x => x.uid === item.content.uid
+                      )[0] ? (
+                        <FileDisplay
+                          readOnly
+                          project={this.state.project}
+                          file={
+                            this.state.project.files.filter(
+                              x => x.uid === item.content.uid
+                            )[0]
+                          }
+                        />
+                      ) : (
+                        <span style={{ opacity: 0.65 }}>
+                          {
+                            "We can not display this file because it has been deleted."
+                          }
+                        </span>
+                      );
                       break;
                     case "member":
                       break;

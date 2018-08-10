@@ -9,6 +9,12 @@ import User from "./User";
  * @class Messages
  */
 export default class Messages extends EventEmitter {
+  static equal(a, b) {
+    if (!(a && b)) return false;
+    let inequality = 0;
+    inequality += a.uid !== b.uid;
+    return !inequality;
+  }
   /**
    * Gets a message collection, alias to `Fetch.getMessages`
    * @static
