@@ -116,7 +116,7 @@ export default class FEED extends Component {
       >
         {this.renderMessages(this.state.project, this.state.messages)}
         {(this.state.project.history || [])
-          .slice()
+          .slice(0,10)
           .reverse()
           .map(item => (
             <div key={item.uid}>

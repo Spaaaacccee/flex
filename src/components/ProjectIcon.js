@@ -34,6 +34,14 @@ export default class ProjectIcon extends Component {
     });
   }
 
+  shouldComponentUpdate(props,state) {
+    if(props.name !== this.state.name) return true;
+    if(props.selected !== this.state.selected) return true;
+    if(props.thumbnail !== this.state.thumbnail) return true;
+    if(props.icon !== this.state.icon) return true;
+    return false;
+  }
+
   /**
    * Respond to pressing this item
    * @return {void}

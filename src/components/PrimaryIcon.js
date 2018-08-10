@@ -32,6 +32,13 @@ export default class PrimaryIcon extends Component {
     });
   }
 
+  shouldComponentUpdate(props,state) {
+    if(props.text !== this.state.text) return true;
+    if(props.background !== this.state.background) return true;
+    if(props.backgroundColor !== this.state.backgroundColor) return true;
+    return false;
+  }
+
   render() {
     return (
       <div>

@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import { Tag, Icon } from "antd";
 import User from "../classes/User";
+import Project from "../classes/Project";
 
 export default class UserGroupDisplay extends Component {
   state = {
-    people: {},
+    people: {members:[],roles:[]},
     roleInfo: [],
     userInfo: [],
     project: {},
@@ -32,6 +33,14 @@ export default class UserGroupDisplay extends Component {
           .filter(item => item)
       });
     }
+  }
+
+  shouldComponentUpdate(props, state) {
+    if(state.roleInfo !== this.state.roleInfo) return true;
+    if(state.userInfo !== this.state.userInfo) return true;
+    if(JSON.stringify(props.people) !== JSON.stringify(this.state.people)) return true;
+    if(!Project.equal(props.project,this.state.project)) return true;
+    return false;
   }
   render() {
     return (

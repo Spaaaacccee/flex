@@ -11,6 +11,8 @@ import Firebase from "firebase";
 import Project from "../classes/Project";
 import Fetch from "../classes/Fetch";
 import User from "../classes/User";
+import update from 'immutability-helper';
+import $ from '../classes/Utils';
 
 /**
  * Represents a single item that can be displayed by the project navigation sidebar
@@ -73,7 +75,7 @@ export default class ProjectNavigation extends Component {
     openedIndex: -1,
     user: {},
     userData: {},
-    projects: null,
+    projects: {},
     pauseUpdate: false
   };
 
@@ -88,9 +90,7 @@ export default class ProjectNavigation extends Component {
    * @memberof ProjectNavigation
    */
   componentWillReceiveProps(props) {
-    if (props.pauseUpdate) {
-      this.setState({ pauseUpdate: props.pauseUpdate });
-    }
+    this.getProjects(props.items);
     this.setState(
       {
         openedProject: props.openedProject,
@@ -101,7 +101,6 @@ export default class ProjectNavigation extends Component {
           : -1
       },
       () => {
-        this.getProjects();
         User.getCurrentUser().then(user => {
           this.setState({ userData: user });
         });
@@ -109,24 +108,18 @@ export default class ProjectNavigation extends Component {
     );
   }
 
-  shouldComponentUpdate(nextProps) {
-    return !nextProps.pauseUpdate;
-  }
-
-  getProjects() {
-    Promise.all(
-      this.state.items.map(item => {
-        try {
-          return Project.get(item);
-        } catch (e) {
-          console.log(e);
-          return null;
-        }
-      })
-    ).then(projects => {
-      this.setState({
-        projects
-      });
+  getProjects(items) {
+    items.forEach(projectID => {
+      if(!this.state.projects[projectID]) {
+        Fetch.getProjectReference(projectID).child('name').on('value',(snapshot)=>{
+          this.setState(update(this.state,{projects:{[projectID]:{$set:snapshot.val()}}}))
+        })
+      }
+    });
+    this.state.items.forEach(projectID => {
+      if(!$.array(items).exists(projectID)) {
+        Fetch.getProjectReference(projectID).child('name').off();
+      }
     });
   }
 
@@ -183,7 +176,7 @@ export default class ProjectNavigation extends Component {
             selected={this.state.openedIndex === -1}
           />
         </Badge>
-        {this.state.projects ? (
+        {this.state.items ? (
           <Menu
             style={{
               height: "100%",
@@ -191,13 +184,11 @@ export default class ProjectNavigation extends Component {
               border: "none"
             }}
           >
-            {this.state.projects.map((item, index) => (
+            {this.state.items.map((item, index) => (
               <ProjectIcon
-                key={index}
-                name={item ? item.name : null}
-                icon={item ? null : "loading"}
-                thumbnail={item ? item.thumbnail : null}
-                onPress={item ? this.handlePress.bind(this, index) : () => {}}
+                key={item}
+                name={this.state.projects[item] || null}
+                onPress={this.state.projects[item]  ? this.handlePress.bind(this, index) : () => {}}
                 selected={index === this.state.openedIndex}
               />
             ))}

@@ -8,4 +8,13 @@ span.primary-icon {
     color: #BBB;
     padding-top: 10px;
     background-size: cover;
+    animation: fade-in 0.3s ease forwards;
 }
+
+@keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+    }
+  }
