@@ -1,3 +1,5 @@
+import Moment from 'moment';
+
 /**
  * Class for implementing event functionality in classes
  * @export
@@ -76,6 +78,15 @@ class IDGen {
    */
   generateInt(target, min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+}
+
+class DateUtils {
+  relativeTimeThreshold = 1000*60*60;
+  humanise(date) {
+    let moment = new Moment(date);
+    let datenow = Date.now();
+    return ((datenow-date)>this.relativeTimeThreshold?moment.calendar():moment.fromNow()).toLowerCase();
   }
 }
 
@@ -255,6 +266,19 @@ class $ {
    * @memberof $
    */
   string = this.make(new StringUtils());
+
+  /**
+   * @typedef dateUtils
+   * @type {Object}
+   * @property {()=>String} humanise
+   */
+
+  /**
+   * Utilities for dealing with time
+   * @type {(target:Number|Date)=>dateUtils}
+   * @memberof $
+   */
+  date = this.make(new DateUtils());
 
   /**
    * @typedef idGen

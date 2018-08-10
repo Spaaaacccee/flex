@@ -4,7 +4,7 @@ import { Layout, Icon, Modal, message, Popover } from "antd";
 import TopBar from "./TopBar";
 import ProjectSider from "./ProjectSider";
 import PageView from "./PageView";
-import { Pages, UserPage } from "../classes/Page";
+import Page, { Pages, UserPage } from "../classes/Page";
 import Fetch from "../classes/Fetch";
 import Project from "../classes/Project";
 
@@ -16,23 +16,23 @@ const { Header, Footer, Sider, Content } = Layout;
 
 export default class ProjectView extends Component {
   static defaultProps = {
-    projectID: "", // The project ID of the project that should be displayed
+    projectID: null, // The project ID of the project that should be displayed
     siderWidth: 200,
     onNavButtonPress: () => {}, // A callback for when the expand/collapse navigation button is pressed
     onContentPress: () => {}, // A callback for when the main content area is pressed
     onNavDrag: () => {}, // A callback for when an open navigation gesture is performed
     navigationCollapsed: true, // Whether or not the in-project navigation bar should be collapsed
     style: {}, // Pass the style attribute from the Component to the DOM element
-    onMessage:()=>{}
+    onMessage: () => {}
   };
 
   state = {
-    navigationCollapsed: true,
-    projectID: "",
-    openedPage: Pages[0],
-    hideSideBar: false,
     style: {},
+    projectID: null,
     project: {},
+    openedPageIndex: 0,
+    navigationCollapsed: true,
+    hideSideBar: false,
     settingsVisible: false,
     inviteUsersVisible: false,
     pauseSiderUpdate: false
@@ -43,18 +43,19 @@ export default class ProjectView extends Component {
       pauseSiderUpdate: props.pauseSiderUpdate,
       navigationCollapsed: props.navigationCollapsed ? true : false,
       projectID: props.projectID,
-      hideSideBar: !!props.hideSideBar, // By inverting the value of hideSideBar twice, the value is guaranteed to be a boolean
+      hideSideBar: props.hideSideBar,
       siderWidth: props.siderWidth
     });
     if (props.projectID === this.state.projectID) return;
-    if (this.state.project.projectID) {
+    if (this.state.projectID) {
       Fetch.getProjectReference(this.state.projectID).off();
-      this.setState({project:{}});
+      this.setState({ project: {} });
     }
-    Fetch.getProjectReference(props.projectID).on('value',(snapshot)=>{
-      if(snapshot.val()===null) return;
-      this.setState({project:Object.assign(new Project(),snapshot.val())});
-    })
+    if(!props.projectID) return;
+    Fetch.getProjectReference(props.projectID).on("value", snapshot => {
+      if (snapshot.val() === null) return;
+      this.setState({ project: Object.assign(new Project(), snapshot.val()) });
+    });
   }
 
   async applySettings(values) {
@@ -66,9 +67,16 @@ export default class ProjectView extends Component {
   }
 
   render() {
+    const displayPages = this.state.projectID ? Pages : UserPage;
+    const openIndex = Math.min(
+      this.state.openedPageIndex,
+      displayPages.length - 1
+    );
+    const openedPage = displayPages[openIndex];
+    const displayProject = Page.equal(openedPage,UserPage) ? {} : this.state.project;
     return (
       <div
-        className={this.state.openedPage.name}
+        className={openedPage.name}
         style={{
           flex: 1,
           height: "100%",
@@ -95,12 +103,12 @@ export default class ProjectView extends Component {
                   display: "block"
                 }}
               >
-                {this.state.project.name || <Icon type="loading" />}
+                {displayProject.name || <Icon type="loading" />}
               </b>
-              {!!this.state.project.description && (
+              {!!displayProject.description && (
                 <Popover
                   placement="bottomLeft"
-                  content={this.state.project.description}
+                  content={displayProject.description}
                 >
                   <p
                     style={{
@@ -111,16 +119,16 @@ export default class ProjectView extends Component {
                       marginBottom: 0
                     }}
                   >
-                    {this.state.project.description}
+                    {displayProject.description}
                   </p>
                 </Popover>
               )}
             </div>
             <ProjectSider
-              pauseUpdate={this.state.pauseSiderUpdate}
-              items={this.state.projectID ? Pages : UserPage}
+              items={displayPages}
+              index={openIndex}
               onItemSelected={itemSelectedArgs => {
-                this.setState({ openedPage: itemSelectedArgs.item });
+                this.setState({ openedPageIndex: itemSelectedArgs.index });
               }}
               onSettingsPress={() => {
                 this.setState({ settingsVisible: true });
@@ -173,23 +181,26 @@ export default class ProjectView extends Component {
               <PageView
                 onLeftButtonPress={this.props.onNavButtonPress}
                 onContentPress={this.props.onContentPress}
-                project={this.state.project}
-                page={this.state.openedPage}
-                onMessage={(msg)=>{
-                  switch(msg.type) {
-                    case "switchTo":
-                    this.props.onMessage(msg);
-                    break;
+                project={displayProject}
+                page={openedPage}
+                onMessage={(msg => {
+                  switch (msg.type) {
+                    case "navigate":
+                      this.setState({
+                        openedPageIndex: msg.content
+                      });
+                      break;
                     default:
-                    break;
+                      this.props.onMessage(msg);
+                      break;
                   }
-                }}
+                }).bind(this)}
               />
             </div>
           </Layout>
         </Layout>
         <Settings
-          project={this.state.project}
+          project={displayProject}
           visible={this.state.settingsVisible}
           onClose={() => {
             this.setState({ settingsVisible: false });
@@ -201,7 +212,7 @@ export default class ProjectView extends Component {
           }}
         />
         <SendInvite
-          project={this.state.project}
+          project={displayProject}
           visible={this.state.inviteUsersVisible}
           onClose={() => {
             this.setState({ inviteUsersVisible: false });

@@ -343,10 +343,11 @@ export default class Project {
    * Set a single event
    * @param  {String} uid
    * @param  {TimelineEvent} eventData
+   * @param {Boolean} completed
    * @return {void}
    * @memberof Project
    */
-  async setEvent(uid, eventData) {
+  async setEvent(uid, eventData, completed) {
     await this.transaction(project => {
       project.events = (project.events || []).map(
         item => (item.uid === uid ? Object.assign(eventData, { uid }) : item)
@@ -355,7 +356,7 @@ export default class Project {
         User.getCurrentUser().then(user => {
           project.addHistory(
             new HistoryItem({
-              action: "edited",
+              action: completed ? "completed" : "edited",
               doneBy: user.uid,
               type: "event",
               content: new HistoryItemContent({ uid })
@@ -400,6 +401,18 @@ export default class Project {
   async deleteEvent(uid) {
     await this.transaction(project => {
       project.events = (project.events || []).filter(item => item.uid !== uid);
+      if (project instanceof Project) {
+        User.getCurrentUser().then(user => {
+          project.addHistory(
+            new HistoryItem({
+              action: "removed",
+              type: "event",
+              doneBy: user.uid,
+              content: new HistoryItemContent({ uid })
+            })
+          );
+        });
+      }
     });
   }
 
@@ -430,6 +443,8 @@ export default class Project {
     );
 
     const user = User.getCurrentUser().then(user => {
+      let archiveID = $.id().generateUID();
+      let actionType = "added";
       const reader = new FileReader();
       reader.onloadend = async () => {
         const hash = CryptoJS.MD5(reader.result).toString();
@@ -442,6 +457,8 @@ export default class Project {
           state: "unavailable",
           hash
         });
+
+        archiveID = meta.uid;
 
         let task;
 
@@ -460,6 +477,8 @@ export default class Project {
                 message.error(`A file that's exactly the same already exists`);
             } else {
               project.files[existingArchive].files.push(meta);
+              archiveID = project.files[existingArchive].uid;
+              actionType = "updated";
               if (project instanceof Project) {
                 message.info(
                   `We're putting ${file.name} together with an existing copy.`
@@ -472,7 +491,8 @@ export default class Project {
               new DocumentArchive({
                 files: [meta],
                 name: meta.name,
-                type: meta.type
+                type: meta.type,
+                uid: archiveID
               })
             );
             if (project instanceof Project) {
@@ -505,10 +525,10 @@ export default class Project {
             User.getCurrentUser().then(user => {
               this.addHistory(
                 new HistoryItem({
-                  action: "added",
+                  action: actionType,
                   type: "file",
                   doneBy: user.uid,
-                  content: new HistoryItemContent({ uid: meta.uid })
+                  content: new HistoryItemContent({ uid: archiveID })
                 })
               );
             });

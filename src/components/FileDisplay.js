@@ -6,15 +6,20 @@ import Document from "../classes/Document";
 class FileDisplay extends Component {
   state = {
     project: {},
-    file: {}
+    file: {},
+    readOnly: false
   };
-  
+
   componentDidMount() {
     this.componentWillReceiveProps(this.props);
   }
 
   componentWillReceiveProps(props) {
-    this.setState({ project: props.project, file: props.file });
+    this.setState({
+      project: props.project,
+      file: props.file,
+      readOnly: props.readOnly
+    });
   }
 
   render() {
@@ -24,10 +29,11 @@ class FileDisplay extends Component {
           <Card
             style={Object.assign(
               { maxWidth: 350 },
-              this.state.file.files && !this.state.file.files.find(i => i.state !== "unavailable")
+              this.state.file.files &&
+              !this.state.file.files.find(i => i.state !== "unavailable")
                 ? {
                     opacity: 0.65,
-                    pointerEvents: 'none'
+                    pointerEvents: "none"
                   }
                 : {}
             )}
@@ -81,13 +87,15 @@ class FileDisplay extends Component {
               </div>
             } */
             actions={[
-              <Icon
-                type="export"
+              <span
                 onClick={() => {
                   Document.tryPreviewWindow(this.state.file);
                 }}
-              />,
-              <Icon type="ellipsis" />
+              >
+                <Icon type="export" />
+                {" Open"}
+              </span>,
+              ...(this.state.readOnly ? [] : [<Icon type="ellipsis" />])
             ]}
           >
             {this.state.file.uid || this.state.file.source ? (
@@ -169,7 +177,9 @@ class FileDisplay extends Component {
                                   item.dateUploaded
                                 ).toLocaleString()}`,
                                 `${item.size} bytes`
-                              ].map((x, i) => <div key={i}>{x}</div>)}
+                              ].map((x, i) => (
+                                <div key={i}>{x}</div>
+                              ))}
                               <div>
                                 <UserGroupDisplay
                                   people={{ members: [item.uploader] }}
@@ -187,7 +197,6 @@ class FileDisplay extends Component {
             )}
           </Card>
         }
-        <br />
       </div>
     );
   }

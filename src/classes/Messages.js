@@ -96,9 +96,9 @@ export default class Messages extends EventEmitter {
   }
 
   /**
-   * 
-   * @param  {String} id 
-   * @param  {Boolean} isRead 
+   *
+   * @param  {String} id
+   * @param  {Boolean} isRead
    * @return {void}
    * @memberof Messages
    */
@@ -125,6 +125,14 @@ export default class Messages extends EventEmitter {
   async setMessage(messageID, message) {
     await this.setData(messageID, message);
     this.messages[messageID] = Object.assign(message, { uid: messageID });
+  }
+
+  async getMessagesByDateOrder(limit) {
+    return (await Fetch.getMessagesReference(this.uid)
+      .child("messages")
+      .orderByChild("timeSent")
+      .limitToLast(limit || Infinity)
+      .once("value")).val();
   }
 
   startListening() {

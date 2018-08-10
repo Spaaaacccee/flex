@@ -16,6 +16,7 @@ import UserGroupDisplay from "../components/UserGroupDisplay";
 import "./Messages.css";
 import User from "../classes/User";
 import Project from "../classes/Project";
+import Moment from 'moment';
 
 class MESSAGES extends Component {
   /**
@@ -40,9 +41,6 @@ class MESSAGES extends Component {
     this.setState({ user: props.user });
     if (Project.equal(props.project, this.state.project)) return;
     this.setState({ project: props.project });
-    if (!props.project.messengerID) {
-      props.project.setMessenger(props.project.projectID);
-    }
     if (this.state.messenger) {
       this.state.messenger.off();
       this.state.messenger.stopListening();
@@ -83,10 +81,11 @@ class MESSAGES extends Component {
 
   scrollBottom() {
     this.scrollElement.scrollTop = this.scrollElement.scrollHeight;
+    this.trySetRead();
   }
 
   trySetRead() {
-    if ((this.scrollElement.scrollTop === this.scrollElement.scrollHeight)) {
+    if ((Math.ceil(this.scrollElement.scrollTop) >= (this.scrollElement.scrollHeight-this.scrollElement.offsetHeight))) {
       $.object(this.receivedMessages)
         .values()
         .forEach(item => this.state.messenger.setRead(item.uid, true));
@@ -274,9 +273,9 @@ class MESSAGES extends Component {
         <div
           className="messages"
           ref={e => (this.scrollElement = e)}
-          onScroll={e => {
+          onScroll={(e => {
             this.trySetRead();
-          }}
+          }).bind(this)}
         >
           {!!this.state.orderedMessages.length ? (
             <List itemLayout="vertical" style={{ userSelect: "text" }}>
@@ -307,9 +306,9 @@ class MESSAGES extends Component {
                                       inputValue: `${(
                                         this.state.cachedUsers[item.sender] ||
                                         {}
-                                      ).name || item.sender} at ${new Date(
+                                      ).name || item.sender} on ${new Date(
                                         item.timeSent
-                                      ).toLocaleString()}:\n${
+                                      ).toLocaleString()} said:\n${
                                         item.content.bodyText
                                       }\n`
                                     });
@@ -371,7 +370,7 @@ class MESSAGES extends Component {
                       (this.state.cachedUsers[item.sender] || {}).name ||
                       item.sender
                     }
-                    description={new Date(item.timeSent).toLocaleString()}
+                    description={$.date(item.timeSent).humanise()}
                   />
                   <pre
                     style={{

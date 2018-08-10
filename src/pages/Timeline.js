@@ -89,7 +89,8 @@ export default class TIMELINE extends Component {
                                 data.item.uid,
                                 Object.assign(data.item, {
                                   markedAsCompleted: true
-                                })
+                                }),
+                                true
                               );
                             }}
                             event={data.item}

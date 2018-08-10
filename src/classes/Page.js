@@ -16,6 +16,11 @@ import MESSAGES from "../pages/Messages";
  * @class Page
  */
 export default class Page {
+
+  static equal(a,b) {
+    return (a&&b) && a.name===b.name;
+  }
+
   /**
    * The name of the page. This will also be displayed as the name of the associated menu item button.
    * @type {String}
@@ -47,6 +52,11 @@ export default class Page {
    * @memberof Page
    */
   topBarMode;
+  /**
+   * @type {boolean}
+   * @memberof Page
+   */
+  requireProject=true;
   /**
    * Creates an instance of Page.
    * @param {Page} args

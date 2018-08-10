@@ -54,6 +54,7 @@ div.project-view-content {
 
 .widescreen .top-bar-wrapper + div {
   margin-top: 0;
+  overflow: hidden;
 }
 
 .widescreen div.project-view-content {

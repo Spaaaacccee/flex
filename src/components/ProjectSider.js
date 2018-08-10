@@ -47,24 +47,13 @@ export default class ProjectSider extends Component {
   };
   state = {
     items: [],
-    openKey: 0 // The index of the menu item that is currently open.
+    index: 0 // The index of the menu item that is currently open.
   };
   componentWillReceiveProps(props) {
     this.setState({
       items: props.items,
-      pauseUpdate:props.pauseUpdate
+      index: props.index
     });
-    if (props.items.length <= parseInt(this.state.openKey)) {
-      this.setState({ openKey: props.items.length - 1 });
-      this.handleOpenKeyChange(null, -1);
-    }
-    if (props.items && props.items !== this.state.items) {
-      this.handleOpenKeyChange(props.items[0], 0);
-    }
-  }
-
-  shouldComponentUpdate(nextProps) {
-    return !nextProps.pauseUpdate;
   }
 
   /**
@@ -77,10 +66,9 @@ export default class ProjectSider extends Component {
   handleOpenKeyChange(item, index) {
     this.props.onItemSelected(new itemSelectedArgs(item, index));
   }
-
+  
   handleSettingsPress(e) {
     this.props.onSettingsPress();
-    e.preventDefault();
   }
 
   handleInviteUsersPress() {
@@ -99,7 +87,7 @@ export default class ProjectSider extends Component {
     if (t.parentNode !== e.currentTarget) {
       while (t.parentNode.parentNode !== e.currentTarget) t = t.parentNode; // Traverse up the DOM hierarchy until the target element is a menu item.
       this.handleClick({
-        key: String(Array.prototype.indexOf.call(t.parentNode.childNodes, t))
+        key: Array.prototype.indexOf.call(t.parentNode.childNodes, t)
       }); // Get the index of the menu item and emulate click
     }
     e.preventDefault();
@@ -113,10 +101,11 @@ export default class ProjectSider extends Component {
    * @memberof ProjectSider
    */
   handleClick(e) {
-    this.setState({ openKey: parseInt(e.key) });
+    let index = parseInt(e.key);
+    this.setState({ index });
     this.handleOpenKeyChange(
-      this.state.items[parseInt(e.key)],
-      parseInt(e.key)
+      this.state.items[index],
+      index
     );
   }
 
@@ -143,10 +132,10 @@ export default class ProjectSider extends Component {
             onClick={this.handleClick.bind(this)}
             defaultSelectedKeys={["0"]}
             mode="inline"
-            selectedKeys={[String(this.state.openKey) || "0"]}
+            selectedKeys={[""+(this.state.index||0)]}
           >
             {this.state.items.map((item, index) => (
-              <Menu.Item key={index}>
+              <Menu.Item key={""+index}>
                 <Icon type={item.icon} />
                 <span>{item.name}</span>
               </Menu.Item>

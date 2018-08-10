@@ -9,12 +9,12 @@ export class HistoryItem {
    */
   uid = $.id().generateUID();
   /**
-   * @type {"added" | "removed" | "edited" | "other"}
+   * @type {"added" | "removed" | "edited"}
    * @memberof HistoryItem
    */
   action;
   /**
-   * @type {"description" | "name" | "message" | "event" | "file" | "member" | "other"}
+   * @type {"description" | "name" | "message" | "event" | "file" | "member"}
    * @memberof HistoryItem
    */
   type;

@@ -5,6 +5,7 @@ import User from "../classes/User";
 import TopBar from "./TopBar";
 import Project from "../classes/Project";
 import "./PageView.css";
+import Page from "../classes/Page";
 const { Meta } = Card;
 
 /**
@@ -30,8 +31,9 @@ export default class PageView extends Component {
 
   componentWillReceiveProps(props) {
     if (
-      props.page !== this.state.page ||
-      props.project.projectID !== this.state.project.projectID
+      !Page.equal(props.page, this.state.page) ||
+      (props.project.projectID !== this.state.project.projectID &&
+        props.project.projectID)
     ) {
       this.setState({ animation: false }, () => {
         this.setState({ page: props.page, animation: true });
@@ -40,7 +42,10 @@ export default class PageView extends Component {
     User.getCurrentUser().then(user => {
       if (user) this.setState({ user });
     });
-    if (!props.project || Object.keys(props.project).length === 0) {
+    if (
+      (!props.project || Object.keys(props.project).length === 0) &&
+      props.page.requireProject
+    ) {
       this.setState({ loading: true, project: {} });
       return;
     }
@@ -50,9 +55,7 @@ export default class PageView extends Component {
   }
 
   render() {
-    const displayContent =
-      !!this.state.page.content &&
-      (!this.state.loading || this.state.page.requireProject === false);
+    const displayContent = !!this.state.page.content && !this.state.loading;
     const firstTimeDisplayed = !this.contentDisplayed && displayContent;
     this.contentDisplayed = displayContent;
     return (

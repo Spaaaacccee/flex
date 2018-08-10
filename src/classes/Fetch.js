@@ -14,14 +14,14 @@ export default class Fetch {
   /**
    * Get a collection document reference using collection ID
    * @static
-   * @param  {String} id 
-  * @return {Firebase.database.Reference} The reference to the collection document
+   * @param  {String} id
+   * @return {Firebase.database.Reference} The reference to the collection document
    * @memberof Fetch
    */
   static getMessagesReference(id) {
     return Fire.firebase()
       .database()
-      .ref("messages/" + id);
+      .ref("messages/" + (id || ""));
   }
 
   /**
@@ -34,7 +34,7 @@ export default class Fetch {
   static getProjectReference(id) {
     return Fire.firebase()
       .database()
-      .ref("projects/" + id);
+      .ref("projects/" + (id || ""));
   }
 
   /**
@@ -47,7 +47,7 @@ export default class Fetch {
   static getUserReference(id) {
     return Fire.firebase()
       .database()
-      .ref("users/" + id);
+      .ref("users/" + (id || ""));
   }
 
   /**
@@ -72,20 +72,20 @@ export default class Fetch {
     return Object.assign(target, source);
   }
 
-/**
- * Gets an actual message collection using ID
- * @static
- * @param  {String} id The collectionID of the project to get
- * @return {Messages} The messages collection
- * @memberof Fetch
- */
-static async getMessages(id) {
-  return await Fetch.getObject(
-    await Fetch.getMessagesReference(id),
-    Messages,
-    true
-  )
-}
+  /**
+   * Gets an actual message collection using ID
+   * @static
+   * @param  {String} id The collectionID of the project to get
+   * @return {Messages} The messages collection
+   * @memberof Fetch
+   */
+  static async getMessages(id) {
+    return await Fetch.getObject(
+      await Fetch.getMessagesReference(id),
+      Messages,
+      true
+    );
+  }
 
   /**
    * Gets an actual project using ID.

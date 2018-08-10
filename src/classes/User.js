@@ -7,6 +7,7 @@ import Member from "./Member";
 import { message } from "antd";
 import $ from "./Utils";
 import Messages from "./Messages";
+import { HistoryItem } from "./History";
 
 /**
  * Represents a single user
@@ -14,7 +15,6 @@ import Messages from "./Messages";
  * @class User
  */
 export default class User {
-
   /**
    * Checks whether two users are exactly the same
    * @static
@@ -24,7 +24,7 @@ export default class User {
    * @memberof Project
    */
   static equal(a, b) {
-    if(!(a && b)) return false;
+    if (!(a && b)) return false;
     let inequality = 0;
     inequality += a.uid !== b.uid;
     inequality += a.lastUpdatedTimestamp !== b.lastUpdatedTimestamp;
@@ -291,7 +291,7 @@ export default class User {
           // Add the project to joinedProjects
           user.joinedProjects.push(projectID);
           // Remove the project invite
-          $.array(user.pendingInvites).remove(projectID)
+          $.array(user.pendingInvites).remove(projectID);
           // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
           if (user instanceof User) {
             Project.get(projectID).then(project => {
@@ -325,6 +325,13 @@ export default class User {
         project.owner = this.uid;
         project.members = project.members || [];
         project.members.push(new Member(this.uid, []));
+        project.history.push(
+          new HistoryItem({
+            action: "created",
+            type: "project",
+            doneBy: this.uid
+          })
+        );
         // Create a new messages instance in the database
         await Messages.forceUpdate(project.projectID, new Messages());
         // Update the database with this project
@@ -342,11 +349,13 @@ export default class User {
   async leaveProject(projectID) {
     if ($.array(this.joinedProjects).exists(projectID)) {
       this.transaction(user => {
-        $.array(user.joinedProjects).remove(projectID)
+        $.array(user.joinedProjects).remove(projectID);
         if (user instanceof User) {
           Project.get(projectID).then(project => {
             project.setMembers(
-              $.array(project.members).removeIf((item, index) => item.uid === user.uid)
+              $.array(project.members).removeIf(
+                (item, index) => item.uid === user.uid
+              )
             );
             message.success(`Successfully left ${project.name}`);
           });

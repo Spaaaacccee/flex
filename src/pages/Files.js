@@ -97,7 +97,8 @@ export default class FILES extends Component {
                 {this.state.view === "thumbnail" ? (
                   (filesToRender || []).map((item, index) => (
                     <div key={item.uid || "" + index}>
-                      <FileDisplay project={this.state.project} file={item} />
+                      <FileDisplay project={this.state.project} file={item} readOnly/>
+                      <br/>
                     </div>
                   ))
                 ) : (

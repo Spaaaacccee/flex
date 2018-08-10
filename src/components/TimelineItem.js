@@ -21,7 +21,8 @@ export default class TimelineItem extends Component {
     project: {},
     event: {},
     eventEditorVisible: false,
-    frozen: false
+    frozen: false,
+    readOnly: false
   };
 
   componentDidMount() {
@@ -29,7 +30,11 @@ export default class TimelineItem extends Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState({ event: props.event, project: props.project });
+    this.setState({
+      event: props.event,
+      project: props.project,
+      readOnly: !!props.readOnly
+    });
   }
 
   shouldComponentUpdate(props, state) {
@@ -37,6 +42,8 @@ export default class TimelineItem extends Component {
     if (this.state.frozen !== state.frozen) return true;
     if (this.state.project !== state.project) return true;
     if (this.state.event !== state.event) return true;
+    if (!this.state.readOnly !== !props.readOnly) return true;
+    if (!this.state.readOnly !== !state.readOnly) return true;
     if (this.state.eventEditorVisible !== state.eventEditorVisible) return true;
     if (!Project.equal(props.project, this.state.project)) return true;
     if (JSON.stringify(props.event) !== JSON.stringify(this.state.event))
@@ -58,7 +65,7 @@ export default class TimelineItem extends Component {
         <Card
           style={isComplete ? { opacity: 0.65 } : {}}
           actions={
-            this.state.event.uid
+            this.state.event.uid && !this.state.readOnly
               ? isComplete
                 ? [
                     <Icon
@@ -93,11 +100,23 @@ export default class TimelineItem extends Component {
           }
         >
           <Card.Meta
-            style={isComplete ? { textDecoration: "line-through" } : {}}
-            title={this.state.event.name || <Icon type="loading" />}
+            title={
+              <span>
+                {isComplete && (
+                  <div style={{ fontVariant: "small-caps",marginBottom:10 }}><Icon type="check"/>{" complete"}</div>
+                )}
+                <span
+                  style={isComplete ? { textDecoration: "line-through" } : {}}
+                >
+                  {this.state.event.name}
+                </span>
+              </span>
+            }
             description={
               this.state.event.date ? (
-                <div>
+                <div
+                  style={isComplete ? { textDecoration: "line-through" } : {}}
+                >
                   <div>{new Date(this.state.event.date).toDateString()}</div>
                   <div>{this.state.event.description || ""}</div>
                   <div>
