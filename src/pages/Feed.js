@@ -116,7 +116,7 @@ export default class FEED extends Component {
       >
         {this.renderMessages(this.state.project, this.state.messages)}
         {(this.state.project.history || [])
-          .slice(0,10)
+          .slice(0, 10)
           .reverse()
           .map(item => (
             <div key={item.uid}>
@@ -226,6 +226,12 @@ export default class FEED extends Component {
               <br />
             </div>
           ))}
+        <Card>
+          <div style={{ opacity: 0.65 }}>
+            This marks the start of your project journey.
+          </div>
+        </Card>
+        <br />
       </div>
     );
   }
