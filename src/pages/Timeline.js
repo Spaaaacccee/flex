@@ -28,8 +28,13 @@ export default class TIMELINE extends Component {
     this.setState({
       user: props.user,
       project: props.project,
-      events: props.project.getEventsInDateOrder()
     });
+    if(props.project && props.project.getEventsInDateOrder) {
+      console.log(props.project.getEventsInDateOrder)
+      this.setState({events: props.project.getEventsInDateOrder()})
+    } else {
+      this.setState({events:[]})
+    }
   }
 
   shouldComponentUpdate(props, state) {
