@@ -37,7 +37,7 @@ export default class ProjectInvitation extends Component {
             </Popconfirm>
           ]}
         >
-          <ProjectIcon name={this.state.project.name} />
+          <ProjectIcon name={this.state.project.name} readOnly />
           <br />
           <Card.Meta
             title={this.state.project.name}

@@ -190,7 +190,7 @@ export default class FEED extends Component {
             padding: 10
           }}
         >
-          <ProjectIcon name={this.state.project.name} style={{ margin: -5 }} />
+          <ProjectIcon name={this.state.project.name} style={{ margin: -5 }} readOnly/>
           <h2 style={{ fontWeight: 700, fontSize: 20, marginTop: 10 }}>
             {this.state.project.name}
           </h2>

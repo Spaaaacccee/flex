@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 
-
 import "./ProjectSider.css";
 
 import { Icon, Menu, Button } from "antd";
@@ -42,7 +41,7 @@ class SiderItemDef {
 export default class ProjectSider extends Component {
   static defaultProps = {
     onItemSelected: () => {}, // A callback when an item is selected
-    onSettingsPress:()=>{},
+    onSettingsPress: () => {},
     items: [] // The buttons that will be rendered by default
   };
   state = {
@@ -66,7 +65,7 @@ export default class ProjectSider extends Component {
   handleOpenKeyChange(item, index) {
     this.props.onItemSelected(new itemSelectedArgs(item, index));
   }
-  
+
   handleSettingsPress(e) {
     this.props.onSettingsPress();
   }
@@ -103,17 +102,14 @@ export default class ProjectSider extends Component {
   handleClick(e) {
     let index = parseInt(e.key);
     this.setState({ index });
-    this.handleOpenKeyChange(
-      this.state.items[index],
-      index
-    );
+    this.handleOpenKeyChange(this.state.items[index], index);
   }
 
   render() {
     return (
       <div className="project-sider">
         <Button
-        onClick={this.handleInviteUsersPress.bind(this)}
+          onClick={this.handleInviteUsersPress.bind(this)}
           type="primary"
           icon="user-add"
           style={{
@@ -121,7 +117,11 @@ export default class ProjectSider extends Component {
             margin: "18px 22px",
             marginTop: 0,
             height: 40,
-            boxShadow: '0 5px 20px rgba(4, 111, 210, 0.239)'
+            borderRadius: 80,
+            background: "#E6F7FF",
+            color: "#1990FF",
+            borderColor: "#E6F7FF",
+            fontWeight: 600
           }}
         >
           Invite Users
@@ -132,22 +132,23 @@ export default class ProjectSider extends Component {
             onClick={this.handleClick.bind(this)}
             defaultSelectedKeys={["0"]}
             mode="inline"
-            selectedKeys={[""+(this.state.index||0)]}
+            selectedKeys={["" + (this.state.index || 0)]}
           >
             {this.state.items.map((item, index) => (
-              <Menu.Item key={""+index}>
+              <Menu.Item key={"" + index}>
                 <Icon type={item.icon} />
                 <span>{item.name}</span>
               </Menu.Item>
             ))}
           </Menu>
         </div>
-        <Menu
-          className="sider-menu settings-menu"
-          selectedKeys={null}>
-          <Menu.Item key="settings" style={{paddingLeft:24}}
-          onMouseUp={this.handleSettingsPress.bind(this)}
-          onTouchEnd={this.handleSettingsPress.bind(this)}>
+        <Menu className="sider-menu settings-menu" selectedKeys={null}>
+          <Menu.Item
+            key="settings"
+            style={{ paddingLeft: 24 }}
+            onMouseUp={this.handleSettingsPress.bind(this)}
+            onTouchEnd={this.handleSettingsPress.bind(this)}
+          >
             <Icon type="setting" />
             <span>Project Settings</span>
           </Menu.Item>

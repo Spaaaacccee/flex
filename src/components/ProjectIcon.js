@@ -23,7 +23,8 @@ export default class ProjectIcon extends Component {
     thumbnail: "",
     name: "",
     icon: "",
-    style: {}
+    style: {},
+    readOnly: false
   };
 
   componentWillReceiveProps(props) {
@@ -32,11 +33,13 @@ export default class ProjectIcon extends Component {
       selected: props.selected,
       thumbnail: props.thumbnail,
       icon: props.icon,
-      style: props.style || {}
+      style: props.style || {},
+      readOnly: props.readOnly
     });
   }
 
   shouldComponentUpdate(props, state) {
+    if (props.readOnly !== this.state.readOnly) return true;
     if (props.name !== this.state.name) return true;
     if (props.selected !== this.state.selected) return true;
     if (props.thumbnail !== this.state.thumbnail) return true;
@@ -68,7 +71,10 @@ export default class ProjectIcon extends Component {
   render() {
     return (
       <div
-        style={this.props.style}
+        style={Object.assign(
+          this.state.readOnly ? { pointerEvents: "none" } : {},
+          this.props.style
+        )}
         className={"project-icon " + (this.state.selected ? "selected" : "")}
         onMouseUp={this.handlePress.bind(this)}
         onTouchStart={this.handlePress.bind(this)}

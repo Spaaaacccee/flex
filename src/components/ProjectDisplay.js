@@ -45,9 +45,7 @@ export default class ProjectDisplay extends Component {
         >
           <ProjectIcon
             name={this.state.project.name}
-            onPress={() => {
-              this.props.onOpenPressed();
-            }}
+            readOnly
           />
           <br />
           <Card.Meta
