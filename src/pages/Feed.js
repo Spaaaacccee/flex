@@ -13,6 +13,8 @@ import MessageDisplay from "../components/MessageDisplay";
 import TimelineItem from "../components/TimelineItem";
 import FileDisplay from "../components/FileDisplay";
 import Moment from "moment";
+import ProjectDisplay from "../components/ProjectDisplay";
+import ProjectIcon from "../components/ProjectIcon";
 
 const { Meta } = Card;
 
@@ -72,9 +74,14 @@ export default class FEED extends Component {
         .filter(item => !(item.readBy || {})[this.state.user.uid]);
       return Object.keys(messages).length && newMessages.length ? (
         <div>
-          <h2>
-            <Icon type="message" />
-            {" New Messages"}
+          <h2
+            style={{
+              textTransform: "uppercase",
+              opacity: 0.65,
+              fontSize: 13
+            }}
+          >
+            {"New Messages"}
           </h2>
           <br />
           <Card
@@ -116,24 +123,31 @@ export default class FEED extends Component {
 
   renderEvents(project) {
     if (project && project.events && project.events.length) {
-      let events = project.events.filter(
-        item =>
-          new Moment(item.date).diff(new Moment(), "days") <= 5 &&
-          new Moment(item.date).diff(new Moment(), "days") >= 0
-      ).filter(item=>!item.markedAsCompleted);
+      let events = project.events
+        .filter(
+          item =>
+            new Moment(item.date).diff(new Moment(), "days") <= 5 &&
+            new Moment(item.date).diff(new Moment(), "days") >= 0
+        )
+        .filter(item => !item.markedAsCompleted);
       if (events.length) {
         return (
           <div>
-            <h2>
-              <Icon type="calendar" />
-              {" Upcoming Events"}
+            <h2
+              style={{
+                textTransform: "uppercase",
+                opacity: 0.65,
+                fontSize: 13
+              }}
+            >
+              {"Upcoming Events"}
             </h2>
             <br />
             {events
               .map(item => (
                 <div key={item.uid}>
                   <TimelineItem
-                  user={this.state.user}
+                    user={this.state.user}
                     onComplete={() => {
                       project.setEvent(
                         item.uid,
@@ -168,22 +182,59 @@ export default class FEED extends Component {
           textAlign: "center"
         }}
       >
+        <div
+          style={{
+            textAlign: "left",
+            maxWidth: 500,
+            margin: "auto",
+            padding: 10
+          }}
+        >
+          <ProjectIcon name={this.state.project.name} style={{ margin: -5 }} />
+          <h2 style={{ fontWeight: 700, fontSize: 20, marginTop: 10 }}>
+            {this.state.project.name}
+          </h2>
+          <p style={{ opacity: 0.65 }}>
+            {this.state.project.description}
+            <br />
+          </p>
+          {this.state.project.creator ? (
+            <div style={{ marginTop: 10 }}>
+              <span style={{ opacity: 0.65 }}>Created by </span>
+              <UserGroupDisplay
+                style={{ display: "inline-block" }}
+                people={{ members: [this.state.project.creator] }}
+                project={this.state.project}
+              />
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+        <br />
         {this.renderMessages(this.state.project, this.state.messages)}
         {this.renderEvents(this.state.project)}
-        <h2>
-          <Icon type="clock-circle-o" />
-          {" Recent"}
+        <h2
+          style={{
+            textTransform: "uppercase",
+            opacity: 0.65,
+            fontSize: 13
+          }}
+        >
+          {"Changes"}
         </h2>
         <br />
         {(this.state.project.history || [])
           .slice()
           .reverse()
-          .slice(0,10)
+          .slice(0, 10)
           .map(item => (
             <div key={item.uid}>
               <Card
                 actions={
-                  item.type === "name" || item.type === "description"
+                  item.type === "name" ||
+                  item.type === "description" ||
+                  item.type === "project"
                     ? null
                     : [
                         <span
@@ -228,13 +279,16 @@ export default class FEED extends Component {
                       <UserGroupDisplay
                         style={{ display: "inline-block", marginBottom: -8 }}
                         people={{ members: [item.doneBy] }}
+                        project={this.state.project}
                       />
                       {`${item.action} ${
                         item.type === "name" || item.type === "description"
                           ? "the project"
-                          : $.string(item.type.substring(0, 1)).isVowel()
-                            ? "an"
-                            : "a"
+                          : item.type === "project"
+                            ? "this"
+                            : $.string(item.type.substring(0, 1)).isVowel()
+                              ? "an"
+                              : "a"
                       } ${item.type} ${$.date(item.doneAt).humanise()}`}
                     </span>
                   }
@@ -304,9 +358,7 @@ export default class FEED extends Component {
             </div>
           ))}
         <Card>
-          <div style={{ opacity: 0.65 }}>
-            Nothing else to show.
-          </div>
+          <div style={{ opacity: 0.65 }}>Nothing else to show.</div>
         </Card>
         <br />
       </div>

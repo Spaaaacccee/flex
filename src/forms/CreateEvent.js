@@ -107,7 +107,7 @@ export default class CreateEvent extends Component {
     return (
       <div>
         <h2 style={{ marginBottom: 20 }}>
-          {this.state.mode === "edit" ? "Edit Event" : "New Event"}
+          {this.state.mode === "edit" ? "Event" : "New Event"}
         </h2>
         <div style={{ display: this.state.mode === "edit" ? "block" : "none" }}>
           <h3>Marked as completed</h3>

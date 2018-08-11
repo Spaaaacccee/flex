@@ -65,9 +65,9 @@ export class RoleList extends Array {
  * @class HSL
  */
 class HSL {
-  hue;
-  saturation;
-  lightness;
+  h;
+  s;
+  l;
   /**
    * Creates an instance of HSL colour.
    * @param  {number} h 0 (red) to 360 (red)
@@ -76,8 +76,8 @@ class HSL {
    * @memberof HSL
    */
   constructor(h, s, l) {
-    this.hue = h;
-    this.saturation = s;
-    this.lightness = l;
+    this.h = h;
+    this.s = s;
+    this.l = l;
   }
 }

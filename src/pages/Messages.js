@@ -380,7 +380,7 @@ class MESSAGES extends Component {
             Helvetica, "PingFang SC", "Microsoft YaHei UI", sans-serif`
                     }}
                   >
-                    {item.content.bodyText}
+                    {(item.content||{}).bodyText}
                   </pre>{" "}
                   {this.state.messageStatus[item.uid] === "processing" && (
                     <Icon type="loading" />

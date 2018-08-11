@@ -61,17 +61,25 @@ export default class USER extends Component {
         {this.state.user && this.state.user.uid ? (
           <div style={{ textAlign: "left" }}>
             <div style={{ textAlign: "center" }}>
-              <div>
+              <div className="user-page-icon">
                 <UserIcon thumbnail={this.state.user.profilePhoto} />
               </div>
               <div style={{ marginBottom: 4 }}>
-                <b>{this.state.user.name || "Guest"}</b>
+                <span
+                  style={{
+                    fontSize: 24,
+                    fontWeight: 700
+                  }}
+                >
+                  {this.state.user.name || <Icon type="loading"/>}
+                </span>
               </div>
               <div style={{ marginBottom: 20 }}>
-                {this.state.user.email || "No email address"}
+                {this.state.user.email || <Icon type="loading"/>}
               </div>
               <div>
                 <Button
+                  type="primary"
                   onClick={() => {
                     Fire.firebase()
                       .auth()
@@ -99,7 +107,7 @@ export default class USER extends Component {
                     textAlign: "center"
                   }}
                 >
-                  <div style={{ fontWeight: 200, fontSize: 36 }}>
+                  <div style={{ fontWeight: 600, fontSize: 36 }}>
                     {this.state.user.projects
                       ? this.state.user.projects.length
                       : 0}
@@ -112,7 +120,7 @@ export default class USER extends Component {
                     textAlign: "center"
                   }}
                 >
-                  <div style={{ fontWeight: 200, fontSize: 36 }}>
+                  <div style={{ fontWeight: 600, fontSize: 36 }}>
                     {this.state.user.joinedProjects
                       ? this.state.user.joinedProjects.length
                       : 0}
@@ -125,7 +133,7 @@ export default class USER extends Component {
                     textAlign: "center"
                   }}
                 >
-                  <div style={{ fontWeight: 200, fontSize: 36 }}>
+                  <div style={{ fontWeight: 600, fontSize: 36 }}>
                     {this.state.user.pendingInvites
                       ? this.state.user.pendingInvites.length
                       : 0}

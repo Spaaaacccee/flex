@@ -18,7 +18,8 @@ export default class RolePicker extends Component {
     roles: [],
     availableRoles: [],
     inputVisible: false,
-    selectorIsOpen: false
+    selectorIsOpen: false,
+    readOnly: false
   };
   componentWillReceiveProps(props) {
     this.setState({ readOnly: props.readOnly });
@@ -40,8 +41,8 @@ export default class RolePicker extends Component {
           <Tag
             closable={!this.state.readOnly}
             key={item.uid}
-            color={`hsl(${item.color.hue},${item.color.saturation}%,${
-              item.color.lightness
+            color={`hsl(${item.color.h},${item.color.s}%,${
+              item.color.l
             }%)`}
             afterClose={() => {
               this.setState(
@@ -121,8 +122,8 @@ export default class RolePicker extends Component {
                     key={item.uid}
                     value={item.uid}
                     style={{
-                      color: `hsl(${item.color.hue},${item.color.saturation}%,${
-                        item.color.lightness
+                      color: `hsl(${item.color.h},${item.color.s}%,${
+                        item.color.l
                       }%)`
                     }}
                   >

@@ -58,7 +58,7 @@ export default class TIMELINE extends Component {
     return (
       <div style={{ textAlign: "center" }}>
         {this.state.events && !!this.state.events.length ? (
-          <Timeline style={{ maxWidth: 300, textAlign: "left" }}>
+          <Timeline style={{ maxWidth: 500, textAlign: "left" }}>
             {(() => {
               let events = this.state.events.map((item, index) => ({
                 date: item.date,

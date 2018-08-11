@@ -5,6 +5,7 @@ import Project from "../classes/Project";
 import $ from "../classes/Utils";
 import RolePicker from "./RolePicker";
 import update from "immutability-helper";
+import UserIcon from "./UserIcon";
 
 /**
  * Displays member information in a card.
@@ -16,7 +17,9 @@ export default class MemberDisplay extends Component {
   state = {
     member: {},
     project: {},
-    user: {}
+    user: {},
+    readOnly: false,
+    cardless: false
   };
 
   componentDidMount() {
@@ -32,11 +35,17 @@ export default class MemberDisplay extends Component {
     // Set the member and project information immediately. It is ok if either of these values are null because these are handled later on
     this.setState({
       member: props.member,
-      project: props.project
+      project: props.project,
+      readOnly: props.readOnly,
+      cardless: props.cardless
     });
   }
 
   shouldComponentUpdate(props, state) {
+    if (props.cardless !== this.state.cardless) return true;
+    if (state.cardless !== this.state.cardless) return true;
+    if (props.readOnly !== this.state.readOnly) return true;
+    if (state.readOnly !== this.state.readOnly) return true;
     if (this.state.user !== state.user) return true;
     if (this.state.member !== state.member) return true;
     if (this.state.project !== state.project) return true;
@@ -51,16 +60,35 @@ export default class MemberDisplay extends Component {
   render() {
     return (
       <div>
-        <Card style={{ textAlign: "left" }}>
+        <Card
+          style={Object.assign(
+            { textAlign: "center", maxWidth: 400 },
+            this.state.cardless ? { background: "none", boxShadow: "none" } : {}
+          )}
+        >
           <Card.Meta
-            avatar={<Avatar src={this.state.user.profilePhoto} />}
             title={
-              <div>
+              <div
+                style={{
+                  fontSize: 20,
+                  fontWeight: 700
+                }}
+              >
+                <UserIcon thumbnail={this.state.user.profilePhoto} />
+                <div style={{ paddingBottom: 10 }} />
                 {this.state.user.name || <Icon type="loading" />}{" "}
                 {this.state.user.uid &&
                   this.state.user.uid === this.state.project.owner && (
                     <Popover content="Owner">
-                      <Icon type="star" />
+                      <Icon
+                        type="star"
+                        style={{
+                          fontSize: 14,
+                          position: "absolute",
+                          padding: "0 5px",
+                          color: "#1890FF"
+                        }}
+                      />
                     </Popover>
                   )}
               </div>
@@ -71,16 +99,17 @@ export default class MemberDisplay extends Component {
                 <br />
                 <br />
                 <RolePicker
+                  readOnly={this.state.readOnly}
                   roles={(this.state.project.roles || []).filter(item =>
-                    $
-                      .array(this.state.member.roles || [])
-                      .existsIf(x => x === item.uid)
+                    $.array(this.state.member.roles || []).existsIf(
+                      x => x === item.uid
+                    )
                   )}
                   availableRoles={(this.state.project.roles || []).filter(
                     item =>
-                      !$
-                        .array(this.state.member.roles || [])
-                        .exists(x => x === item.uid)
+                      !$.array(this.state.member.roles || []).exists(
+                        x => x === item.uid
+                      )
                   )}
                   onRolesChange={roles => {
                     this.setState(
@@ -88,7 +117,7 @@ export default class MemberDisplay extends Component {
                     );
                     this.state.project.setMember(
                       this.state.member.uid,
-                      roles.map(item=>item.uid)
+                      roles.map(item => item.uid)
                     );
                   }}
                 />

@@ -33,7 +33,7 @@ export default class FileUploadModal extends Component {
         ]}
       >
         <div>
-          <h2>Add a file</h2>
+          <h2>File</h2>
           <Tabs>
             <Tabs.TabPane tab="Local Device" key="1">
               <FileUpload project={this.state.project} />

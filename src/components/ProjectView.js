@@ -60,8 +60,8 @@ export default class ProjectView extends Component {
 
   async applySettings(values) {
     let project = this.state.project;
-    await project.setName(values.general.name);
-    await project.setDescription(values.general.description);
+    if(project.name !== values.general.name) await project.setName(values.general.name);
+    if(project.description !== values.general.description) await project.setDescription(values.general.description);
     await project.setRoles(values.roles);
     return true;
   }

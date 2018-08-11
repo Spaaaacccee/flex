@@ -3,9 +3,9 @@ span.primary-icon {
     border-radius: 52px;
     width: 52px;
     height: 52px;
-    background-color: rgb(57, 159, 255);
+    background-color: #F4F4F4;
     font-size: 20px;
-    color: rgb(230, 247, 255);
+    color: rgb(187, 187, 187);
     padding-top: 10px;
     background-size: cover;
     animation: fade-in 0.3s ease forwards;

@@ -1,7 +1,7 @@
 .project-icon.selected .primary-icon {
-  background-color: rgb(255, 255, 255);
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.239);
-  color: rgb(24, 144, 255);
+  background-color: #1890FF;
+  box-shadow: rgba(4, 111, 210, 0.24) 0px 5px 20px;
+  color: rgb(255, 255, 255);
   border-radius: 20px;
 }
 
@@ -12,17 +12,17 @@
 }
 
 .project-icon span.primary-icon:hover {
-    background-color: rgb(77, 167, 252);
+    background-color: rgb(236, 247, 252)
 }
 
 .project-icon span.primary-icon:active {
-    background-color: rgb(10, 129, 240);
+    background-color: rgb(206, 234, 247)
 }
 
 .project-icon.selected span.primary-icon:hover {
-    background-color: #ffffff;
+    background-color: #1890FF;
 }
 
 .project-icon.selected span.primary-icon:active {
-    background-color: #ffffff;
+    background-color: #1890FF;
 }

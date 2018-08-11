@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import Role from "../classes/Role";
-import { List, Button, Input, Icon } from "antd";
+import { List, Button, Input, Icon, Popover } from "antd";
 import update from "immutability-helper";
+import {HuePicker} from 'react-color';
 
 /**
  * A panel to edit roles of a project
@@ -42,6 +43,9 @@ export default class RoleEditor extends Component {
               dataSource={this.state.values}
               renderItem={(item, index) => (
                 <List.Item
+                style={{
+                  alignItems:'center'
+                }}
                   actions={[
                     <a
                       onClick={() => {
@@ -60,17 +64,35 @@ export default class RoleEditor extends Component {
                   ]}
                   key={item.uid + index}
                 >
-                  <div
-                    style={{
-                      width: 35,
-                      marginRight: 10,
-                      borderRadius: 50,
-                      backgroundColor: `hsl(${item.color.hue},${
-                        item.color.saturation
-                      }%,${item.color.lightness}%)`,
-                      border: "7px solid white"
-                    }}
-                  />
+                <Popover trigger="click" placement="topLeft" content={
+                  <HuePicker color={this.state.values[index].color} onChangeComplete={(c)=>{
+                    this.setState(
+                      update(this.state, {
+                        values: {
+                          [index]: {
+                            color: {h:{ $set: c.hsl.h }}
+                          }
+                        }
+                      }),
+                      () => {
+                        this.props.onChange(this.state.values);
+                      }
+                    );
+                  }}/>
+                }>
+                <div
+                style={{
+                  transition:'background-color 0.3s ease',
+                  width: 35,
+                  marginRight: 10,
+                  borderRadius: 50,
+                  backgroundColor: `hsl(${item.color.h},${
+                    item.color.s
+                  }%,${item.color.l}%)`,
+                  border: "7px solid white"
+                }}
+              />
+              </Popover>
                   <Input
                     value={this.state.values[index].name}
                     placeholder="New Role"

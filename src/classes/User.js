@@ -325,6 +325,7 @@ export default class User {
         project.owner = this.uid;
         project.members = project.members || [];
         project.members.push(new Member(this.uid, []));
+        project.history = project.history || [];
         project.history.push(
           new HistoryItem({
             action: "created",

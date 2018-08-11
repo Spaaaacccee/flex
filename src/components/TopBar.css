@@ -37,7 +37,7 @@ div.top.top-bar-wrapper:after {
   backdrop-filter: none;
 }
 
-.transparent .top div.top-bar > .heading {
+.transparent.top div.top-bar > .heading {
   opacity: 0;
 }
 

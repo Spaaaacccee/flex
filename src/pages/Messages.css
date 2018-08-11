@@ -45,6 +45,10 @@ div.ant-list-vertical .ant-list-item-meta-title {
   padding: 0;
 }
 
+.Discuss div.top-bar-wrapper:after {
+  opacity: 1
+}
+
 .widescreen .Discuss .project-view-inner-content {
     height: 100%;
 }

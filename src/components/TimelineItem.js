@@ -105,7 +105,12 @@ export default class TimelineItem extends Component {
         >
           <Card.Meta
             title={
-              <span>
+              <span
+                style={{
+                  fontSize: 20,
+                  fontWeight: 700
+                }}
+              >
                 <span
                   style={{
                     fontWeight: "bold",
@@ -140,7 +145,7 @@ export default class TimelineItem extends Component {
                         return true;
                       return false;
                     })() && (
-                      <div style={{ marginBottom: 10, color: "#40A9FF" }}>
+                      <div style={{ marginBottom: 10, color: "#FFD800" }}>
                         <Icon type="user" />
                         {" You're involved"}
                       </div>
@@ -167,32 +172,22 @@ export default class TimelineItem extends Component {
                       </div>
                     )}
                 </span>
-                <span
-                  style={isComplete ? { textDecoration: "line-through" } : {}}
-                >
-                  {this.state.event.name}
-                </span>
+                <span>{this.state.event.name}</span>
               </span>
             }
             description={
               this.state.event.date ? (
-                <div
-                  style={Object.assign(
-                    { columns: 2, columnWidth: 150 },
-                    isComplete ? { textDecoration: "line-through" } : {}
-                  )}
-                >
+                <div style={{ columns: 2, columnWidth: 150 }}>
                   <div>
                     <div>{new Date(this.state.event.date).toDateString()}</div>
                     <div>{this.state.event.description || ""}</div>
-                    <br/>
+                    <br />
                   </div>
                   <div>
                     <UserGroupDisplay
                       project={this.state.project}
                       people={this.state.event.involvedPeople}
-                    >
-                    </UserGroupDisplay>
+                    />
                   </div>
                 </div>
               ) : (

@@ -10,22 +10,45 @@ import ProjectIcon from "./ProjectIcon";
  */
 export default class ProjectDisplay extends Component {
   static defaultProps = {
-    onOpenPressed:()=>{}
-  }
+    onOpenPressed: () => {}
+  };
   state = {
-    project: {}
+    project: {},
+    style: {},
+    readOnly: false
   };
   componentWillReceiveProps(props) {
-    this.setState({ project: props.project||this.state.project });
+    this.setState({
+      project: props.project || this.state.project,
+      style: props.style || {},
+      readOnly: !!props.readOnly
+    });
   }
   render() {
     return (
       <div>
         <Card
-        actions={[<span onClick={()=>{this.props.onOpenPressed()}}><Icon type="export"/>{" Open"}</span>]}
-          style={{ width: 250, textAlign:'center', display:'inline-block' }}
+          actions={!this.state.readOnly?[
+            <span
+              onClick={() => {
+                this.props.onOpenPressed();
+              }}
+            >
+              <Icon type="export" />
+              {" Open"}
+            </span>
+          ]:null}
+          style={Object.assign(
+            { width: 250, textAlign: "center", display: "inline-block" },
+            this.state.style
+          )}
         >
-          <ProjectIcon name={this.state.project.name} />
+          <ProjectIcon
+            name={this.state.project.name}
+            onPress={() => {
+              this.props.onOpenPressed();
+            }}
+          />
           <br />
           <Card.Meta
             title={this.state.project.name}

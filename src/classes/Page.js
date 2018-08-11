@@ -72,9 +72,10 @@ export default class Page {
  */
 export const Pages = [
   new Page({
-    name: "Feed",
+    name: "Home",
     icon: "appstore-o",
-    content: FEED
+    content: FEED,
+    topBarMode: "adaptive"
   }),
   new Page({
     name: "Members",

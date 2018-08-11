@@ -184,6 +184,7 @@ class FileDisplay extends Component {
                                 <div>
                                   <UserGroupDisplay
                                     people={{ members: [item.uploader] }}
+                                    project={this.state.project}
                                   />
                                 </div>
                               </div>

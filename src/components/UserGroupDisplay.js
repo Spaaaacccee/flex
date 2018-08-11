@@ -1,13 +1,14 @@
 import React, { Component } from "react";
-import { Tag, Icon } from "antd";
+import { Tag, Icon, Popover } from "antd";
 import User from "../classes/User";
 import Project from "../classes/Project";
 import shallowEqualArrays from "shallow-equal/arrays";
+import MemberDisplay from "./MemberDisplay";
 export default class UserGroupDisplay extends Component {
   static defaultProps = {
-    people: {members:[],roles:[]},
-    project:{}
-  }
+    people: { members: [], roles: [] },
+    project: {}
+  };
   state = {
     people: { members: [], roles: [] },
     roleInfo: [],
@@ -40,11 +41,23 @@ export default class UserGroupDisplay extends Component {
   }
 
   shouldComponentUpdate(props, state) {
-    if (!shallowEqualArrays(state.roleInfo||[], this.state.roleInfo||[])) return true;
-    if (!shallowEqualArrays(state.userInfo||[], this.state.userInfo||[])) return true;
-    if (!shallowEqualArrays(this.state.people.members||[], props.people.members||[]))
+    if (!shallowEqualArrays(state.roleInfo || [], this.state.roleInfo || []))
       return true;
-    if (!shallowEqualArrays(this.state.people.roles||[], props.people.roles||[]))
+    if (!shallowEqualArrays(state.userInfo || [], this.state.userInfo || []))
+      return true;
+    if (
+      !shallowEqualArrays(
+        this.state.people.members || [],
+        props.people.members || []
+      )
+    )
+      return true;
+    if (
+      !shallowEqualArrays(
+        this.state.people.roles || [],
+        props.people.roles || []
+      )
+    )
       return true;
     if (!Project.equal(props.project, this.state.project)) return true;
     return false;
@@ -59,9 +72,7 @@ export default class UserGroupDisplay extends Component {
         {this.state.roleInfo
           .map((item, index) => (
             <Tag
-              color={`hsl(${item.color.hue},${item.color.saturation}%,${
-                item.color.lightness
-              }%)`}
+              color={`hsl(${item.color.h},${item.color.s}%,${item.color.l}%)`}
               key={"R:" + index}
             >
               {<Icon type="tags" />}
@@ -73,11 +84,13 @@ export default class UserGroupDisplay extends Component {
           ))
           .concat(
             this.state.userInfo.map((item, index) => (
-              <Tag key={"U:" + index}>
-                {<Icon type="user" />}
-                {` `}
-                {item.name}
-              </Tag>
+              <Popover trigger="click" key={"U:" + index} content={this.state.project && this.state.project.members?<MemberDisplay member={this.state.project.members.find(x=>x.uid===item.uid)} project={this.state.project} readOnly cardless/>:null}>
+                <Tag>
+                  {<Icon type="user" />}
+                  {` `}
+                  {item.name}
+                </Tag>
+              </Popover>
             ))
           )}
       </div>
