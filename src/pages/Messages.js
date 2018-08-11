@@ -16,7 +16,7 @@ import UserGroupDisplay from "../components/UserGroupDisplay";
 import "./Messages.css";
 import User from "../classes/User";
 import Project from "../classes/Project";
-import Moment from 'moment';
+import Moment from "moment";
 
 class MESSAGES extends Component {
   /**
@@ -46,7 +46,6 @@ class MESSAGES extends Component {
       this.state.messenger.stopListening();
     }
     this.receivedMessages = {};
-    console.log("received props");
     this.setState({ messenger: null, orderedMessages: [] }, () => {
       Messages.get(props.project.messengerID || props.project.projectID).then(
         messenger => {
@@ -85,7 +84,10 @@ class MESSAGES extends Component {
   }
 
   trySetRead() {
-    if ((Math.ceil(this.scrollElement.scrollTop) >= (this.scrollElement.scrollHeight-this.scrollElement.offsetHeight))) {
+    if (
+      Math.ceil(this.scrollElement.scrollTop) >=
+      this.scrollElement.scrollHeight - this.scrollElement.offsetHeight
+    ) {
       $.object(this.receivedMessages)
         .values()
         .forEach(item => this.state.messenger.setRead(item.uid, true));
@@ -93,7 +95,6 @@ class MESSAGES extends Component {
   }
 
   handleOnDelete(msgID) {
-    console.log("got delete event");
     if (this.receivedMessages[msgID]) {
       delete this.receivedMessages[msgID];
       const i = $.array(this.state.orderedMessages).indexOf(
@@ -110,7 +111,6 @@ class MESSAGES extends Component {
   }
 
   handleOnEdit(msg) {
-    console.log("got edit event");
     if (this.receivedMessages[msg.uid]) {
       this.receivedMessages[msg.uid] = msg;
       const i = $.array(this.state.orderedMessages).indexOf(
@@ -127,7 +127,6 @@ class MESSAGES extends Component {
   }
 
   handleOnReceive(msg) {
-    console.log("got receive event");
     if (!this.receivedMessages[msg.uid]) {
       this.receivedMessages[msg.uid] = msg;
       this.setState(
@@ -359,7 +358,7 @@ class MESSAGES extends Component {
                             </div>
                           }
                         >
-                          <Icon type="ellipsis" style={{ cursor: "pointer" }} />
+                          <Button icon="ellipsis" shape="circle" size="small" />
                         </Popover>
                       );
                     })()
@@ -451,13 +450,9 @@ class MESSAGES extends Component {
                 console.log(e);
                 e.preventDefault();
                 if (e.shiftKey) {
-                  this.setState(
-                    update(this.state, {
-                      inputValue: {
-                        $set: $.string(e.target.value + "\n").trimLeft()
-                      }
-                    })
-                  );
+                  this.setState({
+                    inputValue: $.string(e.target.value + "\n").trimLeft()
+                  });
                 } else {
                   if (this.state.consoleStatus === "editing") {
                     this.handleEdit();

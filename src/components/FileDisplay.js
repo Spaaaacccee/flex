@@ -155,41 +155,43 @@ class FileDisplay extends Component {
                             ? 1
                             : -1
                     )
-                    .map((item, index) => (
-                      <List.Item
-                        key={index}
-                        actions={[
-                          <Button
-                            icon="export"
-                            shape="circle"
-                            onClick={() => {
-                              Document.tryPreviewWindow(item);
-                            }}
-                          />
-                        ]}
-                      >
-                        <List.Item.Meta
-                          title={`Version ${index + 1}`}
-                          description={
-                            <div>
-                              {[
-                                `${new Date(
-                                  item.dateUploaded
-                                ).toLocaleString()}`,
-                                `${item.size} bytes`
-                              ].map((x, i) => (
-                                <div key={i}>{x}</div>
-                              ))}
+                    .map((item, index) =>
+                      (
+                        <List.Item
+                          key={index}
+                          actions={[
+                            <Button
+                              icon="export"
+                              shape="circle"
+                              onClick={() => {
+                                Document.tryPreviewWindow(item);
+                              }}
+                            />
+                          ]}
+                        >
+                          <List.Item.Meta
+                            title={`Version ${index + 1}`}
+                            description={
                               <div>
-                                <UserGroupDisplay
-                                  people={{ members: [item.uploader] }}
-                                />
+                                {[
+                                  `${new Date(
+                                    item.dateUploaded
+                                  ).toLocaleString()}`,
+                                  `${item.size} bytes`
+                                ].map((x, i) => (
+                                  <div key={i}>{x}</div>
+                                ))}
+                                <div>
+                                  <UserGroupDisplay
+                                    people={{ members: [item.uploader] }}
+                                  />
+                                </div>
                               </div>
-                            </div>
-                          }
-                        />
-                      </List.Item>
-                    ))}
+                            }
+                          />
+                        </List.Item>
+                      )
+                    ).reverse()}
                 </List>
               </div>
             ) : (

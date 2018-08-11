@@ -33,13 +33,14 @@ export default class FileUploadModal extends Component {
         ]}
       >
         <div>
-          <h2>File Upload</h2>
+          <h2>Add a file</h2>
           <Tabs>
             <Tabs.TabPane tab="Local Device" key="1">
               <FileUpload project={this.state.project} />
             </Tabs.TabPane>
             <Tabs.TabPane tab="Google Drive" key="2">
               <div style={{ textAlign: "center", margin: 20 }}>
+                <p>Link a Google Drive file to this project.</p>
                 <GooglePicker
                   clientId={
                     "79879287257-rhkuuivs2g1rm3gc8r64rfq0ibumgo06.apps.googleusercontent.com"
@@ -56,7 +57,7 @@ export default class FileUploadModal extends Component {
                         );
                       });
                     }
-                  }}
+                  }}  
                   authImmediate={false}
                   viewId={"DOCS"}
                 >

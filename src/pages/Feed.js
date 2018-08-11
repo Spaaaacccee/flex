@@ -24,7 +24,8 @@ export default class FEED extends Component {
   state = {
     project: {},
     user: {},
-    messenger: null
+    messenger: null,
+    messages: []
   };
 
   componentDidMount() {
@@ -53,8 +54,12 @@ export default class FEED extends Component {
 
   shouldComponentUpdate(props, state) {
     if (!Project.equal(props.project, this.state.project)) return true;
-    if (state.messages !== this.state.messages) return true;
-    if (!Messages.equal(state.messenger, this.state.messenger)) return true;
+    if (
+      state.messages &&
+      state.messages[0] &&
+      state.messages[0].uid !== (this.state.messages[0] || {}).uid
+    )
+      return true;
     return false;
   }
 
@@ -66,40 +71,89 @@ export default class FEED extends Component {
         .sort((a, b) => a.timeSent - b.timeSent)
         .filter(item => !(item.readBy || {})[this.state.user.uid]);
       return Object.keys(messages).length && newMessages.length ? (
-        <Card
-          title="Unread messages"
-          actions={[
-            <span
-              onClick={() => {
-                this.props.passMessage({
-                  type: "navigate",
-                  content: 3
-                });
-              }}
-            >
-              <Icon type="export" />
-              {" See all"}
-            </span>
-          ]}
-        >
-          <div style={{ margin: "-24px 0" }}>
-            <List itemLayout="vertical">
-              {newMessages.map(item => (
-                <MessageDisplay
-                  key={item.uid}
-                  messageID={item.uid}
-                  message={item}
-                  project={this.state.project}
-                  user={this.state.user}
-                />
-              ))}
-            </List>
-          </div>
+        <div>
+          <h2>
+            <Icon type="message" />
+            {" New Messages"}
+          </h2>
           <br />
-        </Card>
+          <Card
+            actions={[
+              <span
+                onClick={() => {
+                  this.props.passMessage({
+                    type: "navigate",
+                    content: 3
+                  });
+                }}
+              >
+                <Icon type="export" />
+                {" See all"}
+              </span>
+            ]}
+          >
+            <div style={{ margin: "-24px 0" }}>
+              <List itemLayout="vertical">
+                {newMessages.map(item => (
+                  <MessageDisplay
+                    key={item.uid}
+                    messageID={item.uid}
+                    message={item}
+                    project={this.state.project}
+                    user={this.state.user}
+                  />
+                ))}
+              </List>
+            </div>
+            <br />
+          </Card>
+        </div>
       ) : null;
     } else {
       return null;
+    }
+  }
+
+  renderEvents(project) {
+    if (project && project.events && project.events.length) {
+      let events = project.events.filter(
+        item =>
+          new Moment(item.date).diff(new Moment(), "days") <= 5 &&
+          new Moment(item.date).diff(new Moment(), "days") >= 0
+      ).filter(item=>!item.markedAsCompleted);
+      if (events.length) {
+        return (
+          <div>
+            <h2>
+              <Icon type="calendar" />
+              {" Upcoming Events"}
+            </h2>
+            <br />
+            {events
+              .map(item => (
+                <div key={item.uid}>
+                  <TimelineItem
+                  user={this.state.user}
+                    onComplete={() => {
+                      project.setEvent(
+                        item.uid,
+                        Object.assign(item, {
+                          markedAsCompleted: true
+                        }),
+                        true
+                      );
+                    }}
+                    project={this.state.project}
+                    event={item}
+                  />
+                  <br />
+                </div>
+              ))
+              .reverse()}
+            <br />
+          </div>
+        );
+      }
     }
   }
 
@@ -115,105 +169,128 @@ export default class FEED extends Component {
         }}
       >
         {this.renderMessages(this.state.project, this.state.messages)}
+        {this.renderEvents(this.state.project)}
+        <h2>
+          <Icon type="clock-circle-o" />
+          {" Recent"}
+        </h2>
+        <br />
         {(this.state.project.history || [])
-          .slice(0, 10)
+          .slice()
           .reverse()
+          .slice(0,10)
           .map(item => (
             <div key={item.uid}>
               <Card
-                actions={[
-                  <span
-                    onClick={() => {
-                      this.props.passMessage({
-                        type: "navigate",
-                        content: (() => {
-                          switch (item.type) {
-                            case "member":
-                              return 1;
-                            case "event":
-                              return 2;
-                            case "file":
-                              return 4;
-                            default:
-                              break;
-                          }
-                        })()
-                      });
-                    }}
-                  >
-                    <Icon type="export" />
-                    {` Show in ${(() => {
-                      switch (item.type) {
-                        case "event":
-                          return "Timeline";
-                        case "file":
-                          return "Files";
-                        case "member":
-                          return "Members";
-                        default:
-                          break;
-                      }
-                    })()}`}
-                  </span>
-                ]}
+                actions={
+                  item.type === "name" || item.type === "description"
+                    ? null
+                    : [
+                        <span
+                          onClick={() => {
+                            this.props.passMessage({
+                              type: "navigate",
+                              content: (() => {
+                                switch (item.type) {
+                                  case "member":
+                                    return 1;
+                                  case "event":
+                                    return 2;
+                                  case "file":
+                                    return 4;
+                                  default:
+                                    break;
+                                }
+                              })()
+                            });
+                          }}
+                        >
+                          <Icon type="export" />
+                          {` ${(() => {
+                            switch (item.type) {
+                              case "event":
+                                return "Timeline";
+                              case "file":
+                                return "Files";
+                              case "member":
+                                return "Members";
+                              default:
+                                break;
+                            }
+                          })()}`}
+                        </span>
+                      ]
+                }
               >
-                <p>
+                <div>
                   {
                     <span>
                       <UserGroupDisplay
-                        style={{ display: "inline-block" }}
+                        style={{ display: "inline-block", marginBottom: -8 }}
                         people={{ members: [item.doneBy] }}
                       />
                       {`${item.action} ${
-                        $.string(item.type.substring(0, 1)).isVowel()
-                          ? "an"
-                          : "a"
+                        item.type === "name" || item.type === "description"
+                          ? "the project"
+                          : $.string(item.type.substring(0, 1)).isVowel()
+                            ? "an"
+                            : "a"
                       } ${item.type} ${$.date(item.doneAt).humanise()}`}
                     </span>
                   }
-                </p>
+                </div>
                 {(() => {
                   switch (item.type) {
                     case "event":
-                      return (this.state.project.events || []).filter(
-                        x => x.uid === item.content.uid
-                      )[0] ? (
-                        <TimelineItem
-                          readOnly
-                          project={this.state.project}
-                          event={
-                            this.state.project.events.filter(
-                              x => x.uid === item.content.uid
-                            )[0]
-                          }
-                        />
-                      ) : (
-                        <span style={{ opacity: 0.65 }}>
-                          {
-                            "We can not display this event because it has been deleted."
-                          }
-                        </span>
+                      return (
+                        <div>
+                          <br />
+                          {(this.state.project.events || []).find(
+                            x => x.uid === item.content.uid
+                          ) ? (
+                            <TimelineItem
+                              readOnly
+                              user={this.state.user}
+                              project={this.state.project}
+                              event={this.state.project.events.find(
+                                x => x.uid === item.content.uid
+                              )}
+                            />
+                          ) : (
+                            <span style={{ opacity: 0.65 }}>
+                              {
+                                "We can not display this event because it has been deleted."
+                              }
+                            </span>
+                          )}
+                        </div>
                       );
                       break;
                     case "file":
-                      return (this.state.project.files || []).filter(
+                      let file = (this.state.project.files || []).find(
                         x => x.uid === item.content.uid
-                      )[0] ? (
-                        <FileDisplay
-                          readOnly
-                          project={this.state.project}
-                          file={
-                            this.state.project.files.filter(
-                              x => x.uid === item.content.uid
-                            )[0]
-                          }
-                        />
-                      ) : (
-                        <span style={{ opacity: 0.65 }}>
-                          {
-                            "We can not display this file because it has been deleted."
-                          }
-                        </span>
+                      );
+                      if (!file)
+                        file = (this.state.project.files || [])
+                          .filter(x => x.uploadType === "cloud")
+                          .find(x => x.source.id === item.content.uid);
+                      return (
+                        <div>
+                          <br />
+                          {file ? (
+                            <FileDisplay
+                              readOnly
+                              project={this.state.project}
+                              file={file}
+                            />
+                          ) : (
+                            <span style={{ opacity: 0.65 }}>
+                              {
+                                "We can not display this file because it has been deleted."
+                              }
+                            </span>
+                          )}
+                        </div>
                       );
                       break;
                     case "member":
@@ -228,7 +305,7 @@ export default class FEED extends Component {
           ))}
         <Card>
           <div style={{ opacity: 0.65 }}>
-            This marks the start of your project journey.
+            Nothing else to show.
           </div>
         </Card>
         <br />

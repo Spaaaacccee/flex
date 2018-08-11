@@ -76,7 +76,7 @@ export default class ProjectIcon extends Component {
             this.state.icon
               ? <Icon type={this.state.icon}/>
               : this.state.name
-                ? this.state.name.substring(0, 1)
+                ? this.state.name.substring(0, 2).trim()
                 : <Icon type="loading"/>
           }
         />

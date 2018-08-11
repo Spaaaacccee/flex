@@ -39,8 +39,8 @@ export default class TopBar extends Component {
         className={`top-bar-wrapper ${
           this.state.visibilityMode === "adaptive" &&
           this.state.scrollPosition <= 0
-            ? "transparent"
-            : ""
+            ? "transparent top"
+            : this.state.scrollPosition <= 0 ? "top":""
         }`}
       >
         <Header className={`top-bar`}>

@@ -16,7 +16,8 @@
     "react": "^16.4.0",
     "react-dom": "^16.4.0",
     "react-google-picker": "0.0.8",
-    "react-scripts": "1.1.4"
+    "react-scripts": "1.1.4",
+    "shallow-equal": "^1.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

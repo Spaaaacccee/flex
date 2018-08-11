@@ -4,7 +4,7 @@ div.project-view-sider {
   opacity: 1;
   background: #fff;
   box-sizing: border-box;
-  box-shadow: 0px 2px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: 0px 2px 50px rgba(0, 0, 0, 0.336);
 }
 
 div.project-view-sider .project-sider {

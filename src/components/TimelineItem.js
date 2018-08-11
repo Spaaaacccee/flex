@@ -5,6 +5,8 @@ import UserGroupDisplay from "./UserGroupDisplay";
 import update from "immutability-helper";
 import CreateEvent from "../forms/CreateEvent";
 import TimelineEvent from "../classes/TimelineEvent";
+import Moment from "moment";
+import User from "../classes/User";
 
 /**
  * Displays an timeline event as a card
@@ -19,6 +21,7 @@ export default class TimelineItem extends Component {
   };
   state = {
     project: {},
+    user: {},
     event: {},
     eventEditorVisible: false,
     frozen: false,
@@ -33,6 +36,7 @@ export default class TimelineItem extends Component {
     this.setState({
       event: props.event,
       project: props.project,
+      user: props.user,
       readOnly: !!props.readOnly
     });
   }
@@ -41,11 +45,13 @@ export default class TimelineItem extends Component {
     // If the new properties are not different to the values in the existing state, then don't update anything.
     if (this.state.frozen !== state.frozen) return true;
     if (this.state.project !== state.project) return true;
+    if (this.state.user !== state.user) return true;
     if (this.state.event !== state.event) return true;
     if (!this.state.readOnly !== !props.readOnly) return true;
     if (!this.state.readOnly !== !state.readOnly) return true;
     if (this.state.eventEditorVisible !== state.eventEditorVisible) return true;
     if (!Project.equal(props.project, this.state.project)) return true;
+    if (!User.equal(state.user, this.state.user)) return true;
     if (JSON.stringify(props.event) !== JSON.stringify(this.state.event))
       return true;
     return false;
@@ -66,45 +72,101 @@ export default class TimelineItem extends Component {
           style={isComplete ? { opacity: 0.65 } : {}}
           actions={
             this.state.event.uid && !this.state.readOnly
-              ? isComplete
-                ? [
-                    <Icon
-                      type="edit"
-                      onClick={() => {
-                        this.setState({ eventEditorVisible: true });
-                        this.props.onEdit();
-                      }}
-                    />
-                  ]
-                : [
-                    <Icon
-                      type="edit"
-                      onClick={() => {
-                        this.setState({ eventEditorVisible: true });
-                        this.props.onEdit();
-                      }}
-                    />,
-                    <Icon
-                      type="check"
-                      onClick={() => {
-                        this.props.onComplete();
-                        this.setState(
-                          update(this.state, {
-                            event: { markedAsCompleted: { $set: true } }
-                          })
-                        );
-                      }}
-                    />
-                  ]
+              ? [
+                  <span
+                    onClick={() => {
+                      this.setState({ eventEditorVisible: true });
+                      this.props.onEdit();
+                    }}
+                  >
+                    <Icon type="edit" />
+                    {" Edit"}
+                  </span>,
+                  ...(!isComplete
+                    ? [
+                        <span
+                          onClick={() => {
+                            this.props.onComplete();
+                            this.setState(
+                              update(this.state, {
+                                event: { markedAsCompleted: { $set: true } }
+                              })
+                            );
+                          }}
+                        >
+                          <Icon type="check" />
+                          {" Complete"}
+                        </span>
+                      ]
+                    : [])
+                ]
               : null
           }
         >
           <Card.Meta
             title={
               <span>
-                {isComplete && (
-                  <div style={{ fontVariant: "small-caps",marginBottom:10 }}><Icon type="check"/>{" complete"}</div>
-                )}
+                <span
+                  style={{
+                    fontWeight: "bold",
+                    fontSize: 13,
+                    textTransform: "uppercase"
+                  }}
+                >
+                  {isComplete && (
+                    <div style={{ marginBottom: 10 }}>
+                      <Icon type="check" />
+                      {" complete"}
+                    </div>
+                  )}
+                  {!isComplete &&
+                    (() => {
+                      if (!this.state.user.uid) return false;
+                      if (!this.state.event.involvedPeople) return false;
+                      if (
+                        (this.state.event.involvedPeople.members || []).find(
+                          item => item.uid === this.state.user.uid
+                        )
+                      )
+                        return true;
+                      if (
+                        (this.state.event.involvedPeople.roles || []).find(
+                          role =>
+                            this.state.project.members
+                              .find(x => x.uid === this.state.user.uid)
+                              .roles.find(x => x === role)
+                        )
+                      )
+                        return true;
+                      return false;
+                    })() && (
+                      <div style={{ marginBottom: 10, color: "#40A9FF" }}>
+                        <Icon type="user" />
+                        {" You're involved"}
+                      </div>
+                    )}
+                  {!isComplete &&
+                    new Moment(this.state.event.date).diff(
+                      new Moment(),
+                      "days"
+                    ) <= 14 &&
+                    new Moment(this.state.event.date).diff(
+                      new Moment(),
+                      "days"
+                    ) >= 0 && (
+                      <div style={{ marginBottom: 10 }}>
+                        <Icon type="clock-circle-o" />{" "}
+                        {Moment(this.state.event.date).calendar(null, {
+                          sameDay: "[Today]",
+                          nextDay: "[Tomorrow]",
+                          nextWeek: "[Upcoming] dddd",
+                          lastDay: "[Yesterday]",
+                          lastWeek: "[Last] dddd",
+                          sameElse: "DD/MM/YYYY"
+                        })}
+                      </div>
+                    )}
+                </span>
                 <span
                   style={isComplete ? { textDecoration: "line-through" } : {}}
                 >
@@ -115,16 +177,22 @@ export default class TimelineItem extends Component {
             description={
               this.state.event.date ? (
                 <div
-                  style={isComplete ? { textDecoration: "line-through" } : {}}
+                  style={Object.assign(
+                    { columns: 2, columnWidth: 150 },
+                    isComplete ? { textDecoration: "line-through" } : {}
+                  )}
                 >
-                  <div>{new Date(this.state.event.date).toDateString()}</div>
-                  <div>{this.state.event.description || ""}</div>
                   <div>
-                    <br />
+                    <div>{new Date(this.state.event.date).toDateString()}</div>
+                    <div>{this.state.event.description || ""}</div>
+                    <br/>
+                  </div>
+                  <div>
                     <UserGroupDisplay
                       project={this.state.project}
                       people={this.state.event.involvedPeople}
-                    />
+                    >
+                    </UserGroupDisplay>
                   </div>
                 </div>
               ) : (

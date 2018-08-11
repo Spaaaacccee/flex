@@ -196,7 +196,7 @@ export default class FILES extends Component {
                                                 }
                                               />
                                             </List.Item>
-                                          ))}
+                                          )).reverse()}
                                       </List>
                                     </div>
                                   )}

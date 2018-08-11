@@ -30,7 +30,6 @@ export default class TIMELINE extends Component {
       project: props.project,
     });
     if(props.project && props.project.getEventsInDateOrder) {
-      console.log(props.project.getEventsInDateOrder)
       this.setState({events: props.project.getEventsInDateOrder()})
     } else {
       this.setState({events:[]})
@@ -80,6 +79,7 @@ export default class TIMELINE extends Component {
                       case "card":
                         return (
                           <TimelineItem
+                          user={this.state.user}
                             onComplete={() => {
                               this.setState(
                                 update(this.state, {

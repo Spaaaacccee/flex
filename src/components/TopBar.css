@@ -28,16 +28,16 @@ div.top-bar-wrapper:after {
   transform: translateY(-52px);
 }
 
-div.transparent.top-bar-wrapper:after {
+div.top.top-bar-wrapper:after {
   opacity: 0;
 }
 
-.transparent div.top-bar {
+.top div.top-bar {
   background: transparent;
   backdrop-filter: none;
 }
 
-.transparent div.top-bar > .heading {
+.transparent .top div.top-bar > .heading {
   opacity: 0;
 }
 

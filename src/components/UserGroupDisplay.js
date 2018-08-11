@@ -2,10 +2,14 @@ import React, { Component } from "react";
 import { Tag, Icon } from "antd";
 import User from "../classes/User";
 import Project from "../classes/Project";
-
+import shallowEqualArrays from "shallow-equal/arrays";
 export default class UserGroupDisplay extends Component {
-  state = {
+  static defaultProps = {
     people: {members:[],roles:[]},
+    project:{}
+  }
+  state = {
+    people: { members: [], roles: [] },
     roleInfo: [],
     userInfo: [],
     project: {},
@@ -17,7 +21,7 @@ export default class UserGroupDisplay extends Component {
   }
 
   componentWillReceiveProps(props) {
-    this.setState({style:props.style})
+    this.setState({ style: props.style });
     let people = props.people || {};
     let project = props.project || {};
     this.setState({ people, project });
@@ -36,15 +40,22 @@ export default class UserGroupDisplay extends Component {
   }
 
   shouldComponentUpdate(props, state) {
-    if(state.roleInfo !== this.state.roleInfo) return true;
-    if(state.userInfo !== this.state.userInfo) return true;
-    if(JSON.stringify(props.people) !== JSON.stringify(this.state.people)) return true;
-    if(!Project.equal(props.project,this.state.project)) return true;
+    if (!shallowEqualArrays(state.roleInfo||[], this.state.roleInfo||[])) return true;
+    if (!shallowEqualArrays(state.userInfo||[], this.state.userInfo||[])) return true;
+    if (!shallowEqualArrays(this.state.people.members||[], props.people.members||[]))
+      return true;
+    if (!shallowEqualArrays(this.state.people.roles||[], props.people.roles||[]))
+      return true;
+    if (!Project.equal(props.project, this.state.project)) return true;
     return false;
   }
   render() {
     return (
       <div style={this.state.style}>
+        {!!(
+          (this.state.people.members || []).length +
+          (this.state.people.roles || []).length
+        ) && this.props.children}
         {this.state.roleInfo
           .map((item, index) => (
             <Tag

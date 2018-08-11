@@ -1,7 +1,7 @@
 .project-icon.selected .primary-icon {
-  background-color: rgb(24, 144, 255);
-  box-shadow: 0 5px 20px rgba(4, 111, 210, 0.239);
-  color: white;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.239);
+  color: rgb(24, 144, 255);
   border-radius: 20px;
 }
 
@@ -12,17 +12,17 @@
 }
 
 .project-icon span.primary-icon:hover {
-    background-color: #f7f7f7;
+    background-color: rgb(77, 167, 252);
 }
 
 .project-icon span.primary-icon:active {
-    background-color: #eeeeee;
+    background-color: rgb(10, 129, 240);
 }
 
 .project-icon.selected span.primary-icon:hover {
-    background-color: #40a9ff;
+    background-color: #ffffff;
 }
 
 .project-icon.selected span.primary-icon:active {
-    background-color: #096dd9;
+    background-color: #ffffff;
 }
