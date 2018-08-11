@@ -14,6 +14,10 @@ class MessageDisplay extends Component {
     sender: {}
   };
 
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
   componentWillReceiveProps(props) {
     this.setState({
       user: props.user,
@@ -69,7 +73,7 @@ class MessageDisplay extends Component {
             {targetMessage.content.bodyText}
           </pre>
         </List.Item>
-    ) : null;
+    ) : <div></div>;
   }
 }
 

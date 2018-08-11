@@ -149,18 +149,21 @@ export default class Messages extends EventEmitter {
       this.messages = this.messages || {};
       this.messages[message.uid] = message;
       this.emit("message", message);
+      this.emit("change", this.messages);
     });
     ref.on("child_changed", snapshot => {
       const message = snapshot.val();
       this.messages = this.messages || {};
       this.messages[message.uid] = message;
       this.emit("edit", message);
+      this.emit("change", this.messages);
     });
     ref.on("child_removed", snapshot => {
       const message = snapshot.val();
       this.messages[message.uid] = null;
       delete this.messages[message.uid];
       this.emit("delete", message);
+      this.emit("change", this.messages);
     });
   }
 

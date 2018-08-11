@@ -9,7 +9,9 @@
       }
     },
     "messages": {
-      ".indexOn": "timeSent"
+      "$messengerID": {
+        "messages": { ".indexOn": "timeSent" }
+      }
     }
   }
 }

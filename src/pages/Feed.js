@@ -15,6 +15,7 @@ import FileDisplay from "../components/FileDisplay";
 import Moment from "moment";
 import ProjectDisplay from "../components/ProjectDisplay";
 import ProjectIcon from "../components/ProjectIcon";
+import update from "immutability-helper";
 
 const { Meta } = Card;
 
@@ -43,36 +44,49 @@ export default class FEED extends Component {
       !this.state.mesenger ||
       this.state.messenger.uid !== props.project.messengerID
     ) {
-      Messages.get(props.project.messengerID).then(messenger => {
-        if (messenger) {
-          this.setState({ messenger });
-          messenger
-            .getMessagesByDateOrder(10)
-            .then(messages => this.setState({ messages }));
+      Messages.get(props.project.messengerID || props.project.projectID).then(
+        messenger => {
+          if (messenger) {
+            this.setState(
+              {
+                messenger,
+                messages: $.object(messenger.messages)
+                  .values()
+                  .sort((a, b) => a.timeSent - b.timeSent)
+              },
+              () => {
+                messenger.on("message", msg => {
+                  if (!this.state.messages.find(x => x.uid === msg.uid))
+                    this.setState(
+                      update(this.state, { messages: { $push: [msg] } })
+                    );
+                });
+                messenger.startListening();
+              }
+            );
+          }
         }
-      });
+      );
     }
+  }
+
+  componentWillUnmount() {
+    if (this.state.messenger) this.state.messenger.off();
   }
 
   shouldComponentUpdate(props, state) {
     if (!Project.equal(props.project, this.state.project)) return true;
-    if (
-      state.messages &&
-      state.messages[0] &&
-      state.messages[0].uid !== (this.state.messages[0] || {}).uid
-    )
+    if ((state.messages || []).length !== (this.state.messages || []).length)
       return true;
     return false;
   }
 
   renderMessages(project, messages) {
     if (project && messages) {
-      let newMessages = $.object(messages)
-        .values()
-        .splice(0, 5)
-        .sort((a, b) => a.timeSent - b.timeSent)
-        .filter(item => !(item.readBy || {})[this.state.user.uid]);
-      return Object.keys(messages).length && newMessages.length ? (
+      let newMessages = messages
+        .filter(item => !(item.readBy || {})[this.state.user.uid])
+        .slice(0, 5);
+      return messages.length && newMessages.length ? (
         <div>
           <h2
             style={{
@@ -104,7 +118,6 @@ export default class FEED extends Component {
                 {newMessages.map(item => (
                   <MessageDisplay
                     key={item.uid}
-                    messageID={item.uid}
                     message={item}
                     project={this.state.project}
                     user={this.state.user}
@@ -112,8 +125,8 @@ export default class FEED extends Component {
                 ))}
               </List>
             </div>
-            <br />
           </Card>
+          <br />
         </div>
       ) : null;
     } else {
@@ -123,7 +136,8 @@ export default class FEED extends Component {
 
   renderEvents(project) {
     if (project && project.events && project.events.length) {
-      let events = project.events
+      let events = project
+        .getEventsInDateOrder()
         .filter(
           item =>
             new Moment(item.date).diff(new Moment(), "days") <= 5 &&
@@ -143,27 +157,25 @@ export default class FEED extends Component {
               {"Upcoming Events"}
             </h2>
             <br />
-            {events
-              .map(item => (
-                <div key={item.uid}>
-                  <TimelineItem
-                    user={this.state.user}
-                    onComplete={() => {
-                      project.setEvent(
-                        item.uid,
-                        Object.assign(item, {
-                          markedAsCompleted: true
-                        }),
-                        true
-                      );
-                    }}
-                    project={this.state.project}
-                    event={item}
-                  />
-                  <br />
-                </div>
-              ))
-              .reverse()}
+            {events.map(item => (
+              <div key={item.uid}>
+                <TimelineItem
+                  user={this.state.user}
+                  onComplete={() => {
+                    project.setEvent(
+                      item.uid,
+                      Object.assign(item, {
+                        markedAsCompleted: true
+                      }),
+                      true
+                    );
+                  }}
+                  project={this.state.project}
+                  event={item}
+                />
+                <br />
+              </div>
+            ))}
             <br />
           </div>
         );
@@ -190,7 +202,11 @@ export default class FEED extends Component {
             padding: 10
           }}
         >
-          <ProjectIcon name={this.state.project.name} style={{ margin: -5 }} readOnly/>
+          <ProjectIcon
+            name={this.state.project.name}
+            style={{ margin: -5 }}
+            readOnly
+          />
           <h2 style={{ fontWeight: 700, fontSize: 20, marginTop: 10 }}>
             {this.state.project.name}
           </h2>
