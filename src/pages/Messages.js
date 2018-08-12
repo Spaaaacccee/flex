@@ -32,9 +32,14 @@ class MESSAGES extends Component {
     orderedMessages: [],
     cachedUsers: {},
     consoleStatus: "ready",
-    consoleEditTarget: null
+    consoleEditTarget: null,
+    messageDisplayCount: 20
   };
 
+  clearMessageTriggerOffset = 200;
+  loadMessageTriggerOffset = 10;
+  initialMessagesCount = 20;
+  batchLoadMessagesCount = 20;
   receivedMessages = {};
 
   componentWillReceiveProps(props) {
@@ -78,9 +83,40 @@ class MESSAGES extends Component {
     }
   }
 
-  scrollBottom() {
-    this.scrollElement.scrollTop = this.scrollElement.scrollHeight;
+  async scrollBottom() {
+    await this.scrollToSmooth(300, this.scrollElement.scrollHeight);
     this.trySetRead();
+  }
+
+  loadMore() {
+    if (this.state.orderedMessages.length > this.state.messageDisplayCount) {
+      let dist = this.scrollElement.scrollHeight - this.scrollElement.scrollTop;
+      this.setState(
+        {
+          messageDisplayCount: Math.min(
+            this.state.orderedMessages.length,
+            this.state.messageDisplayCount + this.batchLoadMessagesCount
+          )
+        },
+        () => {
+          this.scrollElement.scrollTop = this.scrollElement.scrollHeight - dist;
+        }
+      );
+    }
+  }
+
+  loadLess() {
+    if (this.state.messageDisplayCount > this.initialMessagesCount) {
+      let dist = this.scrollElement.scrollHeight - this.scrollElement.scrollTop;
+      this.setState(
+        {
+          messageDisplayCount: this.initialMessagesCount
+        },
+        () => {
+          this.scrollElement.scrollTop = this.scrollElement.scrollHeight - dist;
+        }
+      );
+    }
   }
 
   trySetRead() {
@@ -215,7 +251,11 @@ class MESSAGES extends Component {
           inputValue: { $set: "" }
         }),
         () => {
-          this.scrollBottom();
+          this.scrollBottom().then(() => {
+            this.setState({
+              messageDisplayCount: this.initialMessagesCount
+            });
+          });
           this.state.messenger.addMessage(msg).then(() => {
             this.setState(
               update(this.state, {
@@ -226,6 +266,30 @@ class MESSAGES extends Component {
         }
       );
     }
+  }
+
+  isAnimating = false;
+  scrollToSmooth(duration, endY) {
+    return new Promise((res, rej) => {
+      this.isAnimating = true;
+      let startY = this.scrollElement.scrollTop;
+      let Ydifference = endY - startY;
+      let startTime = Date.now();
+      let endTime = startTime + duration;
+      let loop = () => {
+        let elapsedTime = Date.now() - startTime;
+        this.scrollElement.scrollTop =
+          startY + (elapsedTime / duration) * Ydifference;
+        if (Date.now() < endTime) {
+          requestAnimationFrame(loop);
+        } else {
+          this.scrollElement.scrollTop = endY;
+          this.isAnimating = false;
+          res();
+        }
+      };
+      requestAnimationFrame(loop);
+    });
   }
 
   cacheItems() {
@@ -258,7 +322,7 @@ class MESSAGES extends Component {
     }
   }
   inputElement;
-  scrollElement;
+  scrollElement = <div className="placeholder" />;
   render() {
     return (
       <div
@@ -273,123 +337,167 @@ class MESSAGES extends Component {
           className="messages"
           ref={e => (this.scrollElement = e)}
           onScroll={(e => {
+            if (!this.isAnimating) {
+              if (
+                this.scrollElement.scrollTop <= this.loadMessageTriggerOffset
+              ) {
+                this.loadMore();
+              } else if (
+                this.scrollElement.scrollHeight -
+                  this.scrollElement.clientHeight -
+                  this.scrollElement.scrollTop <=
+                this.clearMessageTriggerOffset
+              ) {
+                this.loadLess();
+              }
+            }
             this.trySetRead();
           }).bind(this)}
         >
+          <p style={{ opacity: 0.65, marginTop: 50 }}>
+            {this.state.orderedMessages.length > this.state.messageDisplayCount
+              ? "Keep scrolling to load more messages"
+              : !!this.state.orderedMessages.length &&
+                "This marks the beginning of your conversation"}
+          </p>
           {!!this.state.orderedMessages.length ? (
             <List itemLayout="vertical" style={{ userSelect: "text" }}>
-              {this.state.orderedMessages.map((item, index) => (
-                <List.Item
-                  key={item.uid + index}
-                  style={Object.assign(
-                    { textAlign: "left" },
-                    this.state.messageStatus[item.uid] === "processing"
-                      ? { opacity: 0.65, pointerEvents: "none" }
-                      : {}
-                  )}
-                  extra={[
-                    (() => {
-                      let ref;
-                      return (
-                        <Popover
-                          ref={e => (ref = e)}
-                          placement="topRight"
-                          trigger="click"
-                          key={0}
-                          content={
-                            <div>
-                              <p>
-                                <a
-                                  onClick={() => {
-                                    this.setState({
-                                      inputValue: `${(
-                                        this.state.cachedUsers[item.sender] ||
-                                        {}
-                                      ).name || item.sender} on ${new Date(
-                                        item.timeSent
-                                      ).toLocaleString()} said:\n${
-                                        item.content.bodyText
-                                      }\n`
-                                    });
-                                    this.inputElement.focus();
-                                    ref.tooltip.setState({
-                                      visible: false
-                                    });
-                                  }}
-                                >
-                                  <Icon type="message" />
-                                  {" Quote"}
-                                </a>
-                              </p>
-                              {item.sender === this.state.user.uid && (
+              {this.state.orderedMessages
+                .slice(
+                  Math.max(
+                    this.state.orderedMessages.length -
+                      1 -
+                      this.state.messageDisplayCount,
+                    0
+                  )
+                )
+                .map((item, index) => (
+                  <List.Item
+                    key={item.uid}
+                    style={Object.assign(
+                      { textAlign: "left" },
+                      this.state.messageStatus[item.uid] === "processing"
+                        ? { opacity: 0.65, pointerEvents: "none" }
+                        : {}
+                    )}
+                    extra={[
+                      (() => {
+                        let ref;
+                        return (
+                          <Popover
+                            ref={e => (ref = e)}
+                            placement="topRight"
+                            trigger="click"
+                            key={0}
+                            content={
+                              <div>
                                 <p>
                                   <a
                                     onClick={() => {
-                                      this.setState({
-                                        consoleStatus: "editing",
-                                        consoleEditTarget: item,
-                                        inputValue: item.content.bodyText
-                                      });
+                                      this.setState(
+                                        {
+                                          inputValue: `${(
+                                            this.state.cachedUsers[
+                                              item.sender
+                                            ] || {}
+                                          ).name || item.sender} on ${new Date(
+                                            item.timeSent
+                                          ).toLocaleString()} said:\n${
+                                            item.content.bodyText
+                                          }\n`
+                                        },
+                                        () => {
+                                          this.scrollBottom().then(() => {
+                                            this.setState({
+                                              messageDisplayCount: this
+                                                .initialMessagesCount
+                                            });
+                                          });
+                                        }
+                                      );
                                       this.inputElement.focus();
                                       ref.tooltip.setState({
                                         visible: false
                                       });
                                     }}
                                   >
-                                    <Icon type="edit" />
-                                    {" Edit"}
+                                    <Icon type="message" />
+                                    {" Quote"}
                                   </a>
                                 </p>
-                              )}
-                              <Popconfirm
-                                placement="topRight"
-                                title="Delete this message?"
-                                okText="Yes"
-                                cancelText="No"
-                                onConfirm={() => {
-                                  this.handleDelete(item.uid);
-                                }}
-                              >
-                                <a>
-                                  <Icon type="delete" />
-                                  {" Delete"}
-                                </a>
-                              </Popconfirm>
-                            </div>
-                          }
-                        >
-                          <Button icon="ellipsis" shape="circle" size="small" />
-                        </Popover>
-                      );
-                    })()
-                  ]}
-                >
-                  <List.Item.Meta
-                    title={
-                      (this.state.cachedUsers[item.sender] || {}).name ||
-                      item.sender
-                    }
-                    description={$.date(item.timeSent).humanise()}
-                  />
-                  <pre
-                    style={{
-                      whiteSpace: "pre-wrap",
-                      display: "inline",
-                      fontFamily: `"Chinese Quote", "-apple-system", "Segoe UI",
+                                {item.sender === this.state.user.uid && (
+                                  <p>
+                                    <a
+                                      onClick={() => {
+                                        this.setState({
+                                          consoleStatus: "editing",
+                                          consoleEditTarget: item,
+                                          inputValue: item.content.bodyText
+                                        });
+                                        this.inputElement.focus();
+                                        ref.tooltip.setState({
+                                          visible: false
+                                        });
+                                      }}
+                                    >
+                                      <Icon type="edit" />
+                                      {" Edit"}
+                                    </a>
+                                  </p>
+                                )}
+                                <Popconfirm
+                                  placement="topRight"
+                                  title="Delete this message?"
+                                  okText="Yes"
+                                  cancelText="No"
+                                  onConfirm={() => {
+                                    this.handleDelete(item.uid);
+                                  }}
+                                >
+                                  <a>
+                                    <Icon type="delete" />
+                                    {" Delete"}
+                                  </a>
+                                </Popconfirm>
+                              </div>
+                            }
+                          >
+                            <Button
+                              icon="ellipsis"
+                              shape="circle"
+                              size="small"
+                            />
+                          </Popover>
+                        );
+                      })()
+                    ]}
+                  >
+                    <List.Item.Meta
+                      title={
+                        (this.state.cachedUsers[item.sender] || {}).name ||
+                        item.sender
+                      }
+                      description={$.date(item.timeSent).humanise()}
+                    />
+                    <pre
+                      style={{
+                        whiteSpace: "pre-wrap",
+                        display: "inline",
+                        fontFamily: `"Chinese Quote", "-apple-system", "Segoe UI",
             "BlinkMacSystemFont", "Helvetica Neue", "Noto Sans", "Roboto", Arial,
             Helvetica, "PingFang SC", "Microsoft YaHei UI", sans-serif`
-                    }}
-                  >
-                    {(item.content||{}).bodyText}
-                  </pre>{" "}
-                  {this.state.messageStatus[item.uid] === "processing" && (
-                    <Icon type="loading" />
-                  )}{" "}
-                  {this.state.messageStatus[item.uid] === "sent" && (
-                    <Icon type="check" />
-                  )}
-                </List.Item>
-              ))}
+                      }}
+                    >
+                      {(item.content || {}).bodyText}
+                    </pre>{" "}
+                    {this.state.messageStatus[item.uid] === "processing" && (
+                      <Icon type="loading" />
+                    )}{" "}
+                    {this.state.messageStatus[item.uid] === "sent" && (
+                      <Icon type="check" />
+                    )}
+                  </List.Item>
+                ))}
             </List>
           ) : (
             <div style={{ opacity: 0.65, margin: 50, marginTop: "10vh" }}>
@@ -428,6 +536,13 @@ class MESSAGES extends Component {
               />
             )}
             <Input.TextArea
+              onFocus={() => {
+                this.scrollBottom().then(() => {
+                  this.setState({
+                    messageDisplayCount: this.initialMessagesCount
+                  });
+                });
+              }}
               type="email"
               onKeyUp={e => {
                 if (

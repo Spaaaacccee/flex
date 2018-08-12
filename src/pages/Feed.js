@@ -243,7 +243,7 @@ export default class FEED extends Component {
         {(this.state.project.history || [])
           .slice()
           .reverse()
-          .slice(0, 10)
+          .slice(0, Math.min(((this.state.project.history||[]).length),20))
           .map(item => (
             <div key={item.uid}>
               <Card

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Icon, Button } from "antd";
+import { Icon, Button, message } from "antd";
 
 import Fire from "../classes/Fire";
 import * as firebaseui from "firebaseui";
@@ -30,12 +30,27 @@ export default class SignIn extends Component {
       signedIn: true,
       loading: false
     });
+    if (this.timeout) clearTimeout(this.timeout);
     this.props.onLogIn(new logInArgs(user));
+  }
+
+  timeout;
+  startTimeout() {
+    if (this.timeout) clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => {
+      this.setState({ loading: false }, () => {
+        message.error(
+          "We couldn't sign you in because the operation timed out. Try signing in again."
+        );
+      });
+    }, 20000);
   }
 
   componentDidMount() {
     if (sessionStorage.getItem("firebaseui::pendingRedirect") === `"pending"`)
-      this.setState({ loading: true });
+      this.setState({ loading: true }, () => {
+        this.startTimeout();
+      });
     Fire.firebase()
       .auth()
       .onAuthStateChanged(user => {
@@ -98,8 +113,11 @@ export default class SignIn extends Component {
               loading={this.state.loading || Fire.firebase().auth().currentUser}
               type="primary"
               icon="google"
+              size="large"
               onClick={() => {
-                this.setState({ loading: true });
+                this.setState({ loading: true }, () => {
+                  this.startTimeout();
+                });
                 let x = setInterval(() => {
                   if (this.firebaseUIElement.querySelector("button")) {
                     this.firebaseUIElement.querySelector("button").click();
