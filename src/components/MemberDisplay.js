@@ -46,12 +46,9 @@ export default class MemberDisplay extends Component {
     if (state.cardless !== this.state.cardless) return true;
     if (props.readOnly !== this.state.readOnly) return true;
     if (state.readOnly !== this.state.readOnly) return true;
-    if (this.state.user !== state.user) return true;
-    if (this.state.member !== state.member) return true;
-    if (this.state.project !== state.project) return true;
     // If the new properties are not different to the values in the existing state, then don't update anything.
     if (!Project.equal(props.project, this.state.project)) return true;
-    if (User.equal(this.state.user, state.user)) return true;
+    if (!User.equal(this.state.user, state.user)) return true;
     if (JSON.stringify(props.member) !== JSON.stringify(this.state.member))
       return true;
     return false;

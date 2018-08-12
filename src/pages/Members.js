@@ -23,7 +23,7 @@ export default class MEMBERS extends Component {
               <MemberDisplay
                 member={member}
                 project={this.state.project}
-                key={JSON.stringify(member)}
+                key={member.uid}
               />
             ))}
           </div>

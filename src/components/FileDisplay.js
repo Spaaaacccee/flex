@@ -158,7 +158,7 @@ class FileDisplay extends Component {
                     .map((item, index) =>
                       (
                         <List.Item
-                          key={index}
+                          key={item.uid || item.source.uid}
                           actions={[
                             <Button
                               icon="export"

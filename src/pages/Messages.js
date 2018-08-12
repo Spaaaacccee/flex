@@ -364,7 +364,7 @@ class MESSAGES extends Component {
             this.trySetRead();
           }).bind(this)}
         >
-          <p style={{ opacity: 0.65, marginTop: 50 }}>
+          <p style={{ opacity: 0.65, margin: 50 }}>
             {this.state.orderedMessages.length > this.state.messageDisplayCount
               ? "Keep scrolling to load more messages"
               : !!this.state.orderedMessages.length &&

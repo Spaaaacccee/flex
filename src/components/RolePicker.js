@@ -36,7 +36,7 @@ export default class RolePicker extends Component {
   }
   render() {
     return (
-      <div>
+      <div className="role-picker">
         {this.state.roles.map((item, index) => (
           <Tag
             closable={!this.state.readOnly}
@@ -79,12 +79,6 @@ export default class RolePicker extends Component {
               dropdownMatchSelectWidth={false}
               ref={element => {
                 this.input = element;
-              }}
-              style={{
-                width: 85.49,
-                marginTop: 1,
-                marginBottom: 8,
-                marginRight: 8
               }}
               onChange={item => {
                 this.setState(

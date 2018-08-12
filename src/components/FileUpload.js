@@ -70,7 +70,7 @@ export default class FileUpload extends Component {
               <List bordered>
                 {renderJobs.map((item, index) => (
                   <List.Item
-                    key={item.uid + index}
+                    key={item.uid}
                     actions={
                       item.status === "done" || item.status === "canceled"
                         ? null

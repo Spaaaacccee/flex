@@ -12,3 +12,15 @@ div.ant-select {
 div.ant-tag.ant-tag-close {
     padding:1px 0px;
 }
+
+.role-picker > span > div {
+    width: 85.49px;
+    margin-top: -1px;
+    margin-bottom: 9px;
+    margin-right: 8px;
+    transform: translateY(1px);
+}
+
+.role-picker > *:last-child, .role-picker > span > div {
+    margin-right: 0;
+}
