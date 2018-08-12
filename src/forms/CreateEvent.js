@@ -61,21 +61,21 @@ export default class CreateEvent extends Component {
 
   componentWillReceiveProps(props) {
     if (!this.state.opened && !!props.opened) {
-      this.setState({ submitted: false });
-    }
-    this.setState(
-      {
-        mode: props.mode || "create",
-        opened: props.opened,
-        user: props.user || {},
-        project: props.project || {}
-      },
-      () => {
-        if (props.mode === "edit" && props.values) {
-          this.setValues(props.values);
+      this.setState(
+        {
+          submitted: false,
+          mode: props.mode || "create",
+          opened: props.opened,
+          user: props.user || {},
+          project: props.project || {}
+        },
+        () => {
+          if (props.mode === "edit" && props.values) {
+            this.setValues(props.values);
+          }
         }
-      }
-    );
+      );
+    }
   }
 
   setValues(values) {
@@ -130,7 +130,9 @@ export default class CreateEvent extends Component {
           style={{ marginBottom: 10 }}
           onChange={e => {
             this.setState(
-              update(this.state, { values: { name: { $set: e.target.value||"Untitled Event" } } })
+              update(this.state, {
+                values: { name: { $set: e.target.value || "Untitled Event" } }
+              })
             );
           }}
           placeholder="Untitled Event"

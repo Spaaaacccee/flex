@@ -88,8 +88,12 @@ class MESSAGES extends Component {
     this.trySetRead();
   }
 
+  loadingMore = false;
+
   loadMore() {
     if (this.state.orderedMessages.length > this.state.messageDisplayCount) {
+      this.loadingMore = true;
+      this.scrollElement.style.overflow = 'hidden'
       let dist = this.scrollElement.scrollHeight - this.scrollElement.scrollTop;
       this.setState(
         {
@@ -99,6 +103,8 @@ class MESSAGES extends Component {
           )
         },
         () => {
+          this.loadingMore = false;
+          this.scrollElement.style.overflow = '';
           this.scrollElement.scrollTop = this.scrollElement.scrollHeight - dist;
         }
       );
@@ -181,6 +187,7 @@ class MESSAGES extends Component {
         update(this.state, {
           messageStatus: { [msgID]: { $set: "processing" } }
         }),
+        this.state.consoleStatus === "editing" &&
         msgID === this.state.consoleEditTarget.uid
           ? { inputValue: "", consoleStatus: "ready", consoleEditTarget: null }
           : {}
@@ -271,6 +278,7 @@ class MESSAGES extends Component {
   isAnimating = false;
   scrollToSmooth(duration, endY) {
     return new Promise((res, rej) => {
+      this.scrollElement.style.overflow = 'hidden'
       this.isAnimating = true;
       let startY = this.scrollElement.scrollTop;
       let Ydifference = endY - startY;
@@ -284,6 +292,7 @@ class MESSAGES extends Component {
           requestAnimationFrame(loop);
         } else {
           this.scrollElement.scrollTop = endY;
+          this.scrollElement.style.overflow = ''
           this.isAnimating = false;
           res();
         }
@@ -339,7 +348,8 @@ class MESSAGES extends Component {
           onScroll={(e => {
             if (!this.isAnimating) {
               if (
-                this.scrollElement.scrollTop <= this.loadMessageTriggerOffset
+                this.scrollElement.scrollTop <= this.loadMessageTriggerOffset &&
+                !this.loadingMore
               ) {
                 this.loadMore();
               } else if (
