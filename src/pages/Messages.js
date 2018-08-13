@@ -7,7 +7,8 @@ import {
   Affix,
   message,
   Popover,
-  Popconfirm
+  Popconfirm,
+  Avatar
 } from "antd";
 import Messages, { Message } from "../classes/Messages";
 import update from "immutability-helper";
@@ -17,6 +18,8 @@ import "./Messages.css";
 import User from "../classes/User";
 import Project from "../classes/Project";
 import Moment from "moment";
+import { HSL } from "../classes/Role";
+import MemberDisplay from "../components/MemberDisplay";
 
 class MESSAGES extends Component {
   /**
@@ -93,7 +96,7 @@ class MESSAGES extends Component {
   loadMore() {
     if (this.state.orderedMessages.length > this.state.messageDisplayCount) {
       this.loadingMore = true;
-      this.scrollElement.style.overflow = 'hidden'
+      this.scrollElement.style.overflow = "hidden";
       let dist = this.scrollElement.scrollHeight - this.scrollElement.scrollTop;
       this.setState(
         {
@@ -104,7 +107,7 @@ class MESSAGES extends Component {
         },
         () => {
           this.loadingMore = false;
-          this.scrollElement.style.overflow = '';
+          this.scrollElement.style.overflow = "";
           this.scrollElement.scrollTop = this.scrollElement.scrollHeight - dist;
         }
       );
@@ -278,7 +281,7 @@ class MESSAGES extends Component {
   isAnimating = false;
   scrollToSmooth(duration, endY) {
     return new Promise((res, rej) => {
-      this.scrollElement.style.overflow = 'hidden'
+      this.scrollElement.style.overflow = "hidden";
       this.isAnimating = true;
       let startY = this.scrollElement.scrollTop;
       let Ydifference = endY - startY;
@@ -292,7 +295,7 @@ class MESSAGES extends Component {
           requestAnimationFrame(loop);
         } else {
           this.scrollElement.scrollTop = endY;
-          this.scrollElement.style.overflow = ''
+          this.scrollElement.style.overflow = "";
           this.isAnimating = false;
           res();
         }
@@ -344,7 +347,7 @@ class MESSAGES extends Component {
       >
         <div
           className="messages"
-          ref={e => (this.scrollElement = e)}
+          ref={e => (this.scrollElement = e || this.scrollElement)}
           onScroll={(e => {
             if (!this.isAnimating) {
               if (
@@ -482,30 +485,72 @@ class MESSAGES extends Component {
                       })()
                     ]}
                   >
-                    <List.Item.Meta
-                      title={
-                        (this.state.cachedUsers[item.sender] || {}).name ||
-                        item.sender
-                      }
-                      description={$.date(item.timeSent).humanise()}
-                    />
-                    <pre
-                      style={{
-                        whiteSpace: "pre-wrap",
-                        display: "inline",
-                        fontFamily: `"Chinese Quote", "-apple-system", "Segoe UI",
+                    <div style={{ display: "flex" }}>
+                      <Popover
+                        trigger="click"
+                        content={
+                          this.state.project && this.state.project.members ? (
+                            <MemberDisplay
+                              member={this.state.project.members.find(
+                                x => x.uid === item.sender
+                              )}
+                              project={this.state.project}
+                              readOnly
+                              cardless
+                            />
+                          ) : null
+                        }
+                      >
+                        <Avatar
+                          src={
+                            (this.state.cachedUsers[item.sender] || {})
+                              .profilePhoto
+                          }
+                          style={{ marginRight: 10, flex: "none", cursor:'pointer' }}
+                        />
+                      </Popover>
+                      <div style={{ display: "inline-block", flex: 1 }}>
+                        <List.Item.Meta
+                          title={
+                            <span
+                              style={{
+                                color: HSL.toCSSColor(
+                                  (
+                                    (this.state.project.roles || []).find(
+                                      role =>
+                                        role.uid ===
+                                        ((this.state.project.members.find(
+                                          member => member.uid === item.sender
+                                        ).roles || [])[0] || {})
+                                    ) || {}
+                                  ).color || { h: 0, s: 0, l: 15 }
+                                )
+                              }}
+                            >
+                              {(this.state.cachedUsers[item.sender] || {})
+                                .name || <Icon type="loading" />}
+                            </span>
+                          }
+                          description={$.date(item.timeSent).humanise()}
+                        />
+                        <pre
+                          style={{
+                            whiteSpace: "pre-wrap",
+                            display: "inline",
+                            fontFamily: `"Chinese Quote", "-apple-system", "Segoe UI",
             "BlinkMacSystemFont", "Helvetica Neue", "Noto Sans", "Roboto", Arial,
             Helvetica, "PingFang SC", "Microsoft YaHei UI", sans-serif`
-                      }}
-                    >
-                      {(item.content || {}).bodyText}
-                    </pre>{" "}
-                    {this.state.messageStatus[item.uid] === "processing" && (
-                      <Icon type="loading" />
-                    )}{" "}
-                    {this.state.messageStatus[item.uid] === "sent" && (
-                      <Icon type="check" />
-                    )}
+                          }}
+                        >
+                          {(item.content || {}).bodyText}
+                        </pre>{" "}
+                        {this.state.messageStatus[item.uid] ===
+                          "processing" && <Icon type="loading" />}{" "}
+                        {this.state.messageStatus[item.uid] === "sent" && (
+                          <Icon type="check" />
+                        )}
+                      </div>
+                    </div>
                   </List.Item>
                 ))}
             </List>

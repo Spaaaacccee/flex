@@ -137,9 +137,9 @@ export default class TimelineItem extends Component {
                       if (
                         (this.state.event.involvedPeople.roles || []).find(
                           role =>
-                            this.state.project.members
+                            (this.state.project.members
                               .find(x => x.uid === this.state.user.uid)
-                              .roles.find(x => x === role)
+                              .roles||[]).find(x => x === role)
                         )
                       )
                         return true;

@@ -64,7 +64,7 @@ export class RoleList extends Array {
  * Represents an HSL colour
  * @class HSL
  */
-class HSL {
+export class HSL {
   h;
   s;
   l;
@@ -79,5 +79,9 @@ class HSL {
     this.h = h;
     this.s = s;
     this.l = l;
+  }
+
+  static toCSSColor(item) {
+    return `hsl(${item.h},${item.s}%,${item.l}%)`;
   }
 }

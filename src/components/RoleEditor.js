@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Role from "../classes/Role";
+import Role, { HSL } from "../classes/Role";
 import { List, Button, Input, Icon, Popover } from "antd";
 import update from "immutability-helper";
 import {HuePicker} from 'react-color';
@@ -86,9 +86,7 @@ export default class RoleEditor extends Component {
                   width: 35,
                   marginRight: 10,
                   borderRadius: 50,
-                  backgroundColor: `hsl(${item.color.h},${
-                    item.color.s
-                  }%,${item.color.l}%)`,
+                  backgroundColor: HSL.toCSSColor(item.color),
                   border: "7px solid white"
                 }}
               />

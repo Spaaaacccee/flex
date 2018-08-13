@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Tag, Select, Icon } from "antd";
 import $ from "../classes/Utils";
 import "./RolePicker.css";
+import { HSL } from "../classes/Role";
 
 /**
  * A panel to select roles out of supplied array of roles
@@ -41,9 +42,7 @@ export default class RolePicker extends Component {
           <Tag
             closable={!this.state.readOnly}
             key={item.uid}
-            color={`hsl(${item.color.h},${item.color.s}%,${
-              item.color.l
-            }%)`}
+            color={HSL.toCSSColor(item.color)}
             afterClose={() => {
               this.setState(
                 {
@@ -116,9 +115,7 @@ export default class RolePicker extends Component {
                     key={item.uid}
                     value={item.uid}
                     style={{
-                      color: `hsl(${item.color.h},${item.color.s}%,${
-                        item.color.l
-                      }%)`
+                      color: HSL.toCSSColor(item.color)
                     }}
                   >
                     {item.name.slice(0, 15) === item.name

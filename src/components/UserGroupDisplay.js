@@ -4,6 +4,7 @@ import User from "../classes/User";
 import Project from "../classes/Project";
 import shallowEqualArrays from "shallow-equal/arrays";
 import MemberDisplay from "./MemberDisplay";
+import { HSL } from "../classes/Role";
 export default class UserGroupDisplay extends Component {
   static defaultProps = {
     people: { members: [], roles: [] },
@@ -72,7 +73,7 @@ export default class UserGroupDisplay extends Component {
         {this.state.roleInfo
           .map((item, index) => (
             <Tag
-              color={`hsl(${item.color.h},${item.color.s}%,${item.color.l}%)`}
+              color={HSL.toCSSColor(item.color)}
               key={"R:" + index}
             >
               {<Icon type="tags" />}
