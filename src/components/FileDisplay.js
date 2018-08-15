@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, Icon, Button, List, Avatar } from "antd";
+import { Card, Icon, Button, List, Avatar, Popconfirm } from "antd";
 import UserGroupDisplay from "./UserGroupDisplay";
 import Fire from "../classes/Fire";
 import Document from "../classes/Document";
@@ -7,7 +7,8 @@ class FileDisplay extends Component {
   state = {
     project: {},
     file: {},
-    readOnly: false
+    readOnly: false,
+    deleting: false,
   };
 
   componentDidMount() {
@@ -18,24 +19,28 @@ class FileDisplay extends Component {
     this.setState({
       project: props.project,
       file: props.file,
-      readOnly: props.readOnly
+      readOnly: props.readOnly,
     });
   }
 
   render() {
+    let isUnavailable =
+      this.state.file.files &&
+      !this.state.file.files.find(i => i.state !== "unavailable");
     return (
       <div style={{ textAlign: "left" }}>
         {
           <Card
             style={Object.assign(
               { maxWidth: 350 },
-              this.state.file.files &&
-              !this.state.file.files.find(i => i.state !== "unavailable")
+              this.state.deleting
                 ? {
                     opacity: 0.65,
                     pointerEvents: "none"
                   }
-                : {}
+                : isUnavailable
+                  ? { opacity: 0.65 }
+                  : {}
             )}
             /*cover={
               <div
@@ -86,17 +91,53 @@ class FileDisplay extends Component {
                 )}
               </div>
             } */
-            actions={[
-              <span
-                onClick={() => {
-                  Document.tryPreviewWindow(this.state.file);
-                }}
-              >
-                <Icon type="export" />
-                {" Open"}
-              </span>,
-              ...(this.state.readOnly ? [] : [<Icon type="ellipsis" />])
-            ]}
+            actions={(() => {
+              const previewButton = (
+                <span
+                  onClick={() => {
+                    Document.tryPreviewWindow(this.state.file);
+                  }}
+                >
+                  <Icon type="export" />
+                  {" Open"}
+                </span>
+              );
+              const mentionButton = (
+                <span>
+                  <Icon type="paper-clip" />
+                  {" Mention"}
+                </span>
+              );
+              const deleteButton = (
+                <Popconfirm
+                  title={
+                    this.state.file.uploadType === "cloud" ||
+                    (this.state.file.files || []).length === 1
+                      ? "This file will be deleted"
+                      : `${
+                          (this.state.file.files || []).length
+                        } files will be deleted`
+                  }
+                  okText="OK"
+                  okType="danger"
+                  cancelText="Cancel"
+                  onConfirm={() => {
+                    this.setState({ deleting: true }, () => {
+                      this.state.project.tryDelete(this.state.file);
+                    });
+                  }}
+                >
+                  <span style={{ color: "rgb(255, 77, 79)" }}>
+                    <Icon type={this.state.deleting ? "loading" : "delete"} />
+                    {this.state.deleting ? " Deleting" : " Delete"}
+                  </span>
+                </Popconfirm>
+              );
+              if (this.state.deleting) return [deleteButton];
+              if (this.state.readOnly) return [previewButton];
+              if (isUnavailable) return [deleteButton];
+              return [previewButton, mentionButton, deleteButton];
+            })()}
           >
             {this.state.file.uid || this.state.file.source ? (
               <Card.Meta
@@ -111,7 +152,7 @@ class FileDisplay extends Component {
                       shape="square"
                       style={{
                         transform: "scale(0.6)",
-                        imageRendering: "crisp-edges"
+                        imageRendering: "pixelated"
                       }}
                       src={this.state.file.source.iconUrl}
                     />
@@ -127,14 +168,40 @@ class FileDisplay extends Component {
                   )
                 }
                 description={
-                  this.state.file.uploadType === "cloud" ? (
-                    <span>
-                      <Icon type="cloud-o" />
-                      {" Stored in the cloud"}
-                    </span>
-                  ) : (
-                    <div>{`${this.state.file.files.length} versions`}</div>
-                  )
+                  <div>
+                    {(this.state.file.type === "cloud" ||
+                      (this.state.file.files || []).length === 1) && (
+                      <UserGroupDisplay
+                      project={this.state.project}
+                        people={{
+                          members: [
+                            (
+                              (this.state.file.files || []).sort(
+                                (a, b) => b.dateUploaded - a.dateUploaded
+                              )[0] || {}
+                            ).uploader
+                          ]
+                        }}
+                      />
+                    )}
+                    {this.state.file.uploadType === "cloud" ? (
+                      <span>
+                        <Icon type="cloud-o" />
+                        {" Stored in the cloud"}
+                      </span>
+                    ) : (
+                      <div>
+                        {isUnavailable
+                          ? "One or more versions of this file is unavailable"
+                          : this.state.file.files.sort(
+                              (a, b) => b.dateUploaded - a.dateUploaded
+                            )[0].description ||
+                            (this.state.file.files.length > 1
+                              ? `${this.state.file.files.length} versions`
+                              : "")}
+                      </div>
+                    )}
+                  </div>
                 }
               />
             ) : (
@@ -147,52 +214,64 @@ class FileDisplay extends Component {
                 <br />
                 <List bordered>
                   {this.state.file.files
-                    .sort(
-                      (a, b) =>
-                        a.dateModified === b.dateModified
-                          ? 0
-                          : a.dateModified > b.dateModified
-                            ? 1
-                            : -1
-                    )
-                    .map((item, index) =>
-                      (
-                        <List.Item
-                          key={item.uid || item.source.uid}
-                          actions={[
-                            <Button
-                              icon="export"
-                              shape="circle"
+                    .sort((a, b) => b.dateUploaded - a.dateUploaded)
+                    .map((item, index) => (
+                      <List.Item
+                        key={item.uid || item.source.uid}
+                        actions={[
+                          <Popconfirm
+                            title="This file will be deleted"
+                            okText="OK"
+                            okType="danger"
+                            cancelText="Cancel"
+                            onConfirm={() => {
+                              this.setState({ deleting: true }, () => {
+                                this.state.project
+                                  .deleteFile(this.state.file.uid, item.uid)
+                                  .then(() => {
+                                    this.setState({ deleting: false });
+                                  });
+                              });
+                            }}
+                          >
+                            <Icon
+                              style={{ color: "rgb(255, 77, 79)" }}
+                              type="delete"
+                            />
+                          </Popconfirm>,
+                          <a>
+                            <Icon
+                              type="export"
                               onClick={() => {
                                 Document.tryPreviewWindow(item);
                               }}
                             />
-                          ]}
-                        >
-                          <List.Item.Meta
-                            title={`Version ${index + 1}`}
-                            description={
+                          </a>
+                        ]}
+                      >
+                        <List.Item.Meta
+                          title={item.description || `No comments`}
+                          description={
+                            <div>
+                              {[
+                                `${new Date(
+                                  item.dateUploaded
+                                ).toLocaleString()}`,
+                                `${item.size} bytes`
+                              ].map((x, i) => (
+                                <div key={i}>{x}</div>
+                              ))}
                               <div>
-                                {[
-                                  `${new Date(
-                                    item.dateUploaded
-                                  ).toLocaleString()}`,
-                                  `${item.size} bytes`
-                                ].map((x, i) => (
-                                  <div key={i}>{x}</div>
-                                ))}
-                                <div>
-                                  <UserGroupDisplay
-                                    people={{ members: [item.uploader] }}
-                                    project={this.state.project}
-                                  />
-                                </div>
+                                <UserGroupDisplay
+                                  people={{ members: [item.uploader] }}
+                                  project={this.state.project}
+                                />
                               </div>
-                            }
-                          />
-                        </List.Item>
-                      )
-                    ).reverse()}
+                            </div>
+                          }
+                        />
+                      </List.Item>
+                    ))}
                 </List>
               </div>
             ) : (

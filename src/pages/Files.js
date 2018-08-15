@@ -97,7 +97,7 @@ export default class FILES extends Component {
                 {this.state.view === "thumbnail" ? (
                   (filesToRender || []).map((item, index) => (
                     <div key={item.uid || item.source.id}>
-                      <FileDisplay project={this.state.project} file={item} readOnly/>
+                      <FileDisplay project={this.state.project} file={item} onDelete={()=>{}}/>
                       <br/>
                     </div>
                   ))
@@ -128,8 +128,7 @@ export default class FILES extends Component {
                             onClick={() => {
                               Document.tryPreviewWindow(item);
                             }}
-                          />,
-                          <Button shape="circle" icon="ellipsis" />
+                          />
                         ]}
                       >
                         <List.Item.Meta
@@ -150,7 +149,7 @@ export default class FILES extends Component {
                                   margin: 5,
                                   marginLeft: 0
                                 }}
-                                type="file"
+                                type={Document.getFiletypeIcon(item.name)}
                               />
                             )
                           }
@@ -221,6 +220,7 @@ export default class FILES extends Component {
                 <br />
               </div>
             )}
+            <br/>
             <Button
               icon="plus"
               type="primary"

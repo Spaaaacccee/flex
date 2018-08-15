@@ -57,7 +57,7 @@ export default class FileUploadModal extends Component {
                         );
                       });
                     }
-                  }}  
+                  }}
                   authImmediate={false}
                   viewId={"DOCS"}
                 >
@@ -72,8 +72,12 @@ export default class FileUploadModal extends Component {
                           <List.Item.Meta
                             avatar={
                               <Avatar
+                                shape="square"
                                 src={item.iconUrl}
-                                style={{ imageRendering: "crisp-edges" }}
+                                style={{
+                                  imageRendering: "pixelated",
+                                  transform: "scale(0.6)"
+                                }}
                               />
                             }
                             title={item.name}

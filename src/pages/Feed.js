@@ -265,6 +265,7 @@ export default class FEED extends Component {
                                     return 1;
                                   case "event":
                                     return 2;
+                                  case "set of files":
                                   case "file":
                                     return 4;
                                   default:
@@ -279,6 +280,7 @@ export default class FEED extends Component {
                             switch (item.type) {
                               case "event":
                                 return "Timeline";
+                              case "set of files":
                               case "file":
                                 return "Files";
                               case "member":
@@ -338,14 +340,18 @@ export default class FEED extends Component {
                         </div>
                       );
                       break;
+                    case "set of files":
                     case "file":
-                      let file = (this.state.project.files || []).find(
-                        x => x.uid === item.content.uid
-                      );
-                      if (!file)
-                        file = (this.state.project.files || [])
-                          .filter(x => x.uploadType === "cloud")
-                          .find(x => x.source.id === item.content.uid);
+                      let file;
+                      if (item.content) {
+                        file = (this.state.project.files || []).find(
+                          x => x.uid === item.content.uid
+                        );
+                        if (!file)
+                          file = (this.state.project.files || [])
+                            .filter(x => x.uploadType === "cloud")
+                            .find(x => x.source.id === item.content.uid);
+                      }
                       return (
                         <div>
                           <br />

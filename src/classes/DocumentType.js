@@ -104,6 +104,7 @@ export default class DocumentType {
       case "mid":
       case "midi":
       case "mp3":
+      case "m4a":
       case "mpa":
       case "ogg":
       case "wav":

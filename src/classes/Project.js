@@ -310,7 +310,6 @@ export default class Project {
     await project.child("lastUpdatedTimestamp").set(dateNow);
     this.lastUpdatedTimestamp = dateNow;
     this.members = members;
-
   }
 
   /**
@@ -431,11 +430,12 @@ export default class Project {
   /**
    * Add a file to this project
    * @param  {File} file The file to add.
+   * @param  {String} description Add a description to this file
    * @param {(e:{jobID:String, task:Firebase.storage.UploadTask})=>void} callback Adding a file may take a while, so instead of a `Promise`, you can set a callback to execute after this is done to avoid `await`s stopping the execution of the thread.
    * @return {void}
    * @memberof Project
    */
-  addFile(file, callback) {
+  addFile(file, description, callback) {
     const jobID = $.id().generateUID();
 
     UploadJob.Jobs.setJob(
@@ -458,6 +458,7 @@ export default class Project {
           name: file.name,
           type: file.type,
           size: file.size,
+          description,
           uploader: user.uid,
           state: "unavailable",
           hash
@@ -512,6 +513,7 @@ export default class Project {
               if (UploadJob.Jobs.getJob(jobID).status !== "done") {
                 task.cancel();
                 UploadJob.Jobs.updateJob(jobID, { status: "canceled" });
+                this.tryDelete(meta);
               }
             }
           });
@@ -572,6 +574,9 @@ export default class Project {
       } else {
         if (project instanceof Project) {
           User.getCurrentUser().then(user => {
+            project.files.push(Object.assign(new CloudDocument(file)), {
+              uploader: user.uid
+            });
             project.addHistory(
               new HistoryItem({
                 action: "added",
@@ -582,10 +587,71 @@ export default class Project {
             );
           });
         }
-
-        project.files.push(new CloudDocument(file));
       }
     });
+  }
+
+  tryDelete(archive) {
+    if (archive.uid) {
+      this.deleteArchive(archive.uid);
+      return;
+    }
+    if (archive.source.id) {
+      this.deleteCloudFile(archive.source.id);
+      return;
+    }
+  }
+
+  async deleteArchive(archiveID) {
+    if (!archiveID) return;
+    let user = await User.getCurrentUser();
+    await Fetch.getProjectReference(this.projectID)
+      .child("files")
+      .set(this.files.filter(x => x.uid !== archiveID));
+    await Promise.all(
+      (this.files.find(x => x.uid === archiveID).files || []).map(x =>
+        Document.delete(x)
+      )
+    );
+    this.files = (this.files || []).filter(x => x.uid !== archiveID);
+    this.addHistory({
+      doneBy: user.uid,
+      action: "removed",
+      type: "set of files"
+    });
+  }
+
+  async deleteFile(archiveID, fileID) {
+    if (!archiveID || !fileID) return;
+    let user = await User.getCurrentUser();
+    let archiveIndex = this.files.findIndex(x => x.uid === archiveID);
+    if (archiveIndex === -1) return;
+    await Fetch.getProjectReference(this.projectID)
+      .child("files")
+      .child(archiveIndex)
+      .child("files")
+      .set(
+        (this.files[archiveIndex].files || []).filter(x => x.uid !== fileID)
+      );
+    await Document.delete(
+      this.files[archiveIndex].files.find(x => x.uid === fileID)
+    );
+    this.files = this.files[archiveIndex].files.filter(x => x.uid !== fileID);
+    await this.addHistory({
+      doneBy: user.uid,
+      action: "removed",
+      type: "file"
+    });
+  }
+
+  async deleteCloudFile(sourceID) {
+    if (!sourceID) return;
+    let user = await User.getCurrentUser();
+    await Fetch.getProjectReference(this.projectID)
+      .child("files")
+      .set(this.files.filter(x => (x.source || {}).id !== sourceID));
+    this.files = this.files.filter(x => (x.source || {}).id !== sourceID);
+    this.addHistory({ doneBy: user.uid, action: "removed", type: "file" });
   }
 
   getFileMeta(fileID) {}

@@ -59,6 +59,25 @@ export default class Document {
     window.open(url);
     msg();
   }
+
+  /**
+   *
+   * @static
+   * @param  {DocumentMeta} meta
+   * @return {Promise<number>}
+   * @memberof Document
+   */
+  static async delete(meta) {
+    try {
+      await Fire.firebase()
+        .storage()
+        .ref(`/${meta.uid}/${meta.name}`)
+        .delete();
+      return 0;
+    } catch (e) {
+      return 1;
+    }
+  }
 }
 
 export class CloudDocument {

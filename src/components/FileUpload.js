@@ -1,14 +1,28 @@
 import React, { Component } from "react";
-import { Upload, Icon, message, Button, List, Progress } from "antd";
+import {
+  Upload,
+  Icon,
+  message,
+  Button,
+  List,
+  Progress,
+  Modal,
+  Input
+} from "antd";
 import update from "immutability-helper";
 import Document, { UploadJob } from "../classes/Document";
+import $ from "../classes/Utils";
 
 export default class FileUpload extends Component {
   state = {
     project: {},
     jobs: [],
     jobListOnly: false,
-    inProgressOnly: false
+    inProgressOnly: false,
+    selectedFile: {},
+    modalVisible: false,
+    description: "",
+    loading: false
   };
 
   updateFiles() {
@@ -27,7 +41,6 @@ export default class FileUpload extends Component {
   componentWillUnmount() {
     UploadJob.Jobs.off("job_changed", this.updateFiles.bind(this));
   }
-  loadingMessage;
   render() {
     const renderJobs = this.state.jobs.filter(
       item => !this.state.inProgressOnly || item.status === "uploading"
@@ -35,22 +48,14 @@ export default class FileUpload extends Component {
     return (
       <div>
         {!this.state.jobListOnly && (
-          <div
-            onClick={() => {
-              if (this.loadingMessage) {
-                this.loadingMessage();
-                this.loadingMessage = null;
-              }
-              this.loadingMessage = message.loading("Waiting for file", 0);
-            }}
-          >
+          <div>
             <Upload.Dragger
               customRequest={({ file }) => {
-                if (this.loadingMessage) {
-                  this.loadingMessage();
-                  this.loadingMessage = null;
-                }
-                this.state.project.addFile(file, this.updateFiles.bind(this));
+                this.setState({
+                  selectedFile: file,
+                  modalVisible: true,
+                  loading: false
+                });
               }}
               fileList={[]}
             >
@@ -129,6 +134,70 @@ export default class FileUpload extends Component {
             </div>
           )}
         </div>
+        <Modal
+          style={{ top: 40 }}
+          visible={this.state.modalVisible}
+          onCancel={() => {
+            this.setState({
+              selectedFile: {},
+              modalVisible: false,
+              description: ""
+            });
+          }}
+          footer={[
+            <Button
+              icon="check"
+              loading={this.state.loading}
+              type="primary"
+              onClick={() => {
+                this.setState({ loading: true }, () => {
+                  this.state.project.addFile(
+                    this.state.selectedFile,
+                    this.state.description.trim() ||
+                      `Made changes to ${this.state.selectedFile.name}`,
+                    () => {
+                      this.setState({
+                        selectedFile: {},
+                        modalVisible: false,
+                        description: ""
+                      });
+                      this.updateFiles();
+                    }
+                  );
+                });
+              }}
+            >
+              Done
+            </Button>
+          ]}
+        >
+          <div style={{ textAlign: "center", marginTop: 20 }}>
+            <Icon
+              type={Document.getFiletypeIcon(
+                this.state.selectedFile.name || ""
+              )}
+              style={{
+                fontSize: 48,
+                color: "rgb(24, 144, 255)",
+                marginBottom: 10
+              }}
+            />
+            <h2>{this.state.selectedFile.name || ""}</h2>
+            <br />
+          </div>
+          <h3>
+            Tell your team why you uploaded {this.state.selectedFile.name}
+          </h3>
+          <Input
+            value={this.state.description}
+            placeholder={`Made changes to ${this.state.selectedFile.name}`}
+            onChange={e => {
+              this.setState({
+                description: $.string(e.target.value).trimLeft()
+              });
+            }}
+          />
+        </Modal>
       </div>
     );
   }
