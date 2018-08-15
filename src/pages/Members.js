@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import { Tabs, List, Icon } from "antd";
 import MemberDisplay from "../components/MemberDisplay";
+import Columns from "react-columns";
 
 export default class MEMBERS extends Component {
   state = {
     user: {},
     project: {}
   };
-  
+
   componentWillReceiveProps(props) {
     this.setState({
       user: props.user,
@@ -19,13 +20,24 @@ export default class MEMBERS extends Component {
       <div>
         {this.state.project ? (
           <div>
-            {(this.state.project.members || []).map((member, index) => (
-              <MemberDisplay
-                member={member}
-                project={this.state.project}
-                key={member.uid}
-              />
-            ))}
+            <Columns
+              rootStyles={{ maxWidth: 950, margin: "auto" }}
+              gap={10}
+              queries={[
+                {
+                  columns: 2,
+                  query: "min-width: 1000px"
+                }
+              ]}
+            >
+              {(this.state.project.members || []).map((member, index) => (
+                <MemberDisplay
+                  member={member}
+                  project={this.state.project}
+                  key={member.uid}
+                />
+              ))}
+            </Columns>
           </div>
         ) : (
           ""

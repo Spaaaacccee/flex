@@ -10,8 +10,8 @@ import UserGroupDisplay from "../components/UserGroupDisplay";
 import Document from "../classes/Document";
 import $ from "../classes/Utils";
 import Project from "../classes/Project";
-import "./Files.css";
 import User from "../classes/User";
+import Columns from "react-columns";
 const { Meta } = Card;
 
 export default class FILES extends Component {
@@ -26,6 +26,7 @@ export default class FILES extends Component {
     uploadModalVisible: false,
     view: "thumbnail"
   };
+
   componentWillReceiveProps(props) {
     this.setState({
       searchResults: null,
@@ -40,7 +41,11 @@ export default class FILES extends Component {
     if (state.view !== this.state.view) return true;
     if (!User.equal(props.user, this.state.user)) return true;
     if (state.uploadModalVisible !== this.state.uploadModalVisible) return true;
-    if ((state.searchResults && this.state.searchResults) && state.searchResults.length !== this.state.searchResults.length)
+    if (
+      state.searchResults &&
+      this.state.searchResults &&
+      state.searchResults.length !== this.state.searchResults.length
+    )
       return true;
     return false;
   }
@@ -106,25 +111,27 @@ export default class FILES extends Component {
             {filesToRender && filesToRender.length ? (
               <div>
                 {this.state.view === "thumbnail" ? (
-                  <div
-                    className="files"
-                    style={{
-                      columns: "10 350px"
-                    }}
-                  >
-                    {(filesToRender || []).map((item, index) => (
-                      <div
-                        key={item.uid || item.source.id}
-                        style={{
-                          breakInside: "avoid",
-                          pageBreakInside: "avoid",
-                          ["-webkit-column-break-inside"]: "avoid"
-                        }}
-                      >
-                        <FileDisplay project={this.state.project} file={item} />
-                        <br />
-                      </div>
-                    ))}
+                  <div>
+                    <Columns
+                      rootStyles={{ maxWidth: 950, margin: "auto" }}
+                      gap={10}
+                      queries={[
+                        {
+                          columns: 2,
+                          query: "min-width: 1000px"
+                        }
+                      ]}
+                    >
+                      {(filesToRender || []).map((item, index) => (
+                        <div key={item.uid || item.source.id}>
+                          <FileDisplay
+                            project={this.state.project}
+                            file={item}
+                          />
+                          <br />
+                        </div>
+                      ))}
+                    </Columns>
                   </div>
                 ) : (
                   <List

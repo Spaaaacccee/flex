@@ -11,6 +11,11 @@ export default class FileUploadModal extends Component {
     project: {},
     drivePickedFiles: []
   };
+
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
   componentWillReceiveProps(props) {
     this.setState({ project: props.project, visible: props.visible });
   }

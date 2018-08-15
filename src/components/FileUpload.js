@@ -37,6 +37,7 @@ export default class FileUpload extends Component {
   }
   componentDidMount() {
     UploadJob.Jobs.on("job_changed", this.updateFiles.bind(this));
+    this.componentWillReceiveProps(this.props);
   }
   componentWillUnmount() {
     UploadJob.Jobs.off("job_changed", this.updateFiles.bind(this));
