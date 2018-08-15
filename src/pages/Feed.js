@@ -210,10 +210,12 @@ export default class FEED extends Component {
           <h2 style={{ fontWeight: 700, fontSize: 20, marginTop: 10 }}>
             {this.state.project.name}
           </h2>
-          <p style={{ opacity: 0.65 }}>
-            {this.state.project.description}
-            <br />
-          </p>
+          {!!this.state.project.description && (
+            <p style={{ opacity: 0.65 }}>
+              {this.state.project.description}
+              <br />
+            </p>
+          )}
           {this.state.project.creator ? (
             <div style={{ marginTop: 10 }}>
               <span style={{ opacity: 0.65 }}>Created by </span>
@@ -243,7 +245,7 @@ export default class FEED extends Component {
         {(this.state.project.history || [])
           .slice()
           .reverse()
-          .slice(0, Math.min(((this.state.project.history||[]).length),20))
+          .slice(0, Math.min((this.state.project.history || []).length, 20))
           .map(item => (
             <div key={item.uid}>
               <Card
@@ -373,9 +375,7 @@ export default class FEED extends Component {
               <br />
             </div>
           ))}
-        <Card>
-          <div style={{ opacity: 0.65 }}>Nothing else to show.</div>
-        </Card>
+        <div style={{ opacity: 0.65, margin: 50 }}>Nothing else to show.</div>
         <br />
       </div>
     );

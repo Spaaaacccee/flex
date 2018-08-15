@@ -148,6 +148,7 @@ ul.ant-timeline {
   animation: fade-in-up 0.3s cubic-bezier(0, 0.65, 0.27, 1) forwards !important;
 }
 
+
 .picker-dialog-content:after {
   content: "Google Drive Picker";
   font-family: "Roboto", "Noto Sans", "Segoe UI", Helvetica, Arial, sans-serif !important;
@@ -167,6 +168,11 @@ ul.ant-timeline {
   background-repeat: no-repeat;
   height: 150px;
   line-height: 220px;
+}
+
+
+div.ant-modal-content {
+  border-radius: 7px;
 }
 
 div.ant-modal-mask {

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Form, Button, Input, Icon } from "antd";
 import UserSelector from "../components/UserSelector";
+import $ from "../classes/Utils";
 
 export default class CreateProject extends Component {
   state = {
@@ -32,10 +33,15 @@ export default class CreateProject extends Component {
         <h2>New Project</h2>
         <h3>Project name</h3>
         <Input
+          onBlur={e => {
+            this.setState({
+              projectName: e.target.value.trim()
+            });
+          }}
           placeholder="Untitled Project"
           onChange={e => {
             this.setState({
-              projectName: e.target.value
+              projectName: $.string(e.target.value).trimLeft()
             });
           }}
         />

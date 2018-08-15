@@ -6,6 +6,7 @@ import RoleEditor from "./RoleEditor";
 import formatJSON from "format-json-pretty";
 import update from "immutability-helper";
 import User from "../classes/User";
+import $ from "../classes/Utils";
 
 const { TabPane } = Tabs;
 
@@ -108,11 +109,28 @@ export default class Settings extends Component {
           <TabPane tab="General" key="1">
             <h3>Project Name</h3>
             <Input
+              onBlur={e => {
+                this.setState(
+                  update(this.state, {
+                    values: {
+                      general: {
+                        name: {
+                          $set: e.target.value.trim() || "Untitled Project"
+                        }
+                      }
+                    }
+                  })
+                );
+              }}
               value={this.state.values.general.name}
               onChange={e => {
                 this.setState(
                   update(this.state, {
-                    values: { general: { name: { $set: e.target.value } } }
+                    values: {
+                      general: {
+                        name: { $set: $.string(e.target.value).trimLeft() }
+                      }
+                    }
                   })
                 );
               }}
@@ -163,26 +181,26 @@ export default class Settings extends Component {
                   cancelText="No"
                   onConfirm={() => {
                     this.setState({ saving: true }, () => {
-                          Promise.all(
-                            (this.state.sourceProject.members || []).map(
-                              async member =>
-                                (await User.getCurrentUser()).leaveProject(
-                                  this.state.sourceProject.projectID,
-                                  true
-                                )
+                      Promise.all(
+                        (this.state.sourceProject.members || []).map(
+                          async member =>
+                            (await User.getCurrentUser()).leaveProject(
+                              this.state.sourceProject.projectID,
+                              true
                             )
-                          ).then(() => {
-                            this.state.user
-                              .deleteProject(this.state.sourceProject.projectID)
-                              .then(() => {
-                                message.success(
-                                  `Successfully deleted ${
-                                    this.state.sourceProject.name
-                                  }`
-                                );
-                                this.props.onClose();
-                              });
+                        )
+                      ).then(() => {
+                        this.state.user
+                          .deleteProject(this.state.sourceProject.projectID)
+                          .then(() => {
+                            message.success(
+                              `Successfully deleted ${
+                                this.state.sourceProject.name
+                              }`
+                            );
+                            this.props.onClose();
                           });
+                      });
                     });
                   }}
                 >
