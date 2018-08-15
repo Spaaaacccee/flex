@@ -122,7 +122,7 @@ class FileDisplay extends Component {
                         margin: 5,
                         marginLeft: 0
                       }}
-                      type="file"
+                      type={Document.getFiletypeIcon(this.state.file.name)}
                     />
                   )
                 }

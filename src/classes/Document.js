@@ -1,11 +1,28 @@
 import Firebase from "firebase";
 import Fire from "./Fire";
 import { message, notification } from "antd";
-import  $, { EventEmitter } from "./Utils";
+import $, { EventEmitter } from "./Utils";
 import UploadLoader from "../components/UploadLoader";
 import React from "react";
+import DocumentType from "./DocumentType";
 
 export default class Document {
+  /**
+   *
+   * @static
+   * @param  {String} filename
+   * @return
+   * @memberof Document
+   */
+  static getFiletypeIcon(filename) {
+    return DocumentType.getIconName(
+      filename
+        .split(".")
+        .pop()
+        .toLowerCase()
+    );
+  }
+
   /**
    *
    * @static
@@ -30,7 +47,7 @@ export default class Document {
   static async tryPreviewWindow(meta) {
     let url;
     let msg = message.loading("Getting the download link for your file");
-    if(meta.uploadType) {
+    if (meta.uploadType) {
       if (meta.uploadType === "cloud") {
         url = meta.source.url;
       } else {
@@ -100,8 +117,6 @@ export class DocumentMeta {
     Object.assign(this, args);
   }
 }
-
-class DocumentType {}
 
 class JobManager extends EventEmitter {
   /**

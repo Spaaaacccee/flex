@@ -1,5 +1,14 @@
 import React, { Component } from "react";
-import { Tabs, Input, Button, Modal, List, Popconfirm, message } from "antd";
+import {
+  Tabs,
+  Input,
+  Button,
+  Modal,
+  List,
+  Popconfirm,
+  message,
+  Icon
+} from "antd";
 import Project from "../classes/Project";
 import Role from "../classes/Role";
 import RoleEditor from "./RoleEditor";
@@ -106,7 +115,15 @@ export default class Settings extends Component {
       >
         <h2>Project Settings</h2>
         <Tabs defaultActiveKey="1">
-          <TabPane tab="General" key="1">
+          <TabPane
+            tab={
+              <span>
+                <Icon type="setting" />
+                {"General"}
+              </span>
+            }
+            key="1"
+          >
             <h3>Project Name</h3>
             <Input
               onBlur={e => {
@@ -154,7 +171,15 @@ export default class Settings extends Component {
             <br />
             <br />
           </TabPane>
-          <TabPane tab="Roles" key="2">
+          <TabPane
+            tab={
+              <span>
+                <Icon type="tags-o" />
+                {"Roles"}
+              </span>
+            }
+            key="2"
+          >
             <RoleEditor
               values={this.state.values.roles}
               onChange={roles => {
@@ -164,10 +189,15 @@ export default class Settings extends Component {
               }}
             />
           </TabPane>
-          <TabPane tab="Security" key="3">
-            Nothing is here yet
-          </TabPane>
-          <TabPane tab="Advanced" key="4">
+          <TabPane
+            tab={
+              <span>
+                <Icon type="warning" />
+                {"Advanced"}
+              </span>
+            }
+            key="3"
+          >
             <Button disabled>Transfer Ownership</Button>
             <br />
             <div style={{ height: 10 }} />
@@ -178,6 +208,7 @@ export default class Settings extends Component {
                 <Popconfirm
                   title="Delete this project?"
                   okText="Yes"
+                  okType="danger"
                   cancelText="No"
                   onConfirm={() => {
                     this.setState({ saving: true }, () => {
@@ -247,7 +278,7 @@ export default class Settings extends Component {
               </div>
             )}
           </TabPane>
-          <TabPane tab="Debug" key="5">
+          <TabPane tab="Debug" key="4">
             <pre>{formatJSON(this.state.sourceProject)}</pre>
           </TabPane>
         </Tabs>

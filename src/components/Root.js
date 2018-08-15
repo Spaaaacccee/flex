@@ -27,6 +27,7 @@ export default class Root extends Component {
       <div style={{ width: "100%", height: "100%" }}>
         <div
           style={{
+            filter:"saturate(0)",
             position: "fixed",
             display: "flex",
             alignItems: "center",

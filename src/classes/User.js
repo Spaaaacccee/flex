@@ -366,7 +366,14 @@ export default class User {
         );
       });
       let project = await Project.get(projectID);
-      project.setMembers(project.members.filter(item => item.uid !== this.uid));
+      await project.addHistory({
+        action: "left",
+        type: "project",
+        doneBy: this.uid
+      });
+      await project.setMembers(
+        project.members.filter(item => item.uid !== this.uid)
+      );
     } else {
       if (!suppressMessages)
         message.error("You can't leave a project you haven't joined!");

@@ -404,74 +404,80 @@ class MESSAGES extends Component {
                             key={0}
                             content={
                               <div>
-                                <p>
-                                  <a
-                                    onClick={() => {
-                                      this.setState(
-                                        {
-                                          inputValue: `${(
-                                            this.state.cachedUsers[
-                                              item.sender
-                                            ] || {}
-                                          ).name || item.sender} on ${new Date(
-                                            item.timeSent
-                                          ).toLocaleString()} said:\n${
-                                            item.content.bodyText
-                                          }\n`
-                                        },
-                                        () => {
-                                          this.scrollBottom().then(() => {
-                                            this.setState({
-                                              messageDisplayCount: this
-                                                .initialMessagesCount
-                                            });
-                                          });
-                                        }
-                                      );
-                                      this.inputElement.focus();
-                                      ref.tooltip.setState({
-                                        visible: false
-                                      });
-                                    }}
-                                  >
-                                    <Icon type="message" />
-                                    {" Quote"}
-                                  </a>
-                                </p>
-                                {item.sender === this.state.user.uid && (
-                                  <p>
+                                <List style={{ margin: "-5px 0" }} size="small">
+                                  <List.Item>
                                     <a
                                       onClick={() => {
-                                        this.setState({
-                                          consoleStatus: "editing",
-                                          consoleEditTarget: item,
-                                          inputValue: item.content.bodyText
-                                        });
+                                        this.setState(
+                                          {
+                                            inputValue: `${(
+                                              this.state.cachedUsers[
+                                                item.sender
+                                              ] || {}
+                                            ).name ||
+                                              item.sender} on ${new Date(
+                                              item.timeSent
+                                            ).toLocaleString()} said:\n${
+                                              item.content.bodyText
+                                            }\n`
+                                          },
+                                          () => {
+                                            this.scrollBottom().then(() => {
+                                              this.setState({
+                                                messageDisplayCount: this
+                                                  .initialMessagesCount
+                                              });
+                                            });
+                                          }
+                                        );
                                         this.inputElement.focus();
                                         ref.tooltip.setState({
                                           visible: false
                                         });
                                       }}
                                     >
-                                      <Icon type="edit" />
-                                      {" Edit"}
-                                    </a>
-                                  </p>
-                                )}
-                                <Popconfirm
-                                  placement="topRight"
-                                  title="Delete this message?"
-                                  okText="Yes"
-                                  cancelText="No"
-                                  onConfirm={() => {
-                                    this.handleDelete(item.uid);
-                                  }}
-                                >
-                                  <a>
-                                    <Icon type="delete" />
-                                    {" Delete"}
-                                  </a>
-                                </Popconfirm>
+                                      <Icon type="message" />
+                                      {" Quote"}
+                                    </a>{" "}
+                                  </List.Item>
+
+                                  {item.sender === this.state.user.uid && (
+                                    <List.Item>
+                                      <a
+                                        onClick={() => {
+                                          this.setState({
+                                            consoleStatus: "editing",
+                                            consoleEditTarget: item,
+                                            inputValue: item.content.bodyText
+                                          });
+                                          this.inputElement.focus();
+                                          ref.tooltip.setState({
+                                            visible: false
+                                          });
+                                        }}
+                                      >
+                                        <Icon type="edit" />
+                                        {" Edit"}
+                                      </a>
+                                    </List.Item>
+                                  )}
+                                  <Popconfirm
+                                    placement="topRight"
+                                    title="Delete this message?"
+                                    okText="Yes"
+                                    cancelText="No"
+                                    onConfirm={() => {
+                                      this.handleDelete(item.uid);
+                                    }}
+                                  >
+                                    <List.Item>
+                                      <a>
+                                        <Icon type="delete" />
+                                        {" Delete"}
+                                      </a>
+                                    </List.Item>
+                                  </Popconfirm>
+                                </List>
                               </div>
                             }
                           >
@@ -593,12 +599,37 @@ class MESSAGES extends Component {
         >
           <div>
             {this.state.consoleStatus !== "editing" && (
-              <Button
-                shape="circle"
-                icon="paper-clip"
-                style={{ flex: "none" }}
-                disabled={!this.state.messenger}
-              />
+              <Popover
+                placement="topLeft"
+                trigger="click"
+                content={
+                  <div>
+                    <List size="small" style={{ margin: "-5px 0" }}>
+                      {[
+                        { icon: "file", name: "File", action: () => {} },
+                        { icon: "calendar", name: "Event", action: () => {} },
+                        { icon: "book", name: "History", action: () => {} },
+                        { icon: "user", name: "Member", action: () => {} },
+                        { icon: "tags-o", name: "Role", action: () => {} }
+                      ].map((x, i) => (
+                        <List.Item key={i}>
+                          <a onClick={x.action}>
+                            <Icon type={x.icon} />
+                            {` ${x.name}`}
+                          </a>
+                        </List.Item>
+                      ))}
+                    </List>
+                  </div>
+                }
+              >
+                <Button
+                  shape="circle"
+                  icon="paper-clip"
+                  style={{ flex: "none" }}
+                  disabled={!this.state.messenger}
+                />
+              </Popover>
             )}
             <Input.TextArea
               onFocus={() => {

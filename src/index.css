@@ -72,7 +72,7 @@ h3 {
 }
 
 .ant-card .ant-card-actions span {
-  color: #1990FF;
+  color: #1990ff;
 }
 
 /* .ant-card:hover {
@@ -148,7 +148,6 @@ ul.ant-timeline {
   animation: fade-in-up 0.3s cubic-bezier(0, 0.65, 0.27, 1) forwards !important;
 }
 
-
 .picker-dialog-content:after {
   content: "Google Drive Picker";
   font-family: "Roboto", "Noto Sans", "Segoe UI", Helvetica, Arial, sans-serif !important;
@@ -170,7 +169,6 @@ ul.ant-timeline {
   line-height: 220px;
 }
 
-
 div.ant-modal-content {
   border-radius: 7px;
 }
@@ -186,6 +184,10 @@ div.ant-modal-mask-hidden {
   backdrop-filter: blur(0px);
   background-color: transparent;
   pointer-events: none;
+}
+
+div.ant-modal-footer {
+  border-top: none;
 }
 
 div.ant-modal-body h2 {
