@@ -33,6 +33,18 @@ export default class TopBar extends Component {
     });
   }
 
+  shouldComponentUpdate(props, state) {
+    if (props.heading !== this.state.heading) return true;
+    if (props.leftButtonType !== this.state.leftButtonType) return true;
+    if (props.rightButtonType !== this.state.rightButtonType) return true;
+    if (props.visibilityMode !== this.state.visibilityMode) return true;
+    if (props.scrollPosition === 0 && this.state.scrollPosition !== 0)
+      return true;
+    if (props.scrollPosition !== 0 && this.state.scrollPosition === 0)
+      return true;
+    return false;
+  }
+
   render() {
     return (
       <div
@@ -40,7 +52,9 @@ export default class TopBar extends Component {
           this.state.visibilityMode === "adaptive" &&
           this.state.scrollPosition <= 0
             ? "transparent top"
-            : this.state.scrollPosition <= 0 ? "top":""
+            : this.state.scrollPosition <= 0
+              ? "top"
+              : ""
         }`}
       >
         <Header className={`top-bar`}>

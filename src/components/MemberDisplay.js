@@ -59,7 +59,7 @@ export default class MemberDisplay extends Component {
       <div>
         <Card
           style={Object.assign(
-            { textAlign: "center", maxWidth: 400 },
+            { textAlign: "center" },
             this.state.cardless ? { background: "none", boxShadow: "none" } : {}
           )}
         >

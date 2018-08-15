@@ -28,6 +28,7 @@ export default class Root extends Component {
         <div
           style={{
             filter:"saturate(0)",
+            opacity:0.4,
             position: "fixed",
             display: "flex",
             alignItems: "center",

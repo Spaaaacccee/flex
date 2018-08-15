@@ -49,7 +49,7 @@ export default class FileUploadModal extends Component {
                   scope={["https://www.googleapis.com/auth/drive.readonly"]}
                   onChange={data => {
                     if (data.docs && data.docs[0]) {
-                      this.state.project.addCloudFile(data.docs[0]).then(() => {
+                      this.state.project.addCloudFile(data.docs[0], () => {
                         this.setState(
                           update(this.state, {
                             drivePickedFiles: { $push: [data.docs[0]] }

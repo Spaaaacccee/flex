@@ -10,6 +10,8 @@ import UserGroupDisplay from "../components/UserGroupDisplay";
 import Document from "../classes/Document";
 import $ from "../classes/Utils";
 import Project from "../classes/Project";
+import "./Files.css";
+import User from "../classes/User";
 const { Meta } = Card;
 
 export default class FILES extends Component {
@@ -25,13 +27,24 @@ export default class FILES extends Component {
     view: "thumbnail"
   };
   componentWillReceiveProps(props) {
-    if (Project.equal(props.project, this.state.project)) return;
     this.setState({
       searchResults: null,
       project: props.project,
       user: props.user
     });
   }
+
+  shouldComponentUpdate(props, state) {
+    if (!Project.equal(props.project, this.state.project)) return true;
+    if (this.state.searchResults !== state.searchResults) return true;
+    if (state.view !== this.state.view) return true;
+    if (!User.equal(props.user, this.state.user)) return true;
+    if (state.uploadModalVisible !== this.state.uploadModalVisible) return true;
+    if ((state.searchResults && this.state.searchResults) && state.searchResults.length !== this.state.searchResults.length)
+      return true;
+    return false;
+  }
+
   onExtrasButtonPress() {
     this.setState({ uploadModalVisible: true });
   }
@@ -62,12 +75,10 @@ export default class FILES extends Component {
                 onChange={(e => {
                   if (e.target.value) {
                     let files = this.state.project.files || [];
-                    let results = $
-                      .array(files)
-                      .searchString(
-                        item => (item.name || item.source.name).toLowerCase(),
-                        e.target.value
-                      );
+                    let results = $.array(files).searchString(
+                      item => (item.name || item.source.name).toLowerCase(),
+                      e.target.value
+                    );
                     this.setState({ searchResults: results });
                   } else {
                     this.setState({ searchResults: null });
@@ -95,12 +106,26 @@ export default class FILES extends Component {
             {filesToRender && filesToRender.length ? (
               <div>
                 {this.state.view === "thumbnail" ? (
-                  (filesToRender || []).map((item, index) => (
-                    <div key={item.uid || item.source.id}>
-                      <FileDisplay project={this.state.project} file={item} onDelete={()=>{}}/>
-                      <br/>
-                    </div>
-                  ))
+                  <div
+                    className="files"
+                    style={{
+                      columns: "10 350px"
+                    }}
+                  >
+                    {(filesToRender || []).map((item, index) => (
+                      <div
+                        key={item.uid || item.source.id}
+                        style={{
+                          breakInside: "avoid",
+                          pageBreakInside: "avoid",
+                          ["-webkit-column-break-inside"]: "avoid"
+                        }}
+                      >
+                        <FileDisplay project={this.state.project} file={item} />
+                        <br />
+                      </div>
+                    ))}
+                  </div>
                 ) : (
                   <List
                     style={{
@@ -195,7 +220,8 @@ export default class FILES extends Component {
                                                 }
                                               />
                                             </List.Item>
-                                          )).reverse()}
+                                          ))
+                                          .reverse()}
                                       </List>
                                     </div>
                                   )}
@@ -220,7 +246,7 @@ export default class FILES extends Component {
                 <br />
               </div>
             )}
-            <br/>
+            <br />
             <Button
               icon="plus"
               type="primary"

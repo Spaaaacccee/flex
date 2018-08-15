@@ -3,23 +3,40 @@ import { Card, Icon, Button, List, Avatar, Popconfirm } from "antd";
 import UserGroupDisplay from "./UserGroupDisplay";
 import Fire from "../classes/Fire";
 import Document from "../classes/Document";
+import Project from "../classes/Project";
 class FileDisplay extends Component {
   state = {
     project: {},
     file: {},
     readOnly: false,
-    deleting: false,
+    deleting: false
   };
 
   componentDidMount() {
     this.componentWillReceiveProps(this.props);
   }
 
+  shouldComponentUpdate(props, state) {
+    if (!Project.equal(props.project, this.state.project)) return true;
+    if (props.readOnly !== this.state.readOnly) return true;
+    if (state.deleting !== this.state.deleting) return true;
+    if (!this.state.file) return true;
+    if (props.file) {
+      if (props.file.source) {
+        if (props.file.source.id !== this.state.file.source.id) return true;
+        return false;
+      }
+      if (props.file.uid !== this.state.file.uid) return true;
+      if (props.file.files.length !== this.state.file.files.length) return true;
+    }
+    return false;
+  }
+
   componentWillReceiveProps(props) {
     this.setState({
       project: props.project,
       file: props.file,
-      readOnly: props.readOnly,
+      readOnly: props.readOnly
     });
   }
 
@@ -32,7 +49,7 @@ class FileDisplay extends Component {
         {
           <Card
             style={Object.assign(
-              { maxWidth: 350 },
+              {},
               this.state.deleting
                 ? {
                     opacity: 0.65,
@@ -172,7 +189,7 @@ class FileDisplay extends Component {
                     {(this.state.file.type === "cloud" ||
                       (this.state.file.files || []).length === 1) && (
                       <UserGroupDisplay
-                      project={this.state.project}
+                        project={this.state.project}
                         people={{
                           members: [
                             (

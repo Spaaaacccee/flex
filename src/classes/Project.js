@@ -557,8 +557,9 @@ export default class Project {
     });
   }
 
-  async addCloudFile(file, callback) {
-    await this.transaction(project => {
+  addCloudFile(file, callback) {
+    User.getCurrentUser().then(user => {
+    this.transaction(project => {
       project.files = project.files || [];
       if (
         project.files.find(
@@ -572,11 +573,10 @@ export default class Project {
           message.error(`${file.name} already exists!`);
         }
       } else {
+        project.files.push(Object.assign(new CloudDocument(file), {
+          uploader: user.uid
+        }));
         if (project instanceof Project) {
-          User.getCurrentUser().then(user => {
-            project.files.push(Object.assign(new CloudDocument(file)), {
-              uploader: user.uid
-            });
             project.addHistory(
               new HistoryItem({
                 action: "added",
@@ -584,10 +584,10 @@ export default class Project {
                 doneBy: user.uid,
                 content: new HistoryItemContent({ uid: file.id })
               })
-            );
-          });
+            ).then(()=>{callback()});
+          }
         }
-      }
+      });
     });
   }
 
