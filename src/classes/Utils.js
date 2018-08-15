@@ -1,4 +1,4 @@
-import Moment from 'moment';
+import Moment from "moment";
 
 /**
  * Class for implementing event functionality in classes
@@ -30,7 +30,7 @@ export class EventEmitter {
     if (action && eventName) {
       this.all[eventName] = this.all[eventName].filter(item => item !== action);
     } else {
-      if(eventName) this.all[eventName] = [];
+      if (eventName) this.all[eventName] = [];
       else this.all = {};
     }
   }
@@ -52,8 +52,7 @@ export class EventEmitter {
 
 class IDGen {
   UIDlength = 28;
-  UIDChars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  UIDChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
   /**
    * Generates a random ID
 
@@ -82,11 +81,14 @@ class IDGen {
 }
 
 class DateUtils {
-  relativeTimeThreshold = 1000*60*60;
+  relativeTimeThreshold = 1000 * 60 * 60;
   humanise(date) {
     let moment = new Moment(date);
     let datenow = Date.now();
-    return ((datenow-date)>this.relativeTimeThreshold?moment.calendar():moment.fromNow()).toLowerCase();
+    return (datenow - date > this.relativeTimeThreshold
+      ? moment.calendar()
+      : moment.fromNow()
+    ).toLowerCase();
   }
 }
 
@@ -116,10 +118,7 @@ class ArrayUtils {
    * @memberof ArrayUtils
    */
   remove(array, item) {
-    if (this.exists(array, item)) {
-      array.splice(array.indexOf(item), 1);
-      return array;
-    }
+    return (array || []).filter(x => x !== item);
   }
 
   /**
@@ -168,7 +167,7 @@ class StringUtils {
     return string.replace(/^\s+/, "");
   }
   isVowel(char) {
-    return ['a', 'e', 'i', 'o', 'u'].indexOf(char.toLowerCase()) !== -1
+    return ["a", "e", "i", "o", "u"].indexOf(char.toLowerCase()) !== -1;
   }
 }
 

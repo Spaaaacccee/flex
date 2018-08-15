@@ -35,7 +35,8 @@ export default class ProjectView extends Component {
     hideSideBar: false,
     settingsVisible: false,
     inviteUsersVisible: false,
-    pauseSiderUpdate: false
+    pauseSiderUpdate: false,
+    user: {}
   };
   componentWillReceiveProps(props) {
     this.setState({
@@ -44,24 +45,36 @@ export default class ProjectView extends Component {
       navigationCollapsed: props.navigationCollapsed ? true : false,
       projectID: props.projectID,
       hideSideBar: props.hideSideBar,
-      siderWidth: props.siderWidth
+      siderWidth: props.siderWidth,
+      user: props.user
     });
     if (props.projectID === this.state.projectID) return;
     if (this.state.projectID) {
       Fetch.getProjectReference(this.state.projectID).off();
       this.setState({ project: {} });
     }
-    if(!props.projectID) return;
+    if (!props.projectID) return;
     Fetch.getProjectReference(props.projectID).on("value", snapshot => {
-      if (snapshot.val() === null) return;
-      this.setState({ project: Object.assign(new Project(), snapshot.val()) });
+      let project = snapshot.val();
+      if (project === null) return;
+      if (
+        project.deleted ||
+        !(project.members || []).find(x => x.uid === this.state.user.uid)
+      ) {
+        this.props.onMessage({ type: "switchTo", content: null });
+        Fetch.getProjectReference(this.state.projectID).off();
+        return;
+      }
+      this.setState({ project: Object.assign(new Project(), project) });
     });
   }
 
   async applySettings(values) {
     let project = this.state.project;
-    if(project.name !== values.general.name) await project.setName(values.general.name);
-    if(project.description !== values.general.description) await project.setDescription(values.general.description);
+    if (project.name !== values.general.name)
+      await project.setName(values.general.name);
+    if (project.description !== values.general.description)
+      await project.setDescription(values.general.description);
     await project.setRoles(values.roles);
     return true;
   }
@@ -73,7 +86,9 @@ export default class ProjectView extends Component {
       displayPages.length - 1
     );
     const openedPage = displayPages[openIndex];
-    const displayProject = Page.equal(openedPage,UserPage) ? {} : this.state.project;
+    const displayProject = Page.equal(openedPage, UserPage)
+      ? {}
+      : this.state.project;
     return (
       <div
         className={openedPage.name}
@@ -200,6 +215,7 @@ export default class ProjectView extends Component {
           </Layout>
         </Layout>
         <Settings
+          user={this.state.user}
           project={displayProject}
           visible={this.state.settingsVisible}
           onClose={() => {

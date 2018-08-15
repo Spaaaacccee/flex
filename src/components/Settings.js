@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { Tabs, Input, Button, Modal, List } from "antd";
+import { Tabs, Input, Button, Modal, List, Popconfirm, message } from "antd";
 import Project from "../classes/Project";
 import Role from "../classes/Role";
 import RoleEditor from "./RoleEditor";
 import formatJSON from "format-json-pretty";
 import update from "immutability-helper";
+import User from "../classes/User";
 
 const { TabPane } = Tabs;
 
@@ -20,6 +21,7 @@ export default class Settings extends Component {
   };
   state = {
     sourceProject: {},
+    user: {},
     values: {
       general: { name: "", description: "" },
       roles: []
@@ -38,7 +40,8 @@ export default class Settings extends Component {
         {
           sourceProject: props.project,
           saving: false,
-          visible: true
+          visible: true,
+          user: props.user
         },
         this.resetToMatchProject
       );
@@ -147,18 +150,84 @@ export default class Settings extends Component {
             Nothing is here yet
           </TabPane>
           <TabPane tab="Advanced" key="4">
-            <Button>Transfer Ownership</Button>
+            <Button disabled>Transfer Ownership</Button>
             <br />
             <div style={{ height: 10 }} />
             <p>Make one of the members of this project the owner.</p>
             <br />
-            <Button type="danger">Delete Project</Button>
-            <br />
-            <div style={{ height: 10 }} />
-            <p>
-              Permanently delete this project, including all files stored here.{" "}
-              <b>This operation is not reversible.</b>
-            </p>
+            {this.state.user.uid === this.state.sourceProject.owner ? (
+              <div>
+                <Popconfirm
+                  title="Delete this project?"
+                  okText="Yes"
+                  cancelText="No"
+                  onConfirm={() => {
+                    this.setState({ saving: true }, () => {
+                          Promise.all(
+                            (this.state.sourceProject.members || []).map(
+                              async member =>
+                                (await User.getCurrentUser()).leaveProject(
+                                  this.state.sourceProject.projectID,
+                                  true
+                                )
+                            )
+                          ).then(() => {
+                            this.state.user
+                              .deleteProject(this.state.sourceProject.projectID)
+                              .then(() => {
+                                message.success(
+                                  `Successfully deleted ${
+                                    this.state.sourceProject.name
+                                  }`
+                                );
+                                this.props.onClose();
+                              });
+                          });
+                    });
+                  }}
+                >
+                  <Button type="danger" disabled={this.state.saving}>
+                    Delete Project
+                  </Button>
+                </Popconfirm>
+                <br />
+                <div style={{ height: 10 }} />
+                <p>
+                  Permanently delete this project, including all files stored
+                  here. <b>This operation is not reversible.</b>
+                </p>
+              </div>
+            ) : (
+              <div>
+                <Button
+                  type="danger"
+                  disabled={this.state.saving}
+                  onClick={() => {
+                    this.setState({ saving: true }, () => {
+                      User.getCurrentUser().then(user => {
+                        user
+                          .leaveProject(this.state.sourceProject.projectID)
+                          .then(() => {
+                            message.success(
+                              `Successfully left ${
+                                this.state.sourceProject.name
+                              }`
+                            );
+                            this.props.onClose();
+                          });
+                      });
+                    });
+                  }}
+                >
+                  Leave Project
+                </Button>
+                <br />
+                <div style={{ height: 10 }} />
+                <p>
+                  You won't be able to rejoin until someone invites you again.
+                </p>
+              </div>
+            )}
           </TabPane>
           <TabPane tab="Debug" key="5">
             <pre>{formatJSON(this.state.sourceProject)}</pre>

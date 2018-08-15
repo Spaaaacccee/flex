@@ -105,7 +105,7 @@ export default class Project {
    */
   static async delete(projectID) {
     try {
-      await Fetch.getProjectReference(projectID).set({});
+      await Fetch.getProjectReference(projectID).set({ deleted: true });
       return true;
     } catch (e) {
       console.log(e);
@@ -234,6 +234,7 @@ export default class Project {
         if (item) {
           operation(item);
           item.lastUpdatedTimestamp = dateNow;
+          return item;
         }
         return item;
       });
@@ -303,9 +304,13 @@ export default class Project {
    * @memberof Project
    */
   async setMembers(members) {
-    await this.transaction(project => {
-      project.members = members;
-    });
+    let project = await Fetch.getProjectReference(this.projectID);
+    let dateNow = Date.now();
+    await project.child("members").set(members);
+    await project.child("lastUpdatedTimestamp").set(dateNow);
+    this.lastUpdatedTimestamp = dateNow;
+    this.members = members;
+
   }
 
   /**

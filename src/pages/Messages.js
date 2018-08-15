@@ -476,6 +476,10 @@ class MESSAGES extends Component {
                             }
                           >
                             <Button
+                              style={{
+                                border: 0,
+                                background: "transparent"
+                              }}
                               icon="ellipsis"
                               shape="circle"
                               size="small"
@@ -506,7 +510,11 @@ class MESSAGES extends Component {
                             (this.state.cachedUsers[item.sender] || {})
                               .profilePhoto
                           }
-                          style={{ marginRight: 10, flex: "none", cursor:'pointer' }}
+                          style={{
+                            marginRight: 10,
+                            flex: "none",
+                            cursor: "pointer"
+                          }}
                         />
                       </Popover>
                       <div style={{ display: "inline-block", flex: 1 }}>

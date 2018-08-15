@@ -109,7 +109,7 @@ export default class Main extends Component {
       // Only update the user data if data exists in the database. It is ok if the current user does not exist as it will be created when necessary.
       if (!snapShot.val()) return;
       this.setState({
-        userData: snapShot.val()
+        userData: Object.assign(new User(), snapShot.val())
       });
     });
     // Initialise offline/online indicator, in response to a special register in the firebase database API
@@ -135,7 +135,14 @@ export default class Main extends Component {
               pauseUpdate={this.state.navigationCollapsed}
               user={this.state.user}
               // Here we're displaying all user projects, only if they exist
-              items={this.state.userData?[...(this.state.userData.projects||[]),...(this.state.userData.joinedProjects||[])]:[]}
+              items={
+                this.state.userData
+                  ? [
+                      ...(this.state.userData.projects || []),
+                      ...(this.state.userData.joinedProjects || [])
+                    ]
+                  : []
+              }
               openedProject={this.state.openedProjectID}
               onProjectChanged={projectChangedArgs => {
                 // Respond to when the selected project changes by setting the selected item in the component state
@@ -161,10 +168,11 @@ export default class Main extends Component {
           </Sider>
           {/* Secondary navigation bar and main content */}
           <ProjectView
+            user={this.state.userData}
             onMessage={msg => {
               switch (msg.type) {
                 case "switchTo":
-                  this.setState({openedProjectID:msg.content})
+                  this.setState({ openedProjectID: msg.content });
                   break;
                 default:
                   break;
@@ -222,6 +230,7 @@ export default class Main extends Component {
           }}
           footer={null}
           maskClosable={false}
+          key={this.state.modal.key}
         >
           <CreateProject
             opened={this.state.modal.visible}
@@ -245,7 +254,8 @@ export default class Main extends Component {
                   visible: false,
                   // Due to the way React works, a new key is required every time we want a new modal. This key increments by 1 every time a project is created.
                   key: this.state.modal.key + 1
-                }
+                },
+                openedProjectID: newProject.projectID
               });
             }}
           />

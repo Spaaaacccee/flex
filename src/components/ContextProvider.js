@@ -5,9 +5,9 @@ import User from "../classes/User";
 
 export default class ContextProvider extends Component {
   state = {
-    project: {},
+    project: null,
     projectID: null,
-    user: {},
+    user: null,
     userID: null
   };
 
@@ -26,7 +26,7 @@ export default class ContextProvider extends Component {
       }
       this.projectReference = Fetch.getProjectReference(props.projectID);
       this.projectReference.on("value", snapshot => {
-        this.setState({ project: snapshot.val() || {} });
+        this.setState({ project: snapshot.val()});
       });
       this.setState({ projectID: props.projectID });
     }
@@ -37,7 +37,7 @@ export default class ContextProvider extends Component {
       }
       this.userReference = Fetch.getUserReference(props.userID);
       this.userReference.on("value", snapshot => {
-        this.setState({ user: snapshot.val() || {} });
+        this.setState({ user: snapshot.val()});
       });
       this.setState({ userID: props.userID });
     }

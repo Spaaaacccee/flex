@@ -205,7 +205,7 @@ export default class User {
   async rejectInvite(projectID) {
     await this.transaction(user => {
       user.pendingInvites = user.pendingInvites || [];
-      $.array(user.pendingInvites).remove(projectID);
+      user.pendingInvites = $.array(user.pendingInvites).remove(projectID);
     });
   }
 
@@ -272,42 +272,48 @@ export default class User {
    * @memberof User
    */
   async acceptInvite(projectID) {
-    this.transaction(user => {
-      // Check if pendingInvites is not empty and contains the specified project ID.
-      if (
-        user.pendingInvites &&
-        $.array(user.pendingInvites).exists(projectID)
-      ) {
-        // Initialise required properties so they're not undefined.
-        user.joinedProjects = user.joinedProjects || [];
-        user.projects = user.projects || [];
-        // Check if the user has already joined, or is part of, this project. This check is redundant as adding an invite already has a check for the same thing but this is here just in case.
+    if (await Project.get(projectID)) {
+      this.transaction(user => {
+        // Check if pendingInvites is not empty and contains the specified project ID.
         if (
-          !(
-            $.array(user.projects).exists(projectID) ||
-            $.array(user.joinedProjects).exists(projectID)
-          )
+          user.pendingInvites &&
+          $.array(user.pendingInvites).exists(projectID)
         ) {
-          // Add the project to joinedProjects
-          user.joinedProjects.push(projectID);
-          // Remove the project invite
-          $.array(user.pendingInvites).remove(projectID);
-          // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
-          if (user instanceof User) {
-            Project.get(projectID).then(project => {
-              project.addMember(user.uid).then(() => {
-                message.success(`You've successfully joined ${project.name}`);
+          // Initialise required properties so they're not undefined.
+          user.joinedProjects = user.joinedProjects || [];
+          user.projects = user.projects || [];
+          // Check if the user has already joined, or is part of, this project. This check is redundant as adding an invite already has a check for the same thing but this is here just in case.
+          if (
+            !(
+              $.array(user.projects).exists(projectID) ||
+              $.array(user.joinedProjects).exists(projectID)
+            )
+          ) {
+            // Add the project to joinedProjects
+            user.joinedProjects.push(projectID);
+            // Remove the project invite
+            user.pendingInvites = $.array(user.pendingInvites).remove(
+              projectID
+            );
+            // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
+            if (user instanceof User) {
+              Project.get(projectID).then(project => {
+                project.addMember(user.uid).then(() => {
+                  message.success(`You've successfully joined ${project.name}`);
+                });
               });
-            });
+            }
+          } else {
+            if (user instanceof User) {
+              message.error(`You tried to join a project you're already in!`);
+            }
+            return;
           }
-        } else {
-          if (user instanceof User) {
-            message.error(`You tried to join a project you're already in!`);
-          }
-          return;
         }
-      }
-    });
+      });
+    } else {
+      message.error("The project you're trying to join doesn't exist anymore");
+    }
   }
 
   /**
@@ -347,23 +353,36 @@ export default class User {
     return false;
   }
 
-  async leaveProject(projectID) {
-    if ($.array(this.joinedProjects).exists(projectID)) {
-      this.transaction(user => {
-        $.array(user.joinedProjects).remove(projectID);
-        if (user instanceof User) {
-          Project.get(projectID).then(project => {
-            project.setMembers(
-              $.array(project.members).removeIf(
-                (item, index) => item.uid === user.uid
-              )
-            );
-            message.success(`Successfully left ${project.name}`);
-          });
-        }
+  async leaveProject(projectID, suppressMessages) {
+    if ($.array(this.joinedProjects || []).exists(projectID)) {
+      await this.transaction(user => {
+        user.joinedProjects = $.array(user.joinedProjects || []).remove(
+          projectID
+        );
       });
+      let project = await Project.get(projectID);
+      project.setMembers(
+        project.members.filter(item => item.uid !== this.uid)
+      );
+    } else {
+      if (!suppressMessages)
+        message.error("You can't leave a project you haven't joined!");
     }
   }
+
+  async deleteProject(projectID) {
+    if ($.array(this.projects || []).exists(projectID)) {
+      this.transaction(user => {
+        user.projects = $.array(user.projects).remove(projectID);
+        if (user instanceof User) {
+          Project.delete(projectID);
+        }
+      });
+    } else {
+      message.error("You don't own the project you're trying to delete.");
+    }
+  }
+
   /**
    * Creates an instance of User.
    * @param  {String} uid

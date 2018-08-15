@@ -17,6 +17,9 @@ export default class ProjectInvitation extends Component {
   state = {
     project: {}
   };
+
+
+
   componentWillReceiveProps(props) {
     this.setState({ project: props.project||this.state.project });
   }
@@ -24,24 +27,43 @@ export default class ProjectInvitation extends Component {
     return (
       <div>
         <Card
-          style={{ width: 250, textAlign:'center', display:'inline-block'}}
+          style={{ width: 250, textAlign: "center", display: "inline-block" }}
           actions={[
-            <span onClick={this.props.onAcceptInvite}><Icon type="check" />{" Accept"}</span>,
-            <Popconfirm
-              title="Are you sure you want to reject this invite?"
-              okText="Yes"
-              cancelText="No"
-              onConfirm={this.props.onRejectInvite}
-            >
-              <span><Icon type="close" />{" Reject"}</span>
-            </Popconfirm>
+            !this.state.project.deleted
+              ? [
+                  <span onClick={this.props.onAcceptInvite}>
+                    <Icon type="check" />
+                    {" Accept"}
+                  </span>
+                ]
+              : [],
+            ...[
+              <Popconfirm
+                title="Are you sure you want to reject this invite?"
+                okText="Yes"
+                cancelText="No"
+                onConfirm={this.props.onRejectInvite}
+              >
+                <span>
+                  <Icon type="close" />
+                  {" Reject"}
+                </span>
+              </Popconfirm>
+            ]
           ]}
         >
-          <ProjectIcon name={this.state.project.name} readOnly />
+          <ProjectIcon
+            name={!this.state.project.deleted ? this.state.project.name : "?"}
+            readOnly
+          />
           <br />
           <Card.Meta
-            title={this.state.project.name}
-            description={this.state.project.description}
+            title={!this.state.project.deleted ? this.state.project.name : "Deleted"}
+            description={
+              !this.state.project.deleted
+                ? this.state.project.description
+                : "The owner has deleted this project."
+            }
           />
         </Card>
       </div>
