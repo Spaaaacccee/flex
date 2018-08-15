@@ -527,9 +527,11 @@ class MESSAGES extends Component {
                                     (this.state.project.roles || []).find(
                                       role =>
                                         role.uid ===
-                                        ((this.state.project.members.find(
-                                          member => member.uid === item.sender
-                                        ).roles || [])[0] || {})
+                                        ((
+                                          this.state.project.members.find(
+                                            member => member.uid === item.sender
+                                          ).roles || []
+                                        ).find(x => x === role.uid) || {})
                                     ) || {}
                                   ).color || { h: 0, s: 0, l: 15 }
                                 )

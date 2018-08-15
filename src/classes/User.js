@@ -301,6 +301,11 @@ export default class User {
                 project.addMember(user.uid).then(() => {
                   message.success(`You've successfully joined ${project.name}`);
                 });
+                project.addHistory({
+                  action: "joined",
+                  type: "project",
+                  doneBy: this.uid
+                });
               });
             }
           } else {
@@ -361,9 +366,7 @@ export default class User {
         );
       });
       let project = await Project.get(projectID);
-      project.setMembers(
-        project.members.filter(item => item.uid !== this.uid)
-      );
+      project.setMembers(project.members.filter(item => item.uid !== this.uid));
     } else {
       if (!suppressMessages)
         message.error("You can't leave a project you haven't joined!");
