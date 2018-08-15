@@ -402,4 +402,5 @@ export default class User {
     this.uid = uid || null;
     this.lastUpdatedTimestamp = Date.now();
   }
+  
 }
