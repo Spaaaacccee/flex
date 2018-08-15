@@ -25,7 +25,10 @@ export default class MEMBERS extends Component {
               gap={10}
               queries={[
                 {
-                  columns: 2,
+                  columns: Math.min(
+                    (this.state.project.members || []).length || 1,
+                    2
+                  ),
                   query: "min-width: 1000px"
                 }
               ]}

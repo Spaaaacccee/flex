@@ -248,7 +248,10 @@ export default class FEED extends Component {
           gap={10}
           queries={[
             {
-              columns: 2,
+              columns: Math.min(
+                (this.state.project.history || []).length || 1,
+                2
+              ),
               query: "min-width: 1000px"
             }
           ]}

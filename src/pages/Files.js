@@ -117,7 +117,10 @@ export default class FILES extends Component {
                       gap={10}
                       queries={[
                         {
-                          columns: 2,
+                          columns: Math.min(
+                            (filesToRender || []).length || 1,
+                            2
+                          ),
                           query: "min-width: 1000px"
                         }
                       ]}
