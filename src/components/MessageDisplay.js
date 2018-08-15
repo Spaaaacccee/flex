@@ -65,7 +65,7 @@ class MessageDisplay extends Component {
             style={{
               whiteSpace: "pre-wrap",
               display: "inline",
-              fontFamily: `"Chinese Quote", "-apple-system", "Segoe UI",
+              fontFamily: `"Segoe UI",
           "BlinkMacSystemFont", "Helvetica Neue", "Noto Sans", "Roboto", Arial,
           Helvetica, "PingFang SC", "Microsoft YaHei UI", sans-serif`
             }}
