@@ -6,13 +6,14 @@
 }
 
 .project-icon span {
-  transition: border-radius 0.4s cubic-bezier(0, 0.65, 0.27, 1), color 0.1s ease, background-color 0.4s ease;
+  transition: border-radius 0.4s cubic-bezier(0, 0.65, 0.27, 1), color 0.1s ease, background-color 0.4s ease, border-color 0.4s ease;
   cursor: pointer;
 }
 
 .project-icon span.primary-icon:hover {
     background-color: rgb(236, 247, 252);
     color: rgb(25, 144, 255);
+    border-color:#1890FF;
 }
 
 .project-icon span.primary-icon:active {

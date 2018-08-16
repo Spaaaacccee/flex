@@ -43,6 +43,10 @@ The application uses Firebase for database and file storage solutions.
 }
 ```
 
+- Heres what it looks like in the Firebase Console:
+
+![Database in Firebase Console](./img/img1.png)
+
 - Requests are made to and from the database using the Firebase JS API. In essense, JSON data is transferred along with an operation and other metadata.
 
 ```json
@@ -90,5 +94,26 @@ Files that are hosted on Google Drive still have Google Drive's own sharing perm
 The users' projects and messages are fully backed up locally every 15 minutes.
 
 Each backup records the user who has made the backup, the time it was backed up, the id of the backed up project, and the project itself.
+
+Backup is again saved as a JSON hierarchy tree, with the following format
+
+```json
+{
+  "projects": {
+    "[projectID]": {
+      "[timestamp]": {
+        "madeBy": "[userID]",
+        "sourceMessages": "[messages]",
+        "sourceProject": "[project]"
+      }
+    }
+  }
+}
+
+```
+
+Here's what it looks like in Chrome Dev Tools
+
+![Local Backups in Chrome Developer Tools](./img/img0.png)
 
 The project is synced to GitHub, and Google Drive. It is backed up periodically to a USB flash drive.

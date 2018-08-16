@@ -132,4 +132,3 @@ UI Elements have built-in input validation or intrinsic restrictions that preven
 
 | ID  | Element | Data | Expected | Actual | Fix |
 | --- | ------- | ---- | -------- | ------ | --- |
-

@@ -105,6 +105,7 @@ export default class RoleEditor extends Component {
                     />
                   </Popover>
                   <Input
+                    // Trim whitespace on the left or reset the field to "New Role" to ensure the field always contains a valid value.
                     onBlur={e => {
                       this.setState(
                         update(this.state, {
@@ -115,6 +116,7 @@ export default class RoleEditor extends Component {
                           }
                         }),
                         () => {
+                          // Inform the parent component of this change.
                           this.props.onChange(this.state.values);
                         }
                       );

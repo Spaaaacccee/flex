@@ -278,7 +278,7 @@ export default class Settings extends Component {
               </div>
             )}
           </TabPane>
-          <TabPane tab="Debug" key="4">
+          <TabPane tab="Debug" key="5">
             <pre>{formatJSON(this.state.sourceProject)}</pre>
           </TabPane>
         </Tabs>
