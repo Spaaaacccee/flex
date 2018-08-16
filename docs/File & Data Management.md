@@ -75,6 +75,11 @@ FileStorage
     \->document.docx
 ```
 
+Here's how it looks like in the Firebase Console
+
+![Firebase folders](./img/img7.png)
+![Firebase folders](./img/img8.png)
+
 ## Security and Accessibility
 
 - Users are authorised by Google via OAuth 2.0, the industry-standard protocol for authentication.
@@ -116,4 +121,3 @@ Here's what it looks like in Chrome Dev Tools
 
 ![Local Backups in Chrome Developer Tools](./img/img0.png)
 
-The project is synced to GitHub, and Google Drive. It is backed up periodically to a USB flash drive.
