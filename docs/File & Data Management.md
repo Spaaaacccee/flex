@@ -77,14 +77,18 @@ FileStorage
 
 - All traffic is encrypted using SSL/TLS (Secure Socket Layer/Transport Layer Security), the industry standard for web traffic security.
 
-- Database operations are protected via security configurations that permits only relevant authenticated users from making specific changes.
+- Database operations are protected via security configurations that permits only authenticated users from making specific changes.
+
+### File security and Accessibility
 
 The file storage is configured so that while creating and manipulating files require athentication, fetching files do not. The timestamp:uid component of a file path enables security as a file can only be accessed if an individual can access the uid and timestamp of a file (e.g. The member of a project). This enables easy file sharing as long as an individual knows the link to it, while ensuring that outsiders can not directly access any files. This strategy, or a version of it, is used by many only services, including Discord, Google Docs etc.
 
-Files that are hosted on Google Drive still have Google Drive's own sharing permissions .
+Files that are hosted on Google Drive still have Google Drive's own sharing permissions.
 
 ## Backups
 
-File & database backups are automatically handled by Firebase.
+The users' projects and messages are fully backed up locally every 15 minutes.
+
+Each backup records the user who has made the backup, the time it was backed up, the id of the backed up project, and the project itself.
 
 The project is synced to GitHub, and Google Drive. It is backed up periodically to a USB flash drive.

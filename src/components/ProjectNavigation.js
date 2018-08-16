@@ -11,8 +11,8 @@ import Firebase from "firebase";
 import Project from "../classes/Project";
 import Fetch from "../classes/Fetch";
 import User from "../classes/User";
-import update from 'immutability-helper';
-import $ from '../classes/Utils';
+import update from "immutability-helper";
+import $ from "../classes/Utils";
 
 /**
  * Represents a single item that can be displayed by the project navigation sidebar
@@ -110,15 +110,23 @@ export default class ProjectNavigation extends Component {
 
   getProjects(items) {
     items.forEach(projectID => {
-      if(!this.state.projects[projectID]) {
-        Fetch.getProjectReference(projectID).child('name').on('value',(snapshot)=>{
-          this.setState(update(this.state,{projects:{[projectID]:{$set:snapshot.val()}}}))
-        })
+      if (!this.state.projects[projectID]) {
+        Fetch.getProjectReference(projectID)
+          .child("name")
+          .on("value", snapshot => {
+            this.setState(
+              update(this.state, {
+                projects: { [projectID]: { $set: snapshot.val() } }
+              })
+            );
+          });
       }
     });
     this.state.items.forEach(projectID => {
-      if(!$.array(items).exists(projectID)) {
-        Fetch.getProjectReference(projectID).child('name').off();
+      if (!$.array(items).exists(projectID)) {
+        Fetch.getProjectReference(projectID)
+          .child("name")
+          .off();
       }
     });
   }
@@ -184,14 +192,20 @@ export default class ProjectNavigation extends Component {
               border: "none"
             }}
           >
-            {this.state.items.map((item, index) => (
-              <ProjectIcon
-                key={item}
-                name={this.state.projects[item] || null}
-                onPress={this.state.projects[item]  ? this.handlePress.bind(this, index) : () => {}}
-                selected={index === this.state.openedIndex}
-              />
-            ))}
+            {this.state.items
+              .filter(item => !this.state.projects[item] || !this.state.projects[item].deleted)
+              .map((item, index) => (
+                <ProjectIcon
+                  key={item}
+                  name={this.state.projects[item] || null}
+                  onPress={
+                    this.state.projects[item]
+                      ? this.handlePress.bind(this, index)
+                      : () => {}
+                  }
+                  selected={index === this.state.openedIndex}
+                />
+              ))}
             {<AddIcon onPress={this.handleAddIconPress.bind(this)} />}
           </Menu>
         ) : (

@@ -11,6 +11,7 @@ import Project from "../classes/Project";
 import "./ProjectView.css";
 import Settings from "./Settings";
 import SendInvite from "./SendInvite";
+import Backup from "../classes/Backup";
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -38,6 +39,27 @@ export default class ProjectView extends Component {
     pauseSiderUpdate: false,
     user: {}
   };
+
+  backupTimer;
+  /**
+   * How long before each backup occurs, in minutes
+   * @type {Number}
+   * @memberof ProjectView
+   */
+  backupFrequency = 15;
+
+  componentDidMount() {
+    this.backupTimer = setInterval(() => {
+      if (!this.state.project || !Object.keys(this.state.project).length)
+        return;
+      Backup.backupProject(this.state.project.projectID, this.state.project);
+    }, 1000 * 60 * this.backupFrequency);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.backupTimer);
+  }
+
   componentWillReceiveProps(props) {
     this.setState({
       style: props.style || this.state.style,

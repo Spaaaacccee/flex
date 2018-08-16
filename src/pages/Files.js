@@ -24,7 +24,8 @@ export default class FILES extends Component {
     user: {},
     searchResults: null,
     uploadModalVisible: false,
-    view: "thumbnail"
+    view: "thumbnail",
+    searchQuery: ""
   };
 
   componentWillReceiveProps(props) {
@@ -37,7 +38,7 @@ export default class FILES extends Component {
 
   shouldComponentUpdate(props, state) {
     if (!Project.equal(props.project, this.state.project)) return true;
-    if (this.state.searchResults !== state.searchResults) return true;
+    if (this.state.searchQuery !== state.searchQuery) return true;
     if (state.view !== this.state.view) return true;
     if (!User.equal(props.user, this.state.user)) return true;
     if (state.uploadModalVisible !== this.state.uploadModalVisible) return true;
@@ -84,9 +85,15 @@ export default class FILES extends Component {
                       item => (item.name || item.source.name).toLowerCase(),
                       e.target.value
                     );
-                    this.setState({ searchResults: results });
+                    this.setState({
+                      searchResults: results,
+                      searchQuery: e.target.value
+                    });
                   } else {
-                    this.setState({ searchResults: null });
+                    this.setState({
+                      searchResults: null,
+                      searchQuery: e.target.value
+                    });
                   }
                 }).bind(this)}
               />

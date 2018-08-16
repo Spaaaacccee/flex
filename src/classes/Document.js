@@ -39,10 +39,15 @@ export default class Document {
     return uploadTask;
   }
   static async getURL(meta) {
-    return await Fire.firebase()
-      .storage()
-      .ref(`/${meta.uid}/${meta.name}`)
-      .getDownloadURL();
+    try {
+      return await Fire.firebase()
+        .storage()
+        .ref(`/${meta.uid}/${meta.name}`)
+        .getDownloadURL();
+    } catch (e) {
+      message.error(`We couldn't get ${meta.name} because its source file has been removed.`);
+      return null;
+    }
   }
   static async tryPreviewWindow(meta) {
     let url;
