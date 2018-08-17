@@ -13,7 +13,7 @@ import Fetch from "../classes/Fetch";
 
 import "./Main.css";
 
-const { Sider, Content } = Layout;
+const { Sider } = Layout;
 
 /**
  * The main interface

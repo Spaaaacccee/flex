@@ -4,13 +4,10 @@ import {
   Input,
   Button,
   Modal,
-  List,
   Popconfirm,
   message,
   Icon
 } from "antd";
-import Project from "../classes/Project";
-import Role from "../classes/Role";
 import RoleEditor from "./RoleEditor";
 import formatJSON from "format-json-pretty";
 import update from "immutability-helper";

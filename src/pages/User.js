@@ -6,10 +6,8 @@ import UserIcon from "../components/UserIcon";
 import "./User.css";
 import User from "../classes/User";
 
-import { Button, Modal, Icon, Popconfirm, Badge } from "antd";
+import { Button, Icon } from "antd";
 import { Card } from "antd";
-import Project from "../classes/Project";
-import ProjectIcon from "../components/ProjectIcon";
 import ProjectInvitation from "../components/ProjectInvitation";
 import ProjectDisplay from "../components/ProjectDisplay";
 import formatJSON from "format-json-pretty";

@@ -126,7 +126,6 @@ class HistoryDisplay extends Component {
                     )}
                   </div>
                 );
-                break;
               case "set of files":
               case "file":
                 let file;
@@ -157,7 +156,6 @@ class HistoryDisplay extends Component {
                     )}
                   </div>
                 );
-                break;
               case "member":
                 break;
               default:

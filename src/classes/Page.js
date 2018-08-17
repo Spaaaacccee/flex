@@ -1,10 +1,9 @@
-import React, { Component } from "react";
+import React from "react";
 
 import {Icon} from 'antd';
 
 import USER from "../pages/User";
 import MEMBERS from "../pages/Members";
-import DEBUG from "../pages/Debug";
 import FEED from "../pages/Feed";
 import TIMELINE from "../pages/Timeline";
 import FILES from "../pages/Files";
@@ -116,6 +115,6 @@ export const UserPage = [
     content: USER,
     requireProject: false,
     topBarMode: "adaptive",
-    extrasButtonType: (<a href="https://myaccount.google.com/" target="_blank"><Icon type="edit"/></a>)
+    extrasButtonType: (<a href="https://myaccount.google.com/" rel="noopener noreferrer" target="_blank"><Icon type="edit"/></a>)
   })
 ];

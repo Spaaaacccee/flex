@@ -3,7 +3,6 @@ export default class DocumentType {
     switch (ext) {
       case "md":
         return "file-markdown";
-        break;
       case "doc":
       case "dot":
       case "wbk":
@@ -14,7 +13,6 @@ export default class DocumentType {
       case "docb":
       case "pages":
         return "file-word";
-        break;
       case "ppt":
       case "pot":
       case "pps":
@@ -29,7 +27,6 @@ export default class DocumentType {
       case "sldm":
       case "key":
         return "file-ppt";
-        break;
       case "xls":
       case "xlt":
       case "xlm":
@@ -45,7 +42,6 @@ export default class DocumentType {
       case "csv":
       case "numbers":
         return "file-excel";
-        break;
       case "txt":
       case "rtf":
       case "pdf":
@@ -72,7 +68,6 @@ export default class DocumentType {
       case "swift":
       case "vb":
         return "file-text";
-        break;
       case "zip":
       case "zipx":
       case "tar":
@@ -98,7 +93,6 @@ export default class DocumentType {
       case "com":
       case "jar":
         return "database";
-        break;
       case "aif":
       case "cda":
       case "mid":
@@ -110,7 +104,6 @@ export default class DocumentType {
       case "wav":
       case "wma":
         return "sound";
-        break;
       case "3pg":
       case "3g2":
       case "avi":
@@ -127,7 +120,6 @@ export default class DocumentType {
       case "vob":
       case "wmv":
         return "video-camera";
-        break;
       case "ase":
       case "art":
       case "bmp":
@@ -249,7 +241,6 @@ export default class DocumentType {
       case "sun":
       case "tga":
         return "picture";
-        break;
       default:
         return "file";
     }
