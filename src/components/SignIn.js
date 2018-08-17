@@ -47,7 +47,7 @@ export default class SignIn extends Component {
   }
 
   componentDidMount() {
-    if (sessionStorage.getItem("firebaseui::pendingRedirect") === `"pending"`)
+    if (sessionStorage.getItem("firebaseui::pendingRedirect") === "\"pending\"")
       this.setState({ loading: true }, () => {
         this.startTimeout();
       });
@@ -91,29 +91,38 @@ export default class SignIn extends Component {
         style={
           this.state.signedIn
             ? {
-                opacity: 0,
-                pointerEvents: "none"
-              }
+              opacity: 0,
+              pointerEvents: "none"
+            }
             : {
-                opacity: 1,
-                pointerEvents: "all"
-              }
+              opacity: 1,
+              pointerEvents: "all"
+            }
         }
       >
         <div className="sign-in">
           <div className="sign-in-text">
-            <h2>Sign in</h2>
+            <img src="./icons/icon.png" style={{ width: 50, marginTop: 10 }} />
             <br />
-            <UserIcon
-              thumbnail={(Fire.firebase().auth().currentUser || {}).photoURL}
-            />
+            <br />
+            <h2
+              style={{
+                fontSize: 24,
+                fontWeight: 700,
+                color: "rgb(40, 166, 240)"
+              }}
+            >
+              Sign In
+            </h2>
+            <p style={{ color: "rgb(26, 146, 255)" }}>
+              Get started with Bonfire.
+            </p>
             <br />
             <Button
-              style={{ boxShadow: "0 5px 20px rgba(4, 111, 210, 0.239)" }}
+              style={{ background: "rgb(26, 146, 255)" }}
               loading={this.state.loading || Fire.firebase().auth().currentUser}
               type="primary"
-              icon="google"
-              size="large"
+              icon="login"
               onClick={() => {
                 this.setState({ loading: true }, () => {
                   this.startTimeout();
@@ -126,7 +135,7 @@ export default class SignIn extends Component {
                 }, 250);
               }}
             >
-              Sign in with Google
+              Google
             </Button>
             <br />
             <br />
@@ -138,10 +147,11 @@ export default class SignIn extends Component {
             >
               <p
                 style={{
-                  color: "black"
+                  color: "black",
+                  opacity: 0.65
                 }}
               >
-                <Icon type="link" /> Create a Google account
+                No Google account?
               </p>
             </a>
           </div>

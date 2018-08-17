@@ -78,7 +78,6 @@ export default class FILES extends Component {
               <Input.Search
                 key={this.state.project.projectID || "1"}
                 placeholder="Search for a file"
-                style={{ marginRight: 10 }}
                 onChange={(e => {
                   if (e.target.value) {
                     let files = this.state.project.files || [];
@@ -100,6 +99,7 @@ export default class FILES extends Component {
               />
               <Radio.Group
                 style={{
+                  display: "none",
                   flex: "none"
                 }}
                 value={this.state.view}
@@ -149,7 +149,7 @@ export default class FILES extends Component {
                                 })
                               });
                             }}
-                            onVersionMentionButtonPressed={(versionID)=>{
+                            onVersionMentionButtonPressed={versionID => {
                               this.props.passMessage({
                                 type: "prepare-message",
                                 content: new Message({
@@ -179,9 +179,9 @@ export default class FILES extends Component {
                           item.files &&
                           !item.files.find(i => i.state !== "unavailable")
                             ? {
-                                opacity: 0.65,
-                                pointerEvents: "none"
-                              }
+                              opacity: 0.65,
+                              pointerEvents: "none"
+                            }
                             : {}
                         }
                         key={index}
@@ -230,41 +230,41 @@ export default class FILES extends Component {
                                 {`${item.files.length} versions`}
                                 {!!item.files &&
                                   item.files.length > 1 && (
-                                    <div>
-                                      <br />
-                                      <List
+                                  <div>
+                                    <br />
+                                    <List
                                         style={{
-                                          borderTop: "1px solid #e8e8e8"
-                                        }}
-                                      >
-                                        {item.files
-                                          .sort(
-                                            (a, b) =>
-                                              a.dateModified === b.dateModified
-                                                ? 0
-                                                : a.dateModified >
+                                        borderTop: "1px solid #e8e8e8"
+                                      }}
+                                    >
+                                      {item.files
+                                        .sort(
+                                          (a, b) =>
+                                            a.dateModified === b.dateModified
+                                              ? 0
+                                              : a.dateModified >
                                                   b.dateModified
-                                                  ? 1
-                                                  : -1
-                                          )
-                                          .map((item, index) => (
-                                            <List.Item key={index}>
-                                              <List.Item.Meta
+                                                ? 1
+                                                : -1
+                                        )
+                                        .map((item, index) => (
+                                          <List.Item key={index}>
+                                            <List.Item.Meta
                                                 title={`Version ${index + 1}`}
                                                 description={
-                                                  <div>
-                                                    {`${new Date(
-                                                      item.dateUploaded
-                                                    ).toLocaleString()}`}
-                                                  </div>
-                                                }
-                                              />
-                                            </List.Item>
-                                          ))
-                                          .reverse()}
-                                      </List>
-                                    </div>
-                                  )}
+                                                <div>
+                                                  {`${new Date(
+                                                    item.dateUploaded
+                                                  ).toLocaleString()}`}
+                                                </div>
+                                              }
+                                            />
+                                          </List.Item>
+                                        ))
+                                        .reverse()}
+                                    </List>
+                                  </div>
+                                )}
                               </div>
                             )
                           }
@@ -280,8 +280,8 @@ export default class FILES extends Component {
                 <br />
                 <br />
                 {this.state.searchResults === null
-                  ? `The files you've added to this project will show up here.`
-                  : `No files match your search`}
+                  ? "The files you've added to this project will show up here."
+                  : "No files match your search"}
                 <br />
                 <br />
               </div>

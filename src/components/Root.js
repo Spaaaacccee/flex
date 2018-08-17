@@ -27,8 +27,6 @@ export default class Root extends Component {
       <div style={{ width: "100%", height: "100%" }}>
         <div
           style={{
-            filter:"saturate(0)",
-            opacity:0.4,
             position: "fixed",
             display: "flex",
             alignItems: "center",
@@ -37,13 +35,11 @@ export default class Root extends Component {
             height: "100%",
             fontSize: 24,
             flexDirection: "column",
-            background: "#fff"
+            background: "rgb(252, 252, 252)"
           }}
         >
           <div>
-            <img src="/icons/icon.png" style={{width:72,height:72}}/>
-            <br /><br/>
-            <Icon style={{ color: "#3BC9F4" }} type="loading" />
+            <img src="/icons/icon.png" style={{width:50,height:50}}/>
           </div>
         </div>
         <div style={{ height: "100%", opacity: this.state.loaded ? 1 : 0 }}>
