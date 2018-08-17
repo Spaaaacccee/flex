@@ -119,7 +119,10 @@ export default class SignIn extends Component {
             </p>
             <br />
             <Button
-              style={{ background: "rgb(26, 146, 255)" }}
+              style={{
+                background: "rgb(42, 166, 253)",
+                borderColor: "rgb(42, 166, 253)"
+              }}
               loading={this.state.loading || Fire.firebase().auth().currentUser}
               type="primary"
               icon="login"
