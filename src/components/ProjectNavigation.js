@@ -114,11 +114,11 @@ export default class ProjectNavigation extends Component {
         Fetch.getProjectReference(projectID)
           .child("name")
           .on("value", snapshot => {
-            this.setState(
-              update(this.state, {
-                projects: { [projectID]: { $set: snapshot.val() } }
+            this.setState({
+              projects: Object.assign(this.state.projects, {
+                [projectID]: snapshot.val()
               })
-            );
+            });
           });
       }
     });
@@ -193,7 +193,11 @@ export default class ProjectNavigation extends Component {
             }}
           >
             {this.state.items
-              .filter(item => !this.state.projects[item] || !this.state.projects[item].deleted)
+              .filter(
+                item =>
+                  !this.state.projects[item] ||
+                  !this.state.projects[item].deleted
+              )
               .map((item, index) => (
                 <ProjectIcon
                   key={item}

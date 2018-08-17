@@ -1,12 +1,13 @@
 import React, { Component } from "react";
-import { List, Popconfirm, Icon } from "antd";
+import { List, Popconfirm, Icon, Button } from "antd";
 import UserGroupDisplay from "./UserGroupDisplay";
+import Document from '../classes/Document';
 
 class FileVersionDisplay extends Component {
   static defaultProps = {
-    onMentionButtonPressed:()=>{}
-  }
-  state = { item: null, project: {} };
+    onMentionButtonPressed: () => {}
+  };
+  state = { item: null, project: {}, readOnly: false };
 
   componentDidMount() {
     this.componentWillReceiveProps(this.props);
@@ -15,7 +16,8 @@ class FileVersionDisplay extends Component {
   componentWillReceiveProps(props) {
     this.setState({
       item: props.item,
-      project: props.project
+      project: props.project,
+      readOnly: props.readOnly
     });
   }
   render() {
@@ -23,37 +25,56 @@ class FileVersionDisplay extends Component {
     if (!item) return <div />;
     return (
       <List.Item
+        style={{ display: "flex" }}
         key={item.uid || item.source.uid}
-        actions={[
-          <Popconfirm
-            title="This version will be deleted"
-            okText="OK"
-            okType="danger"
-            cancelText="Cancel"
-            onConfirm={() => {
-              this.setState({ deleting: true }, () => {
-                this.state.project
-                  .deleteFile(this.state.file.uid, item.uid)
-                  .then(() => {
-                    this.setState({ deleting: false });
-                  });
-              });
-            }}
-          >
-            <Icon style={{ color: "rgb(255, 77, 79)" }} type="delete" />
-          </Popconfirm>,
-          <a><Icon type="paper-clip" onClick={()=>{
-            this.props.onMentionButtonPressed();
-          }}/></a>,
-          <a>
-            <Icon
-              type="export"
-              onClick={() => {
-                Document.tryPreviewWindow(item);
-              }}
-            />
-          </a>
-        ]}
+        actions={
+          this.state.readOnly
+            ? [
+                <Button
+                  shape="circle"
+                  icon="export"
+                  type="primary"
+                  onClick={() => {
+                    Document.tryPreviewWindow(item);
+                  }}
+                />
+              ]
+            : [
+                <Popconfirm
+                  title="This version will be deleted"
+                  okText="OK"
+                  okType="danger"
+                  cancelText="Cancel"
+                  onConfirm={() => {
+                    this.setState({ deleting: true }, () => {
+                      this.state.project
+                        .deleteFile(this.state.file.uid, item.uid)
+                        .then(() => {
+                          this.setState({ deleting: false });
+                        });
+                    });
+                  }}
+                >
+                  <Icon style={{ color: "rgb(255, 77, 79)" }} type="delete" />
+                </Popconfirm>,
+                <a>
+                  <Icon
+                    type="message"
+                    onClick={() => {
+                      this.props.onMentionButtonPressed();
+                    }}
+                  />
+                </a>,
+                <a>
+                  <Icon
+                    type="export"
+                    onClick={() => {
+                      Document.tryPreviewWindow(item);
+                    }}
+                  />
+                </a>
+              ]
+        }
       >
         <List.Item.Meta
           title={item.description || `No comments`}

@@ -132,7 +132,7 @@ class FileDisplay extends Component {
                     this.props.onMentionButtonPressed();
                   }}
                 >
-                  <Icon type="paper-clip" />
+                  <Icon type="message" />
                   {" Mention"}
                 </span>
               );

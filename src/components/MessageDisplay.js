@@ -1,31 +1,48 @@
 import React, { Component } from "react";
-import { List, Popover, Icon, Popconfirm, Button, Avatar } from "antd";
+import { List, Popover, Icon, Popconfirm, Button, Avatar, Card } from "antd";
 import User from "../classes/User";
 import Messages from "../classes/Messages";
-import $ from '../classes/Utils';
+import $ from "../classes/Utils";
 import MemberDisplay from "./MemberDisplay";
 import { HSL } from "../classes/Role";
 import FileDisplay from "./FileDisplay";
 import HistoryDisplay from "./HistoryDisplay";
+import FileVersionDisplay from "./FileVersionDisplay";
+import Project from "../classes/Project";
+import Document from "../classes/Document";
 
 class MessageDisplay extends Component {
   static defaultProps = {
-    onQuotePressed:()=>{},
-    onEditPressed:()=>{},
-    onDeletePressed:()=>{},
-  }
+    onQuotePressed: () => {},
+    onEditPressed: () => {},
+    onDeletePressed: () => {},
+    onReady: () => {}
+  };
   state = {
     user: {},
     project: {},
     messageID: null,
     messenger: null,
-    message:null,
+    message: null,
     sender: {},
     status: null
   };
 
   componentDidMount() {
     this.componentWillReceiveProps(this.props);
+  }
+
+  shouldComponentUpdate(props, state) {
+    if (!User.equal(props.user, this.state.user)) return true;
+    if (!Project.equal(props.project, this.state.project)) return true;
+    if (this.state.status !== props.status) return true;
+    if (this.state.messageID !== props.messageID) return true;
+    if ((state.sender || {}.uid) !== (this.state.sender || {}).uid) return true;
+    if ((this.state.messenger || {}).uid !== (state.messenger || {}).uid)
+      return true;
+    if ((props.message || {}).uid !== (this.state.message || {}).uid)
+      return true;
+    return false;
   }
 
   componentWillReceiveProps(props) {
@@ -35,15 +52,17 @@ class MessageDisplay extends Component {
       messageID: props.messageID,
       status: props.status
     });
-    if(props.message) {
-      this.setState({message:props.message})
-      User.get(props.message.sender).then(
-        sender=>{this.setState({sender})}
-      )
+    if (props.message) {
+      this.setState({ message: props.message }, () => {
+        this.props.onReady();
+      });
+      User.get(props.message.sender).then(sender => {
+        this.setState({ sender });
+      });
     } else {
       if (
         !this.state.messenger ||
-        (props.project.messengerID !== this.state.messenger.uid)
+        props.project.messengerID !== this.state.messenger.uid
       ) {
         this.setState({ messenger: null });
         Messages.get(props.project.messengerID).then(messenger => {
@@ -51,7 +70,9 @@ class MessageDisplay extends Component {
             if (messenger.messages[props.messageID]) {
               User.get(messenger.messages[props.messageID].sender).then(
                 sender => {
-                  this.setState({ messenger, sender });
+                  this.setState({ messenger, sender }, () => {
+                    this.props.onReady();
+                  });
                 }
               );
             }
@@ -62,8 +83,13 @@ class MessageDisplay extends Component {
   }
 
   render() {
-    const item = this.state.message||(this.state.messenger?this.state.messenger.messages[this.state.messageID]:null)
-    return item ? (()=>{
+    const item =
+      this.state.message ||
+      (this.state.messenger
+        ? this.state.messenger.messages[this.state.messageID]
+        : null);
+    return item ? (
+      (() => {
         let ref;
         let sender = this.state.sender;
         return (
@@ -169,10 +195,7 @@ class MessageDisplay extends Component {
                 }
               >
                 <Avatar
-                  src={
-                    (this.state.sender || {})
-                      .profilePhoto
-                  }
+                  src={(this.state.sender || {}).profilePhoto}
                   style={{
                     marginRight: 10,
                     flex: "none",
@@ -192,8 +215,7 @@ class MessageDisplay extends Component {
                                 role.uid ===
                                 ((
                                   this.state.project.members.find(
-                                    member =>
-                                      member.uid === item.sender
+                                    member => member.uid === item.sender
                                   ).roles || []
                                 ).find(x => x === role.uid) || {})
                             ) || {}
@@ -201,8 +223,7 @@ class MessageDisplay extends Component {
                         )
                       }}
                     >
-                      {(sender || {})
-                        .name || <Icon type="loading" />}
+                      {(sender || {}).name || <Icon type="loading" />}
                     </span>
                   }
                   description={$.date(item.timeSent).humanise()}
@@ -213,16 +234,17 @@ class MessageDisplay extends Component {
                   }}
                 >
                   {(!!item.content.files ||
-                    !!item.content.histories) && (
+                    !!item.content.histories ||
+                    item.content.fileVersions) && (
                     <div>
                       <br />
                       {!!item.content.files &&
                         item.content.files.map(fileID => {
                           let file;
                           if (fileID) {
-                            file = (
-                              this.state.project.files || []
-                            ).find(x => x.uid === fileID);
+                            file = (this.state.project.files || []).find(
+                              x => x.uid === fileID
+                            );
                             if (!file)
                               file = (this.state.project.files || [])
                                 .filter(x => x.uploadType === "cloud")
@@ -267,6 +289,52 @@ class MessageDisplay extends Component {
                             <div />
                           );
                         })}
+                      {!!item.content.fileVersions &&
+                        item.content.fileVersions.map(versionID => {
+                          let file;
+                          for (let item of this.state.project.files || []) {
+                            if (item.files) {
+                              file = item.files.find(x => x.uid === versionID);
+                              if (file) break;
+                            }
+                          }
+                          return file ? (
+                            <Card>
+                              <Card.Meta
+                                title={
+                                  <span>
+                                    <Icon
+                                      style={{
+                                        color: "rgb(25, 144, 255)",
+                                        fontSize: 24,
+                                        fontWeight: "normal"
+                                      }}
+                                      type={Document.getFiletypeIcon(file.name)}
+                                    />
+                                    <span
+                                      style={{
+                                        verticalAlign: "top",
+                                        marginLeft: 10
+                                      }}
+                                    >
+                                      {file.name}
+                                    </span>
+                                  </span>
+                                }
+                              />
+                              <br />
+                              <List bordered>
+                                <FileVersionDisplay
+                                  readOnly
+                                  project={this.state.project}
+                                  item={file}
+                                />
+                              </List>
+                            </Card>
+                          ) : (
+                            <div />
+                          );
+                        })}
                       <br />
                     </div>
                   )}
@@ -282,16 +350,20 @@ class MessageDisplay extends Component {
                 >
                   {(item.content || {}).bodyText}
                 </pre>{" "}
-                {this.state.status ===
-                  "processing" && <Icon type="loading" />}{" "}
-                {this.state.status === "sent" && (
-                  <Icon type="check" />
-                )}
+                <span style={{ color: "rgb(25, 144, 255)" }}>
+                  {this.state.status === "processing" && (
+                    <Icon type="loading" />
+                  )}{" "}
+                  {this.state.status === "sent" && <Icon type="check" />}
+                </span>
               </div>
             </div>
           </List.Item>
         );
-    })() : <div></div>;
+      })()
+    ) : (
+      <div />
+    );
   }
 }
 

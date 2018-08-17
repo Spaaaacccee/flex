@@ -72,6 +72,7 @@ class MESSAGES extends Component {
             this.cacheUsers();
             this.cacheItems();
             this.props.onLoad(this);
+            this.scrollBottom();
           } else {
             Messages.forceUpdate(
               props.project.messengerID || props.project.projectID,
@@ -306,6 +307,7 @@ class MESSAGES extends Component {
   isAnimating = false;
   scrollToSmooth(duration, endY) {
     return new Promise((res, rej) => {
+      if(this.isAnimating) res();
       this.scrollElement.style.overflow = "hidden";
       this.isAnimating = true;
       let startY = this.scrollElement.scrollTop;
@@ -414,7 +416,7 @@ class MESSAGES extends Component {
                     project={this.state.project}
                     user={this.state.user}
                     message={item}
-                    messageStatus={this.state.messageStatus[item.uid]}
+                    status={this.state.messageStatus[item.uid]}
                     key={item.uid}
                     onQuotePressed={() => {
                       this.setState(
@@ -505,7 +507,7 @@ class MESSAGES extends Component {
               >
                 <Button
                   shape="circle"
-                  icon="paper-clip"
+                  icon="message"
                   style={{ flex: "none" }}
                   disabled={!this.state.messenger}
                 />

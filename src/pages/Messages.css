@@ -13,9 +13,14 @@ div.ant-list-vertical .ant-list-item-meta-title {
   margin: 0 calc(10px + 2vw);
 }
 
-.messages .ant-list-item-meta-content > * {
-  display: inline;
+.messages .ant-list .ant-list-item-meta-content > * {
+  display: inline-block;
   margin-right: 5px;
+}
+
+.messages .ant-list .ant-list .ant-list-item-meta-content > * {
+  display: block;
+  margin-right: 0;
 }
 
 .message-console {

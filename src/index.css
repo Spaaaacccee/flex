@@ -108,7 +108,7 @@ div.ant-card-meta-title {
 }
 
 .ant-list-item-action > li:last-child {
-  padding-right: 0;
+  padding-right: 0 !important;
 }
 
 ul.ant-timeline {
