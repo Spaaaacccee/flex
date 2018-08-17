@@ -12,6 +12,7 @@ import $ from "../classes/Utils";
 import Project from "../classes/Project";
 import User from "../classes/User";
 import Columns from "react-columns";
+import { Message, MessageContent } from "../classes/Messages";
 const { Meta } = Card;
 
 export default class FILES extends Component {
@@ -137,6 +138,28 @@ export default class FILES extends Component {
                           <FileDisplay
                             project={this.state.project}
                             file={item}
+                            onMentionButtonPressed={() => {
+                              this.props.passMessage({
+                                type: "prepare-message",
+                                content: new Message({
+                                  sender: this.state.user.uid,
+                                  content: new MessageContent({
+                                    files: [item.uid || item.source.id]
+                                  })
+                                })
+                              });
+                            }}
+                            onVersionMentionButtonPressed={(versionID)=>{
+                              this.props.passMessage({
+                                type: "prepare-message",
+                                content: new Message({
+                                  sender: this.state.user.uid,
+                                  content: new MessageContent({
+                                    fileVersions: [versionID]
+                                  })
+                                })
+                              });
+                            }}
                           />
                           <br />
                         </div>

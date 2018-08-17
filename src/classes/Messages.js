@@ -214,10 +214,11 @@ export class Message {
   }
 }
 
-class MessageContent {
+export class MessageContent {
   bodyText = "";
-  fileID = "";
-  eventID = "";
+  files = [];
+  events = [];
+  histories = [];
   people = { members: [], roles: [] };
   /**
    * Creates an instance of MessageContent.

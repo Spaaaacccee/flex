@@ -594,12 +594,13 @@ export default class Project {
   tryDelete(archive) {
     if (archive.uid) {
       this.deleteArchive(archive.uid);
-      return;
+      return true;
     }
     if (archive.source.id) {
       this.deleteCloudFile(archive.source.id);
-      return;
+      return true;
     }
+    return false;
   }
 
   async deleteArchive(archiveID) {

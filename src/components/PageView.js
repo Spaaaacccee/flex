@@ -16,6 +16,8 @@ const { Meta } = Card;
  */
 export default class PageView extends Component {
   static defaultProps = {
+    onLoad: () => {},
+    onMessage: () => {},
     page: {},
     onLeftButtonPress: () => {},
     onContentPress: () => {}
@@ -107,6 +109,9 @@ export default class PageView extends Component {
                     ref: "pageContentElement",
                     passMessage: msg => {
                       this.props.onMessage(msg);
+                    },
+                    onLoad: page => {
+                      this.props.onLoad(page);
                     }
                   }
                 );

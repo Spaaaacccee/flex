@@ -4,7 +4,7 @@ import Fire from "../classes/Fire";
 import $ from "../classes/Utils";
 
 import { Card, Icon, Avatar, Button, List } from "antd";
-import Messages from "../classes/Messages";
+import Messages, { Message, MessageContent } from "../classes/Messages";
 import formatJSON from "format-json-pretty";
 import Project from "../classes/Project";
 import User from "../classes/User";
@@ -17,6 +17,7 @@ import ProjectDisplay from "../components/ProjectDisplay";
 import ProjectIcon from "../components/ProjectIcon";
 import update from "immutability-helper";
 import Columns from "react-columns";
+import HistoryDisplay from "../components/HistoryDisplay";
 
 const { Meta } = Card;
 
@@ -261,137 +262,27 @@ export default class FEED extends Component {
             .reverse()
             .slice(0, Math.min((this.state.project.history || []).length, 20))
             .map(item => (
-              <div key={item.uid}>
-                <Card
-                  actions={
-                    item.type === "name" ||
-                    item.type === "description" ||
-                    item.type === "project"
-                      ? null
-                      : [
-                          <span
-                            onClick={() => {
-                              this.props.passMessage({
-                                type: "navigate",
-                                content: (() => {
-                                  switch (item.type) {
-                                    case "member":
-                                      return 1;
-                                    case "event":
-                                      return 2;
-                                    case "set of files":
-                                    case "file":
-                                      return 4;
-                                    default:
-                                      break;
-                                  }
-                                })()
-                              });
-                            }}
-                          >
-                            <Icon type="export" />
-                            {` ${(() => {
-                              switch (item.type) {
-                                case "event":
-                                  return "Timeline";
-                                case "set of files":
-                                case "file":
-                                  return "Files";
-                                case "member":
-                                  return "Members";
-                                default:
-                                  break;
-                              }
-                            })()}`}
-                          </span>
-                        ]
-                  }
-                >
-                  <div>
-                    {
-                      <span>
-                        <UserGroupDisplay
-                          style={{ display: "inline-block", marginBottom: -8 }}
-                          people={{ members: [item.doneBy] }}
-                          project={this.state.project}
-                        />
-                        {`${item.action} ${
-                          item.type === "name" || item.type === "description"
-                            ? "the project"
-                            : item.type === "project"
-                              ? "this"
-                              : $.string(item.type.substring(0, 1)).isVowel()
-                                ? "an"
-                                : "a"
-                        } ${item.type} ${$.date(item.doneAt).humanise()}`}
-                      </span>
-                    }
-                  </div>
-                  {(() => {
-                    switch (item.type) {
-                      case "event":
-                        return (
-                          <div>
-                            <br />
-                            {(this.state.project.events || []).find(
-                              x => x.uid === item.content.uid
-                            ) ? (
-                              <TimelineItem
-                                readOnly
-                                user={this.state.user}
-                                project={this.state.project}
-                                event={this.state.project.events.find(
-                                  x => x.uid === item.content.uid
-                                )}
-                              />
-                            ) : (
-                              <span style={{ opacity: 0.65 }}>
-                                {
-                                  "We can not display this event because it has been deleted."
-                                }
-                              </span>
-                            )}
-                          </div>
-                        );
-                        break;
-                      case "set of files":
-                      case "file":
-                        let file;
-                        if (item.content) {
-                          file = (this.state.project.files || []).find(
-                            x => x.uid === item.content.uid
-                          );
-                          if (!file)
-                            file = (this.state.project.files || [])
-                              .filter(x => x.uploadType === "cloud")
-                              .find(x => x.source.id === item.content.uid);
-                        }
-                        return (
-                          <div>
-                            <br />
-                            {file ? (
-                              <FileDisplay
-                                readOnly
-                                project={this.state.project}
-                                file={file}
-                              />
-                            ) : (
-                              <span style={{ opacity: 0.65 }}>
-                                {
-                                  "We can not display this file because it has been deleted."
-                                }
-                              </span>
-                            )}
-                          </div>
-                        );
-                        break;
-                      case "member":
-                        break;
-                      default:
-                        break;
-                    }
-                  })()}
-                </Card>
+              <div>
+                <HistoryDisplay
+                  key={item.uid}
+                  user={this.state.user}
+                  project={this.state.project}
+                  item={item}
+                  onMessage={msg => {
+                    this.props.passMessage(msg);
+                  }}
+                  onMentionButtonPressed={() => {
+                    this.props.passMessage({
+                      type: "prepare-message",
+                      content: new Message({
+                        sender: this.state.user.uid,
+                        content: new MessageContent({
+                          histories: [item.uid]
+                        })
+                      })
+                    });
+                  }}
+                />{" "}
                 <br />
               </div>
             ))}

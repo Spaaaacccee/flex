@@ -12,6 +12,8 @@ import "./ProjectView.css";
 import Settings from "./Settings";
 import SendInvite from "./SendInvite";
 import Backup from "../classes/Backup";
+import { Message } from "../classes/Messages";
+import MESSAGES from "../pages/Messages";
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -39,6 +41,8 @@ export default class ProjectView extends Component {
     pauseSiderUpdate: false,
     user: {}
   };
+
+  onPageLoad = null;
 
   backupTimer;
   /**
@@ -220,8 +224,21 @@ export default class ProjectView extends Component {
                 onContentPress={this.props.onContentPress}
                 project={displayProject}
                 page={openedPage}
+                onLoad={page => {
+                  if (this.onPageLoad) this.onPageLoad(page);
+                }}
                 onMessage={(msg => {
                   switch (msg.type) {
+                    case "prepare-message":
+                      this.setState({
+                        openedPageIndex: 3
+                      });
+                      this.onPageLoad = messagesPage => {
+                        if (messagesPage instanceof MESSAGES)
+                          messagesPage.handleSendRaw(msg.content);
+                        this.onPageLoad = null;
+                      };
+                      break;
                     case "navigate":
                       this.setState({
                         openedPageIndex: msg.content

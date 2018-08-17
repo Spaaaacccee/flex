@@ -86,7 +86,11 @@ Here's how it looks like in the Firebase Console
 
 - All traffic is encrypted using SSL/TLS (Secure Socket Layer/Transport Layer Security), the industry standard for web traffic security.
 
+### Database security and Accessibility
+
 - Database operations are protected via security configurations that permits only authenticated users from making specific changes.
+
+- Most database operations are done through _transactions_, which guarantee that the operation can be performed on the latest version of the data, and can merge successfully with operations done at the same time by other users.
 
 ### File security and Accessibility
 
@@ -114,10 +118,8 @@ Backup is again saved as a JSON hierarchy tree, with the following format
     }
   }
 }
-
 ```
 
 Here's what it looks like in Chrome Dev Tools
 
 ![Local Backups in Chrome Developer Tools](./img/img0.png)
-

@@ -4,7 +4,14 @@ import UserGroupDisplay from "./UserGroupDisplay";
 import Fire from "../classes/Fire";
 import Document from "../classes/Document";
 import Project from "../classes/Project";
+import Fetch from "../classes/Fetch";
+import User from "../classes/User";
+import { HistoryItem } from "../classes/History";
+import FileVersionDisplay from "./FileVersionDisplay";
 class FileDisplay extends Component {
+  static defaultProps = {
+    onMentionButtonPressed: () => {}
+  };
   state = {
     project: {},
     file: {},
@@ -120,7 +127,11 @@ class FileDisplay extends Component {
                 </span>
               );
               const mentionButton = (
-                <span>
+                <span
+                  onClick={() => {
+                    this.props.onMentionButtonPressed();
+                  }}
+                >
                   <Icon type="paper-clip" />
                   {" Mention"}
                 </span>
@@ -140,7 +151,21 @@ class FileDisplay extends Component {
                   cancelText="Cancel"
                   onConfirm={() => {
                     this.setState({ deleting: true }, () => {
-                      this.state.project.tryDelete(this.state.file);
+                      this.state.project
+                        .tryDelete(this.state.file)
+                        .then(isSuccessful => {
+                          if (isSuccessful) {
+                            User.getCurrentUser().then(user => {
+                              this.state.project.addHistory(
+                                new HistoryItem({
+                                  action: "removed",
+                                  type: "file",
+                                  doneBy: user.uid
+                                })
+                              );
+                            });
+                          }
+                        });
                     });
                   }}
                 >
@@ -233,61 +258,16 @@ class FileDisplay extends Component {
                   {this.state.file.files
                     .sort((a, b) => b.dateUploaded - a.dateUploaded)
                     .map((item, index) => (
-                      <List.Item
-                        key={item.uid || item.source.uid}
-                        actions={[
-                          <Popconfirm
-                            title="This file will be deleted"
-                            okText="OK"
-                            okType="danger"
-                            cancelText="Cancel"
-                            onConfirm={() => {
-                              this.setState({ deleting: true }, () => {
-                                this.state.project
-                                  .deleteFile(this.state.file.uid, item.uid)
-                                  .then(() => {
-                                    this.setState({ deleting: false });
-                                  });
-                              });
-                            }}
-                          >
-                            <Icon
-                              style={{ color: "rgb(255, 77, 79)" }}
-                              type="delete"
-                            />
-                          </Popconfirm>,
-                          <a>
-                            <Icon
-                              type="export"
-                              onClick={() => {
-                                Document.tryPreviewWindow(item);
-                              }}
-                            />
-                          </a>
-                        ]}
-                      >
-                        <List.Item.Meta
-                          title={item.description || `No comments`}
-                          description={
-                            <div>
-                              {[
-                                `${new Date(
-                                  item.dateUploaded
-                                ).toLocaleString()}`,
-                                `${item.size} bytes`
-                              ].map((x, i) => (
-                                <div key={i}>{x}</div>
-                              ))}
-                              <div>
-                                <UserGroupDisplay
-                                  people={{ members: [item.uploader] }}
-                                  project={this.state.project}
-                                />
-                              </div>
-                            </div>
-                          }
-                        />
-                      </List.Item>
+                      <FileVersionDisplay
+                        key={item.uid || item.source.id}
+                        item={item}
+                        project={this.state.project}
+                        onMentionButtonPressed={() => {
+                          this.props.onVersionMentionButtonPressed(
+                            item.uid || item.source.id
+                          );
+                        }}
+                      />
                     ))}
                 </List>
               </div>
