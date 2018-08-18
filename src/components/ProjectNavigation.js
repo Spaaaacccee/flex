@@ -108,6 +108,18 @@ export default class ProjectNavigation extends Component {
     );
   }
 
+  shouldComponentUpdate(props, state) {
+    if (props.items !== this.state.items) return true;
+    if (this.state.projects !== state.projects) return true;
+    if (props.openedProject !== this.state.openedProject) return true;
+    if ((props.user || {}).uid !== (this.state.user || {}).uid) return true;
+    if (this.state.openedIndex !== state.openedIndex) return true;
+    if ((state.userData || {}).uid !== (this.state.userData || {}).uid)
+      return true;
+    if (state.projects !== this.state.projects) return true;
+    return false;
+  }
+
   getProjects(items) {
     items.forEach(projectID => {
       if (!this.state.projects[projectID]) {

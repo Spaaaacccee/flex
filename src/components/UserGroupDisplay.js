@@ -46,20 +46,6 @@ export default class UserGroupDisplay extends Component {
       return true;
     if (!shallowEqualArrays(state.userInfo || [], this.state.userInfo || []))
       return true;
-    if (
-      !shallowEqualArrays(
-        this.state.people.members || [],
-        props.people.members || []
-      )
-    )
-      return true;
-    if (
-      !shallowEqualArrays(
-        this.state.people.roles || [],
-        props.people.roles || []
-      )
-    )
-      return true;
     if (!Project.equal(props.project, this.state.project)) return true;
     return false;
   }

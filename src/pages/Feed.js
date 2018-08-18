@@ -190,6 +190,8 @@ export default class FEED extends Component {
   }
 
   render() {
+    let msgs = this.renderMessages(this.state.project, this.state.messages);
+    let events = this.renderEvents(this.state.project);
     return (
       <div
         style={{
@@ -232,24 +234,28 @@ export default class FEED extends Component {
           )}
         </div>
         <br />
-        <Columns
-          rootStyles={{ maxWidth: 950, margin: "auto" }}
-          gap={10}
-          queries={[
-            {
-              columns: Math.min(
-                (this.state.project.history || []).length || 1,
-                2
-              ),
-              query: "min-width: 1000px"
-            }
-          ]}
-        >
+        {events && msgs ? (
+          <Columns
+            rootStyles={{ maxWidth: 950, margin: "auto" }}
+            gap={10}
+            queries={[
+              {
+                columns: Math.min(
+                  (this.state.project.history || []).length || 1,
+                  2
+                ),
+                query: "min-width: 1000px"
+              }
+            ]}
+          >
+            {msgs} {events}
+          </Columns>
+        ) : (
           <div>
-            {this.renderMessages(this.state.project, this.state.messages)}
+            {msgs} {events}
           </div>
-          <div>{this.renderEvents(this.state.project)}</div>
-        </Columns>
+        )}
+
         <h2
           style={{
             textTransform: "uppercase",

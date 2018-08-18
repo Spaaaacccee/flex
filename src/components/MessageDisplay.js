@@ -37,7 +37,7 @@ class MessageDisplay extends Component {
     if (!Project.equal(props.project, this.state.project)) return true;
     if (this.state.status !== props.status) return true;
     if (this.state.messageID !== props.messageID) return true;
-    if ((state.sender || {}.uid) !== (this.state.sender || {}).uid) return true;
+    if ((state.sender || {}).uid !== (this.state.sender || {}).uid) return true;
     if ((this.state.messenger || {}).uid !== (state.messenger || {}).uid)
       return true;
     if ((props.message || {}).uid !== (this.state.message || {}).uid)
