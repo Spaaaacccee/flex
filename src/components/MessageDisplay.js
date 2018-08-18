@@ -235,9 +235,8 @@ class MessageDisplay extends Component {
                 >
                   {(!!item.content.files ||
                     !!item.content.histories ||
-                    item.content.fileVersions) && (
+                    !!item.content.fileVersions) && (
                     <div>
-                      <br />
                       {!!item.content.files &&
                         item.content.files.map(fileID => {
                           let file;
@@ -253,17 +252,24 @@ class MessageDisplay extends Component {
                           return (
                             <div>
                               {file ? (
-                                <FileDisplay
-                                  readOnly
-                                  project={this.state.project}
-                                  file={file}
-                                />
+                                <div>
+                                  <br />
+                                  <FileDisplay
+                                    readOnly
+                                    project={this.state.project}
+                                    file={file}
+                                  />
+                                </div>
                               ) : (
-                                <span style={{ opacity: 0.65 }}>
-                                  {
-                                    "We can not display this file because it has been deleted."
-                                  }
-                                </span>
+                                <Card>
+                                  <div
+                                    style={{ opacity: 0.65, margin: "auto", textAlign: 'center' }}
+                                  >
+                                    {
+                                      "We can not display this file because it has been deleted."
+                                    }
+                                  </div>
+                                </Card>
                               )}
                             </div>
                           );
@@ -275,6 +281,7 @@ class MessageDisplay extends Component {
                           ).find(x => x.uid === historyID);
                           return historyItem ? (
                             <div>
+                              <br />
                               <HistoryDisplay
                                 readOnly
                                 user={this.state.user}
@@ -299,38 +306,43 @@ class MessageDisplay extends Component {
                             }
                           }
                           return file ? (
-                            <Card>
-                              <Card.Meta
-                                title={
-                                  <span>
-                                    <Icon
-                                      style={{
-                                        color: "rgb(25, 144, 255)",
-                                        fontSize: 24,
-                                        fontWeight: "normal"
-                                      }}
-                                      type={Document.getFiletypeIcon(file.name)}
-                                    />
-                                    <span
-                                      style={{
-                                        verticalAlign: "top",
-                                        marginLeft: 10
-                                      }}
-                                    >
-                                      {file.name}
-                                    </span>
-                                  </span>
-                                }
-                              />
+                            <div>
                               <br />
-                              <List bordered>
-                                <FileVersionDisplay
-                                  readOnly
-                                  project={this.state.project}
-                                  item={file}
+                              <Card>
+                                <Card.Meta
+                                  title={
+                                    <span>
+                                      <Icon
+                                        style={{
+                                          color: "rgb(25, 144, 255)",
+                                          fontSize: 24,
+                                          fontWeight: "normal"
+                                        }}
+                                        type={Document.getFiletypeIcon(
+                                          file.name
+                                        )}
+                                      />
+                                      <span
+                                        style={{
+                                          verticalAlign: "top",
+                                          marginLeft: 10
+                                        }}
+                                      >
+                                        {file.name}
+                                      </span>
+                                    </span>
+                                  }
                                 />
-                              </List>
-                            </Card>
+                                <br />
+                                <List bordered>
+                                  <FileVersionDisplay
+                                    readOnly
+                                    project={this.state.project}
+                                    item={file}
+                                  />
+                                </List>
+                              </Card>
+                            </div>
                           ) : (
                             <div />
                           );

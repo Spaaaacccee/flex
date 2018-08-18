@@ -59,9 +59,9 @@ class FileDisplay extends Component {
               {},
               this.state.deleting
                 ? {
-                    opacity: 0.65,
-                    pointerEvents: "none"
-                  }
+                  opacity: 0.65,
+                  pointerEvents: "none"
+                }
                 : isUnavailable
                   ? { opacity: 0.65 }
                   : {}
@@ -139,10 +139,12 @@ class FileDisplay extends Component {
               const deleteButton = (
                 <Popconfirm
                   title={
-                    this.state.file.uploadType === "cloud" ||
-                    (this.state.file.files || []).length === 1
-                      ? "This file will be deleted"
-                      : `${
+                    isUnavailable
+                      ? "Delete this file? This file may still be uploading, or may become available later."
+                      : this.state.file.uploadType === "cloud" ||
+                        (this.state.file.files || []).length === 1
+                        ? "This file will be deleted"
+                        : `${
                           (this.state.file.files || []).length
                         } files will be deleted`
                   }
@@ -236,8 +238,8 @@ class FileDisplay extends Component {
                         {isUnavailable
                           ? "One or more versions of this file is unavailable"
                           : this.state.file.files.sort(
-                              (a, b) => b.dateUploaded - a.dateUploaded
-                            )[0].description ||
+                            (a, b) => b.dateUploaded - a.dateUploaded
+                          )[0].description ||
                             (this.state.file.files.length > 1
                               ? `${this.state.file.files.length} versions`
                               : "")}
@@ -252,28 +254,30 @@ class FileDisplay extends Component {
             {this.state.file.uploadType !== "cloud" &&
             this.state.file.files &&
             this.state.file.files.length > 1 ? (
-              <div>
-                <br />
-                <List bordered>
-                  {this.state.file.files
-                    .sort((a, b) => b.dateUploaded - a.dateUploaded)
-                    .map((item, index) => (
-                      <FileVersionDisplay
-                        key={item.uid || item.source.id}
-                        item={item}
-                        project={this.state.project}
-                        onMentionButtonPressed={() => {
-                          this.props.onVersionMentionButtonPressed(
-                            item.uid || item.source.id
-                          );
-                        }}
-                      />
-                    ))}
-                </List>
-              </div>
-            ) : (
-              ""
-            )}
+                <div>
+                  <br />
+                  <List bordered>
+                    {this.state.file.files
+                      .sort((a, b) => b.dateUploaded - a.dateUploaded)
+                      .map((item, index) => (
+                        <FileVersionDisplay
+                            readOnly={this.state.readOnly}
+                            key={item.uid || item.source.id}
+                            sourceFile={this.state.file}
+                            item={item}
+                            project={this.state.project}
+                            onMentionButtonPressed={() => {
+                            this.props.onVersionMentionButtonPressed(
+                              item.uid || item.source.id
+                            );
+                          }}
+                        />
+                      ))}
+                  </List>
+                </div>
+              ) : (
+                ""
+              )}
           </Card>
         }
       </div>

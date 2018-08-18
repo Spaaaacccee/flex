@@ -460,13 +460,15 @@ export default class Project {
           size: file.size,
           description,
           uploader: user.uid,
-          state: "unavailable",
+          state: "available",
           hash
         });
 
         archiveID = meta.uid;
 
         let task;
+
+        let afterDone = () => {};
 
         await this.transaction(project => {
           project.files = project.files || [];
@@ -480,12 +482,15 @@ export default class Project {
               ) !== -1;
             if (existingFile) {
               if (project instanceof Project)
-                message.error(`A file that's exactly the same already exists`);
+                message.error("A file that's exactly the same already exists");
             } else {
-              project.files[existingArchive].files.push(meta);
               archiveID = project.files[existingArchive].uid;
               actionType = "updated";
               if (project instanceof Project) {
+                afterDone = (prj) => {
+                  prj.files[existingArchive].files = prj.files[existingArchive].files || [];
+                  prj.files[existingArchive].files.push(meta);
+                };
                 message.info(
                   `We're putting ${file.name} together with an existing copy.`
                 );
@@ -493,15 +498,18 @@ export default class Project {
               }
             }
           } else {
-            project.files.push(
-              new DocumentArchive({
-                files: [meta],
-                name: meta.name,
-                type: meta.type,
-                uid: archiveID
-              })
-            );
             if (project instanceof Project) {
+              afterDone = (prj) => {
+                prj.files = prj.files || [];
+                prj.files.push(
+                  new DocumentArchive({
+                    files: [meta],
+                    name: meta.name,
+                    type: meta.type,
+                    uid: archiveID
+                  })
+                );
+              };
               task = Document.upload(file, meta);
             }
           }
@@ -525,10 +533,9 @@ export default class Project {
             });
           });
           task.then(() => {
-            this.setFileMeta(
-              meta.uid,
-              Object.assign(meta, { state: "available" })
-            );
+            this.transaction((prj)=>{
+              afterDone(prj);
+            })
             User.getCurrentUser().then(user => {
               this.addHistory(
                 new HistoryItem({
@@ -559,45 +566,51 @@ export default class Project {
 
   addCloudFile(file, callback) {
     User.getCurrentUser().then(user => {
-    this.transaction(project => {
-      project.files = project.files || [];
-      if (
-        project.files.find(
-          item =>
-            item.uploadType === "cloud" &&
-            item.source.id &&
-            item.source.id === file.id
-        )
-      ) {
-        if (project instanceof Project) {
-          message.error(`${file.name} already exists!`);
-        }
-      } else {
-        project.files.push(Object.assign(new CloudDocument(file), {
-          uploader: user.uid
-        }));
-        if (project instanceof Project) {
-            project.addHistory(
-              new HistoryItem({
-                action: "added",
-                type: "file",
-                doneBy: user.uid,
-                content: new HistoryItemContent({ uid: file.id })
-              })
-            ).then(()=>{callback()});
+      this.transaction(project => {
+        project.files = project.files || [];
+        if (
+          project.files.find(
+            item =>
+              item.uploadType === "cloud" &&
+              item.source.id &&
+              item.source.id === file.id
+          )
+        ) {
+          if (project instanceof Project) {
+            message.error(`${file.name} already exists!`);
+          }
+        } else {
+          project.files.push(
+            Object.assign(new CloudDocument(file), {
+              uploader: user.uid
+            })
+          );
+          if (project instanceof Project) {
+            project
+              .addHistory(
+                new HistoryItem({
+                  action: "added",
+                  type: "file",
+                  doneBy: user.uid,
+                  content: new HistoryItemContent({ uid: file.id })
+                })
+              )
+              .then(() => {
+                callback();
+              });
           }
         }
       });
     });
   }
 
-  tryDelete(archive) {
+  async tryDelete(archive) {
     if (archive.uid) {
-      this.deleteArchive(archive.uid);
+      await this.deleteArchive(archive.uid);
       return true;
     }
     if (archive.source.id) {
-      this.deleteCloudFile(archive.source.id);
+      await this.deleteCloudFile(archive.source.id);
       return true;
     }
     return false;
@@ -615,11 +628,14 @@ export default class Project {
       )
     );
     this.files = (this.files || []).filter(x => x.uid !== archiveID);
-    this.addHistory({
-      doneBy: user.uid,
-      action: "removed",
-      type: "set of files"
-    });
+    await this.addHistory(
+      new HistoryItem({
+        doneBy: user.uid,
+        action: "removed",
+        type: "set of files",
+        content: new HistoryItemContent({ uid: archiveID })
+      })
+    );
   }
 
   async deleteFile(archiveID, fileID) {
@@ -638,11 +654,14 @@ export default class Project {
       this.files[archiveIndex].files.find(x => x.uid === fileID)
     );
     this.files = this.files[archiveIndex].files.filter(x => x.uid !== fileID);
-    await this.addHistory({
-      doneBy: user.uid,
-      action: "removed",
-      type: "file"
-    });
+    await this.addHistory(
+      new HistoryItem({
+        doneBy: user.uid,
+        action: "removed",
+        type: "file",
+        content: new HistoryItemContent({ uid: fileID })
+      })
+    );
   }
 
   async deleteCloudFile(sourceID) {
@@ -652,7 +671,14 @@ export default class Project {
       .child("files")
       .set(this.files.filter(x => (x.source || {}).id !== sourceID));
     this.files = this.files.filter(x => (x.source || {}).id !== sourceID);
-    this.addHistory({ doneBy: user.uid, action: "removed", type: "file" });
+    await this.addHistory(
+      new HistoryItem({
+        doneBy: user.uid,
+        action: "removed",
+        type: "file",
+        content: new HistoryItemContent({ uid: sourceID })
+      })
+    );
   }
 
   getFileMeta(fileID) {}

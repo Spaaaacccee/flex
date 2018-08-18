@@ -118,11 +118,11 @@ class HistoryDisplay extends Component {
                         )}
                       />
                     ) : (
-                      <span style={{ opacity: 0.65 }}>
+                      <div style={{ opacity: 0.65, margin: 'auto', textAlign: 'center' }}>
                         {
                           "We can not display this event because it has been deleted."
                         }
-                      </span>
+                      </div>
                     )}
                   </div>
                 );
@@ -148,11 +148,11 @@ class HistoryDisplay extends Component {
                         file={file}
                       />
                     ) : (
-                      <span style={{ opacity: 0.65 }}>
+                      <div style={{ opacity: 0.65, margin: 'auto', textAlign: 'center' }}>
                         {
                           "We can not display this file because it has been deleted."
                         }
-                      </span>
+                      </div>
                     )}
                   </div>
                 );

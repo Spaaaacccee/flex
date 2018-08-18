@@ -7,7 +7,7 @@ class FileVersionDisplay extends Component {
   static defaultProps = {
     onMentionButtonPressed: () => {}
   };
-  state = { item: null, project: {}, readOnly: false };
+  state = { item: null, project: {}, readOnly: false, sourceFile: null };
 
   componentDidMount() {
     this.componentWillReceiveProps(this.props);
@@ -17,7 +17,8 @@ class FileVersionDisplay extends Component {
     this.setState({
       item: props.item,
       project: props.project,
-      readOnly: props.readOnly
+      readOnly: props.readOnly,
+      sourceFile: props.sourceFile
     });
   }
   render() {
