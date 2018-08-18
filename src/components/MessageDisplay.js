@@ -237,8 +237,10 @@ class MessageDisplay extends Component {
                   }}
                 >
                   {((!!item.content.files && item.content.files.length) ||
-                    (!!item.content.histories && item.content.histories.length) ||
-                    (!!item.content.fileVersions && item.content.fileVersions.length)) && (
+                    (!!item.content.histories &&
+                      item.content.histories.length) ||
+                    (!!item.content.fileVersions &&
+                      item.content.fileVersions.length)) && (
                     <div>
                       {!!item.content.files &&
                         item.content.files.map(fileID => {
@@ -264,19 +266,22 @@ class MessageDisplay extends Component {
                                   />
                                 </div>
                               ) : (
-                                <Card>
-                                  <div
-                                    style={{
-                                      opacity: 0.65,
-                                      margin: "auto",
-                                      textAlign: "center"
-                                    }}
-                                  >
-                                    {
-                                      "We can not display this file because it has been deleted."
-                                    }
-                                  </div>
-                                </Card>
+                                <div>
+                                  <br />
+                                  <Card>
+                                    <div
+                                      style={{
+                                        opacity: 0.65,
+                                        margin: "auto",
+                                        textAlign: "center"
+                                      }}
+                                    >
+                                      {
+                                        "We can not display this file because it has been deleted."
+                                      }
+                                    </div>
+                                  </Card>
+                                </div>
                               )}
                             </div>
                           );

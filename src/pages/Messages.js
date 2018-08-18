@@ -100,7 +100,7 @@ class MESSAGES extends Component {
     }
     requestAnimationFrame(this.scrollHeightWatcher);
   };
-  
+
   componentDidMount() {
     requestAnimationFrame(this.scrollHeightWatcher);
   }
@@ -145,13 +145,15 @@ class MESSAGES extends Component {
     }
   }
   trySetRead() {
-    if (
-      Math.ceil(this.scrollElement.scrollTop) >=
-      this.scrollElement.scrollHeight - this.scrollElement.offsetHeight
-    ) {
-      $.object(this.receivedMessages)
-        .values()
-        .forEach(item => this.state.messenger.setRead(item.uid, true));
+    if (this.state.messenger) {
+      if (
+        Math.ceil(this.scrollElement.scrollTop) >=
+        this.scrollElement.scrollHeight - this.scrollElement.offsetHeight
+      ) {
+        $.object(this.receivedMessages)
+          .values()
+          .forEach(item => this.state.messenger.setRead(item.uid, true));
+      }
     }
   }
   handleOnDelete(msgID) {

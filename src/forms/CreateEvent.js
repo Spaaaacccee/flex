@@ -55,7 +55,7 @@ export default class CreateEvent extends Component {
 
   shouldComponentUpdate(props, state) {
     if (this.state.submitted !== state.submitted) return true;
-    if (!this.state.opened && !!props.opened) return true;
+    if (this.state.opened !== props.opened) return true;
     return false;
   }
 

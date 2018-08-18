@@ -32,10 +32,12 @@ export default class MemberGroupSelector extends Component {
         this.setState({
           values: [
             ...members.map(x => `M:${x}:${this.state.userInfo[x].name}`),
-            ...roles.map(
-              x =>
-                `R:${x}:${this.state.project.roles.find(i => i.uid === x).name}`
-            )
+            ...roles
+              .map(x => {
+                let role = this.state.project.roles.find(i => i.uid === x);
+                return role ? `R:${x}:${role.name}` : null;
+              })
+              .filter(x => x)
           ]
         });
       }
