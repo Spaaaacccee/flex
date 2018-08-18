@@ -230,7 +230,10 @@ class MessageDisplay extends Component {
                 />
                 <div
                   style={{
-                    maxWidth: 450
+                    maxWidth: 400,
+                    MozUserSelect: "none",
+                    WebkitUserSelect: "none",
+                    msUserSelect: "none"
                   }}
                 >
                   {(!!item.content.files ||
@@ -263,7 +266,11 @@ class MessageDisplay extends Component {
                               ) : (
                                 <Card>
                                   <div
-                                    style={{ opacity: 0.65, margin: "auto", textAlign: 'center' }}
+                                    style={{
+                                      opacity: 0.65,
+                                      margin: "auto",
+                                      textAlign: "center"
+                                    }}
                                   >
                                     {
                                       "We can not display this file because it has been deleted."

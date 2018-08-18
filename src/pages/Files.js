@@ -144,7 +144,8 @@ export default class FILES extends Component {
                                 content: new Message({
                                   sender: this.state.user.uid,
                                   content: new MessageContent({
-                                    files: [item.uid || item.source.id]
+                                    files: [item.uid || item.source.id],
+                                    bodyText: "(Mentioned a file)"
                                   })
                                 })
                               });
@@ -155,7 +156,8 @@ export default class FILES extends Component {
                                 content: new Message({
                                   sender: this.state.user.uid,
                                   content: new MessageContent({
-                                    fileVersions: [versionID]
+                                    fileVersions: [versionID],
+                                    bodyText: "(Mentioned a specific version of a file)"
                                   })
                                 })
                               });

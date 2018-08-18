@@ -27,7 +27,7 @@ export default class Main extends Component {
     openedProjectID: "", // The project ID of the currently opened, or on-screen project
     navigationCollapsed: true, // Whether the navigation sidebars (left-side) are collapsed
     siderWidth: 64, // The width of the left-most sidebar
-    breakpoint: 1024, // The screen-width in which the layout adopt a widescreen format
+    breakpoint: 1280, // The screen-width in which the layout adopt a widescreen format
     currentlyWidescreen: false, // Whether the screen is currently wider than the breakpoint
     user: {}, // The auth data current user
     userData: {}, // The project data of the current user

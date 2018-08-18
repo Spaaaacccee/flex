@@ -232,8 +232,24 @@ export default class FEED extends Component {
           )}
         </div>
         <br />
-        {this.renderMessages(this.state.project, this.state.messages)}
-        {this.renderEvents(this.state.project)}
+        <Columns
+          rootStyles={{ maxWidth: 950, margin: "auto" }}
+          gap={10}
+          queries={[
+            {
+              columns: Math.min(
+                (this.state.project.history || []).length || 1,
+                2
+              ),
+              query: "min-width: 1000px"
+            }
+          ]}
+        >
+          <div>
+            {this.renderMessages(this.state.project, this.state.messages)}
+          </div>
+          <div>{this.renderEvents(this.state.project)}</div>
+        </Columns>
         <h2
           style={{
             textTransform: "uppercase",
@@ -277,7 +293,8 @@ export default class FEED extends Component {
                       content: new Message({
                         sender: this.state.user.uid,
                         content: new MessageContent({
-                          histories: [item.uid]
+                          histories: [item.uid],
+                          bodyText: "(Mentioned a change)"
                         })
                       })
                     });
