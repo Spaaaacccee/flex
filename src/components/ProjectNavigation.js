@@ -127,8 +127,8 @@ export default class ProjectNavigation extends Component {
           .child("name")
           .on("value", snapshot => {
             this.setState({
-              projects: Object.assign(this.state.projects, {
-                [projectID]: snapshot.val()
+              projects: update(this.state.projects, {
+                [projectID]: { $set: snapshot.val() }
               })
             });
           });

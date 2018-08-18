@@ -236,9 +236,9 @@ class MessageDisplay extends Component {
                     msUserSelect: "none"
                   }}
                 >
-                  {(!!item.content.files ||
-                    !!item.content.histories ||
-                    !!item.content.fileVersions) && (
+                  {((!!item.content.files && item.content.files.length) ||
+                    (!!item.content.histories && item.content.histories.length) ||
+                    (!!item.content.fileVersions && item.content.fileVersions.length)) && (
                     <div>
                       {!!item.content.files &&
                         item.content.files.map(fileID => {

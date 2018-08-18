@@ -8,7 +8,7 @@ import whyDidYouUpdate from 'why-did-you-update';
 
 class App extends Component {
   componentDidMount() {
-    whyDidYouUpdate(React);
+    // whyDidYouUpdate(React);
   }
   render() {
     return (
