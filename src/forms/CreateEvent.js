@@ -60,7 +60,7 @@ export default class CreateEvent extends Component {
   }
 
   componentWillReceiveProps(props) {
-    if (!this.state.opened && !!props.opened) {
+    if (this.state.opened !== props.opened) {
       this.setState(
         {
           submitted: false,
