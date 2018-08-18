@@ -422,8 +422,8 @@ class MESSAGES extends Component {
                     key={item.uid}
                     onQuotePressed={() => {
                       this.setInputValue(
-                        `${(this.state.cachedUsers[item.sender] || {})
-                          .name || item.sender} on ${new Date(
+                        `${(this.state.cachedUsers[item.sender] || {}).name ||
+                          item.sender} on ${new Date(
                           item.timeSent
                         ).toLocaleString()} said:\n${item.content.bodyText}`,
                         () => {
@@ -533,11 +533,7 @@ class MESSAGES extends Component {
                         this.handleEdit();
                       } else {
                         if (
-                          !(
-                            this.lastInputKey === "@" ||
-                            this.lastInputKey === "ArrowUp" ||
-                            this.lastInputKey === "ArrowDown"
-                          )
+                          !document.querySelector(".ant-mention-dropdown")
                         ) {
                           this.handleSend();
                         }
@@ -551,12 +547,15 @@ class MESSAGES extends Component {
                   suggestions={this.state.suggestions}
                   placement="top"
                   multiLines
-                  notFoundContent="Nothing found."
+                  notFoundContent="No members or roles found. Press space to continue."
                   onSearchChange={query => {
                     let relevantRoles = $.array(this.state.project.roles || [])
                       .searchString(x => x.name, query)
                       .map(item => (
-                        <Mention.Nav value={item.name + "#" + $.id().checkSum(item.uid)} data={item}>
+                        <Mention.Nav
+                          value={item.name + "#" + $.id().checkSum(item.uid)}
+                          data={item}
+                        >
                           <span style={{ color: HSL.toCSSColor(item.color) }}>
                             <Icon type="tags-o" /> {item.name}
                           </span>
@@ -567,7 +566,10 @@ class MESSAGES extends Component {
                     )
                       .searchString(x => x.name, query)
                       .map(item => (
-                        <Mention.Nav value={item.name + "#" + $.id().checkSum(item.uid)} data={item}>
+                        <Mention.Nav
+                          value={item.name + "#" + $.id().checkSum(item.uid)}
+                          data={item}
+                        >
                           <span>
                             <Icon type="user" /> {item.name}
                           </span>

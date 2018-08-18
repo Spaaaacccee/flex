@@ -172,7 +172,7 @@ class ArrayUtils {
 
   searchString(array, getString, value) {
     return array.filter(
-      item => getString(item).includes(value.toLowerCase()) !== false
+      item => getString(item).toLowerCase().includes(value.toLowerCase()) !== false
     );
   }
 }
