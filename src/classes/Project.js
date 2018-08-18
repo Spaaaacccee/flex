@@ -521,7 +521,6 @@ export default class Project {
               if (UploadJob.Jobs.getJob(jobID).status !== "done") {
                 task.cancel();
                 UploadJob.Jobs.updateJob(jobID, { status: "canceled" });
-                this.tryDelete(meta);
               }
             }
           });
