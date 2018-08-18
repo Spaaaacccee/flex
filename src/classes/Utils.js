@@ -1,4 +1,5 @@
 import Moment from "moment";
+import CryptoJS from "crypto-js";
 
 /**
  * Class for implementing event functionality in classes
@@ -55,7 +56,6 @@ class IDGen {
   UIDChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
   /**
    * Generates a random ID
-
    * @return
    * @memberof IDGen
    */
@@ -67,6 +67,21 @@ class IDGen {
       );
     return uid;
   }
+
+  checkSumLength = 4;
+  /**
+   * Generates a checksum from a string
+   * @param  {String} str
+   * @return {void}
+   * @memberof IDGen
+   */
+  checkSum(target, str) {
+    return ("" + parseInt(CryptoJS.SHA1(str).toString(), 16)).replace(".","").substring(
+      0,
+      this.checkSumLength
+    );
+  }
+
   /**
    * Generates a random integer between values (inclusive)
 
@@ -282,6 +297,7 @@ class $ {
   /**
    * @typedef idGen
    * @property {()=>string} generateUID
+   * @property {(string)=>string} checkSum
    * @property {(min:number,max:number)=>number} generateInt
    */
 

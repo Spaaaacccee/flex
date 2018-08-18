@@ -10,6 +10,7 @@ import HistoryDisplay from "./HistoryDisplay";
 import FileVersionDisplay from "./FileVersionDisplay";
 import Project from "../classes/Project";
 import Document from "../classes/Document";
+import UserGroupDisplay from "./UserGroupDisplay";
 
 class MessageDisplay extends Component {
   static defaultProps = {
@@ -25,7 +26,9 @@ class MessageDisplay extends Component {
     messenger: null,
     message: null,
     sender: {},
-    status: null
+    status: null,
+    hashedMembers: {},
+    hashedRoles: {}
   };
 
   componentDidMount() {
@@ -52,6 +55,24 @@ class MessageDisplay extends Component {
       messageID: props.messageID,
       status: props.status
     });
+    if (props.project) {
+      this.setState({
+        hashedMembers: (() => {
+          let x = {};
+          (props.project.members || []).forEach(item => {
+            x[$.id().checkSum(item.uid)] = item;
+          });
+          return x;
+        })(),
+        hashedRoles: (() => {
+          let x = {};
+          (props.project.roles || []).forEach(item => {
+            x[$.id().checkSum(item.uid)] = item;
+          });
+          return x;
+        })()
+      });
+    }
     if (props.message) {
       this.setState({ message: props.message }, () => {
         this.props.onReady();
@@ -108,75 +129,6 @@ class MessageDisplay extends Component {
                 ? { opacity: 0.65, pointerEvents: "none" }
                 : {}
             )}
-            extra={[
-              <Popover
-                ref={e => (ref = e)}
-                placement="topRight"
-                trigger="click"
-                key={0}
-                content={
-                  <div>
-                    <List style={{ margin: "-5px 0" }} size="small">
-                      <List.Item>
-                        <a
-                          onClick={() => {
-                            this.props.onQuotePressed();
-                            ref.tooltip.setState({
-                              visible: false
-                            });
-                          }}
-                        >
-                          <Icon type="message" />
-                          {" Quote"}
-                        </a>{" "}
-                      </List.Item>
-
-                      {item.sender === this.state.user.uid && (
-                        <List.Item>
-                          <a
-                            onClick={() => {
-                              this.props.onEditPressed();
-                              ref.tooltip.setState({
-                                visible: false
-                              });
-                            }}
-                          >
-                            <Icon type="edit" />
-                            {" Edit"}
-                          </a>
-                        </List.Item>
-                      )}
-                      <Popconfirm
-                        placement="topRight"
-                        title="Delete this message?"
-                        okText="Yes"
-                        cancelText="No"
-                        onConfirm={() => {
-                          this.props.onDeletePressed();
-                        }}
-                      >
-                        <List.Item>
-                          <a>
-                            <Icon type="delete" />
-                            {" Delete"}
-                          </a>
-                        </List.Item>
-                      </Popconfirm>
-                    </List>
-                  </div>
-                }
-              >
-                <Button
-                  style={{
-                    border: 0,
-                    background: "transparent"
-                  }}
-                  icon="ellipsis"
-                  shape="circle"
-                  size="small"
-                />
-              </Popover>
-            ]}
           >
             <div style={{ display: "flex" }}>
               <Popover
@@ -208,6 +160,9 @@ class MessageDisplay extends Component {
                   title={
                     <span
                       style={{
+                        marginBottom: 5,
+                        fontSize: 16,
+                        display: "inline-block",
                         color: HSL.toCSSColor(
                           (
                             (this.state.project.roles || []).find(
@@ -224,6 +179,75 @@ class MessageDisplay extends Component {
                       }}
                     >
                       {(sender || {}).name || <Icon type="loading" />}
+                      <Popover
+                        ref={e => (ref = e)}
+                        placement="topRight"
+                        trigger="click"
+                        key={0}
+                        content={
+                          <div>
+                            <List style={{ margin: "-5px 0" }} size="small">
+                              <List.Item>
+                                <a
+                                  onClick={() => {
+                                    this.props.onQuotePressed();
+                                    ref.tooltip.setState({
+                                      visible: false
+                                    });
+                                  }}
+                                >
+                                  <Icon type="message" />
+                                  {" Quote"}
+                                </a>{" "}
+                              </List.Item>
+
+                              {item.sender === this.state.user.uid && (
+                                <List.Item>
+                                  <a
+                                    onClick={() => {
+                                      this.props.onEditPressed();
+                                      ref.tooltip.setState({
+                                        visible: false
+                                      });
+                                    }}
+                                  >
+                                    <Icon type="edit" />
+                                    {" Edit"}
+                                  </a>
+                                </List.Item>
+                              )}
+                              <Popconfirm
+                                placement="topRight"
+                                title="Delete this message?"
+                                okText="Yes"
+                                cancelText="No"
+                                onConfirm={() => {
+                                  this.props.onDeletePressed();
+                                }}
+                              >
+                                <List.Item>
+                                  <a>
+                                    <Icon type="delete" />
+                                    {" Delete"}
+                                  </a>
+                                </List.Item>
+                              </Popconfirm>
+                            </List>
+                          </div>
+                        }
+                      >
+                        <Button
+                          style={{
+                            border: 0,
+                            background: "transparent",
+                            position: "absolute",
+                            right: 0
+                          }}
+                          icon="ellipsis"
+                          shape="circle"
+                          size="small"
+                        />
+                      </Popover>
                     </span>
                   }
                   description={$.date(item.timeSent).humanise()}
@@ -231,6 +255,7 @@ class MessageDisplay extends Component {
                 <div
                   style={{
                     maxWidth: 400,
+                    width: "calc(100vw - 80px)",
                     MozUserSelect: "none",
                     WebkitUserSelect: "none",
                     msUserSelect: "none"
@@ -323,12 +348,18 @@ class MessageDisplay extends Component {
                               <Card>
                                 <Card.Meta
                                   title={
-                                    <span>
+                                    <span
+                                      style={{
+                                        display: "flex",
+                                        alignItems: "center"
+                                      }}
+                                    >
                                       <Icon
                                         style={{
                                           color: "rgb(25, 144, 255)",
                                           fontSize: 24,
-                                          fontWeight: "normal"
+                                          fontWeight: "normal",
+                                          flex: "none"
                                         }}
                                         type={Document.getFiletypeIcon(
                                           file.name
@@ -336,7 +367,6 @@ class MessageDisplay extends Component {
                                       />
                                       <span
                                         style={{
-                                          verticalAlign: "top",
                                           marginLeft: 10
                                         }}
                                       >
@@ -365,6 +395,7 @@ class MessageDisplay extends Component {
                 </div>
                 <pre
                   style={{
+                    marginTop: 10,
                     whiteSpace: "pre-wrap",
                     display: "inline",
                     fontFamily: `"Segoe UI",
@@ -372,12 +403,61 @@ class MessageDisplay extends Component {
   Helvetica, "PingFang SC", "Microsoft YaHei UI", sans-serif`
                   }}
                 >
-                  {(item.content || {}).bodyText}
+                  {(() => {
+                    let source = " " + (item.content || {}).bodyText + " ";
+                    let tokens = source.match(/@.*?#\d\d\d\d\s/g) || [];
+                    let text = source.split(/@.*?#\d\d\d\d\s/g);
+                    console.log({ tokens, text, source });
+                    if (tokens.length) {
+                      let str = [];
+                      text.forEach((item, index) => {
+                        str.push(index ? item : item.substring(1));
+                        if (tokens[index]) {
+                          let hash = tokens[index]
+                            .split("#")
+                            .pop()
+                            .trim();
+                          if (this.state.hashedMembers[hash]) {
+                            str.push(
+                              <UserGroupDisplay
+                                style={{
+                                  display: "inline-block",
+                                  marginBottom: "-8px"
+                                }}
+                                project={this.state.project}
+                                people={{
+                                  members: [this.state.hashedMembers[hash].uid]
+                                }}
+                              />
+                            );
+                          } else if (this.state.hashedRoles[hash]) {
+                            str.push(
+                              <UserGroupDisplay
+                                style={{
+                                  display: "inline-block",
+                                  marginBottom: "-8px"
+                                }}
+                                project={this.state.project}
+                                people={{
+                                  roles: [this.state.hashedRoles[hash].uid]
+                                }}
+                              />
+                            );
+                          } else {
+                            str.push(tokens[index]);
+                          }
+                        }
+                      });
+                      return str;
+                    } else {
+                      return source.trim();
+                    }
+                  })()}
                 </pre>{" "}
                 <span style={{ color: "rgb(25, 144, 255)" }}>
                   {this.state.status === "processing" && (
                     <Icon type="loading" />
-                  )}{" "}
+                  )}
                   {this.state.status === "sent" && <Icon type="check" />}
                 </span>
               </div>

@@ -2,7 +2,6 @@ import Project from "./Project";
 import User from "./User";
 
 import Fire from "./Fire";
-import Firebase from "firebase";
 import Messages from "./Messages";
 
 /**

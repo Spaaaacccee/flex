@@ -1,4 +1,3 @@
-import Firebase from "firebase";
 import Fire from "./Fire";
 import { message, notification } from "antd";
 import $, { EventEmitter } from "./Utils";

@@ -17,7 +17,6 @@ import Document, {
 } from "./Document";
 import User from "./User";
 import Messages from "./Messages";
-import Firebase from "firebase";
 import { HistoryItem, HistoryItemContent } from "./History";
 
 /**

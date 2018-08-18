@@ -6,8 +6,6 @@ import ProjectIcon from "./ProjectIcon";
 import UserIcon from "./UserIcon";
 import AddIcon from "./AddIcon";
 
-import Firebase from "firebase";
-
 import Project from "../classes/Project";
 import Fetch from "../classes/Fetch";
 import User from "../classes/User";

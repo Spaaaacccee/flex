@@ -39,6 +39,11 @@ div.ant-list-vertical .ant-list-item-meta-title {
   max-width: 600px;
   width: calc(100% - 20px);
   align-items: baseline;
+  align-items: flex-start;
+}
+
+.message-console > div > button {
+  margin-top: 10px;
 }
 
 .Discuss .top-bar-wrapper + div {
@@ -51,15 +56,15 @@ div.ant-list-vertical .ant-list-item-meta-title {
 }
 
 .Discuss div.top-bar-wrapper:after {
-  opacity: 1
+  opacity: 1;
 }
 
 .widescreen .Discuss .project-view-inner-content {
-    height: 100%;
+  height: 100%;
 }
 
 .widescreen .Discuss div.top-bar-wrapper:after {
-    display: block;
+  display: block;
 }
 
 textarea.input {

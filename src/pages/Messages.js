@@ -1,29 +1,13 @@
 import React, { Component } from "react";
-import {
-  Input,
-  Button,
-  Icon,
-  List,
-  Affix,
-  message,
-  Popover,
-  Popconfirm,
-  Avatar
-} from "antd";
+import { Input, Button, Icon, List, message, Popover, Mention } from "antd";
 import Messages, { Message } from "../classes/Messages";
 import update from "immutability-helper";
 import $ from "../classes/Utils";
-import UserGroupDisplay from "../components/UserGroupDisplay";
 import "./Messages.css";
 import User from "../classes/User";
 import Project from "../classes/Project";
-import Moment from "moment";
-import { HSL } from "../classes/Role";
-import MemberDisplay from "../components/MemberDisplay";
-import FileDisplay from "../components/FileDisplay";
-import { HistoryItem } from "../classes/History";
-import HistoryDisplay from "../components/HistoryDisplay";
 import MessageDisplay from "../components/MessageDisplay";
+import { HSL } from "../classes/Role";
 class MESSAGES extends Component {
   /**
    * @type {{messenger:Messages}}
@@ -33,14 +17,15 @@ class MESSAGES extends Component {
   state = {
     project: {},
     user: {},
-    inputValue: "",
+    inputValue: Mention.toContentState(""),
     messenger: null,
     messageStatus: {},
     orderedMessages: [],
     cachedUsers: {},
     consoleStatus: "ready",
     consoleEditTarget: null,
-    messageDisplayCount: 20
+    messageDisplayCount: 20,
+    suggestions: []
   };
   clearMessageTriggerOffset = 200;
   loadMessageTriggerOffset = 10;
@@ -206,7 +191,13 @@ class MESSAGES extends Component {
         }),
         this.state.consoleStatus === "editing" &&
         msgID === this.state.consoleEditTarget.uid
-          ? { inputValue: "", consoleStatus: "ready", consoleEditTarget: null }
+          ? (() => {
+              this.setInputValue("");
+              return {
+                consoleStatus: "ready",
+                consoleEditTarget: null
+              };
+            })()
           : {}
       ),
       () => {
@@ -219,7 +210,7 @@ class MESSAGES extends Component {
   handleEdit() {
     this.inputElement.focus();
     const maxChars = 2000;
-    let val = this.state.inputValue.trim();
+    let val = Mention.toString(this.state.inputValue).trim();
     if (!val) return;
     if (val.length > maxChars) {
       message.warn(
@@ -230,11 +221,11 @@ class MESSAGES extends Component {
     let target = Object.assign({}, this.state.consoleEditTarget);
     this.setState(
       update(this.state, {
-        inputValue: { $set: "" },
         consoleStatus: { $set: "ready" },
         messageStatus: { [target.uid]: { $set: "processing" } }
       })
     );
+    this.setInputValue("");
     let res = update(target, {
       content: { bodyText: { $set: val } }
     });
@@ -250,7 +241,7 @@ class MESSAGES extends Component {
   handleSend() {
     this.inputElement.focus();
     const maxChars = 2000;
-    let val = this.state.inputValue.trim();
+    let val = Mention.toString(this.state.inputValue).trim();
     if (!val) return;
     if (this.state.messenger) {
       if (val.length > maxChars) {
@@ -269,13 +260,13 @@ class MESSAGES extends Component {
           messageStatus: {
             $merge: { [msg.uid]: "processing" }
           },
-          orderedMessages: { $push: [msg] },
-          inputValue: { $set: "" }
+          orderedMessages: { $push: [msg] }
         }),
         () => {
           this.sendMessage(msg);
         }
       );
+      this.setInputValue("");
     }
   }
   handleSendRaw(msg) {
@@ -333,6 +324,17 @@ class MESSAGES extends Component {
       requestAnimationFrame(loop);
     });
   }
+
+  settingInput = false;
+  setInputValue(string, callback) {
+    this.settingInput = true;
+    const contentState = Mention.toContentState($.string(string).trimLeft());
+    this.setState({ inputValue: contentState }, () => {
+      if (callback) callback();
+      this.settingInput = false;
+    });
+  }
+
   cacheItems() {
     let orderedMessages = $.object(this.receivedMessages)
       .values()
@@ -347,20 +349,19 @@ class MESSAGES extends Component {
     }
   }
   cacheUsers() {
-    let users = {};
-    let msgs = $.object(this.receivedMessages).values();
-    for (let i = 0; i < msgs.length; i++) {
-      if (users[msgs[i].sender]) continue;
-      users[msgs[i].sender] = User.get(msgs[i].sender);
-      users[msgs[i].sender].then(user => {
+    let members = this.state.project.members || [];
+    for (let member of members) {
+      if (this.state.cachedUsers[member.uid]) continue;
+      User.get(member.uid).then(user => {
         this.setState({
           cachedUsers: update(this.state.cachedUsers, {
-            $merge: { [msgs[i].sender]: user }
+            $merge: { [user.uid]: user }
           })
         });
       });
     }
   }
+  lastInputKey = 0;
   inputElement;
   scrollElement = <div className="placeholder" />;
   render() {
@@ -420,14 +421,11 @@ class MESSAGES extends Component {
                     status={this.state.messageStatus[item.uid]}
                     key={item.uid}
                     onQuotePressed={() => {
-                      this.setState(
-                        {
-                          inputValue: `${(
-                            this.state.cachedUsers[item.sender] || {}
-                          ).name || item.sender} on ${new Date(
-                            item.timeSent
-                          ).toLocaleString()} said:\n${item.content.bodyText}\n`
-                        },
+                      this.setInputValue(
+                        `${(this.state.cachedUsers[item.sender] || {})
+                          .name || item.sender} on ${new Date(
+                          item.timeSent
+                        ).toLocaleString()} said:\n${item.content.bodyText}`,
                         () => {
                           this.scrollBottom().then(() => {
                             this.setState({
@@ -441,9 +439,9 @@ class MESSAGES extends Component {
                     onEditPressed={() => {
                       this.setState({
                         consoleStatus: "editing",
-                        consoleEditTarget: item,
-                        inputValue: item.content.bodyText
+                        consoleEditTarget: item
                       });
+                      this.setInputValue(item.content.bodyText);
                       this.inputElement.focus();
                     }}
                     onDeletePressed={() => {
@@ -508,61 +506,103 @@ class MESSAGES extends Component {
                 <Button
                   shape="circle"
                   icon="message"
-                  style={{ flex: "none" }}
+                  style={{ flex: "none", display: "none" }}
                   disabled={!this.state.messenger}
                 />
               </Popover>
             )}
-            <Input.TextArea
-              onFocus={() => {
-                this.scrollBottom().then(() => {
-                  this.setState({
-                    messageDisplayCount: this.initialMessagesCount
-                  });
-                });
-              }}
-              type="email"
-              onKeyUp={e => {
-                if (
-                  e.keyCode === 27 &&
-                  this.state.consoleStatus === "editing"
-                ) {
-                  this.setState({ consoleStatus: "ready", inputValue: "" });
-                }
-              }}
-              ref={e => (this.inputElement = e)}
-              value={this.state.inputValue}
-              autosize={{ minRows: 1, maxRows: 5 }}
-              className="input"
-              onChange={e => {
-                this.setState({
-                  inputValue: $.string(e.target.value).trimLeft()
-                });
-              }}
-              onPressEnter={(e => {
-                console.log(e);
-                e.preventDefault();
-                if (e.shiftKey) {
-                  this.setState({
-                    inputValue: $.string(e.target.value + "\n").trimLeft()
-                  });
-                } else {
-                  if (this.state.consoleStatus === "editing") {
-                    this.handleEdit();
-                  } else {
-                    this.handleSend();
-                  }
-                }
-              }).bind(this)}
-              placeholder={
-                !this.state.messenger ? "Connecting" : "Enter a message"
-              }
+            <div
               style={{
-                maxWidth: "100%",
-                margin: 10
+                width: "100%",
+                margin: 10,
+                marginLeft: 0,
+                textAlign: "left"
               }}
-              disabled={!this.state.messenger}
-            />
+            >
+              <div
+                tabIndex="0"
+                onKeyDown={e => {
+                  if (
+                    e.keyCode === 27 &&
+                    this.state.consoleStatus === "editing"
+                  ) {
+                    this.setInputValue("");
+                  } else if (e.keyCode === 13) {
+                    if (!e.shiftKey) {
+                      if (this.state.consoleStatus === "editing") {
+                        this.handleEdit();
+                      } else {
+                        if (
+                          !(
+                            this.lastInputKey === "@" ||
+                            this.lastInputKey === "ArrowUp" ||
+                            this.lastInputKey === "ArrowDown"
+                          )
+                        ) {
+                          this.handleSend();
+                        }
+                      }
+                    }
+                  }
+                  this.lastInputKey = e.key;
+                }}
+              >
+                <Mention
+                  suggestions={this.state.suggestions}
+                  placement="top"
+                  multiLines
+                  notFoundContent="Nothing found."
+                  onSearchChange={query => {
+                    let relevantRoles = $.array(this.state.project.roles || [])
+                      .searchString(x => x.name, query)
+                      .map(item => (
+                        <Mention.Nav value={item.name + "#" + $.id().checkSum(item.uid)} data={item}>
+                          <span style={{ color: HSL.toCSSColor(item.color) }}>
+                            <Icon type="tags-o" /> {item.name}
+                          </span>
+                        </Mention.Nav>
+                      ));
+                    let relevantUsers = $.array(
+                      $.object(this.state.cachedUsers).values()
+                    )
+                      .searchString(x => x.name, query)
+                      .map(item => (
+                        <Mention.Nav value={item.name + "#" + $.id().checkSum(item.uid)} data={item}>
+                          <span>
+                            <Icon type="user" /> {item.name}
+                          </span>
+                        </Mention.Nav>
+                      ));
+                    this.setState({
+                      suggestions: [...relevantRoles, ...relevantUsers]
+                    });
+                  }}
+                  onFocus={() => {
+                    this.scrollBottom().then(() => {
+                      this.setState({
+                        messageDisplayCount: this.initialMessagesCount
+                      });
+                    });
+                  }}
+                  type="email"
+                  ref={e => (this.inputElement = e)}
+                  value={this.state.inputValue}
+                  className="input"
+                  onChange={e => {
+                    console.log("change");
+                    if (!this.settingInput) {
+                      this.setState({
+                        inputValue: e
+                      });
+                    }
+                  }}
+                  placeholder={
+                    !this.state.messenger ? "Connecting" : "Enter a message"
+                  }
+                  disabled={!this.state.messenger}
+                />
+              </div>
+            </div>
             <Button
               icon={this.state.consoleStatus === "editing" ? "check" : null}
               style={{ flex: "none" }}
@@ -571,7 +611,10 @@ class MESSAGES extends Component {
                 : this.handleSend
               ).bind(this)}
               type="primary"
-              disabled={!this.state.messenger || !this.state.inputValue}
+              disabled={
+                !this.state.messenger ||
+                !Mention.toString(this.state.inputValue).trim()
+              }
             >
               {this.state.consoleStatus === "editing" ? "" : "Send"}
             </Button>
@@ -580,7 +623,10 @@ class MESSAGES extends Component {
                 icon="close"
                 style={{ flex: "none", marginLeft: 10 }}
                 onClick={() => {
-                  this.setState({ consoleStatus: "ready", inputValue: "" });
+                  this.setState({
+                    consoleStatus: "ready"
+                  });
+                  this.setInputValue("");
                 }}
               />
             )}

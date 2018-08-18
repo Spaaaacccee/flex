@@ -1,4 +1,7 @@
-import Firebase from "firebase";
+import Firebase from "firebase/app"
+import "firebase/auth";
+import "firebase/database"
+import "firebase/storage"
 
 export default class Fire {
   static config = {

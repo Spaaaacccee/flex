@@ -67,6 +67,10 @@ h3 {
   animation: fade-in 0.3s ease forwards;
 }
 
+.ant-card * {
+  white-space: pre-line;
+}
+
 .ant-card .ant-card-actions {
   background: white;
 }
