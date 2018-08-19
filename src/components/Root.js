@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Icon } from "antd";
+import { Icon, message } from "antd";
 
 import Main from "./Main";
 
@@ -21,6 +21,16 @@ export default class Root extends Component {
         this.setState({ loaded: true });
       }, 2000);
     });
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission().then(result => {
+        if (result !== "granted") {
+          message.warn(
+            "You won't receive notifications if you don't give us permission."
+          );
+          return;
+        }
+      });
+    }
   }
   render() {
     return (
@@ -39,7 +49,7 @@ export default class Root extends Component {
           }}
         >
           <div>
-            <img src="/icons/icon.png" style={{width:50,height:50}}/>
+            <img src="/icons/icon.png" style={{ width: 50, height: 50 }} />
           </div>
         </div>
         <div style={{ height: "100%", opacity: this.state.loaded ? 1 : 0 }}>

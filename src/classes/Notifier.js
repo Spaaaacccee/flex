@@ -5,6 +5,7 @@ import Fetch from "./Fetch";
 import Notify from "notifyjs";
 import Moment from "moment";
 import $, { EventEmitter } from "./Utils";
+import { message } from "antd";
 
 export default class Notifier extends EventEmitter {
   static listeners = [];
@@ -16,7 +17,7 @@ export default class Notifier extends EventEmitter {
    * @return {void}
    * @memberof Notifier
    */
-  static setProjects(projectIDs) {
+  static async setProjects(projectIDs) {
     Notifier.listeners.forEach(element => {
       let index = projectIDs.findIndex(x => x === element.projectID);
       if (index === -1) {
@@ -71,6 +72,7 @@ export default class Notifier extends EventEmitter {
             body,
             icon: "./icons/icon.png",
             notifyClick: () => {
+              window.focus();
               this.emit("new_change", { projectID: this.projectID, item });
             }
           }).show();
@@ -123,6 +125,7 @@ export default class Notifier extends EventEmitter {
                   ).capitaliseFirstLetter()}`,
                   icon: "./icons/icon.png",
                   notifyClick: () => {
+                    window.focus();
                     this.emit("event", { projectID: this.projectID, item });
                   }
                 }).show();
@@ -166,6 +169,7 @@ export default class Notifier extends EventEmitter {
             body: msg.content.bodyText,
             icon: user.profilePhoto,
             notifyClick: () => {
+              window.focus();
               this.emit("message", { projectID: this.projectID, msg });
             }
           }).show();
