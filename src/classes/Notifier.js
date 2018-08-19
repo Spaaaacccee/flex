@@ -173,6 +173,7 @@ export default class Notifier extends EventEmitter {
       }
     };
     this.messenger.on("new_message", newMessageListener);
+    this.messenger.startListening();
     this.stopListening = () => {
       Fetch.getProjectReference(this.projectID).off("value", valueListener);
       Fetch.getProjectReference(this.projectID)
