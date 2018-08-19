@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import PrimaryIcon from "./PrimaryIcon";
-import { Icon } from "antd";
+import { Icon, Badge } from "antd";
 import "./ProjectIcon.css";
 
 /**
@@ -24,6 +24,7 @@ export default class ProjectIcon extends Component {
     name: "",
     icon: "",
     style: {},
+    notificationCount: 0,
     readOnly: false
   };
 
@@ -34,7 +35,8 @@ export default class ProjectIcon extends Component {
       thumbnail: props.thumbnail,
       icon: props.icon,
       style: props.style || {},
-      readOnly: props.readOnly
+      readOnly: props.readOnly,
+      notificationCount: props.notificationCount || 0
     });
   }
 
@@ -44,6 +46,8 @@ export default class ProjectIcon extends Component {
     if (props.selected !== this.state.selected) return true;
     if (props.thumbnail !== this.state.thumbnail) return true;
     if (props.icon !== this.state.icon) return true;
+    if ((props.notificationCount || 0) !== this.state.notificationCount)
+      return true;
     return false;
   }
 
@@ -79,18 +83,20 @@ export default class ProjectIcon extends Component {
         onMouseUp={this.handlePress.bind(this)}
         onTouchStart={this.handlePress.bind(this)}
       >
-        <PrimaryIcon
-          background={this.thumbnailToCSS()}
-          text={
-            this.state.icon ? (
-              <Icon type={this.state.icon} />
-            ) : this.state.name ? (
-              this.state.name.substring(0, 2).trim()
-            ) : (
-              <Icon type="loading" />
-            )
-          }
-        />
+        <Badge count={this.state.notificationCount} offset={[15, 15]}>
+          <PrimaryIcon
+            background={this.thumbnailToCSS()}
+            text={
+              this.state.icon ? (
+                <Icon type={this.state.icon} />
+              ) : this.state.name ? (
+                this.state.name.substring(0, 2).trim()
+              ) : (
+                <Icon type="loading" />
+              )
+            }
+          />
+        </Badge>
       </div>
     );
   }

@@ -160,6 +160,7 @@ class FileDisplay extends Component {
                             User.getCurrentUser().then(user => {
                               this.state.project.addHistory(
                                 new HistoryItem({
+                                  readBy: {[user.uid]:true},
                                   action: "removed",
                                   type: "file",
                                   doneBy: user.uid

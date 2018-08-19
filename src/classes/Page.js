@@ -1,6 +1,8 @@
 import React from "react";
 
-import {Icon} from 'antd';
+import $ from "./Utils";
+
+import { Icon } from "antd";
 
 import USER from "../pages/User";
 import MEMBERS from "../pages/Members";
@@ -15,9 +17,8 @@ import MESSAGES from "../pages/Messages";
  * @class Page
  */
 export default class Page {
-
-  static equal(a,b) {
-    return (a&&b) && a.name===b.name;
+  static equal(a, b) {
+    return a && b && a.name === b.name;
   }
 
   /**
@@ -55,7 +56,10 @@ export default class Page {
    * @type {boolean}
    * @memberof Page
    */
-  requireProject=true;
+  requireProject = true;
+  getNotificationCount = () => {
+    return 0;
+  };
   /**
    * Creates an instance of Page.
    * @param {Page} args
@@ -74,7 +78,11 @@ export const Pages = [
     name: "Home",
     icon: "appstore-o",
     content: FEED,
-    topBarMode: "adaptive"
+    topBarMode: "adaptive",
+    getNotificationCount: (project, user) => {
+      return (project.history || []).filter(x => !(x.readBy || {})[user.uid])
+        .length;
+    }
   }),
   new Page({
     name: "Members",
@@ -90,7 +98,12 @@ export const Pages = [
   new Page({
     name: "Discuss",
     icon: "message",
-    content: MESSAGES
+    content: MESSAGES,
+    getNotificationCount: (project, user, messages) => {
+      return ($.object(messages || {}).values() || []).filter(
+        x => !(x.readBy || {})[user.uid]
+      ).length;
+    }
   }),
   new Page({
     name: "Files",
@@ -115,6 +128,14 @@ export const UserPage = [
     content: USER,
     requireProject: false,
     topBarMode: "adaptive",
-    extrasButtonType: (<a href="https://myaccount.google.com/" rel="noopener noreferrer" target="_blank"><Icon type="edit"/></a>)
+    extrasButtonType: (
+      <a
+        href="https://myaccount.google.com/"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <Icon type="edit" />
+      </a>
+    )
   })
 ];

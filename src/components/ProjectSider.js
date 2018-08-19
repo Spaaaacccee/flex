@@ -2,7 +2,8 @@ import React, { Component } from "react";
 
 import "./ProjectSider.css";
 
-import { Icon, Menu, Button } from "antd";
+import { Icon, Menu, Button, Badge } from "antd";
+import Messages from "../classes/Messages";
 const { SubMenu } = Menu;
 
 /**
@@ -45,14 +46,43 @@ export default class ProjectSider extends Component {
     items: [] // The buttons that will be rendered by default
   };
   state = {
+    project: {},
+    user: {},
+    messages: {},
+    messenger: null,
     items: [],
     index: 0 // The index of the menu item that is currently open.
   };
   componentWillReceiveProps(props) {
     this.setState({
+      project: props.project,
+      user: props.user,
       items: props.items,
       index: props.index
     });
+    if (props.project) {
+      Messages.get(props.project.messengerID || props.project.projectID).then(
+        messenger => {
+          messenger.on("change", messages => {
+            this.setState({ messages });
+          });
+          messenger.startListening();
+          this.setState({ messenger, messages: messenger.messages });
+        }
+      );
+    } else {
+      if (this.state.messenger) {
+        this.state.messenger.off();
+        this.state.messenger.stopListening();
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.state.messenger) {
+      this.state.messenger.off();
+      this.state.messenger.stopListening();
+    }
   }
 
   /**
@@ -138,6 +168,14 @@ export default class ProjectSider extends Component {
               <Menu.Item key={"" + index}>
                 <Icon type={item.icon} />
                 <span>{item.name}</span>
+                <Badge
+                  offset={[-20, 0]}
+                  count={item.getNotificationCount(
+                    this.state.project,
+                    this.state.user,
+                    this.state.messages
+                  )}
+                />
               </Menu.Item>
             ))}
           </Menu>

@@ -71,7 +71,6 @@ export default class RoleEditor extends Component {
                     placement="topLeft"
                     content={
                       <HuePicker
-                        style={{ maxWidth: "calc(100vw - 50px)" }}
                         color={this.state.values[index].color}
                         onChangeComplete={c => {
                           this.setState(

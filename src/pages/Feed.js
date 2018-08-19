@@ -37,6 +37,20 @@ export default class FEED extends Component {
     this.componentWillReceiveProps(this.props);
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      this.state.project &&
+      Object.keys(this.state.project).length &&
+      ((prevState.project || {}).history || []).length !==
+        ((this.state.project || {}).history || []).length
+    ) {
+      setTimeout(()=>{
+        console.log(this.state.project);
+        this.state.project.trySetReadHistory();
+      },500)
+    }
+  }
+
   componentWillReceiveProps(props) {
     this.setState({
       project: props.project,

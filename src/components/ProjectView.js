@@ -166,6 +166,8 @@ export default class ProjectView extends Component {
               )}
             </div>
             <ProjectSider
+              project={this.state.project}
+              user={this.state.user}
               items={displayPages}
               index={openIndex}
               onItemSelected={itemSelectedArgs => {

@@ -32,7 +32,7 @@ export class HistoryItem {
    * @type {Object.<String, Number>}
    * @memberof HistoryItem
    */
-  seenBy = [];
+  readBy = [];
   /**
    * The time when this history item was created / the time this action was done
    * @type {Number}

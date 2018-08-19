@@ -407,7 +407,6 @@ class MessageDisplay extends Component {
                     let source = " " + (item.content || {}).bodyText + " ";
                     let tokens = source.match(/@.*?#\d\d\d\d\s/g) || [];
                     let text = source.split(/@.*?#\d\d\d\d\s/g);
-                    console.log({ tokens, text, source });
                     if (tokens.length) {
                       let str = [];
                       text.forEach((item, index) => {

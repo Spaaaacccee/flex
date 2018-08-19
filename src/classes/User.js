@@ -301,11 +301,14 @@ export default class User {
                 project.addMember(user.uid).then(() => {
                   message.success(`You've successfully joined ${project.name}`);
                 });
-                project.addHistory({
-                  action: "joined",
-                  type: "project",
-                  doneBy: this.uid
-                });
+                project.addHistory(
+                  new HistoryItem({
+                    readBy: { [this.uid]: true },
+                    action: "joined",
+                    type: "project",
+                    doneBy: this.uid
+                  })
+                );
               });
             }
           } else {
@@ -339,6 +342,7 @@ export default class User {
         project.history = project.history || [];
         project.history.push(
           new HistoryItem({
+            readBy: { [this.uid]: true },
             action: "created",
             type: "project",
             doneBy: this.uid
@@ -366,11 +370,14 @@ export default class User {
         );
       });
       let project = await Project.get(projectID);
-      await project.addHistory({
-        action: "left",
-        type: "project",
-        doneBy: this.uid
-      });
+      await project.addHistory(
+        new HistoryItem({
+          readBy: { [this.uid]: true },
+          action: "left",
+          type: "project",
+          doneBy: this.uid
+        })
+      );
       await project.setMembers(
         project.members.filter(item => item.uid !== this.uid)
       );
@@ -402,5 +409,4 @@ export default class User {
     this.uid = uid || null;
     this.lastUpdatedTimestamp = Date.now();
   }
-  
 }

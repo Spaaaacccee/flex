@@ -257,6 +257,7 @@ export default class Project {
         User.getCurrentUser().then(user => {
           project.addHistory(
             new HistoryItem({
+              readBy: {[user.uid]:true},
               action: "edited",
               doneBy: user.uid,
               type: "name"
@@ -274,6 +275,7 @@ export default class Project {
         User.getCurrentUser().then(user => {
           project.addHistory(
             new HistoryItem({
+              readBy: {[user.uid]:true},
               action: "edited",
               doneBy: user.uid,
               type: "description"
@@ -359,6 +361,7 @@ export default class Project {
         User.getCurrentUser().then(user => {
           project.addHistory(
             new HistoryItem({
+              readBy: {[user.uid]:true},
               action: completed ? "completed" : "edited",
               doneBy: user.uid,
               type: "event",
@@ -384,6 +387,7 @@ export default class Project {
         User.getCurrentUser().then(user => {
           project.addHistory(
             new HistoryItem({
+              readBy: {[user.uid]:true},
               action: "added",
               type: "event",
               doneBy: user.uid,
@@ -408,6 +412,7 @@ export default class Project {
         User.getCurrentUser().then(user => {
           project.addHistory(
             new HistoryItem({
+              readBy: {[user.uid]:true},
               action: "removed",
               type: "event",
               doneBy: user.uid,
@@ -486,8 +491,9 @@ export default class Project {
               archiveID = project.files[existingArchive].uid;
               actionType = "updated";
               if (project instanceof Project) {
-                afterDone = (prj) => {
-                  prj.files[existingArchive].files = prj.files[existingArchive].files || [];
+                afterDone = prj => {
+                  prj.files[existingArchive].files =
+                    prj.files[existingArchive].files || [];
                   prj.files[existingArchive].files.push(meta);
                 };
                 message.info(
@@ -498,7 +504,7 @@ export default class Project {
             }
           } else {
             if (project instanceof Project) {
-              afterDone = (prj) => {
+              afterDone = prj => {
                 prj.files = prj.files || [];
                 prj.files.push(
                   new DocumentArchive({
@@ -531,12 +537,13 @@ export default class Project {
             });
           });
           task.then(() => {
-            this.transaction((prj)=>{
+            this.transaction(prj => {
               afterDone(prj);
-            })
+            });
             User.getCurrentUser().then(user => {
               this.addHistory(
                 new HistoryItem({
+                  readBy: {[user.uid]:true},
                   action: actionType,
                   type: "file",
                   doneBy: user.uid,
@@ -587,6 +594,7 @@ export default class Project {
             project
               .addHistory(
                 new HistoryItem({
+                  readBy: {[user.uid]:true},
                   action: "added",
                   type: "file",
                   doneBy: user.uid,
@@ -628,6 +636,7 @@ export default class Project {
     this.files = (this.files || []).filter(x => x.uid !== archiveID);
     await this.addHistory(
       new HistoryItem({
+        readBy: {[user.uid]:true},
         doneBy: user.uid,
         action: "removed",
         type: "set of files",
@@ -654,6 +663,7 @@ export default class Project {
     this.files = this.files[archiveIndex].files.filter(x => x.uid !== fileID);
     await this.addHistory(
       new HistoryItem({
+        readBy: {[user.uid]:true},
         doneBy: user.uid,
         action: "removed",
         type: "file",
@@ -671,6 +681,7 @@ export default class Project {
     this.files = this.files.filter(x => (x.source || {}).id !== sourceID);
     await this.addHistory(
       new HistoryItem({
+        readBy: {[user.uid]:true},
         doneBy: user.uid,
         action: "removed",
         type: "file",
@@ -718,6 +729,27 @@ export default class Project {
     await this.transaction(project => {
       project.history = project.history || [];
       project.history.push(historyItem);
+    });
+  }
+
+  async trySetReadHistory() {
+    let user = await User.getCurrentUser();
+    for (let item of this.history || []) {
+      if (!(item.readBy || {})[user.uid]) {
+        await this.setReadHistory(item.uid, user.uid, true);
+      }
+    }
+  }
+  async setReadHistory(historyID, userID, state) {
+    await this.transaction(project => {
+      project.history = project.history || [];
+      let index = project.history.findIndex(x => x.uid === historyID);
+      if (index !== -1) {
+        project.history[index].readBy = {
+          ...(project.history[index].readBy || {}),
+          [userID]: state
+        };
+      }
     });
   }
 }

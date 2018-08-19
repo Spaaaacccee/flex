@@ -74,6 +74,7 @@ export default class ProjectNavigation extends Component {
     user: {},
     userData: {},
     projects: {},
+    notificationCount: {},
     pauseUpdate: false
   };
 
@@ -88,7 +89,7 @@ export default class ProjectNavigation extends Component {
    * @memberof ProjectNavigation
    */
   componentWillReceiveProps(props) {
-    this.getProjects(props.items);
+    this.getProjects(props.items, props.user.uid);
     this.setState(
       {
         openedProject: props.openedProject,
@@ -115,18 +116,68 @@ export default class ProjectNavigation extends Component {
     if ((state.userData || {}).uid !== (this.state.userData || {}).uid)
       return true;
     if (state.projects !== this.state.projects) return true;
+    if (state.notificationCount !== this.state.notificationCount) return true;
     return false;
   }
 
-  getProjects(items) {
+  getNotificationCount(projectID) {
+    return (
+      ((this.state.notificationCount[projectID] || {}).messages || 0) +
+      ((this.state.notificationCount[projectID] || {}).histories || 0)
+    );
+  }
+
+  getProjects(items, userID) {
     items.forEach(projectID => {
       if (!this.state.projects[projectID]) {
+        Project.get(projectID).then(project => {
+          Fetch.getMessagesReference(project.messengerID || project.projectID)
+            .child("messages")
+            .on("value", snapshot => {
+              if (!this.state.items.find(x => x === project.projectID)) {
+                snapshot.ref.off();
+                return;
+              }
+              let messagesCount = (
+                $.object(snapshot.val() || {}).values() || []
+              ).filter(x => !(x.readBy || {})[userID]).length;
+              if (
+                messagesCount !==
+                (this.state.notificationCount[projectID] || {}).messages
+              ) {
+                this.setState(
+                  update(this.state, {
+                    notificationCount: {
+                      [projectID]: {
+                        $set: {
+                          ...(this.state.notificationCount[projectID] || {}),
+                          messages: messagesCount
+                        }
+                      }
+                    }
+                  })
+                );
+              }
+            });
+        });
+
         Fetch.getProjectReference(projectID)
-          .child("name")
           .on("value", snapshot => {
+            let project = snapshot.val();
+            let histories = (project.history || []).filter(
+              x => !(x.readBy||{})[userID]
+            ).length;
             this.setState({
+              notificationCount: update(this.state.notificationCount || {}, {
+                [projectID]: {
+                  $set: {
+                    ...(this.state.notificationCount[projectID] || {}),
+                    histories
+                  }
+                }
+              }),
               projects: update(this.state.projects, {
-                [projectID]: { $set: snapshot.val() }
+                [projectID]: { $set: project.name }
               })
             });
           });
@@ -210,6 +261,7 @@ export default class ProjectNavigation extends Component {
               )
               .map((item, index) => (
                 <ProjectIcon
+                  notificationCount={this.getNotificationCount(item)}
                   key={item}
                   name={this.state.projects[item] || null}
                   onPress={

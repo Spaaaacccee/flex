@@ -591,7 +591,6 @@ class MESSAGES extends Component {
                   value={this.state.inputValue}
                   className="input"
                   onChange={e => {
-                    console.log("change");
                     if (!this.settingInput) {
                       this.setState({
                         inputValue: e
