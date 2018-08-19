@@ -161,26 +161,25 @@ export default class ProjectNavigation extends Component {
             });
         });
 
-        Fetch.getProjectReference(projectID)
-          .on("value", snapshot => {
-            let project = snapshot.val();
-            let histories = (project.history || []).filter(
-              x => !(x.readBy||{})[userID]
-            ).length;
-            this.setState({
-              notificationCount: update(this.state.notificationCount || {}, {
-                [projectID]: {
-                  $set: {
-                    ...(this.state.notificationCount[projectID] || {}),
-                    histories
-                  }
+        Fetch.getProjectReference(projectID).on("value", snapshot => {
+          let project = snapshot.val();
+          let histories = (project.history || []).filter(
+            x => !(x.readBy || {})[userID]
+          ).length;
+          this.setState({
+            notificationCount: update(this.state.notificationCount || {}, {
+              [projectID]: {
+                $set: {
+                  ...(this.state.notificationCount[projectID] || {}),
+                  histories
                 }
-              }),
-              projects: update(this.state.projects, {
-                [projectID]: { $set: project.name }
-              })
-            });
+              }
+            }),
+            projects: update(this.state.projects, {
+              [projectID]: { $set: project.name }
+            })
           });
+        });
       }
     });
     this.state.items.forEach(projectID => {
@@ -261,7 +260,11 @@ export default class ProjectNavigation extends Component {
               )
               .map((item, index) => (
                 <ProjectIcon
-                  notificationCount={this.getNotificationCount(item)}
+                  notificationCount={
+                    index === this.state.openedIndex
+                      ? 0
+                      : this.getNotificationCount(item)
+                  }
                   key={item}
                   name={this.state.projects[item] || null}
                   onPress={

@@ -184,6 +184,9 @@ class StringUtils {
   isVowel(char) {
     return ["a", "e", "i", "o", "u"].indexOf(char.toLowerCase()) !== -1;
   }
+  capitaliseFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 }
 
 class ObjectUtils {
@@ -272,6 +275,7 @@ class $ {
    * @type {Object}
    * @property {(str:string)=>string} trimLeft
    * @property {(char:string)=>boolean} isVowel
+   * @property {(string:string)=>string} capitaliseFirstLetter
    */
 
   /**

@@ -170,11 +170,15 @@ export default class ProjectSider extends Component {
                 <span>{item.name}</span>
                 <Badge
                   offset={[-20, 0]}
-                  count={item.getNotificationCount(
-                    this.state.project,
-                    this.state.user,
-                    this.state.messages
-                  )}
+                  count={
+                    this.state.index === index
+                      ? 0
+                      : item.getNotificationCount(
+                          this.state.project,
+                          this.state.user,
+                          this.state.messages
+                        )
+                  }
                 />
               </Menu.Item>
             ))}

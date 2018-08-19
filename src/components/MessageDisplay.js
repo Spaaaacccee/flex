@@ -250,7 +250,9 @@ class MessageDisplay extends Component {
                       </Popover>
                     </span>
                   }
-                  description={$.date(item.timeSent).humanise()}
+                  description={$.string(
+                    $.date(item.timeSent).humanise()
+                  ).capitaliseFirstLetter()}
                 />
                 <div
                   style={{
