@@ -45,7 +45,6 @@ export default class FEED extends Component {
         ((this.state.project || {}).history || []).length
     ) {
       setTimeout(()=>{
-        console.log(this.state.project);
         this.state.project.trySetReadHistory();
       },500)
     }
