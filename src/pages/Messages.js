@@ -259,7 +259,8 @@ class MESSAGES extends Component {
       }
       let msg = new Message({
         content: { bodyText: val },
-        sender: this.state.user.uid
+        sender: this.state.user.uid,
+        readBy: { [this.user.uid]: true }
       });
       this.receivedMessages[msg.uid] = msg;
       this.setState(

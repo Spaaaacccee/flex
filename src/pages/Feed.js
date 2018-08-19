@@ -262,7 +262,8 @@ export default class FEED extends Component {
               }
             ]}
           >
-            {msgs} {events}
+            <div>{msgs}</div>
+            <div>{events}</div>
           </Columns>
         ) : (
           <div>
