@@ -26,7 +26,10 @@ export default class RoleEditor extends Component {
   componentWillReceiveProps(props) {
     this.setState({ values: props.values });
   }
+
+  inputRefs = [];
   render() {
+    this.inputRefs = [];
     return (
       <div>
         {this.state.values ? (
@@ -95,7 +98,7 @@ export default class RoleEditor extends Component {
                         cursor: "pointer",
                         transition: "background-color 0.3s ease",
                         width: 30,
-                        height:30,
+                        height: 30,
                         marginRight: 10,
                         borderRadius: 60,
                         backgroundColor: HSL.toCSSColor(item.color),
@@ -104,13 +107,16 @@ export default class RoleEditor extends Component {
                     />
                   </Popover>
                   <Input
+                    ref={e => (this.inputRefs[index] = e)}
                     // Trim whitespace on the left or reset the field to "New Role" to ensure the field always contains a valid value.
                     onBlur={e => {
                       this.setState(
                         update(this.state, {
                           values: {
                             [index]: {
-                              name: { $set: e.target.value.trim() || "New Role" }
+                              name: {
+                                $set: e.target.value.trim() || "New Role"
+                              }
                             }
                           }
                         }),
@@ -148,9 +154,10 @@ export default class RoleEditor extends Component {
               onClick={() => {
                 this.setState(
                   update(this.state, {
-                    values: { $push: [new Role("New Role")] }
+                    values: { $push: [new Role("")] }
                   }),
                   () => {
+                    this.inputRefs[this.inputRefs.length - 1].focus();
                     this.props.onChange(this.state.values);
                   }
                 );

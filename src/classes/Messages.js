@@ -109,6 +109,7 @@ export default class Messages extends EventEmitter {
    * @memberof Messages
    */
   async setRead(id, isRead) {
+    if (!id) return;
     await Fetch.getMessagesReference(this.uid)
       .child("messages")
       .child(id)
@@ -146,13 +147,18 @@ export default class Messages extends EventEmitter {
     const ref = Fetch.getMessagesReference(this.uid).child("messages");
     ref.on("child_added", snapshot => {
       const message = snapshot.val();
+      if (!message || !message.content) return;
       this.messages = this.messages || {};
+      if (!this.messages[message.uid]) {
+        this.emit("new_message", message);
+      }
       this.messages[message.uid] = message;
       this.emit("message", message);
       this.emit("change", this.messages);
     });
     ref.on("child_changed", snapshot => {
       const message = snapshot.val();
+      if (!message || !message.content) return;
       this.messages = this.messages || {};
       this.messages[message.uid] = message;
       this.emit("edit", message);
@@ -160,6 +166,7 @@ export default class Messages extends EventEmitter {
     });
     ref.on("child_removed", snapshot => {
       const message = snapshot.val();
+      if (!message || !message.content) return;
       this.messages[message.uid] = null;
       delete this.messages[message.uid];
       this.emit("delete", message);
@@ -226,7 +233,7 @@ export class MessageContent {
   people = {
     roles: {},
     members: {}
-  }
+  };
   /**
    * Creates an instance of MessageContent.
    * @param  {MessageContent} args
@@ -242,10 +249,10 @@ export class UserGroupRule {
   uid;
   /**
    * Creates an instance of UserGroupRule.
-   * @param  {UserGroupRule} args 
+   * @param  {UserGroupRule} args
    * @memberof UserGroupRule
    */
   constructor(args) {
-    Object.assign(this,args)
+    Object.assign(this, args);
   }
 }

@@ -8,6 +8,8 @@ import Fetch from "../classes/Fetch";
 import User from "../classes/User";
 import { HistoryItem } from "../classes/History";
 import FileVersionDisplay from "./FileVersionDisplay";
+import Humanize from 'humanize-plus';
+
 class FileDisplay extends Component {
   static defaultProps = {
     onMentionButtonPressed: () => {}
@@ -244,6 +246,16 @@ class FileDisplay extends Component {
                             (this.state.file.files.length > 1
                               ? `${this.state.file.files.length} versions`
                               : "")}
+                      </div>
+                    )}
+                    {(this.state.file.files||[]).length === 1 && (
+                      <div>
+                      {[
+                        `${new Date(this.state.file.files[0].dateUploaded).toLocaleString()}`,
+                        `${Humanize.fileSize(this.state.file.files[0].size)}`
+                      ].map((x, i) => (
+                        <div key={i}>{x}</div>
+                      ))}
                       </div>
                     )}
                   </div>

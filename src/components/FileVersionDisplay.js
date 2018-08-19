@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { List, Popconfirm, Icon, Button } from "antd";
 import UserGroupDisplay from "./UserGroupDisplay";
-import Document from '../classes/Document';
+import Document from "../classes/Document";
+import Humanize from "humanize-plus";
 
 class FileVersionDisplay extends Component {
   static defaultProps = {
@@ -83,7 +84,7 @@ class FileVersionDisplay extends Component {
             <div>
               {[
                 `${new Date(item.dateUploaded).toLocaleString()}`,
-                `${item.size} bytes`
+                `${Humanize.fileSize(item.size)}`
               ].map((x, i) => (
                 <div key={i}>{x}</div>
               ))}

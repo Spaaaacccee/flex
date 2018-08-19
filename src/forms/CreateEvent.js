@@ -5,6 +5,7 @@ import React, { Component } from "react";
 import MemberGroupSelector from "../components/MemberGroupSelector";
 import Project from "../classes/Project";
 import Moment from "moment";
+import UserGroupDisplay from "../components/UserGroupDisplay";
 
 export default class CreateEvent extends Component {
   /**
@@ -12,6 +13,7 @@ export default class CreateEvent extends Component {
    * @memberof CreateEvent
    */
   state = {
+    creator: null,
     values: {
       name: "Untitled Event",
       description: "",
@@ -63,6 +65,7 @@ export default class CreateEvent extends Component {
     if (this.state.opened !== props.opened) {
       this.setState(
         {
+          creator: (props.values || {}).creator || null,
           submitted: false,
           mode: props.mode || "create",
           opened: props.opened,
@@ -123,6 +126,18 @@ export default class CreateEvent extends Component {
             ref={e => (this.markedAsCompletedField = e)}
           />
           <br />
+          {this.state.creator ? (
+            <p>
+              Creator:{" "}
+              <UserGroupDisplay
+                project={this.state.project}
+                style={{ display: "inline-block" }}
+                people={{ members: [this.state.creator] }}
+              />
+            </p>
+          ) : (
+            ""
+          )}
         </div>
 
         <h3>Name</h3>

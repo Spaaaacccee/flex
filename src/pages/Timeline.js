@@ -150,7 +150,7 @@ export default class TIMELINE extends Component {
             project={this.state.project}
             opened={this.state.eventCreatorVisible}
             onSubmit={e => {
-              let newEvent = new TimelineEvent(e.values);
+              let newEvent = new TimelineEvent({...e.values,creator:this.state.user.uid});
               this.setState(
                 update(this.state, {
                   events: {
@@ -167,7 +167,7 @@ export default class TIMELINE extends Component {
                 })
               );
               this.state.project
-                .addEvent(new TimelineEvent(e.values))
+                .addEvent(newEvent)
                 .then(() => {
                   this.setState({
                     eventCreatorVisible: false,

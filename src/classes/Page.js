@@ -101,7 +101,7 @@ export const Pages = [
     content: MESSAGES,
     getNotificationCount: (project, user, messages) => {
       return ($.object(messages || {}).values() || []).filter(
-        x => !(x.readBy || {})[user.uid]
+        x => x.content && !(x.readBy || {})[user.uid]
       ).length;
     }
   }),

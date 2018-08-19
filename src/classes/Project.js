@@ -736,9 +736,7 @@ export default class Project {
     let user = await User.getCurrentUser();
     for (let item of (this.history || []).reverse()) {
       if (!(item.readBy || {})[user.uid]) {
-        await this.setReadHistory(item.uid, user.uid, true);
-      } else {
-        break;
+        this.setReadHistory(item.uid, user.uid, true);
       }
     }
   }

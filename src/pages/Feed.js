@@ -132,6 +132,7 @@ export default class FEED extends Component {
               <List itemLayout="vertical">
                 {newMessages.map(item => (
                   <MessageDisplay
+                    readOnly
                     key={item.uid}
                     message={item}
                     project={this.state.project}

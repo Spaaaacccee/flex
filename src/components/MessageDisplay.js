@@ -28,7 +28,8 @@ class MessageDisplay extends Component {
     sender: {},
     status: null,
     hashedMembers: {},
-    hashedRoles: {}
+    hashedRoles: {},
+    readOnly: false
   };
 
   componentDidMount() {
@@ -36,6 +37,7 @@ class MessageDisplay extends Component {
   }
 
   shouldComponentUpdate(props, state) {
+    if (props.readOnly !== this.state.readOnly) return true;
     if (!User.equal(props.user, this.state.user)) return true;
     if (!Project.equal(props.project, this.state.project)) return true;
     if (this.state.status !== props.status) return true;
@@ -53,7 +55,8 @@ class MessageDisplay extends Component {
       user: props.user,
       project: props.project,
       messageID: props.messageID,
-      status: props.status
+      status: props.status,
+      readOnly: props.readOnly
     });
     if (props.project) {
       this.setState({
@@ -109,7 +112,7 @@ class MessageDisplay extends Component {
       (this.state.messenger
         ? this.state.messenger.messages[this.state.messageID]
         : null);
-    return item ? (
+    return item && item.content ? (
       (() => {
         let ref;
         let sender = this.state.sender;
@@ -238,6 +241,7 @@ class MessageDisplay extends Component {
                       >
                         <Button
                           style={{
+                            visibility: this.state.readOnly ? "hidden" : "visible",
                             border: 0,
                             background: "transparent",
                             position: "absolute",
@@ -251,7 +255,7 @@ class MessageDisplay extends Component {
                     </span>
                   }
                   description={$.string(
-                    $.date(item.timeSent).humanise()
+                    $.date(item.timeSent).humanise(true)
                   ).capitaliseFirstLetter()}
                 />
                 <div

@@ -32,41 +32,47 @@ class MESSAGES extends Component {
   initialMessagesCount = 20;
   batchLoadMessagesCount = 20;
   receivedMessages = {};
+
   componentWillReceiveProps(props) {
     this.setState({ user: props.user });
+    if (!props.project) return;
     if (Project.equal(props.project, this.state.project)) return;
     this.setState({ project: props.project });
-    if (this.state.messenger) {
-      this.state.messenger.off();
-      this.state.messenger.stopListening();
-    }
-    this.receivedMessages = {};
-    this.setState({ messenger: null, orderedMessages: [] }, () => {
-      Messages.get(props.project.messengerID || props.project.projectID).then(
-        messenger => {
-          if (messenger) {
-            this.setState({ messenger });
-            this.receivedMessages = Object.assign({}, messenger.messages);
-            messenger.on("message", x => this.handleOnReceive(x));
-            messenger.on("edit", x => this.handleOnEdit(x));
-            messenger.on("delete", x => this.handleOnDelete(x.uid));
-            messenger.startListening();
-            this.setState({ cachedUsers: { [props.user.uid]: props.user } });
-            this.cacheUsers();
-            this.cacheItems();
-            this.props.onLoad(this);
-            this.scrollBottom();
-          } else {
-            Messages.forceUpdate(
-              props.project.messengerID || props.project.projectID,
-              new Messages()
-            ).then(() => {
-              this.componentWillReceiveProps(this.props);
-            });
+    if (
+      (props.project || {}).projectID !== (this.state.project || {}).projectID
+    ) {
+      if (this.state.messenger) {
+        this.state.messenger.off();
+        this.state.messenger.stopListening();
+      }
+      this.receivedMessages = {};
+      this.setState({ messenger: null, orderedMessages: [] }, () => {
+        Messages.get(props.project.messengerID || props.project.projectID).then(
+          messenger => {
+            if (messenger) {
+              this.setState({ messenger });
+              this.receivedMessages = Object.assign({}, messenger.messages);
+              messenger.on("message", x => this.handleOnReceive(x));
+              messenger.on("edit", x => this.handleOnEdit(x));
+              messenger.on("delete", x => this.handleOnDelete(x.uid));
+              messenger.startListening();
+              this.setState({ cachedUsers: { [props.user.uid]: props.user } });
+              this.cacheUsers();
+              this.cacheItems();
+              this.props.onLoad(this);
+              this.scrollBottom();
+            } else {
+              Messages.forceUpdate(
+                props.project.messengerID || props.project.projectID,
+                new Messages()
+              ).then(() => {
+                this.componentWillReceiveProps(this.props);
+              });
+            }
           }
-        }
-      );
-    });
+        );
+      });
+    }
   }
 
   lastScrollHeight = 0;
@@ -93,6 +99,7 @@ class MESSAGES extends Component {
   componentWillUnmount() {
     cancelAnimationFrame(this.scrollHeightWatcher);
     if (this.state.messenger) {
+      this.state.messenger.off();
       this.state.messenger.stopListening();
     }
   }
@@ -532,9 +539,7 @@ class MESSAGES extends Component {
                       if (this.state.consoleStatus === "editing") {
                         this.handleEdit();
                       } else {
-                        if (
-                          !document.querySelector(".ant-mention-dropdown")
-                        ) {
+                        if (!document.querySelector(".ant-mention-dropdown")) {
                           this.handleSend();
                         }
                       }

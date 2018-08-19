@@ -96,7 +96,7 @@ class HistoryDisplay extends Component {
                       : $.string(item.type.substring(0, 1)).isVowel()
                         ? "an"
                         : "a"
-                } ${item.type} ${$.date(item.doneAt).humanise()}`}
+                } ${item.type} ${$.date(item.doneAt).humanise(true)}`}
               </span>
             }
           </div>

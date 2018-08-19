@@ -76,10 +76,9 @@ class IDGen {
    * @memberof IDGen
    */
   checkSum(target, str) {
-    return ("" + parseInt(CryptoJS.SHA1(str).toString(), 16)).replace(".","").substring(
-      0,
-      this.checkSumLength
-    );
+    return ("" + parseInt(CryptoJS.SHA1(str).toString(), 16))
+      .replace(".", "")
+      .substring(0, this.checkSumLength);
   }
 
   /**
@@ -97,13 +96,26 @@ class IDGen {
 
 class DateUtils {
   relativeTimeThreshold = 1000 * 60 * 60;
-  humanise(date) {
+  humanise(date, pastOnly) {
+    if (pastOnly) date = Math.min(date, Date.now());
     let moment = new Moment(date);
     let datenow = Date.now();
     return (datenow - date > this.relativeTimeThreshold
       ? moment.calendar()
       : moment.fromNow()
     ).toLowerCase();
+  }
+  humaniseDate(date) {
+    let moment = new Moment(date);
+    return moment
+      .calendar(null, {
+        sameDay: "[Today]",
+        nextDay: "[Tomorrow]",
+        nextWeek: "[Upcoming] dddd",
+        lastDay: "[Yesterday]",
+        lastWeek: "[Last] dddd",
+        sameElse: "DD/MM/YYYY"
+      })
   }
 }
 
@@ -172,7 +184,10 @@ class ArrayUtils {
 
   searchString(array, getString, value) {
     return array.filter(
-      item => getString(item).toLowerCase().includes(value.toLowerCase()) !== false
+      item =>
+        getString(item)
+          .toLowerCase()
+          .includes(value.toLowerCase()) !== false
     );
   }
 }
@@ -186,7 +201,7 @@ class StringUtils {
   }
   capitaliseFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
-}
+  }
 }
 
 class ObjectUtils {
@@ -289,6 +304,7 @@ class $ {
    * @typedef dateUtils
    * @type {Object}
    * @property {()=>String} humanise
+   * @property {()=>String} humaniseDate
    */
 
   /**

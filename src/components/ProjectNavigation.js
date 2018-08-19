@@ -11,6 +11,7 @@ import Fetch from "../classes/Fetch";
 import User from "../classes/User";
 import update from "immutability-helper";
 import $ from "../classes/Utils";
+import Notifier from '../classes/Notifier';
 
 /**
  * Represents a single item that can be displayed by the project navigation sidebar
@@ -89,6 +90,9 @@ export default class ProjectNavigation extends Component {
    * @memberof ProjectNavigation
    */
   componentWillReceiveProps(props) {
+    if(props.items.length) {
+      Notifier.setProjects(props.items);
+    }
     this.getProjects(props.items, props.user.uid);
     this.setState(
       {
@@ -140,7 +144,7 @@ export default class ProjectNavigation extends Component {
               }
               let messagesCount = (
                 $.object(snapshot.val() || {}).values() || []
-              ).filter(x => !(x.readBy || {})[userID]).length;
+              ).filter(x => x.content && !(x.readBy || {})[userID]).length;
               if (
                 messagesCount !==
                 (this.state.notificationCount[projectID] || {}).messages

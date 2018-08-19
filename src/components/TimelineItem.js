@@ -210,7 +210,7 @@ export default class TimelineItem extends Component {
             mode="edit"
             onSubmit={event => {
               this.state.project
-                .setEvent(this.state.event.uid, new TimelineEvent(event.values))
+                .setEvent(this.state.event.uid, new TimelineEvent(Object.assign(this.state.event, event.values)))
                 .then(() => {
                   this.setState({
                     event: event.values,

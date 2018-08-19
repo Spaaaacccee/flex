@@ -19,7 +19,7 @@ export default class Root extends Component {
     window.addEventListener("load", () => {
       setTimeout(() => {
         this.setState({ loaded: true });
-      }, 500);
+      }, 2000);
     });
   }
   render() {
