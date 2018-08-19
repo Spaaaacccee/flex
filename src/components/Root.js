@@ -21,15 +21,17 @@ export default class Root extends Component {
         this.setState({ loaded: true });
       }, 2000);
     });
-    if (Notification.permission !== "granted") {
-      Notification.requestPermission().then(result => {
-        if (result !== "granted") {
-          message.warn(
-            "You won't receive notifications if you don't give us permission."
-          );
-          return;
-        }
-      });
+    if(window.Notification) {
+      if (Notification.permission !== "granted") {
+        Notification.requestPermission().then(result => {
+          if (result !== "granted") {
+            message.warn(
+              "You won't receive notifications if you don't give us permission."
+            );
+            return;
+          }
+        });
+      }
     }
   }
   render() {
