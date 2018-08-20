@@ -270,11 +270,11 @@ class MessageDisplay extends Component {
                 >
                   {((!!item.content.files && item.content.files.length) ||
                     (!!item.content.histories &&
-                      item.content.histories.length) ||
+                      !!item.content.histories.length) ||
                     (!!item.content.fileVersions &&
-                      item.content.fileVersions.length) ||
+                      !!item.content.fileVersions.length) ||
                       (!!item.content.events &&
-                        item.content.events.length)) && (
+                        !!item.content.events.length)) && (
                     <div>
                     {!!item.content.events && item.content.events.map(eventID=>{
                       let event = (this.state.project.events||[]).find(x=>x.uid===eventID);
