@@ -100,6 +100,7 @@ export const Pages = [
     icon: "message",
     content: MESSAGES,
     getNotificationCount: (project, user, messages) => {
+      if(!messages) return 0;
       return ($.object(messages || {}).values() || []).filter(
         x => x.content && !(x.readBy || {})[user.uid]
       ).length;

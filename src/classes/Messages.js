@@ -231,31 +231,11 @@ export class MessageContent {
   files = [];
   events = [];
   histories = [];
-  /**
-   * @type {{roles:UserGroupRule[], members: UserGroupRule[]}}
-   * @memberof MessageContent
-   */
-  people = {
-    roles: {},
-    members: {}
-  };
+
   /**
    * Creates an instance of MessageContent.
    * @param  {MessageContent} args
    * @memberof MessageContent
-   */
-  constructor(args) {
-    Object.assign(this, args);
-  }
-}
-
-export class UserGroupRule {
-  query;
-  uid;
-  /**
-   * Creates an instance of UserGroupRule.
-   * @param  {UserGroupRule} args
-   * @memberof UserGroupRule
    */
   constructor(args) {
     Object.assign(this, args);

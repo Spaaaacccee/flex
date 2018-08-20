@@ -5,15 +5,21 @@ import UploadLoader from "../components/UploadLoader";
 import React from "react";
 import DocumentType from "./DocumentType";
 
+/**
+ * Class for representing a file, or document, in the database
+ * @export
+ * @class Document
+ */
 export default class Document {
   /**
-   *
+   * Gets the icon name based on the file extension.
    * @static
    * @param  {String} filename
    * @return
    * @memberof Document
    */
   static getFiletypeIcon(filename) {
+    // Get the file extension by the
     return DocumentType.getIconName(
       filename
         .split(".")

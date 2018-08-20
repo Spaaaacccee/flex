@@ -22,7 +22,8 @@ export default class FileUpload extends Component {
     selectedFile: {},
     modalVisible: false,
     description: "",
-    loading: false
+    loading: false,
+    specifyFileName: null
   };
 
   updateFiles() {
@@ -32,7 +33,8 @@ export default class FileUpload extends Component {
     this.setState({
       project: props.project,
       jobListOnly: !!props.jobListOnly,
-      inProgressOnly: !!props.inProgressOnly
+      inProgressOnly: !!props.inProgressOnly,
+      specifyFileName: props.specifyFileName
     });
   }
   componentDidMount() {
@@ -53,6 +55,14 @@ export default class FileUpload extends Component {
           <div>
             <Upload.Dragger
               customRequest={({ file }) => {
+                if(this.state.specifyFileName && this.state.specifyFileName.split(".").pop().toLowerCase() !== file.name.split(".").pop().toLowerCase()) {
+                  message.error(`We only allow files of the same format to be merged. Instead, you should upload ${file.name} as a separate file.`);
+                  return;
+                }
+                if(file.size > 1024*1024*50) {
+                  message.error(`${file.name} is larger than the maximum allowed file size (50 MB).`);
+                  return;
+                }
                 this.setState({
                   selectedFile: file,
                   modalVisible: true,
@@ -101,7 +111,8 @@ export default class FileUpload extends Component {
                             display: "block",
                             fontSize: 24,
                             margin: 5,
-                            marginLeft: 0
+                            marginLeft: 0,
+                            color: "rgb(25, 144, 255)"
                           }}
                           type={Document.getFiletypeIcon(item.name)}
                         />
@@ -164,7 +175,8 @@ export default class FileUpload extends Component {
                         description: ""
                       });
                       this.updateFiles();
-                    }
+                    },
+                    this.state.specifyFileName
                   );
                 });
               }}

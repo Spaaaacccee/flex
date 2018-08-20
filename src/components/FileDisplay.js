@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, Icon, Button, List, Avatar, Popconfirm } from "antd";
+import { Card, Icon, Button, List, Avatar, Popconfirm, Modal } from "antd";
 import UserGroupDisplay from "./UserGroupDisplay";
 import Fire from "../classes/Fire";
 import Document from "../classes/Document";
@@ -8,7 +8,8 @@ import Fetch from "../classes/Fetch";
 import User from "../classes/User";
 import { HistoryItem } from "../classes/History";
 import FileVersionDisplay from "./FileVersionDisplay";
-import Humanize from 'humanize-plus';
+import Humanize from "humanize-plus";
+import FileUpload from "./FileUpload";
 
 class FileDisplay extends Component {
   static defaultProps = {
@@ -18,7 +19,8 @@ class FileDisplay extends Component {
     project: {},
     file: {},
     readOnly: false,
-    deleting: false
+    deleting: false,
+    addVersionModalVisible: false
   };
 
   componentDidMount() {
@@ -26,6 +28,7 @@ class FileDisplay extends Component {
   }
 
   shouldComponentUpdate(props, state) {
+    if(state.addVersionModalVisible !== this.state.addVersionModalVisible) return true;
     if (!Project.equal(props.project, this.state.project)) return true;
     if (props.readOnly !== this.state.readOnly) return true;
     if (state.deleting !== this.state.deleting) return true;
@@ -61,9 +64,9 @@ class FileDisplay extends Component {
               {},
               this.state.deleting
                 ? {
-                  opacity: 0.65,
-                  pointerEvents: "none"
-                }
+                    opacity: 0.65,
+                    pointerEvents: "none"
+                  }
                 : isUnavailable
                   ? { opacity: 0.65 }
                   : {}
@@ -118,6 +121,16 @@ class FileDisplay extends Component {
               </div>
             } */
             actions={(() => {
+              const replyButton = (
+                <span
+                  onClick={() => {
+                    this.setState({ addVersionModalVisible: true });
+                  }}
+                >
+                  <Icon type="file-add" />
+                  {" Version"}
+                </span>
+              );
               const previewButton = (
                 <span
                   onClick={() => {
@@ -147,8 +160,8 @@ class FileDisplay extends Component {
                         (this.state.file.files || []).length === 1
                         ? "This file will be deleted"
                         : `${
-                          (this.state.file.files || []).length
-                        } files will be deleted`
+                            (this.state.file.files || []).length
+                          } files will be deleted`
                   }
                   okText="OK"
                   okType="danger"
@@ -162,7 +175,7 @@ class FileDisplay extends Component {
                             User.getCurrentUser().then(user => {
                               this.state.project.addHistory(
                                 new HistoryItem({
-                                  readBy: {[user.uid]:true},
+                                  readBy: { [user.uid]: true },
                                   action: "removed",
                                   type: "file",
                                   doneBy: user.uid
@@ -183,7 +196,7 @@ class FileDisplay extends Component {
               if (this.state.deleting) return [deleteButton];
               if (this.state.readOnly) return [previewButton];
               if (isUnavailable) return [deleteButton];
-              return [previewButton, mentionButton, deleteButton];
+              return [replyButton, previewButton, mentionButton, deleteButton];
             })()}
           >
             {this.state.file.uid || this.state.file.source ? (
@@ -208,7 +221,8 @@ class FileDisplay extends Component {
                       style={{
                         fontSize: 24,
                         margin: 5,
-                        marginLeft: 0
+                        marginLeft: 0,
+                        color: "rgb(25, 144, 255)"
                       }}
                       type={Document.getFiletypeIcon(this.state.file.name)}
                     />
@@ -241,21 +255,23 @@ class FileDisplay extends Component {
                         {isUnavailable
                           ? "One or more versions of this file is unavailable"
                           : this.state.file.files.sort(
-                            (a, b) => b.dateUploaded - a.dateUploaded
-                          )[0].description ||
+                              (a, b) => b.dateUploaded - a.dateUploaded
+                            )[0].description ||
                             (this.state.file.files.length > 1
                               ? `${this.state.file.files.length} versions`
                               : "")}
                       </div>
                     )}
-                    {(this.state.file.files||[]).length === 1 && (
+                    {(this.state.file.files || []).length === 1 && (
                       <div>
-                      {[
-                        `${new Date(this.state.file.files[0].dateUploaded).toLocaleString()}`,
-                        `${Humanize.fileSize(this.state.file.files[0].size)}`
-                      ].map((x, i) => (
-                        <div key={i}>{x}</div>
-                      ))}
+                        {[
+                          `${new Date(
+                            this.state.file.files[0].dateUploaded
+                          ).toLocaleString()}`,
+                          `${Humanize.fileSize(this.state.file.files[0].size)}`
+                        ].map((x, i) => (
+                          <div key={i}>{x}</div>
+                        ))}
                       </div>
                     )}
                   </div>
@@ -267,32 +283,60 @@ class FileDisplay extends Component {
             {this.state.file.uploadType !== "cloud" &&
             this.state.file.files &&
             this.state.file.files.length > 1 ? (
-                <div>
-                  <br />
-                  <List bordered>
-                    {this.state.file.files
-                      .sort((a, b) => b.dateUploaded - a.dateUploaded)
-                      .map((item, index) => (
-                        <FileVersionDisplay
-                            readOnly={this.state.readOnly}
-                            key={item.uid || item.source.id}
-                            sourceFile={this.state.file}
-                            item={item}
-                            project={this.state.project}
-                            onMentionButtonPressed={() => {
-                            this.props.onVersionMentionButtonPressed(
-                              item.uid || item.source.id
-                            );
-                          }}
-                        />
-                      ))}
-                  </List>
-                </div>
-              ) : (
-                ""
-              )}
+              <div>
+                <br />
+                <List bordered>
+                  {this.state.file.files
+                    .sort((a, b) => b.dateUploaded - a.dateUploaded)
+                    .map((item, index) => (
+                      <FileVersionDisplay
+                        readOnly={this.state.readOnly}
+                        key={item.uid || item.source.id}
+                        sourceFile={this.state.file}
+                        item={item}
+                        project={this.state.project}
+                        onMentionButtonPressed={() => {
+                          this.props.onVersionMentionButtonPressed(
+                            item.uid || item.source.id
+                          );
+                        }}
+                      />
+                    ))}
+                </List>
+              </div>
+            ) : (
+              ""
+            )}
           </Card>
         }
+        <Modal
+          visible={this.state.addVersionModalVisible}
+          style={{ top: 20 }}
+          onCancel={() => {
+            this.setState({ addVersionModalVisible: false });
+          }}
+          onOk={() => {
+            this.setState({ addVersionModalVisible: false });
+          }}
+          footer={[
+            <Button
+              type="primary"
+              key="0"
+              onClick={() => {
+                this.setState({ addVersionModalVisible: false });
+              }}
+              icon="check"
+            >
+              Done
+            </Button>
+          ]}
+        >
+          <h2>New Version</h2><br/>
+          <FileUpload
+            project={this.state.project}
+            specifyFileName={this.state.file.name}
+          />
+        </Modal>
       </div>
     );
   }

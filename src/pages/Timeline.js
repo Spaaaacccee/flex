@@ -6,6 +6,7 @@ import CreateEvent from "../forms/CreateEvent";
 import TimelineItem from "../components/TimelineItem";
 import Project from "../classes/Project";
 import update from "immutability-helper";
+import { Message, MessageContent } from "../classes/Messages";
 
 export default class TIMELINE extends Component {
   static defaultProps = {
@@ -27,12 +28,12 @@ export default class TIMELINE extends Component {
   componentWillReceiveProps(props) {
     this.setState({
       user: props.user,
-      project: props.project,
+      project: props.project
     });
-    if(props.project && props.project.getEventsInDateOrder) {
-      this.setState({events: props.project.getEventsInDateOrder()})
+    if (props.project && props.project.getEventsInDateOrder) {
+      this.setState({ events: props.project.getEventsInDateOrder() });
     } else {
-      this.setState({events:[]})
+      this.setState({ events: [] });
     }
   }
 
@@ -79,7 +80,19 @@ export default class TIMELINE extends Component {
                       case "card":
                         return (
                           <TimelineItem
-                          user={this.state.user}
+                            onMentionButtonPressed={()=>{
+                              this.props.passMessage({
+                                type: "prepare-message",
+                                content: new Message({
+                                  sender: this.state.user.uid,
+                                  content: new MessageContent({
+                                    events: [data.item.uid],
+                                    bodyText: "(Mentioned an event)"
+                                  })
+                                })
+                              });
+                            }}
+                            user={this.state.user}
                             onComplete={() => {
                               this.setState(
                                 update(this.state, {
@@ -150,7 +163,10 @@ export default class TIMELINE extends Component {
             project={this.state.project}
             opened={this.state.eventCreatorVisible}
             onSubmit={e => {
-              let newEvent = new TimelineEvent({...e.values,creator:this.state.user.uid});
+              let newEvent = new TimelineEvent({
+                ...e.values,
+                creator: this.state.user.uid
+              });
               this.setState(
                 update(this.state, {
                   events: {
@@ -166,14 +182,12 @@ export default class TIMELINE extends Component {
                   }
                 })
               );
-              this.state.project
-                .addEvent(newEvent)
-                .then(() => {
-                  this.setState({
-                    eventCreatorVisible: false,
-                    eventCreatorKey: this.state.eventCreatorKey + 1
-                  });
+              this.state.project.addEvent(newEvent).then(() => {
+                this.setState({
+                  eventCreatorVisible: false,
+                  eventCreatorKey: this.state.eventCreatorKey + 1
                 });
+              });
             }}
           />
         </Modal>

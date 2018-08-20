@@ -42,8 +42,15 @@ export default class PageView extends Component {
   }
   loadingTimeout = false;
   currentTimeout = null;
+
+  isDisplayable(project, page) {
+    return Object.keys(project || {}).length || !page.requireProject;
+  }
+
   componentWillReceiveProps(props) {
-    this.setState({ project: props.project });
+    if (!this.isDisplayable(props.project,props.page)) {
+      this.setState({ animation: false, loading: true });
+    }
     // If the page or the project was switched.
     if (
       !Page.equal(props.page, this.state.page) ||
@@ -56,17 +63,19 @@ export default class PageView extends Component {
         this.currentTimeout = null;
       }
       this.setState(
-        { animation: false, loading: true, page: props.page },
+        {
+          animation: false,
+          loading: true,
+          page: props.page,
+          project: props.project
+        },
         () => {
           this.currentTimeout = setTimeout(() => {
             this.loadingTimeout = false;
-            if (
-              Object.keys(this.state.project || {}).length ||
-              !this.state.page.requireProject
-            ) {
+            if (this.isDisplayable(this.state.project,this.state.page)) {
               this.setState({ animation: true, loading: false });
             }
-          }, 1000);
+          }, 400);
         }
       );
     }
@@ -77,8 +86,6 @@ export default class PageView extends Component {
 
   render() {
     const displayContent = !!this.state.page.content && !this.state.loading;
-    const firstTimeDisplayed = !this.contentDisplayed && displayContent;
-    this.contentDisplayed = displayContent;
     return (
       <div
         ref={e =>

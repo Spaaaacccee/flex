@@ -218,7 +218,8 @@ export default class FILES extends Component {
                                 style={{
                                   fontSize: 24,
                                   margin: 5,
-                                  marginLeft: 0
+                                  marginLeft: 0,
+                                  color: "rgb(25, 144, 255)"
                                 }}
                                 type={Document.getFiletypeIcon(item.name)}
                               />

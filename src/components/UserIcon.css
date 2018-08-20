@@ -1,4 +1,4 @@
-.user-icon .project-icon > div > span {
-    box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.1),
-    0px 1px 18px rgba(0, 0, 0, 0.07) !important;
+.user-icon .project-icon > div > span,
+.user-icon .project-icon > span > div > span {
+  box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.1), 0px 1px 18px rgba(0, 0, 0, 0.07) !important;
 }

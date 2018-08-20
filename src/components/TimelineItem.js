@@ -17,7 +17,8 @@ import User from "../classes/User";
 export default class TimelineItem extends Component {
   static defaultProps = {
     onComplete: () => {},
-    onEdit: () => {}
+    onEdit: () => {},
+    onMentionButtonPressed:()=>{}
   };
   state = {
     project: {},
@@ -81,6 +82,13 @@ export default class TimelineItem extends Component {
                   >
                     <Icon type="edit" />
                     {" Edit"}
+                  </span>,
+                  <span onClick={() => {
+                    this.props.onMentionButtonPressed();
+                  }}
+                >
+                  <Icon type="message" />
+                  {" Mention"}
                   </span>,
                   ...(!isComplete
                     ? [

@@ -11,6 +11,7 @@ import FileVersionDisplay from "./FileVersionDisplay";
 import Project from "../classes/Project";
 import Document from "../classes/Document";
 import UserGroupDisplay from "./UserGroupDisplay";
+import TimelineItem from "./TimelineItem";
 
 class MessageDisplay extends Component {
   static defaultProps = {
@@ -271,8 +272,45 @@ class MessageDisplay extends Component {
                     (!!item.content.histories &&
                       item.content.histories.length) ||
                     (!!item.content.fileVersions &&
-                      item.content.fileVersions.length)) && (
+                      item.content.fileVersions.length) ||
+                      (!!item.content.events &&
+                        item.content.events.length)) && (
                     <div>
+                    {!!item.content.events && item.content.events.map(eventID=>{
+                      let event = (this.state.project.events||[]).find(x=>x.uid===eventID);
+                      return (
+                        <div>
+                          {event ? (
+                            <div>
+                              <br />
+                              <TimelineItem
+                                readOnly
+                                project={this.state.project}
+                                user={this.state.user}
+                                event={event}
+                              />
+                            </div>
+                          ) : (
+                            <div>
+                              <br />
+                              <Card>
+                                <div
+                                  style={{
+                                    opacity: 0.65,
+                                    margin: "auto",
+                                    textAlign: "center"
+                                  }}
+                                >
+                                  {
+                                    "We can not display this event because it has been deleted."
+                                  }
+                                </div>
+                              </Card>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
                       {!!item.content.files &&
                         item.content.files.map(fileID => {
                           let file;

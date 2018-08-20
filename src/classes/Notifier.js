@@ -35,7 +35,6 @@ export default class Notifier extends EventEmitter {
         Notifier.listeners.push(newNotifier);
       }
     });
-    console.log(Notifier.listeners);
   }
 
   projectID;
@@ -162,7 +161,6 @@ export default class Notifier extends EventEmitter {
       this.project.messengerID || this.project.projectID
     );
     let newMessageListener = msg => {
-      console.log("msg!");
       if (!document.hasFocus()) {
         User.get(msg.sender).then(user => {
           new Notify(`Bonfire - ${this.project.name}`, {

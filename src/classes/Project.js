@@ -439,19 +439,20 @@ export default class Project {
    * @return {void}
    * @memberof Project
    */
-  addFile(file, description, callback) {
+  addFile(file, description, callback, forceName) {
+    let fileName = forceName || file.name;
     const jobID = $.id().generateUID();
 
     UploadJob.Jobs.setJob(
       new UploadJob({
         uid: jobID,
         totalBytes: file.size,
-        name: file.name,
+        name: fileName,
         project: this.projectID
       })
     );
 
-    const user = User.getCurrentUser().then(user => {
+    User.getCurrentUser().then(user => {
       let archiveID = $.id().generateUID();
       let actionType = "added";
       const reader = new FileReader();
@@ -477,7 +478,7 @@ export default class Project {
         await this.transaction(project => {
           project.files = project.files || [];
           let existingArchive = $.array(project.files).indexOf(
-            item => item.name === meta.name && item.type === meta.type
+            item => item.name === fileName && item.type === meta.type
           );
           if (existingArchive !== -1) {
             let existingFile =
@@ -509,7 +510,7 @@ export default class Project {
                 prj.files.push(
                   new DocumentArchive({
                     files: [meta],
-                    name: meta.name,
+                    name: fileName,
                     type: meta.type,
                     uid: archiveID
                   })
