@@ -92,7 +92,7 @@ export default class Notifier extends EventEmitter {
               "days"
             );
             if (timeDifference < item.notify) {
-              if (item.markedAsCompleted) return;
+              if (item.markedAsCompleted || (item.autoComplete && item.date <= Date.now())) return;
               if (
                 (() => {
                   if (!this.user.uid) return false;
