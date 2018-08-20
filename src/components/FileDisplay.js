@@ -28,7 +28,8 @@ class FileDisplay extends Component {
   }
 
   shouldComponentUpdate(props, state) {
-    if(state.addVersionModalVisible !== this.state.addVersionModalVisible) return true;
+    if (state.addVersionModalVisible !== this.state.addVersionModalVisible)
+      return true;
     if (!Project.equal(props.project, this.state.project)) return true;
     if (props.readOnly !== this.state.readOnly) return true;
     if (state.deleting !== this.state.deleting) return true;
@@ -196,7 +197,9 @@ class FileDisplay extends Component {
               if (this.state.deleting) return [deleteButton];
               if (this.state.readOnly) return [previewButton];
               if (isUnavailable) return [deleteButton];
-              return [replyButton, previewButton, mentionButton, deleteButton];
+              return this.state.file.uploadType === "cloud"
+                ? [previewButton, mentionButton, deleteButton]
+                : [replyButton, previewButton, mentionButton, deleteButton];
             })()}
           >
             {this.state.file.uid || this.state.file.source ? (
@@ -331,7 +334,8 @@ class FileDisplay extends Component {
             </Button>
           ]}
         >
-          <h2>New Version</h2><br/>
+          <h2>New Version</h2>
+          <br />
           <FileUpload
             project={this.state.project}
             specifyFileName={this.state.file.name}
