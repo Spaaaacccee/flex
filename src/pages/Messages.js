@@ -93,6 +93,7 @@ class MESSAGES extends Component {
   };
 
   componentDidMount() {
+    this.componentWillReceiveProps(this.props);
     requestAnimationFrame(this.scrollHeightWatcher);
   }
 

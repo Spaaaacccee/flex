@@ -44,14 +44,12 @@ export default class FEED extends Component {
       ((prevState.project || {}).history || []).length !==
         ((this.state.project || {}).history || []).length
     ) {
-      setTimeout(()=>{
         this.state.project.trySetReadHistory();
-      },500)
     }
   }
 
   componentWillReceiveProps(props) {
-    this.setState({
+    this.setState({ 
       project: props.project,
       user: props.user
     });

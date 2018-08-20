@@ -29,6 +29,10 @@ export default class FILES extends Component {
     searchQuery: ""
   };
 
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
   componentWillReceiveProps(props) {
     this.setState({
       searchResults: null,

@@ -31,29 +31,48 @@ export default class PageView extends Component {
     scrollPosition: 0
   };
 
+  shouldComponentUpdate(props, state) {
+    if (props.page !== this.state.page) return true;
+    if (!Project.equal(props.project, this.state.project)) return true;
+    if (!User.equal(state.user, this.state.user)) return true;
+    if (state.scrollPostion !== this.state.scrollPosition) return true;
+    if (this.state.animation !== state.animation) return true;
+    if (this.state.loading !== state.loading) return true;
+    return false;
+  }
+  loadingTimeout = false;
+  currentTimeout = null;
   componentWillReceiveProps(props) {
+    this.setState({ project: props.project });
+    // If the page or the project was switched.
     if (
       !Page.equal(props.page, this.state.page) ||
       (props.project.projectID !== this.state.project.projectID &&
         props.project.projectID)
     ) {
-      this.setState({ animation: false }, () => {
-        this.setState({ page: props.page, animation: true });
-      });
+      this.loadingTimeout = true;
+      if (this.currentTimeout) {
+        clearTimeout(this.currentTimeout);
+        this.currentTimeout = null;
+      }
+      this.setState(
+        { animation: false, loading: true, page: props.page },
+        () => {
+          this.currentTimeout = setTimeout(() => {
+            this.loadingTimeout = false;
+            if (
+              Object.keys(this.state.project || {}).length ||
+              !this.state.page.requireProject
+            ) {
+              this.setState({ animation: true, loading: false });
+            }
+          }, 1000);
+        }
+      );
     }
     User.getCurrentUser().then(user => {
-      if (user) this.setState({ user });
+      if (user && !User.equal(user, this.state.user)) this.setState({ user });
     });
-    if (
-      (!props.project || Object.keys(props.project).length === 0) &&
-      props.page.requireProject
-    ) {
-      this.setState({ loading: true, project: {} });
-      return;
-    }
-    this.setState({ loading: false });
-    if (Project.equal(props.project, this.state.project)) return;
-    this.setState({ project: props.project });
   }
 
   render() {

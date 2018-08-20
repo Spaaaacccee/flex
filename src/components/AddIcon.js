@@ -25,6 +25,13 @@ export default class AddIcon extends Component {
     this.props.onPress();
   }
 
+  rendered = false;
+  shouldComponentUpdate(props, state) {
+    if (this.rendered) return false;
+    this.rendered = true;
+    return true;
+  }
+
   render() {
     return (
       <div

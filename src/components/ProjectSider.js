@@ -4,6 +4,8 @@ import "./ProjectSider.css";
 
 import { Icon, Menu, Button, Badge } from "antd";
 import Messages from "../classes/Messages";
+import Project from "../classes/Project";
+import User from "../classes/User";
 const { SubMenu } = Menu;
 
 /**
@@ -53,6 +55,19 @@ export default class ProjectSider extends Component {
     items: [],
     index: 0 // The index of the menu item that is currently open.
   };
+
+  shouldComponentUpdate(props, state) {
+    if (!User.equal(props.user, this.state.user)) return true;
+    if (props.items.length !== this.state.items.length) return true;
+    if (props.index !== this.state.index) return true;
+    if (!Project.equal(props.project, this.state.project)) return;
+    if (
+      Object.keys(this.state.messages).length !==
+      Object.keys(state.messages).length
+    )
+      return true;
+    return false;
+  }
   componentWillReceiveProps(props) {
     this.setState({
       project: props.project,
@@ -60,7 +75,10 @@ export default class ProjectSider extends Component {
       items: props.items,
       index: props.index
     });
-    if (props.project) {
+    if (
+      props.project &&
+      props.project.projectID !== (this.state.project || {}).projectID
+    ) {
       Messages.get(props.project.messengerID || props.project.projectID).then(
         messenger => {
           messenger.on("change", messages => {

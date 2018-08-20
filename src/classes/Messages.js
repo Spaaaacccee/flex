@@ -110,6 +110,11 @@ export default class Messages extends EventEmitter {
    */
   async setRead(id, isRead) {
     if (!id) return;
+    let current = await Fetch.getMessagesReference(this.uid)
+      .child("messages")
+      .child(id)
+      .once("value");
+    if (!current.val()) return;
     await Fetch.getMessagesReference(this.uid)
       .child("messages")
       .child(id)

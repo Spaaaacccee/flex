@@ -9,6 +9,10 @@ export default class MEMBERS extends Component {
     project: {}
   };
 
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
   componentWillReceiveProps(props) {
     this.setState({
       user: props.user,
