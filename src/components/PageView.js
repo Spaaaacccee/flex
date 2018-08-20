@@ -48,10 +48,10 @@ export default class PageView extends Component {
   }
 
   componentWillReceiveProps(props) {
-    if (!this.isDisplayable(props.project,props.page)) {
+    if (!this.isDisplayable(props.project, props.page)) {
       this.setState({ animation: false, loading: true });
     }
-    this.setState({project:props.project});
+    this.setState({ project: props.project });
     // If the page or the project was switched.
     if (
       !Page.equal(props.page, this.state.page) ||
@@ -67,12 +67,12 @@ export default class PageView extends Component {
         {
           animation: false,
           loading: true,
-          page: props.page,
+          page: props.page
         },
         () => {
           this.currentTimeout = setTimeout(() => {
             this.loadingTimeout = false;
-            if (this.isDisplayable(this.state.project,this.state.page)) {
+            if (this.isDisplayable(this.state.project, this.state.page)) {
               this.setState({ animation: true, loading: false });
             }
           }, 400);
@@ -83,7 +83,7 @@ export default class PageView extends Component {
       if (user && !User.equal(user, this.state.user)) this.setState({ user });
     });
   }
-
+  pageContentElement;
   render() {
     const displayContent = !!this.state.page.content && !this.state.loading;
     return (
@@ -110,11 +110,9 @@ export default class PageView extends Component {
           }}
           onLeftButtonPress={this.props.onLeftButtonPress}
           onRightButtonPress={
-            ((this.refs.pageContentElement || {}).onExtrasButtonPress
-              ? (() => {
-                  this.refs.pageContentElement.onExtrasButtonPress();
-                }) || 0
-              : 0) || (() => {})
+            ()=>{
+              ((this.pageContentElement||{}).onExtrasButtonPress||(()=>{})).apply(this.pageContentElement)
+            }
           }
           leftButtonType={"menu"}
           rightButtonType={this.state.page.extrasButtonType}
@@ -126,23 +124,17 @@ export default class PageView extends Component {
         >
           {displayContent ? (
             <div className={this.state.animation ? "content-fade-in-up" : ""}>
-              {(() => {
-                this.pageContentElement = React.createElement(
-                  this.state.page.content,
-                  {
-                    project: this.state.project,
-                    user: this.state.user,
-                    ref: "pageContentElement",
-                    passMessage: msg => {
-                      this.props.onMessage(msg);
-                    },
-                    onLoad: page => {
-                      this.props.onLoad(page);
-                    }
-                  }
-                );
-                return this.pageContentElement;
-              })()}
+              {React.createElement(this.state.page.content, {
+                project: this.state.project,
+                user: this.state.user,
+                ref: e => (this.pageContentElement = e),
+                passMessage: msg => {
+                  this.props.onMessage(msg);
+                },
+                onLoad: page => {
+                  this.props.onLoad(page);
+                }
+              })}
               {
                 // <p style={{ marginTop: 20, opacity: 0.4 }}>
                 //   <p>That's all there is</p>
