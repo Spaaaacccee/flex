@@ -30,7 +30,8 @@ export default class FEED extends Component {
     project: {},
     user: {},
     messenger: null,
-    messages: []
+    messages: [],
+    totalHistoryRenderCount: 8
   };
 
   componentDidMount() {
@@ -44,12 +45,12 @@ export default class FEED extends Component {
       ((prevState.project || {}).history || []).length !==
         ((this.state.project || {}).history || []).length
     ) {
-        this.state.project.trySetReadHistory();
+      this.state.project.trySetReadHistory();
     }
   }
 
   componentWillReceiveProps(props) {
-    this.setState({ 
+    this.setState({
       project: props.project,
       user: props.user
     });
@@ -88,6 +89,11 @@ export default class FEED extends Component {
   }
 
   shouldComponentUpdate(props, state) {
+    if (
+      state.totalHistoryRenderCount &&
+      this.state.totalHistoryRenderCount !== state.totalHistoryRenderCount
+    )
+      return true;
     if (!Project.equal(props.project, this.state.project)) return true;
     if ((state.messages || []).length !== (this.state.messages || []).length)
       return true;
@@ -197,6 +203,93 @@ export default class FEED extends Component {
     }
   }
 
+  renderBatchSize = 8;
+  renderChanges() {
+    return (
+      <div>
+        <h2
+          style={{
+            textTransform: "uppercase",
+            opacity: 0.65,
+            fontSize: 13
+          }}
+        >
+          {"Changes"}
+        </h2>
+        <br />
+        <Columns
+          rootStyles={{ maxWidth: 950, margin: "auto" }}
+          gap={10}
+          queries={[
+            {
+              columns: Math.min(
+                (this.state.project.history || []).length || 1,
+                2
+              ),
+              query: "min-width: 1000px"
+            }
+          ]}
+        >
+          {(this.state.project.history || [])
+            .slice()
+            .sort((a, b) => b.doneAt - a.doneAt)
+            .slice(
+              0,
+              Math.min(
+                (this.state.project.history || []).length,
+                this.state.totalHistoryRenderCount
+              )
+            )
+            .map(item => (
+              <div>
+                <HistoryDisplay
+                  key={item.uid}
+                  user={this.state.user}
+                  project={this.state.project}
+                  item={item}
+                  onMessage={msg => {
+                    this.props.passMessage(msg);
+                  }}
+                  onMentionButtonPressed={() => {
+                    this.props.passMessage({
+                      type: "prepare-message",
+                      content: new Message({
+                        sender: this.state.user.uid,
+                        content: new MessageContent({
+                          histories: [item.uid],
+                          bodyText: "(Mentioned a change)"
+                        })
+                      })
+                    });
+                  }}
+                />{" "}
+                <br />
+              </div>
+            ))}
+        </Columns>
+        {this.state.totalHistoryRenderCount <
+        (this.state.project.history || []).length ? (
+          <Button
+            icon="sync"
+            style={{
+              margin: "auto"
+            }}
+            onClick={() => {
+              this.setState({
+                totalHistoryRenderCount:
+                  this.state.totalHistoryRenderCount + this.renderBatchSize
+              });
+            }}
+          >
+            Load More
+          </Button>
+        ) : (
+          <div style={{ opacity: 0.65, margin: 50 }}>Nothing else to show.</div>
+        )}
+      </div>
+    );
+  }
+
   async getContent(project) {
     //let messages = (await Messages.get(project.messengerID)).;
   }
@@ -269,61 +362,7 @@ export default class FEED extends Component {
           </div>
         )}
 
-        <h2
-          style={{
-            textTransform: "uppercase",
-            opacity: 0.65,
-            fontSize: 13
-          }}
-        >
-          {"Changes"}
-        </h2>
-        <br />
-        <Columns
-          rootStyles={{ maxWidth: 950, margin: "auto" }}
-          gap={10}
-          queries={[
-            {
-              columns: Math.min(
-                (this.state.project.history || []).length || 1,
-                2
-              ),
-              query: "min-width: 1000px"
-            }
-          ]}
-        >
-          {(this.state.project.history || [])
-            .slice()
-            .reverse()
-            .slice(0, Math.min((this.state.project.history || []).length, 20))
-            .map(item => (
-              <div>
-                <HistoryDisplay
-                  key={item.uid}
-                  user={this.state.user}
-                  project={this.state.project}
-                  item={item}
-                  onMessage={msg => {
-                    this.props.passMessage(msg);
-                  }}
-                  onMentionButtonPressed={() => {
-                    this.props.passMessage({
-                      type: "prepare-message",
-                      content: new Message({
-                        sender: this.state.user.uid,
-                        content: new MessageContent({
-                          histories: [item.uid],
-                          bodyText: "(Mentioned a change)"
-                        })
-                      })
-                    });
-                  }}
-                />{" "}
-                <br />
-              </div>
-            ))}
-        </Columns>
-        <div style={{ opacity: 0.65, margin: 50 }}>Nothing else to show.</div>
+        {this.renderChanges()}
         <br />
       </div>
     );
