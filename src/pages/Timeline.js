@@ -92,7 +92,6 @@ export default class TIMELINE extends Component {
                                 })
                               });
                             }}
-                            user={this.state.user}
                             onComplete={() => {
                               this.setState(
                                 update(this.state, {
@@ -111,6 +110,7 @@ export default class TIMELINE extends Component {
                                 true
                               );
                             }}
+                            user={this.state.user}
                             event={data.item}
                             project={this.state.project}
                           />

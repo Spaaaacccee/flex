@@ -177,12 +177,24 @@ export default class FEED extends Component {
               {"Upcoming Events"}
             </h2>
             <br />
-            {events.map(item => (
+            {events.map((item, index) => (
               <div key={item.uid}>
                 <TimelineItem
                   user={this.state.user}
+                  onMentionButtonPressed={()=>{
+                    this.props.passMessage({
+                      type: "prepare-message",
+                      content: new Message({
+                        sender: this.state.user.uid,
+                        content: new MessageContent({
+                          events: [item.uid],
+                          bodyText: "(Mentioned an event)"
+                        })
+                      })
+                    });
+                  }}
                   onComplete={() => {
-                    project.setEvent(
+                    this.state.project.setEvent(
                       item.uid,
                       Object.assign(item, {
                         markedAsCompleted: true

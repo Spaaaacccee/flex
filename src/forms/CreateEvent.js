@@ -113,6 +113,19 @@ export default class CreateEvent extends Component {
           {this.state.mode === "edit" ? "Event" : "New Event"}
         </h2>
         <div style={{ display: this.state.mode === "edit" ? "block" : "none" }}>
+          {this.state.creator ? (
+            <p>
+              Creator:{" "}
+              <UserGroupDisplay
+                project={this.state.project}
+                style={{ display: "inline-block" }}
+                people={{ members: [this.state.creator] }}
+              />
+              <br />
+            </p>
+          ) : (
+            ""
+          )}
           <h3>Marked as completed</h3>
           <Switch
             style={{ marginBottom: 10 }}
@@ -126,18 +139,6 @@ export default class CreateEvent extends Component {
             ref={e => (this.markedAsCompletedField = e)}
           />
           <br />
-          {this.state.creator ? (
-            <p>
-              Creator:{" "}
-              <UserGroupDisplay
-                project={this.state.project}
-                style={{ display: "inline-block" }}
-                people={{ members: [this.state.creator] }}
-              />
-            </p>
-          ) : (
-            ""
-          )}
         </div>
 
         <h3>Name</h3>

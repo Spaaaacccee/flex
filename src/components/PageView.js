@@ -51,6 +51,7 @@ export default class PageView extends Component {
     if (!this.isDisplayable(props.project,props.page)) {
       this.setState({ animation: false, loading: true });
     }
+    this.setState({project:props.project});
     // If the page or the project was switched.
     if (
       !Page.equal(props.page, this.state.page) ||
@@ -67,7 +68,6 @@ export default class PageView extends Component {
           animation: false,
           loading: true,
           page: props.page,
-          project: props.project
         },
         () => {
           this.currentTimeout = setTimeout(() => {
