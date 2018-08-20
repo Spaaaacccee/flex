@@ -109,11 +109,9 @@ export default class PageView extends Component {
             flex: "none"
           }}
           onLeftButtonPress={this.props.onLeftButtonPress}
-          onRightButtonPress={
-            ()=>{
+          onRightButtonPress={()=>{
               ((this.pageContentElement||{}).onExtrasButtonPress||(()=>{})).apply(this.pageContentElement)
-            }
-          }
+          }}
           leftButtonType={"menu"}
           rightButtonType={this.state.page.extrasButtonType}
           heading={this.state.page.name || "Untitled"}

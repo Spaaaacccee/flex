@@ -19,15 +19,16 @@ export default class ContextProvider extends Component {
   }
 
   componentWillReceiveProps(props) {
+    let projectCallback = snapshot => {
+      this.setState({ project: snapshot.val()});
+    }
     if (props.projectID !== this.state.projectID) {
       if (this.projectReference) {
-        this.projectReference.off();
+        this.projectReference.off("value", projectCallback);
         this.projectReference = null;
       }
       this.projectReference = Fetch.getProjectReference(props.projectID);
-      this.projectReference.on("value", snapshot => {
-        this.setState({ project: snapshot.val()});
-      });
+      this.projectReference.on("value", projectCallback);
       this.setState({ projectID: props.projectID });
     }
     if (props.userID !== this.state.userID) {

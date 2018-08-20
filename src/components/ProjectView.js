@@ -65,6 +65,27 @@ export default class ProjectView extends Component {
   }
 
   componentWillReceiveProps(props) {
+    let projectCallback = snapshot => {
+      let project = snapshot.val();
+      if (project === null) return;
+      if(Project.equal(project, this.state.project)) return;
+      if(project.projectID !== this.state.projectID) {
+        snapshot.ref.off("value", projectCallback);
+        return;
+      };
+      if (
+        project.deleted ||
+        !(project.members || []).find(x => x.uid === this.state.user.uid)
+      ) {
+        this.props.onMessage({ type: "switchTo", content: null });
+        Fetch.getProjectReference(this.state.projectID).off(
+          "value",
+          projectCallback
+        );
+        return;
+      }
+      this.setState({ project: Object.assign(new Project(), project) });
+    };
     this.setState({
       style: props.style || this.state.style,
       pauseSiderUpdate: props.pauseSiderUpdate,
@@ -73,25 +94,9 @@ export default class ProjectView extends Component {
       hideSideBar: props.hideSideBar,
       siderWidth: props.siderWidth,
       user: props.user
-    });
-    if (props.projectID === this.state.projectID) return;
-    if (this.state.projectID) {
-      Fetch.getProjectReference(this.state.projectID).off();
-      this.setState({ project: {} });
-    }
-    if (!props.projectID) return;
-    Fetch.getProjectReference(props.projectID).on("value", snapshot => {
-      let project = snapshot.val();
-      if (project === null) return;
-      if (
-        project.deleted ||
-        !(project.members || []).find(x => x.uid === this.state.user.uid)
-      ) {
-        this.props.onMessage({ type: "switchTo", content: null });
-        Fetch.getProjectReference(this.state.projectID).off();
-        return;
-      }
-      this.setState({ project: Object.assign(new Project(), project) });
+    }, ()=>{
+      if (!props.projectID) return;
+      Fetch.getProjectReference(props.projectID).on("value", projectCallback);
     });
   }
 

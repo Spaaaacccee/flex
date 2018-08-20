@@ -51,7 +51,8 @@ export default class ProjectSider extends Component {
   state = {
     items: [],
     index: 0, // The index of the menu item that is currently open.
-    notifications: []
+    notifications: [],
+    messenger: null
   };
 
   shouldComponentUpdate(props, state) {
@@ -83,12 +84,17 @@ export default class ProjectSider extends Component {
       props.project &&
       props.project.projectID !== (this.state.project || {}).projectID
     ) {
+      if(this.state.messenger) {
+        this.state.messenger.off();
+        this.state.messenger.stopListening();
+      }
       Messages.get(props.project.messengerID || props.project.projectID).then(
         messenger => {
           messenger.on("change", messages => {
             this.updateNotifications(this.state.items,this.state.project,this.state.user, messages)
           });
           messenger.startListening();
+          this.setState({messenger});
         }
       );
     } else {
@@ -190,13 +196,14 @@ export default class ProjectSider extends Component {
                 <Icon type={item.icon} />
                 <span>{item.name}</span>
                 <Badge
-                  offset={[-20, 0]}
+                  style={{transform:'scale(0.9)'}}
+                  offset={[-2, 10]}
                   count={
                     this.state.index === index
                       ? 0
                       : this.state.notifications[index]|| 0
                   }
-                />
+                >{" "}</Badge>
               </Menu.Item>
             ))}
           </Menu>

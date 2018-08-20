@@ -231,20 +231,23 @@ class MESSAGES extends Component {
       update(this.state, {
         consoleStatus: { $set: "ready" },
         messageStatus: { [target.uid]: { $set: "processing" } }
-      })
+      }),
+      () => {
+        this.setInputValue("", () => {
+          let res = update(target, {
+            content: { bodyText: { $set: `${val} (edited)` } }
+          });
+          this.state.messenger.setMessage(target.uid, res).then(() => {
+            this.setState(
+              update(this.state, {
+                messageStatus: { [target.uid]: { $set: "sent" } }
+              })
+            );
+            this.handleOnEdit(res);
+          });
+        });
+      }
     );
-    this.setInputValue("");
-    let res = update(target, {
-      content: { bodyText: { $set: val } }
-    });
-    this.state.messenger.setMessage(target.uid, res).then(() => {
-      this.setState(
-        update(this.state, {
-          messageStatus: { [target.uid]: { $set: "sent" } }
-        })
-      );
-      this.handleOnEdit(res);
-    });
   }
   handleSend() {
     this.inputElement.focus();
