@@ -447,6 +447,7 @@ class MESSAGES extends Component {
                         }
                       );
                       this.inputElement.focus();
+                      document.execCommand("selectAll", false, null);
                     }}
                     onEditPressed={() => {
                       this.setState({
@@ -455,6 +456,7 @@ class MESSAGES extends Component {
                       });
                       this.setInputValue(item.content.bodyText);
                       this.inputElement.focus();
+                      document.execCommand("selectAll", false, null);
                     }}
                     onDeletePressed={() => {
                       this.handleDelete(item.uid);
