@@ -84,6 +84,7 @@ export default class TIMELINE extends Component {
                               this.props.passMessage({
                                 type: "prepare-message",
                                 content: new Message({
+                                  readBy: { [this.state.user.uid]: true },
                                   sender: this.state.user.uid,
                                   content: new MessageContent({
                                     events: [data.item.uid],

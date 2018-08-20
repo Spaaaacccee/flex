@@ -120,6 +120,7 @@ class MessageDisplay extends Component {
         return (
           <List.Item
             onContextMenu={e => {
+              if(this.state.readOnly) return;
               if (!window.getSelection().toString()) {
                 e.preventDefault();
                 ref.tooltip.setState({
@@ -268,7 +269,7 @@ class MessageDisplay extends Component {
                     msUserSelect: "none"
                   }}
                 >
-                  {((!!item.content.files && item.content.files.length) ||
+                  {!this.state.readOnly && ((!!item.content.files && item.content.files.length) ||
                     (!!item.content.histories &&
                       !!item.content.histories.length) ||
                     (!!item.content.fileVersions &&

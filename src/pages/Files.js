@@ -146,6 +146,7 @@ export default class FILES extends Component {
                               this.props.passMessage({
                                 type: "prepare-message",
                                 content: new Message({
+                                  readBy: { [this.state.user.uid]: true },
                                   sender: this.state.user.uid,
                                   content: new MessageContent({
                                     files: [item.uid || item.source.id],
@@ -158,6 +159,7 @@ export default class FILES extends Component {
                               this.props.passMessage({
                                 type: "prepare-message",
                                 content: new Message({
+                                  readBy: { [this.state.user.uid]: true },
                                   sender: this.state.user.uid,
                                   content: new MessageContent({
                                     fileVersions: [versionID],
