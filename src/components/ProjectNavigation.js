@@ -94,7 +94,7 @@ export default class ProjectNavigation extends Component {
     if (props.items.length) {
       Notifier.setProjects(props.items);
     }
-    this.getProjects(props.items, props.user.uid);
+    let oldItems = this.state.items.slice();
     this.setState(
       {
         openedProject: props.openedProject,
@@ -105,6 +105,7 @@ export default class ProjectNavigation extends Component {
           : -1
       },
       () => {
+        this.getProjects(props.items, oldItems, props.user.uid);
         User.getCurrentUser().then(user => {
           this.setState({ userData: user });
         });
@@ -131,9 +132,9 @@ export default class ProjectNavigation extends Component {
     );
   }
 
-  getProjects(items, userID) {
-    items.forEach(projectID => {
-      if (!this.state.projects[projectID]) {
+  getProjects(newItems, oldItems, userID) {
+    newItems.forEach(projectID => {
+      if (!oldItems.find(x=>x===projectID)) {
         Project.get(projectID).then(project => {
           Fetch.getMessagesReference(project.messengerID || project.projectID)
             .child("messages")

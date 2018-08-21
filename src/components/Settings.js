@@ -1,13 +1,5 @@
 import React, { Component } from "react";
-import {
-  Tabs,
-  Input,
-  Button,
-  Modal,
-  Popconfirm,
-  message,
-  Icon
-} from "antd";
+import { Tabs, Input, Button, Modal, Popconfirm, message, Icon } from "antd";
 import RoleEditor from "./RoleEditor";
 import formatJSON from "format-json-pretty";
 import update from "immutability-helper";
@@ -220,12 +212,15 @@ export default class Settings extends Component {
                       ).then(() => {
                         this.state.user
                           .deleteProject(this.state.sourceProject.projectID)
-                          .then(() => {
-                            message.success(
-                              `Successfully deleted ${
-                                this.state.sourceProject.name
-                              }`
-                            );
+                          .then(error => {
+                            if (!error) {
+                              message.success(
+                                `Successfully deleted ${
+                                  this.state.sourceProject.name
+                                }`
+                              );
+                            }
+
                             this.props.onClose();
                           });
                       });
@@ -253,12 +248,14 @@ export default class Settings extends Component {
                       User.getCurrentUser().then(user => {
                         user
                           .leaveProject(this.state.sourceProject.projectID)
-                          .then(() => {
-                            message.success(
-                              `Successfully left ${
-                                this.state.sourceProject.name
-                              }`
-                            );
+                          .then(error => {
+                            if (!error) {
+                              message.success(
+                                `Successfully left ${
+                                  this.state.sourceProject.name
+                                }`
+                              );
+                            }
                             this.props.onClose();
                           });
                       });

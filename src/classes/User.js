@@ -384,6 +384,7 @@ export default class User {
     } else {
       if (!suppressMessages)
         message.error("You can't leave a project you haven't joined!");
+        return 1;
     }
   }
 
@@ -397,6 +398,7 @@ export default class User {
       });
     } else {
       message.error("You don't own the project you're trying to delete.");
+      return 1;
     }
   }
 

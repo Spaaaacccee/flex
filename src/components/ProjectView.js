@@ -68,7 +68,7 @@ export default class ProjectView extends Component {
     let projectCallback = snapshot => {
       let project = snapshot.val();
       if (project === null) return;
-      if(Project.equal(project, this.state.project)) return;
+      if (Project.equal(project, this.state.project)) return;
       if (
         project.deleted ||
         !(project.members || []).find(x => x.uid === this.state.user.uid)
@@ -81,25 +81,28 @@ export default class ProjectView extends Component {
         snapshot.ref.off("value", projectCallback);
         return;
       }
-      if(project.projectID !== this.state.projectID) {
+      if (project.projectID !== this.state.projectID) {
         snapshot.ref.off("value", projectCallback);
         return;
-      };
+      }
       this.setState({ project: Object.assign(new Project(), project) });
     };
 
-    this.setState({
-      style: props.style || this.state.style,
-      pauseSiderUpdate: props.pauseSiderUpdate,
-      navigationCollapsed: props.navigationCollapsed ? true : false,
-      projectID: props.projectID,
-      hideSideBar: props.hideSideBar,
-      siderWidth: props.siderWidth,
-      user: props.user
-    }, ()=>{
-      if (!props.projectID) return;
-      Fetch.getProjectReference(props.projectID).on("value", projectCallback);
-    });
+    this.setState(
+      {
+        style: props.style || this.state.style,
+        pauseSiderUpdate: props.pauseSiderUpdate,
+        navigationCollapsed: props.navigationCollapsed ? true : false,
+        projectID: props.projectID,
+        hideSideBar: props.hideSideBar,
+        siderWidth: props.siderWidth,
+        user: props.user
+      },
+      () => {
+        if (!props.projectID) return;
+        Fetch.getProjectReference(props.projectID).on("value", projectCallback);
+      }
+    );
   }
 
   async applySettings(values) {
@@ -128,7 +131,10 @@ export default class ProjectView extends Component {
         style={{
           flex: 1,
           height: "100%",
-          width: 0
+          width: 0,
+          ...(this.state.project.deleted
+            ? { pointerEvents: "none", opacity: 0.65 }
+            : {})
         }}
       >
         <Layout className="project-view-wrapper" style={this.state.style}>
