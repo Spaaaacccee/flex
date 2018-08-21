@@ -132,6 +132,15 @@ export default class Main extends Component {
           <Sider width={this.state.siderWidth} className="project-sider">
             {/* Project navigation items */}
             <ProjectNavigation
+            onMessage={msg => {
+              switch (msg.type) {
+                case "switchTo":
+                  this.setState({ openedProjectID: msg.content });
+                  break;
+                default:
+                  break;
+              }
+            }}
               pauseUpdate={this.state.navigationCollapsed}
               user={this.state.user}
               // Here we're displaying all user projects, only if they exist

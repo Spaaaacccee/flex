@@ -65,6 +65,7 @@ export default class ProjectNavigation extends Component {
     onProjectChanged: () => {},
     onAddIconPress: () => {},
     onUserProfilePress: () => {},
+    passMessage: () => {},
     items: []
   };
 
@@ -117,8 +118,7 @@ export default class ProjectNavigation extends Component {
     if (props.openedProject !== this.state.openedProject) return true;
     if ((props.user || {}).uid !== (this.state.user || {}).uid) return true;
     if (this.state.openedIndex !== state.openedIndex) return true;
-    if ((state.userData || {}).uid !== (this.state.userData || {}).uid)
-      return true;
+    if (!User.equal(state.userData, this.state.userData)) return true;
     if (state.projects !== this.state.projects) return true;
     if (state.notificationCount !== this.state.notificationCount) return true;
     return false;
@@ -165,9 +165,17 @@ export default class ProjectNavigation extends Component {
             });
         });
         let projectCallback = snapshot => {
-          if (!this.state.items.find(x=>x === projectID))
+          if (!this.state.items.find(x => x === projectID))
             snapshot.ref.off("value", projectCallback);
           let project = snapshot.val();
+          if (!project) return;
+          if (
+            project.deleted &&
+            this.state.openedProject === project.projectID
+          ) {
+            this.props.onMessage({ type: "switchTo", content: null });
+            snapshot.ref.off("value", projectCallback);
+          }
           let histories = (project.history || []).filter(
             x => !(x.readBy || {})[userID]
           ).length;
@@ -267,11 +275,7 @@ export default class ProjectNavigation extends Component {
                   }
                   key={item}
                   name={this.state.projects[item] || null}
-                  onPress={
-                    this.state.projects[item]
-                      ? this.handlePress.bind(this, index)
-                      : () => {}
-                  }
+                  onPress={this.handlePress.bind(this, index)}
                   selected={index === this.state.openedIndex}
                 />
               ))}

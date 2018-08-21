@@ -69,10 +69,6 @@ export default class ProjectView extends Component {
       let project = snapshot.val();
       if (project === null) return;
       if(Project.equal(project, this.state.project)) return;
-      if(project.projectID !== this.state.projectID) {
-        snapshot.ref.off("value", projectCallback);
-        return;
-      };
       if (
         project.deleted ||
         !(project.members || []).find(x => x.uid === this.state.user.uid)
@@ -82,10 +78,16 @@ export default class ProjectView extends Component {
           "value",
           projectCallback
         );
+        snapshot.ref.off("value", projectCallback);
         return;
       }
+      if(project.projectID !== this.state.projectID) {
+        snapshot.ref.off("value", projectCallback);
+        return;
+      };
       this.setState({ project: Object.assign(new Project(), project) });
     };
+
     this.setState({
       style: props.style || this.state.style,
       pauseSiderUpdate: props.pauseSiderUpdate,

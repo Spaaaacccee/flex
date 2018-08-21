@@ -6,7 +6,7 @@ import { Icon, Menu, Button, Badge } from "antd";
 import Messages from "../classes/Messages";
 import Project from "../classes/Project";
 import User from "../classes/User";
-import shallowEqualArrays from 'shallow-equal/arrays';
+import shallowEqualArrays from "shallow-equal/arrays";
 const { SubMenu } = Menu;
 
 /**
@@ -57,19 +57,24 @@ export default class ProjectSider extends Component {
 
   shouldComponentUpdate(props, state) {
     if (props.index !== this.state.index) return true;
-    if(!shallowEqualArrays(state.notifications||[], this.state.notifications||[])) return true;
-    if (!shallowEqualArrays(props.items || [],this.state.items||[])) return true;
+    if (
+      !shallowEqualArrays(
+        state.notifications || [],
+        this.state.notifications || []
+      )
+    )
+      return true;
+    if (!shallowEqualArrays(props.items || [], this.state.items || []))
+      return true;
     return false;
   }
 
   updateNotifications(items, newProject, newUser, newMessages) {
-    this.setState({notifications:items.map((item)=>(
-      item.getNotificationCount(
-        newProject,
-        newUser,
-        newMessages
+    this.setState({
+      notifications: items.map(item =>
+        item.getNotificationCount(newProject, newUser, newMessages)
       )
-    ))})
+    });
   }
 
   componentWillReceiveProps(props) {
@@ -77,24 +82,34 @@ export default class ProjectSider extends Component {
       project: props.project,
       user: props.user,
       items: props.items,
-      index: props.index,
+      index: props.index
     });
-    this.updateNotifications(props.items,props.project,props.user,null)
+    this.updateNotifications(
+      props.items,
+      props.project,
+      props.user,
+      (this.state.messenger||{}).messages
+    );
     if (
       props.project &&
       props.project.projectID !== (this.state.project || {}).projectID
     ) {
-      if(this.state.messenger) {
+      if (this.state.messenger) {
         this.state.messenger.off();
         this.state.messenger.stopListening();
       }
       Messages.get(props.project.messengerID || props.project.projectID).then(
         messenger => {
           messenger.on("change", messages => {
-            this.updateNotifications(this.state.items,this.state.project,this.state.user, messages)
+            this.updateNotifications(
+              this.state.items,
+              this.state.project,
+              this.state.user,
+              messages
+            );
           });
           messenger.startListening();
-          this.setState({messenger});
+          this.setState({ messenger });
         }
       );
     } else {
@@ -196,14 +211,16 @@ export default class ProjectSider extends Component {
                 <Icon type={item.icon} />
                 <span>{item.name}</span>
                 <Badge
-                  style={{transform:'scale(0.9)'}}
+                  style={{ transform: "scale(0.9)" }}
                   offset={[-2, 10]}
                   count={
                     this.state.index === index
                       ? 0
-                      : this.state.notifications[index]|| 0
+                      : this.state.notifications[index] || 0
                   }
-                >{" "}</Badge>
+                >
+                  {" "}
+                </Badge>
               </Menu.Item>
             ))}
           </Menu>
