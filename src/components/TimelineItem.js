@@ -133,26 +133,8 @@ export default class TimelineItem extends Component {
                     </div>
                   )}
                   {!isComplete &&
-                    (() => {
-                      if (!this.state.user.uid) return false;
-                      if (!this.state.event.involvedPeople) return false;
-                      if (
-                        (this.state.event.involvedPeople.members || []).find(
-                          item => item.uid === this.state.user.uid
-                        )
-                      )
-                        return true;
-                      if (
-                        (this.state.event.involvedPeople.roles || []).find(
-                          role =>
-                            (this.state.project.members
-                              .find(x => x.uid === this.state.user.uid)
-                              .roles||[]).find(x => x === role)
-                        )
-                      )
-                        return true;
-                      return false;
-                    })() && (
+                    UserGroupDisplay.hasUser(this.state.event.involvedPeople, this.state.project, this.state.user)
+                    && (
                       <div style={{ marginBottom: 10, color: "#FFD800" }}>
                         <Icon type="user" />
                         {" You're involved"}

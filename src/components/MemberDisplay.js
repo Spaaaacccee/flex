@@ -14,6 +14,7 @@ import UserIcon from "./UserIcon";
  * @extends Component
  */
 export default class MemberDisplay extends Component {
+
   state = {
     member: {},
     project: {},

@@ -16,20 +16,30 @@ There are various stages where the user is required to enter data.
 
 - As the user types, the program continuously trims whitespace on the left side of the entered value.
 
+- As the user shifts focus, the program removes surrounding whitespace.
+
 - The program all surrounding whitespace around the project name when it is submitted.
 
-- The program allows input of any length, as long as the above is satisfied.
+- The program allows input of up to, and including 100 characters, as long as the above is satisfied.
 
 - If the resulting value is empty, "Untitled Project" takes its place.
 
 CreateProject.js
 
 ```javascript
-onChange={e => {
-  this.setState({
-    projectName: $.string(e.target.value).trimLeft()
-  });
-}}
+<Input
+  maxLength={100}
+  onChange={e => {
+    this.setState({
+      projectName: $.string(e.target.value).trimLeft()
+    });
+  }}
+  onBlur={e => {
+    this.setState({
+      projectName: e.target.value.trim()
+    });
+  }}
+/>
 ```
 
 Main.js
@@ -43,7 +53,20 @@ onSubmit={async data => {
 
 #### 1.2 Project description
 
-- Any text input is allowed.
+- Any text input is allowed, up to and including 2000 characters in length.
+
+CreateEvent.js
+
+```javascript
+<Input.TextArea
+  maxLength={2000}
+  onChange={e => {
+    this.setState({
+      description: e.target.value
+    });
+  }}
+/>
+```
 
 #### 1.3 Invite people
 
@@ -58,6 +81,8 @@ onSubmit={async data => {
 ![Invite Users](./img/img4.png)
 
 This component functions exactly like 1.3 Invite People in Create project, submitting is not allowed if the field is empty:
+
+SendInvite.js
 
 ```javascript
 <Button
@@ -77,6 +102,8 @@ Both the Project name and Project description fields function the same way as in
 ![Role Settings](./img/img6.png)
 
 Each role input field follows the same input restrictions as 1.1 Project name. See that section for relevant code. Instead of replacing empty fields with "Untitled Project", role input fields replace it with "New Role" upon defocus. The user can immediately realise that empty fields are not allowed and can enter a valid value before submission.
+
+RoleEditor.js
 
 ```javascript
 <Input
@@ -100,7 +127,37 @@ Each role input field follows the same input restrictions as 1.1 Project name. S
 >
 ```
 
+#### Change in the latest version
+
+As of the latest version, the app initialises each new field as empty, and upon defocus, replaces the field with "New Role" if left empty.
+
+```javascript
+// Add role button
+<Button
+  type="primary"
+  icon="plus"
+  onClick={() => {
+    this.setState(
+      update(this.state, {
+        // Initalise field as empty
+        values: { $push: [new Role("")] }
+      }),
+      () => {
+        // Focus the new field
+        this.inputRefs[this.inputRefs.length - 1].focus();
+        this.props.onChange(this.state.values);
+      }
+    );
+  }}
+>
+  Role
+</Button>
+```
+
+The blur mechanic remains the same.
+
 ### Create Event
+
 
 
 

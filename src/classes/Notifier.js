@@ -6,6 +6,7 @@ import Notify from "notifyjs";
 import Moment from "moment";
 import $, { EventEmitter } from "./Utils";
 import { message } from "antd";
+import UserGroupDisplay from "../components/UserGroupDisplay";
 
 export default class Notifier extends EventEmitter {
   static listeners = [];
@@ -98,27 +99,11 @@ export default class Notifier extends EventEmitter {
               )
                 return;
               if (
-                (() => {
-                  if (!this.user.uid) return false;
-                  if (this.user.uid === item.creator) return true;
-                  if (!item.involvedPeople) return false;
-                  if (
-                    (item.involvedPeople.members || []).find(
-                      item => item.uid === this.user.uid
-                    )
-                  )
-                    return true;
-                  if (
-                    (item.involvedPeople.roles || []).find(role =>
-                      (
-                        this.project.members.find(x => x.uid === this.user.uid)
-                          .roles || []
-                      ).find(x => x === role)
-                    )
-                  )
-                    return true;
-                  return false;
-                })()
+                UserGroupDisplay.hasUser(
+                  item.involvedPeople,
+                  this.project,
+                  this.user
+                )
               ) {
                 new Notify(`Bonfire - ${this.project.name}`, {
                   body: `${timeDifference < 0 ? "(Overdue) " : ""}${

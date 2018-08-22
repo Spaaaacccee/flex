@@ -107,6 +107,7 @@ export default class RoleEditor extends Component {
                     />
                   </Popover>
                   <Input
+                    maxLength={100}
                     ref={e => (this.inputRefs[index] = e)}
                     // Trim whitespace on the left or reset the field to "New Role" to ensure the field always contains a valid value.
                     onBlur={e => {

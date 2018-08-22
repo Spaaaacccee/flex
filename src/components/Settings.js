@@ -115,6 +115,7 @@ export default class Settings extends Component {
           >
             <h3>Project Name</h3>
             <Input
+              maxLength={100}
               onBlur={e => {
                 this.setState(
                   update(this.state, {
@@ -141,10 +142,12 @@ export default class Settings extends Component {
                 );
               }}
             />
-            <br />
-            <br />
+            <p style={{ textAlign: "right", opacity: 0.65 }}>
+              100 characters limit
+            </p>
             <h3>Project Description</h3>
             <Input.TextArea
+              maxLength={2000}
               autosize={{ minRows: 2, maxRows: 6 }}
               value={this.state.values.general.description}
               onChange={e => {
@@ -157,8 +160,9 @@ export default class Settings extends Component {
                 );
               }}
             />
-            <br />
-            <br />
+            <p style={{ textAlign: "right", opacity: 0.65 }}>
+              2000 characters limit
+            </p>
           </TabPane>
           <TabPane
             tab={

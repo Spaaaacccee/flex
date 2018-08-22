@@ -26,6 +26,12 @@ export default class TimelineEvent {
    */
   creator;
   /**
+   * The uid of the user who last edited this event
+   * @type {String}
+   * @memberof TimelineEvent
+   */
+  lastModifiedBy;
+  /**
    * The date that this event takes place
    * @type {Number}
    * @memberof TimelineEvent

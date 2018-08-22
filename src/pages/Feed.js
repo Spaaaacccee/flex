@@ -2,6 +2,7 @@ import React, { Component } from "react";
 
 import Fire from "../classes/Fire";
 import $ from "../classes/Utils";
+import './Feed.css';
 
 import { Card, Icon, Avatar, Button, List } from "antd";
 import Messages, { Message, MessageContent } from "../classes/Messages";
@@ -133,7 +134,7 @@ export default class FEED extends Component {
             ]}
           >
             <div style={{ margin: "-24px 0" }}>
-              <List itemLayout="vertical">
+              <List itemLayout="vertical" className="messages">
                 {newMessages.map(item => (
                   <MessageDisplay
                     readOnly

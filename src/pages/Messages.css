@@ -10,7 +10,12 @@ div.ant-list-vertical .ant-list-item-meta-title {
 }
 
 .messages > div {
-  margin: 0 calc(10px + 2vw);
+  padding: 0 2vw;
+}
+
+
+.messages > div .ant-list-item {
+  padding: 12px 10px;
 }
 
 .messages .ant-list .ant-list-item-meta-content > * {

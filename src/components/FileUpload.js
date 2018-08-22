@@ -203,6 +203,7 @@ export default class FileUpload extends Component {
             Tell your team why you uploaded {this.state.selectedFile.name}
           </h3>
           <Input
+            maxLength={100}
             value={this.state.description}
             placeholder={`Made changes to ${this.state.selectedFile.name}`}
             onChange={e => {
@@ -211,6 +212,9 @@ export default class FileUpload extends Component {
               });
             }}
           />
+          <p style={{ textAlign: "right", opacity: 0.65 }}>
+          100 characters limit
+        </p>
         </Modal>
       </div>
     );

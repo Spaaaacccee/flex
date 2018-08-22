@@ -6,6 +6,24 @@ import shallowEqualArrays from "shallow-equal/arrays";
 import MemberDisplay from "./MemberDisplay";
 import { HSL } from "../classes/Role";
 export default class UserGroupDisplay extends Component {
+  static hasUser(people, project, user) {
+    if (!user.uid) return false;
+    if (!project.projectID) return false;
+    if (!people) return false;
+    if ((people.members || []).find(memberID => memberID === user.uid))
+      return true;
+    if (
+      (people.roles || []).find(role =>
+        (
+          (project.members || []).find(memberID => memberID.uid === user.uid)
+            .roles || []
+        ).find(roleID => roleID === role)
+      )
+    )
+      return true;
+    return false;
+  }
+
   static defaultProps = {
     people: { members: [], roles: [] },
     project: {}
@@ -58,10 +76,7 @@ export default class UserGroupDisplay extends Component {
         ) && this.props.children}
         {this.state.roleInfo
           .map((item, index) => (
-            <Tag
-              color={HSL.toCSSColor(item.color)}
-              key={"R:" + index}
-            >
+            <Tag color={HSL.toCSSColor(item.color)} key={"R:" + index}>
               {<Icon type="tags" />}
               {` `}
               {item.name.slice(0, 15) === item.name
@@ -71,7 +86,22 @@ export default class UserGroupDisplay extends Component {
           ))
           .concat(
             this.state.userInfo.map((item, index) => (
-              <Popover trigger="click" key={"U:" + index} content={this.state.project && this.state.project.members?<MemberDisplay member={this.state.project.members.find(x=>x.uid===item.uid)} project={this.state.project} readOnly cardless/>:null}>
+              <Popover
+                trigger="click"
+                key={"U:" + index}
+                content={
+                  this.state.project && this.state.project.members ? (
+                    <MemberDisplay
+                      member={this.state.project.members.find(
+                        x => x.uid === item.uid
+                      )}
+                      project={this.state.project}
+                      readOnly
+                      cardless
+                    />
+                  ) : null
+                }
+              >
                 <Tag>
                   {<Icon type="user" />}
                   {` `}

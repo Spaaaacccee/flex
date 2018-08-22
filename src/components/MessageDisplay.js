@@ -113,14 +113,65 @@ class MessageDisplay extends Component {
       (this.state.messenger
         ? this.state.messenger.messages[this.state.messageID]
         : null);
+
     return item && item.content ? (
       (() => {
+        let mentionedMembers = [];
+        let mentionedRoles = [];
+        let source = " " + (item.content || {}).bodyText + " ";
+        let body = source.trim();
+        let tokens = source.match(/@.*?#\d\d\d\d\s/g) || [];
+        let text = source.split(/@.*?#\d\d\d\d\s/g);
+        if (tokens.length) {
+          let str = [];
+          text.forEach((item, index) => {
+            str.push(index ? item : item.substring(1));
+            if (tokens[index]) {
+              let hash = tokens[index]
+                .split("#")
+                .pop()
+                .trim();
+              if (this.state.hashedMembers[hash]) {
+                mentionedMembers.push(this.state.hashedMembers[hash].uid);
+                str.push(
+                  <UserGroupDisplay
+                    style={{
+                      display: "inline-block",
+                      marginBottom: "-8px"
+                    }}
+                    project={this.state.project}
+                    people={{
+                      members: [this.state.hashedMembers[hash].uid]
+                    }}
+                  />
+                );
+              } else if (this.state.hashedRoles[hash]) {
+                mentionedRoles.push(this.state.hashedRoles[hash].uid);
+                str.push(
+                  <UserGroupDisplay
+                    style={{
+                      display: "inline-block",
+                      marginBottom: "-8px"
+                    }}
+                    project={this.state.project}
+                    people={{
+                      roles: [this.state.hashedRoles[hash].uid]
+                    }}
+                  />
+                );
+              } else {
+                str.push(tokens[index]);
+              }
+            }
+          });
+          body = str;
+        }
         let ref;
         let sender = this.state.sender;
         return (
           <List.Item
             onContextMenu={e => {
-              if(this.state.readOnly) return;
+              if (this.state.readOnly) return;
               if (!window.getSelection().toString()) {
                 e.preventDefault();
                 ref.tooltip.setState({
@@ -128,12 +179,19 @@ class MessageDisplay extends Component {
                 });
               }
             }}
-            style={Object.assign(
-              { textAlign: "left" },
-              this.state.messageStatus === "processing"
+            style={{
+              ...{ textAlign: "left" },
+              ...(this.state.messageStatus === "processing"
                 ? { opacity: 0.65, pointerEvents: "none" }
-                : {}
-            )}
+                : {}),
+              ...(UserGroupDisplay.hasUser(
+                { members: mentionedMembers, roles: mentionedRoles },
+                this.state.project,
+                this.state.user
+              )
+                ? { background: "rgb(230, 247, 255)" }
+                : {})
+            }}
           >
             <div style={{ display: "flex" }}>
               <Popover
@@ -243,11 +301,13 @@ class MessageDisplay extends Component {
                       >
                         <Button
                           style={{
-                            visibility: this.state.readOnly ? "hidden" : "visible",
+                            visibility: this.state.readOnly
+                              ? "hidden"
+                              : "visible",
                             border: 0,
                             background: "transparent",
                             position: "absolute",
-                            right: 0
+                            right: "2vw"
                           }}
                           icon="ellipsis"
                           shape="circle"
@@ -269,174 +329,180 @@ class MessageDisplay extends Component {
                     msUserSelect: "none"
                   }}
                 >
-                  {!this.state.readOnly && ((!!item.content.files && item.content.files.length) ||
-                    (!!item.content.histories &&
-                      !!item.content.histories.length) ||
-                    (!!item.content.fileVersions &&
-                      !!item.content.fileVersions.length) ||
+                  {!this.state.readOnly &&
+                    ((!!item.content.files && item.content.files.length) ||
+                      (!!item.content.histories &&
+                        !!item.content.histories.length) ||
+                      (!!item.content.fileVersions &&
+                        !!item.content.fileVersions.length) ||
                       (!!item.content.events &&
                         !!item.content.events.length)) && (
-                    <div>
-                    {!!item.content.events && item.content.events.map(eventID=>{
-                      let event = (this.state.project.events||[]).find(x=>x.uid===eventID);
-                      return (
-                        <div>
-                          {event ? (
-                            <div>
-                              <br />
-                              <TimelineItem
-                                readOnly
-                                project={this.state.project}
-                                user={this.state.user}
-                                event={event}
-                              />
-                            </div>
-                          ) : (
-                            <div>
-                              <br />
-                              <Card>
-                                <div
-                                  style={{
-                                    opacity: 0.65,
-                                    margin: "auto",
-                                    textAlign: "center"
-                                  }}
-                                >
-                                  {
-                                    "We can not display this event because it has been deleted."
-                                  }
-                                </div>
-                              </Card>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                      {!!item.content.files &&
-                        item.content.files.map(fileID => {
-                          let file;
-                          if (fileID) {
-                            file = (this.state.project.files || []).find(
-                              x => x.uid === fileID
+                      <div>
+                        {!!item.content.events &&
+                          item.content.events.map(eventID => {
+                            let event = (this.state.project.events || []).find(
+                              x => x.uid === eventID
                             );
-                            if (!file)
-                              file = (this.state.project.files || [])
-                                .filter(x => x.uploadType === "cloud")
-                                .find(x => x.source.id === fileID);
-                          }
-                          return (
-                            <div>
-                              {file ? (
-                                <div>
-                                  <br />
-                                  <FileDisplay
-                                    readOnly
-                                    project={this.state.project}
-                                    file={file}
-                                  />
-                                </div>
-                              ) : (
-                                <div>
-                                  <br />
-                                  <Card>
-                                    <div
-                                      style={{
-                                        opacity: 0.65,
-                                        margin: "auto",
-                                        textAlign: "center"
-                                      }}
-                                    >
-                                      {
-                                        "We can not display this file because it has been deleted."
-                                      }
-                                    </div>
-                                  </Card>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      {!!item.content.histories &&
-                        item.content.histories.map(historyID => {
-                          let historyItem = (
-                            this.state.project.history || []
-                          ).find(x => x.uid === historyID);
-                          return historyItem ? (
-                            <div>
-                              <br />
-                              <HistoryDisplay
-                                readOnly
-                                user={this.state.user}
-                                project={this.state.project}
-                                item={historyItem}
-                                onMessage={msg => {
-                                  this.props.passMessage(msg);
-                                }}
-                              />
-                            </div>
-                          ) : (
-                            <div />
-                          );
-                        })}
-                      {!!item.content.fileVersions &&
-                        item.content.fileVersions.map(versionID => {
-                          let file;
-                          for (let item of this.state.project.files || []) {
-                            if (item.files) {
-                              file = item.files.find(x => x.uid === versionID);
-                              if (file) break;
-                            }
-                          }
-                          return file ? (
-                            <div>
-                              <br />
-                              <Card>
-                                <Card.Meta
-                                  title={
-                                    <span
-                                      style={{
-                                        display: "flex",
-                                        alignItems: "center"
-                                      }}
-                                    >
-                                      <Icon
+                            return (
+                              <div>
+                                {event ? (
+                                  <div>
+                                    <br />
+                                    <TimelineItem
+                                      readOnly
+                                      project={this.state.project}
+                                      user={this.state.user}
+                                      event={event}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <br />
+                                    <Card>
+                                      <div
                                         style={{
-                                          color: "rgb(25, 144, 255)",
-                                          fontSize: 24,
-                                          fontWeight: "normal",
-                                          flex: "none"
-                                        }}
-                                        type={Document.getFiletypeIcon(
-                                          file.name
-                                        )}
-                                      />
-                                      <span
-                                        style={{
-                                          marginLeft: 10
+                                          opacity: 0.65,
+                                          margin: "auto",
+                                          textAlign: "center"
                                         }}
                                       >
-                                        {file.name}
-                                      </span>
-                                    </span>
-                                  }
-                                />
+                                        {
+                                          "We can not display this event because it has been deleted."
+                                        }
+                                      </div>
+                                    </Card>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        {!!item.content.files &&
+                          item.content.files.map(fileID => {
+                            let file;
+                            if (fileID) {
+                              file = (this.state.project.files || []).find(
+                                x => x.uid === fileID
+                              );
+                              if (!file)
+                                file = (this.state.project.files || [])
+                                  .filter(x => x.uploadType === "cloud")
+                                  .find(x => x.source.id === fileID);
+                            }
+                            return (
+                              <div>
+                                {file ? (
+                                  <div>
+                                    <br />
+                                    <FileDisplay
+                                      readOnly
+                                      project={this.state.project}
+                                      file={file}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div>
+                                    <br />
+                                    <Card>
+                                      <div
+                                        style={{
+                                          opacity: 0.65,
+                                          margin: "auto",
+                                          textAlign: "center"
+                                        }}
+                                      >
+                                        {
+                                          "We can not display this file because it has been deleted."
+                                        }
+                                      </div>
+                                    </Card>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        {!!item.content.histories &&
+                          item.content.histories.map(historyID => {
+                            let historyItem = (
+                              this.state.project.history || []
+                            ).find(x => x.uid === historyID);
+                            return historyItem ? (
+                              <div>
                                 <br />
-                                <List bordered>
-                                  <FileVersionDisplay
-                                    readOnly
-                                    project={this.state.project}
-                                    item={file}
+                                <HistoryDisplay
+                                  readOnly
+                                  user={this.state.user}
+                                  project={this.state.project}
+                                  item={historyItem}
+                                  onMessage={msg => {
+                                    this.props.passMessage(msg);
+                                  }}
+                                />
+                              </div>
+                            ) : (
+                              <div />
+                            );
+                          })}
+                        {!!item.content.fileVersions &&
+                          item.content.fileVersions.map(versionID => {
+                            let file;
+                            for (let item of this.state.project.files || []) {
+                              if (item.files) {
+                                file = item.files.find(
+                                  x => x.uid === versionID
+                                );
+                                if (file) break;
+                              }
+                            }
+                            return file ? (
+                              <div>
+                                <br />
+                                <Card>
+                                  <Card.Meta
+                                    title={
+                                      <span
+                                        style={{
+                                          display: "flex",
+                                          alignItems: "center"
+                                        }}
+                                      >
+                                        <Icon
+                                          style={{
+                                            color: "rgb(25, 144, 255)",
+                                            fontSize: 24,
+                                            fontWeight: "normal",
+                                            flex: "none"
+                                          }}
+                                          type={Document.getFiletypeIcon(
+                                            file.name
+                                          )}
+                                        />
+                                        <span
+                                          style={{
+                                            marginLeft: 10
+                                          }}
+                                        >
+                                          {file.name}
+                                        </span>
+                                      </span>
+                                    }
                                   />
-                                </List>
-                              </Card>
-                            </div>
-                          ) : (
-                            <div />
-                          );
-                        })}
-                      <br />
-                    </div>
-                  )}
+                                  <br />
+                                  <List bordered>
+                                    <FileVersionDisplay
+                                      readOnly
+                                      project={this.state.project}
+                                      item={file}
+                                    />
+                                  </List>
+                                </Card>
+                              </div>
+                            ) : (
+                              <div />
+                            );
+                          })}
+                        <br />
+                      </div>
+                    )}
                 </div>
                 <pre
                   style={{
@@ -448,55 +514,7 @@ class MessageDisplay extends Component {
   Helvetica, "PingFang SC", "Microsoft YaHei UI", sans-serif`
                   }}
                 >
-                  {(() => {
-                    let source = " " + (item.content || {}).bodyText + " ";
-                    let tokens = source.match(/@.*?#\d\d\d\d\s/g) || [];
-                    let text = source.split(/@.*?#\d\d\d\d\s/g);
-                    if (tokens.length) {
-                      let str = [];
-                      text.forEach((item, index) => {
-                        str.push(index ? item : item.substring(1));
-                        if (tokens[index]) {
-                          let hash = tokens[index]
-                            .split("#")
-                            .pop()
-                            .trim();
-                          if (this.state.hashedMembers[hash]) {
-                            str.push(
-                              <UserGroupDisplay
-                                style={{
-                                  display: "inline-block",
-                                  marginBottom: "-8px"
-                                }}
-                                project={this.state.project}
-                                people={{
-                                  members: [this.state.hashedMembers[hash].uid]
-                                }}
-                              />
-                            );
-                          } else if (this.state.hashedRoles[hash]) {
-                            str.push(
-                              <UserGroupDisplay
-                                style={{
-                                  display: "inline-block",
-                                  marginBottom: "-8px"
-                                }}
-                                project={this.state.project}
-                                people={{
-                                  roles: [this.state.hashedRoles[hash].uid]
-                                }}
-                              />
-                            );
-                          } else {
-                            str.push(tokens[index]);
-                          }
-                        }
-                      });
-                      return str;
-                    } else {
-                      return source.trim();
-                    }
-                  })()}
+                  {body}
                 </pre>{" "}
                 <span style={{ color: "rgb(25, 144, 255)" }}>
                   {this.state.status === "processing" && (

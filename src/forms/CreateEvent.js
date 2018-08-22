@@ -6,6 +6,7 @@ import MemberGroupSelector from "../components/MemberGroupSelector";
 import Project from "../classes/Project";
 import Moment from "moment";
 import UserGroupDisplay from "../components/UserGroupDisplay";
+import User from "../classes/User";
 
 export default class CreateEvent extends Component {
   /**
@@ -38,7 +39,17 @@ export default class CreateEvent extends Component {
         submitted: true
       },
       () => {
-        this.props.onSubmit(this.state);
+        if (this.state.mode === "create") {
+          this.props.onSubmit(this.state);
+        } else {
+          User.getCurrentUser().then(user => {
+            this.props.onSubmit(
+              update(this.state, {
+                values: { lastModifiedBy: { $set: user.uid } }
+              })
+            );
+          });
+        }
       }
     );
   }
@@ -66,6 +77,7 @@ export default class CreateEvent extends Component {
       this.setState(
         {
           creator: (props.values || {}).creator || null,
+          lastEditor: (props.values || {}).lastModifiedBy || null,
           submitted: false,
           mode: props.mode || "create",
           opened: props.opened,
@@ -113,19 +125,34 @@ export default class CreateEvent extends Component {
           {this.state.mode === "edit" ? "Event" : "New Event"}
         </h2>
         <div style={{ display: this.state.mode === "edit" ? "block" : "none" }}>
-          {this.state.creator ? (
-            <p>
-              Creator:{" "}
-              <UserGroupDisplay
-                project={this.state.project}
-                style={{ display: "inline-block" }}
-                people={{ members: [this.state.creator] }}
-              />
-              <br />
-            </p>
-          ) : (
-            ""
-          )}
+          <div>
+            {this.state.creator ? (
+              <p style={{ display: "inline-block", marginRight: 10 }}>
+                Creator:{" "}
+                <UserGroupDisplay
+                  project={this.state.project}
+                  style={{ display: "inline-block" }}
+                  people={{ members: [this.state.creator] }}
+                />
+                <br />
+              </p>
+            ) : (
+              ""
+            )}
+            {this.state.lastEditor ? (
+              <p style={{ display: "inline-block", marginRight: 10 }}>
+                Last edited by:{" "}
+                <UserGroupDisplay
+                  project={this.state.project}
+                  style={{ display: "inline-block" }}
+                  people={{ members: [this.state.lastEditor] }}
+                />
+                <br />
+              </p>
+            ) : (
+              ""
+            )}
+          </div>
           <h3>Marked as completed</h3>
           <Switch
             style={{ marginBottom: 10 }}
@@ -143,6 +170,7 @@ export default class CreateEvent extends Component {
 
         <h3>Name</h3>
         <Input
+          maxLength={100}
           style={{ marginBottom: 10 }}
           onChange={e => {
             this.setState(
@@ -154,8 +182,12 @@ export default class CreateEvent extends Component {
           placeholder="Untitled Event"
           ref={e => (this.nameField = e)}
         />
+        <p style={{ textAlign: "right", opacity: 0.65 }}>
+          100 characters limit
+        </p>
         <h3>Description</h3>
         <Input.TextArea
+          maxLength={2000}
           style={{ marginBottom: 10 }}
           onChange={e => {
             this.setState(
@@ -166,6 +198,9 @@ export default class CreateEvent extends Component {
           }}
           ref={e => (this.descriptionField = e)}
         />
+        <p style={{ textAlign: "right", opacity: 0.65 }}>
+          2000 characters limit
+        </p>
         <h3>Date</h3>
         <div>
           <DatePicker
