@@ -175,7 +175,7 @@ export default class CreateEvent extends Component {
           onChange={e => {
             this.setState(
               update(this.state, {
-                values: { name: { $set: e.target.value || "Untitled Event" } }
+                values: { name: { $set: e.target.value.trim() || "Untitled Event" } }
               })
             );
           }}
@@ -229,8 +229,8 @@ export default class CreateEvent extends Component {
           ref={e => (this.peopleField = e)}
         />
         <p>
-          Only people involved will see this event in their feed and receive
-          reminders.
+          People involved will see this event in their feed and receive
+          reminders. You will always receive reminders for events you create.
         </p>
         <h3>Notify</h3>
         <Select

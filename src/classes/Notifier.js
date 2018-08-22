@@ -103,7 +103,7 @@ export default class Notifier extends EventEmitter {
                   item.involvedPeople,
                   this.project,
                   this.user
-                )
+                )||item.creator===this.user.uid
               ) {
                 new Notify(`Bonfire - ${this.project.name}`, {
                   body: `${timeDifference < 0 ? "(Overdue) " : ""}${

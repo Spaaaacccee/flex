@@ -18,7 +18,7 @@ export default class TimelineItem extends Component {
   static defaultProps = {
     onComplete: () => {},
     onEdit: () => {},
-    onMentionButtonPressed:()=>{}
+    onMentionButtonPressed: () => {}
   };
   state = {
     project: {},
@@ -83,12 +83,13 @@ export default class TimelineItem extends Component {
                     <Icon type="edit" />
                     {" Edit"}
                   </span>,
-                  <span onClick={() => {
-                    this.props.onMentionButtonPressed();
-                  }}
-                >
-                  <Icon type="message" />
-                  {" Mention"}
+                  <span
+                    onClick={() => {
+                      this.props.onMentionButtonPressed();
+                    }}
+                  >
+                    <Icon type="message" />
+                    {" Mention"}
                   </span>,
                   ...(!isComplete
                     ? [
@@ -133,8 +134,12 @@ export default class TimelineItem extends Component {
                     </div>
                   )}
                   {!isComplete &&
-                    UserGroupDisplay.hasUser(this.state.event.involvedPeople, this.state.project, this.state.user)
-                    && (
+                    (UserGroupDisplay.hasUser(
+                      this.state.event.involvedPeople,
+                      this.state.project,
+                      this.state.user
+                    ) ||
+                      this.state.event.creator === this.state.user.uid) && (
                       <div style={{ marginBottom: 10, color: "#FFD800" }}>
                         <Icon type="user" />
                         {" You're involved"}
@@ -167,7 +172,7 @@ export default class TimelineItem extends Component {
             }
             description={
               this.state.event.date ? (
-                <div style={{ columns: 2, columnWidth: 150 }}>
+                <div>
                   <div>
                     <div>{new Date(this.state.event.date).toDateString()}</div>
                     <div>{this.state.event.description || ""}</div>
@@ -178,6 +183,18 @@ export default class TimelineItem extends Component {
                       project={this.state.project}
                       people={this.state.event.involvedPeople}
                     />
+                    {this.state.event.creator ? (
+                      <div>
+                        Creator:{" "}
+                        <UserGroupDisplay
+                          style={{display:'inline-block'}}
+                          project={this.state.project}
+                          people={{ members: [this.state.user.uid] }}
+                        />
+                      </div>
+                    ) : (
+                      ""
+                    )}
                   </div>
                 </div>
               ) : (
@@ -200,7 +217,12 @@ export default class TimelineItem extends Component {
             mode="edit"
             onSubmit={event => {
               this.state.project
-                .setEvent(this.state.event.uid, new TimelineEvent(Object.assign(this.state.event, event.values)))
+                .setEvent(
+                  this.state.event.uid,
+                  new TimelineEvent(
+                    Object.assign(this.state.event, event.values)
+                  )
+                )
                 .then(() => {
                   this.setState({
                     event: event.values,
