@@ -1,5 +1,14 @@
 export default class DocumentType {
+  /**
+   * Get an antd file icon name from an extension. This list only contains definitions for popular file types. A result is not guaranteed.
+   * Referenced https://github.com/arthurvr/image-extensions
+   * @static
+   * @param  {String} ext 
+   * @return {String}
+   * @memberof DocumentType
+   */
   static getIconName(ext) {
+    // Giant switch case for matching file types to icon names
     switch (ext) {
       case "md":
         return "file-markdown";

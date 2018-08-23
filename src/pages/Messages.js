@@ -546,7 +546,7 @@ class MESSAGES extends Component {
                       if (this.state.consoleStatus === "editing") {
                         this.handleEdit();
                       } else {
-                        if (!document.querySelector(".ant-mention-dropdown")) {
+                        if (!document.querySelector(".ant-mention-dropdown:not(.slide-down-leave-active)")) {
                           this.handleSend();
                         }
                       }

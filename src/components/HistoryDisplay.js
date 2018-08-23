@@ -4,6 +4,7 @@ import UserGroupDisplay from "./UserGroupDisplay";
 import $ from "../classes/Utils";
 import FileDisplay from "./FileDisplay";
 import TimelineItem from "./TimelineItem";
+import { HistoryItem } from "../classes/History";
 
 class HistoryDisplay extends Component {
   state = { project: {}, user: {}, item: null, readOnly: false };
@@ -88,15 +89,7 @@ class HistoryDisplay extends Component {
                   people={{ members: [item.doneBy] }}
                   project={this.state.project}
                 />
-                {`${item.action} ${
-                  item.type === "name" || item.type === "description"
-                    ? "the project"
-                    : item.type === "project"
-                      ? "this"
-                      : $.string(item.type.substring(0, 1)).isVowel()
-                        ? "an"
-                        : "a"
-                } ${item.type} ${$.date(item.doneAt).humanise(true)}`}
+                {HistoryItem.getDescription(item, true)}
               </span>
             }
           </div>

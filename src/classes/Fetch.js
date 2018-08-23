@@ -112,10 +112,10 @@ export default class Fetch {
   }
 
   /**
-   * Gets users by their email address.
+   * Gets users by their email address. The search only tries to match the name from the start.
    * @static
-   * @param  {String} email The email address to query for
-   * @param  {Number} numberOfResults The number of results to return
+   * @param  {String} email The email address to query for. The search only tries to match the name from the start. For example, the query "123" would match 123@gmail.com but no 0123@gmail.com
+   * @param  {Number} numberOfResults The number of results to return.
    * @return {User[]}
    * @memberof Fetch
    */
@@ -132,6 +132,8 @@ export default class Fetch {
     queryResult.forEach(snapshot => {
       userResults.push(snapshot.val().uid);
     });
+
+    // Return user information for each user that was found.
     return await Promise.all(userResults.map(item => Fetch.getUser(item)));
   }
 }
@@ -165,6 +167,7 @@ class LocalCache {
   static set(request, response) {
     LocalCache.cache[JSON.stringify(request)] = response;
   }
+
   /**
    * Gets an item in the cache
    * @static

@@ -9,11 +9,19 @@ import User from "./User";
  * @class Messages
  */
 export default class Messages extends EventEmitter {
+  /**
+   * A utility to determine whether two messengers are the same.
+   * @static
+   * @param  {any} a
+   * @param  {any} b
+   * @return
+   * @memberof Messages
+   */
   static equal(a, b) {
+    // If either of the objects are null or undefined, return false.
     if (!(a && b)) return false;
-    let inequality = 0;
-    inequality += a.uid !== b.uid;
-    return !inequality;
+    // Return whether the two items have the same ID.
+    return a.uid === b.uid;
   }
   /**
    * Gets a message collection, alias to `Fetch.getMessages`
@@ -27,7 +35,7 @@ export default class Messages extends EventEmitter {
   }
 
   /**
-   * Instantly modifies a message collection
+   * Instantly modifies a message collection. This is used when initialising a messenger.
    * @static
    * @param  {String} collectionID
    * @param  {Messages} messages
@@ -57,6 +65,11 @@ export default class Messages extends EventEmitter {
 
   uid = $.id().generateUID();
 
+  /**
+   * The last time this collection of messages was changed.
+   * @type {Number}
+   * @memberof Messages
+   */
   lastUpdatedTimestamp = Date.now();
 
   /**
@@ -67,8 +80,9 @@ export default class Messages extends EventEmitter {
   messages = {};
 
   /**
+   * Performs an operation on the latest version of the messenger
    * @param {{(messages:Messages)=>Void}} operation
-   * @return {Promise<Boolean>}
+   * @return {Promise<Boolean>} Whether the operation was successful.
    * @memberof Messages
    */
   async transaction(operation) {
@@ -85,7 +99,7 @@ export default class Messages extends EventEmitter {
     } catch (e) {
       // Catch any problems with the database request and throw an error.
       console.log(e);
-      throw new Error("Transaction was not able to be completed");
+      return false;
     }
     // Perform the same operation on the local object
     operation(this);
@@ -94,52 +108,115 @@ export default class Messages extends EventEmitter {
     return true;
   }
 
+  /**
+   * Updates the timestamp of this messenger to the current time.
+   * @return {void}
+   * @memberof Messages
+   */
+  async updateTimestamp() {
+    // Get current time.
+    let dateNow = Date.now();
+    // Set database last updated value
+    await Fetch.getMessagesReference(this.uid)
+      .child("lastUpdatedTimestamp")
+      .set(dateNow);
+    // Set local last updated value
+    this.lastUpdatedTimestamp = dateNow;
+  }
+
+  /**
+   * Instantly set a message on the server.
+   * @param  {any} id
+   * @param  {any} newData
+   * @return {void}
+   * @memberof Messages
+   */
   async setData(id, newData) {
+    // Set the message with the right ID with the new data.
     await Fetch.getMessagesReference(this.uid)
       .child("messages")
       .child(id)
       .set(newData);
+    // Update the timestamp for the last change.
+    this.updateTimestamp();
   }
 
   /**
-   *
+   * Mark a message as read.
    * @param  {String} id
    * @param  {Boolean} isRead
    * @return {void}
    * @memberof Messages
    */
   async setRead(id, isRead) {
-    if (!id) return;
+    // The ID is a null or undefined value, cancel setting a message as read.
+    if (!id) return 0;
+    // Get the current version of the message. If it doesn't exist, then cancel setting the message as read.
     let current = await Fetch.getMessagesReference(this.uid)
       .child("messages")
       .child(id)
       .once("value");
-    if (!current.val()) return;
+    if (!current.val()) return 0;
+    // Mark the message as read.
     await Fetch.getMessagesReference(this.uid)
       .child("messages")
       .child(id)
       .child("readBy")
       .child((await User.getCurrentUser()).uid)
       .set(isRead);
+    // Update the timestamp for the last change.
+    this.updateTimestamp();
+    // Return true to signify that the operation was successful.
+    return 1;
   }
 
+  /**
+   * Add a new message to this collection.
+   * @param  {Message} message
+   * @return {void}
+   * @memberof Messages
+   */
   async addMessage(message) {
     await this.setData(message.uid, message);
     this.messages[message.uid] = message;
   }
 
+  /**
+   * Deletes a message
+   * @param  {String} messageID
+   * @return {void}
+   * @memberof Messages
+   */
   async deleteMessage(messageID) {
+    // Set the message as null
     await this.setData(messageID, null);
+    // Set the local copy as null, then delete it.
     this.messages[messageID] = null;
     delete this.messages[messageID];
   }
 
+  /**
+   * Set a message with new data.
+   * @param  {any} messageID
+   * @param  {any} message
+   * @memberof Messages
+   */
   async setMessage(messageID, message) {
-    await this.setData(messageID, message);
-    this.messages[messageID] = Object.assign(message, { uid: messageID });
+    let newMessage = { ...message, ...{ uid: messageID } };
+    // Set the message on the database.
+    await this.setData(messageID, newMessage);
+    // Set the message locally.
+    this.messages[messageID] = newMessage;
   }
 
+  /**
+   * Get an array of messages by time order.
+   * @param  {any} limit
+   * @return
+   * @memberof Messages
+   */
   async getMessagesByDateOrder(limit) {
+    // Create a query for the database to order the messages by time and return the result.
     return (await Fetch.getMessagesReference(this.uid)
       .child("messages")
       .orderByChild("timeSent")
@@ -147,9 +224,17 @@ export default class Messages extends EventEmitter {
       .once("value")).val();
   }
 
+  /**
+   * Start listening for new messages.
+   * @return
+   * @memberof Messages
+   */
   startListening() {
+    // If this object doesn't have a uid it could potentially create problematic queries, so return.
     if (this.uid === undefined) return;
+    // Get a reference to where the messages are stored.
     const ref = Fetch.getMessagesReference(this.uid).child("messages");
+    // Add a handler for when a message is added.
     ref.on("child_added", snapshot => {
       const message = snapshot.val();
       if (!message || !message.content) return;
@@ -161,6 +246,7 @@ export default class Messages extends EventEmitter {
       this.emit("message", message);
       this.emit("change", this.messages);
     });
+    // Add a handler for when a message is changed, e.g. edited.
     ref.on("child_changed", snapshot => {
       const message = snapshot.val();
       if (!message || !message.content) return;
@@ -169,6 +255,7 @@ export default class Messages extends EventEmitter {
       this.emit("edit", message);
       this.emit("change", this.messages);
     });
+    // Add a handler for when a message is deleted.
     ref.on("child_removed", snapshot => {
       const message = snapshot.val();
       if (!message || !message.content) return;
@@ -179,12 +266,20 @@ export default class Messages extends EventEmitter {
     });
   }
 
+  // Stop listening to new message events
   stopListening() {
+    // If this object doesn't have a uid it could potentially create problematic queries, so return.
     if (this.uid === undefined) return;
+    // Remove all handlers for this messenger
     Fetch.getMessagesReference(this.uid).off();
   }
 }
 
+/**
+ * Represents a single message
+ * @export
+ * @class Message
+ */
 export class Message {
   /**
    * The content of this message.
@@ -227,9 +322,29 @@ export class Message {
 }
 
 export class MessageContent {
+  /**
+   * The text content of this message
+   * @type {String}
+   * @memberof MessageContent
+   */
   bodyText = "";
+  /**
+   * The files that are mentioned in this message
+   * @type {String[]}
+   * @memberof MessageContent
+   */
   files = [];
+  /**
+   * The events that are mentioned in this message.
+   * @type {String[]}
+   * @memberof MessageContent
+   */
   events = [];
+  /**
+   * The changes that are mentioned in this message
+   * @type {String[]}
+   * @memberof MessageContent
+   */
   histories = [];
 
   /**

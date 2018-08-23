@@ -3,7 +3,13 @@ import "firebase/auth";
 import "firebase/database"
 import "firebase/storage"
 
+/**
+ * Class for managing Firebase
+ * @export
+ * @class Fire
+ */
 export default class Fire {
+  // Configuration information to connect to Firebase.
   static config = {
     apiKey: "AIzaSyDky75Lh8P3sqMCB3MvUVnRjwfquOcMerE",
     clientId:
@@ -33,14 +39,21 @@ export default class Fire {
     return Firebase;
   }
 
+  /**
+   * Authenticate Google APIs. This is necessary for Google Drive integration to work
+   * @static
+   * @param  {()=>{})} callback 
+   * @return {void}@memberof Fire
+   */
   static authenticateGoogleAPIs(callback) {
+    // Google API script to be injected.
     var script = document.createElement("script");
     script.type = "text/javascript";
     script.src = "https://apis.google.com/js/api.js";
-    // Once the Google API Client is loaded, you can run your code
+    // Once the Google API Client is loaded, initialise it.
     script.onload = e => {
       window.gapi.load("client", () => {
-        // Initialize the Google API Client with the config object
+        // Initialise the Google API Client with the config object
         window.gapi.client
           .init({
             apiKey: Fire.config.apiKey,
@@ -48,13 +61,13 @@ export default class Fire {
             discoveryDocs: Fire.config.discoveryDocs,
             scope: Fire.config.scopes.join(" ")
           })
-          // Loading is finished, so start the app
+          // Loading is finished, notify the caller.
           .then(() => {
             callback();
           });
       });
     };
-    // Add to the document
+    // Inject the script into the document
     document.getElementsByTagName("head")[0].appendChild(script);
   }
 }

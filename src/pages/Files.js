@@ -163,7 +163,8 @@ export default class FILES extends Component {
                                   sender: this.state.user.uid,
                                   content: new MessageContent({
                                     fileVersions: [versionID],
-                                    bodyText: "(Mentioned a specific version of a file)"
+                                    bodyText:
+                                      "(Mentioned a specific version of a file)"
                                   })
                                 })
                               });
@@ -187,9 +188,9 @@ export default class FILES extends Component {
                           item.files &&
                           !item.files.find(i => i.state !== "unavailable")
                             ? {
-                              opacity: 0.65,
-                              pointerEvents: "none"
-                            }
+                                opacity: 0.65,
+                                pointerEvents: "none"
+                              }
                             : {}
                         }
                         key={index}
@@ -239,41 +240,36 @@ export default class FILES extends Component {
                                 {`${item.files.length} versions`}
                                 {!!item.files &&
                                   item.files.length > 1 && (
-                                  <div>
-                                    <br />
-                                    <List
+                                    <div>
+                                      <br />
+                                      <List
                                         style={{
-                                        borderTop: "1px solid #e8e8e8"
-                                      }}
-                                    >
-                                      {item.files
-                                        .sort(
-                                          (a, b) =>
-                                            a.dateModified === b.dateModified
-                                              ? 0
-                                              : a.dateModified >
-                                                  b.dateModified
-                                                ? 1
-                                                : -1
-                                        )
-                                        .map((item, index) => (
-                                          <List.Item key={index}>
-                                            <List.Item.Meta
+                                          borderTop: "1px solid #e8e8e8"
+                                        }}
+                                      >
+                                        {item.files
+                                          .sort(
+                                            (a, b) =>
+                                              a.dateUploaded - b.dateUploaded
+                                          )
+                                          .map((item, index) => (
+                                            <List.Item key={index}>
+                                              <List.Item.Meta
                                                 title={`Version ${index + 1}`}
                                                 description={
-                                                <div>
-                                                  {`${new Date(
-                                                    item.dateUploaded
-                                                  ).toLocaleString()}`}
-                                                </div>
-                                              }
-                                            />
-                                          </List.Item>
-                                        ))
-                                        .reverse()}
-                                    </List>
-                                  </div>
-                                )}
+                                                  <div>
+                                                    {`${new Date(
+                                                      item.dateUploaded
+                                                    ).toLocaleString()}`}
+                                                  </div>
+                                                }
+                                              />
+                                            </List.Item>
+                                          ))
+                                          .reverse()}
+                                      </List>
+                                    </div>
+                                  )}
                               </div>
                             )
                           }

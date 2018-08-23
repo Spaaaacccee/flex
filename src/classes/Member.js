@@ -40,4 +40,10 @@ export default class Member {
   }
 }
 
+/**
+ * A list of members. Funcions like an array.
+ * @export
+ * @class MemberList
+ * @extends Array
+ */
 export class MemberList extends Array {}

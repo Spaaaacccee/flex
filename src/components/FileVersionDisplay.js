@@ -94,6 +94,7 @@ class FileVersionDisplay extends Component {
                   project={this.state.project}
                 />
               </div>
+              {!!item.name && <div>Uploaded as {item.name}</div>}
             </div>
           }
         />

@@ -1,5 +1,6 @@
 import Moment from "moment";
 import CryptoJS from "crypto-js";
+import Algorithm from "./Algorithm";
 
 /**
  * Class for implementing event functionality in classes
@@ -120,9 +121,11 @@ class DateUtils {
 }
 
 class ArrayUtils {
+  sort (array, comparator) {
+    return Algorithm.quicksort(array,comparator);
+  }
   /**
    * Returns whether an item exists in an array
-
    * @param  {any} array
    * @param  {any} item
    * @return {Boolean}
@@ -255,10 +258,11 @@ class $ {
   /**
    * @typedef arrayUtils
    * @type {Object}
+   * @property {(comparator:(a,b)=>number)=>array} sort -  Quicksorts this array.
    * @property {(item)=>boolean} exists - Checks if an item exists in this array.
    * @property {(condition:(item)=>boolean)=>boolean} existsIf - Checks if any item matches a condition in this array.
    * @property {(item)=>array} remove - Removes an item from this array.
-   * @property {(predicate:(item)=>boolean)=>array} removeIf - Removes any items that match a condition from this array.
+   * @property {(condition:(item)=>boolean)=>array} removeIf - Removes any items that match a condition from this array.
    * @property {(condition:(item)=>boolean)=>number} indexOf - Gets the index of the first item that matches the condition in this array.
    * @property {(getString:(item)=>string,query: string)=>array} searchString - Gets all items in this array that matches a search string.
    */
