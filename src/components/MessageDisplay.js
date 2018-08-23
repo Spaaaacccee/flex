@@ -509,9 +509,8 @@ class MessageDisplay extends Component {
                     marginTop: 10,
                     whiteSpace: "pre-wrap",
                     display: "inline",
-                    fontFamily: `"Segoe UI",
-  "BlinkMacSystemFont", "Helvetica Neue", "Noto Sans", "Roboto", Arial,
-  Helvetica, "PingFang SC", "Microsoft YaHei UI", sans-serif`
+                    fontFamily: `"BlinkMacSystemFont", "Open Sans", "Segoe UI", Helvetica,
+                    "PingFang SC", "Microsoft YaHei", sans-serif`
                   }}
                 >
                   {body}

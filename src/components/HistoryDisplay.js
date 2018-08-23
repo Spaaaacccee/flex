@@ -89,7 +89,7 @@ class HistoryDisplay extends Component {
                   people={{ members: [item.doneBy] }}
                   project={this.state.project}
                 />
-                {HistoryItem.getDescription(item, true)}
+                {HistoryItem.getDescription(item, true, false, this.state.user)}
               </span>
             }
           </div>

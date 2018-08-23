@@ -28,8 +28,8 @@ export default class Member {
   joined;
   /**
    * Creates an instance of Member.
-   * @param  {String} uid
-   * @param  {RoleList} roles
+   * @param  {String} uid 
+   * @param  {RoleList} roles List of roles
    * @param {Boolean} justJoined Whether to set the `joined` date to now
    * @memberof Member
    */

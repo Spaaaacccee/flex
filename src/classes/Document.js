@@ -87,7 +87,7 @@ export default class Document {
       } else {
         // If the file is an archive, get the download link for the last version of the file
         if (meta.files && meta.files.length) {
-          url = `${await Document.getURL(meta.files[meta.files.length - 1])}`;
+          url = `${await Document.getURL(meta.files[0])}`;
         }
       }
     } else {

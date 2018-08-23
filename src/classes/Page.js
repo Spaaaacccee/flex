@@ -47,11 +47,17 @@ export default class Page {
   extrasButtonType;
 
   /**
-   * Define the way the top bar interacts with the content
+   * Define the way the top bar interacts with the content. Adaptive means the title name will be hidden when the scroll position is 0.
    * @type {"default" | "adaptive"}
    * @memberof Page
    */
   topBarMode;
+  /**
+   * Whether to hide the logo at the bottom of the page
+   * @type {Boolean}
+   * @memberof Page
+   */
+  hideFooter;
   /**
    * @type {boolean}
    * @memberof Page
@@ -99,6 +105,7 @@ export const Pages = [
     name: "Discuss",
     icon: "message",
     content: MESSAGES,
+    hideFooter: true,
     getNotificationCount: (project, user, messages) => {
       if(!messages) return 0;
       return ($.object(messages || {}).values() || []).filter(

@@ -47,7 +47,7 @@ export default class SignIn extends Component {
   }
 
   componentDidMount() {
-    if (sessionStorage.getItem("firebaseui::pendingRedirect") === "\"pending\"")
+    if (sessionStorage.getItem("firebaseui::pendingRedirect") === '"pending"')
       this.setState({ loading: true }, () => {
         this.startTimeout();
       });
@@ -91,25 +91,26 @@ export default class SignIn extends Component {
         style={
           this.state.signedIn
             ? {
-              opacity: 0,
-              pointerEvents: "none"
-            }
+                opacity: 0,
+                pointerEvents: "none"
+              }
             : {
-              opacity: 1,
-              pointerEvents: "all"
-            }
+                opacity: 1,
+                pointerEvents: "all"
+              }
         }
       >
         <div className="sign-in">
           <div className="sign-in-text">
             <img src="./icons/icon.png" style={{ width: 50, marginTop: 10 }} />
             <br />
-            <br />
             <h2
               style={{
-                fontSize: 24,
-                fontWeight: 700,
-                color: "rgb(40, 166, 240)"
+                fontSize: 32,
+                fontWeight: 400,
+                color: `rgb(40, 166, 240)`,
+                marginTop: 10,
+                marginBottom: 15
               }}
             >
               Sign In

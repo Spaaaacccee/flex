@@ -111,7 +111,10 @@ export default class ProjectView extends Component {
       await project.setName(values.general.name);
     if (project.description !== values.general.description)
       await project.setDescription(values.general.description);
-    await project.setRoles(values.roles);
+    if (
+      JSON.stringify(values.roles) !== JSON.stringify(this.state.project.roles)
+    )
+      await project.setRoles(values.roles);
     return true;
   }
 

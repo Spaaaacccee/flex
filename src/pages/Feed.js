@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import Fire from "../classes/Fire";
 import $ from "../classes/Utils";
-import './Feed.css';
+import "./Feed.css";
 
 import { Card, Icon, Avatar, Button, List } from "antd";
 import Messages, { Message, MessageContent } from "../classes/Messages";
@@ -182,7 +182,7 @@ export default class FEED extends Component {
               <div key={item.uid}>
                 <TimelineItem
                   user={this.state.user}
-                  onMentionButtonPressed={()=>{
+                  onMentionButtonPressed={() => {
                     this.props.passMessage({
                       type: "prepare-message",
                       content: new Message({
@@ -255,9 +255,8 @@ export default class FEED extends Component {
               )
             )
             .map(item => (
-              <div>
+              <div key={item.uid}>
                 <HistoryDisplay
-                  key={item.uid}
                   user={this.state.user}
                   project={this.state.project}
                   item={item}
@@ -299,7 +298,7 @@ export default class FEED extends Component {
             Load More
           </Button>
         ) : (
-          <div style={{ opacity: 0.65, margin: 50 }}>Nothing else to show.</div>
+          <div style={{ opacity: 0.65, margin: 50, marginBottom: 0 }}>Nothing else to show.</div>
         )}
       </div>
     );

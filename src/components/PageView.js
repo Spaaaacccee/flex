@@ -109,8 +109,10 @@ export default class PageView extends Component {
             flex: "none"
           }}
           onLeftButtonPress={this.props.onLeftButtonPress}
-          onRightButtonPress={()=>{
-              ((this.pageContentElement||{}).onExtrasButtonPress||(()=>{})).apply(this.pageContentElement)
+          onRightButtonPress={() => {
+            (
+              (this.pageContentElement || {}).onExtrasButtonPress || (() => {})
+            ).apply(this.pageContentElement);
           }}
           leftButtonType={"menu"}
           rightButtonType={this.state.page.extrasButtonType}
@@ -133,12 +135,14 @@ export default class PageView extends Component {
                   this.props.onLoad(page);
                 }
               })}
-              {
-                // <p style={{ marginTop: 20, opacity: 0.4 }}>
-                //   <p>That's all there is</p>
-                //   <Icon type="smile" />
-                // </p>
-              }
+              {!(this.state.page || {}).hideFooter && (
+                <p style={{ marginTop: 50 }}>
+                  <img
+                    src="./icons/icon.png"
+                    style={{ width: 25, marginBottom: 50 }}
+                  />
+                </p>
+              )}
             </div>
           ) : (
             <div style={{ opacity: 0.65, margin: 50 }}>

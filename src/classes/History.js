@@ -10,27 +10,48 @@ export class HistoryItem {
   /**
    * Generate a single sentence description of an event.
    * @static
-   * @param  {HistoryItem} item
+   * @param {HistoryItem} item
+   * @param {Boolean} includeTime
+   * @param {Boolean} includeName
+   * @param {User} user
    * @return
    * @memberof HistoryItem
    */
-  static async getDescription(item, includeTime) {
+  static getDescription(item, includeTime, includeName, user) {
     // Generate the body text, starting with the name of the who did this event.
-    return `${(await User.get(item.doneBy)).name} ${item.action} ${
+    return `${includeName ? `${user.name} ` : ""}${item.action} ${
       // If the change is made on the name or description of the project, prepend the action with "the project" e.g. John edited the project description
-      item.type === "name" || item.type === "description"
+      item.type === "name" || item.type === "description" || item.type === "roles"
         ? "the project"
-        // If the change is made on the project, prepend it with "this" e.g. John joined this project
-        : item.type === "project"
+        : // If the change is made on the project, prepend it with "this" e.g. John joined this project
+          item.type === "project"
           ? "this"
-          // Otherwise, the change is made on an item in this project, so select an indefinite article accordingly e.g. John created an event, John added a file
-          : $.string(item.type.substring(0, 1)).isVowel()
+          : // Otherwise, the change is made on an item in this project, so select an indefinite article accordingly e.g. John created an event, John added a file
+            $.string(item.type.substring(0, 1)).isVowel()
             ? "an"
             : "a"
     } ${item.type}${
       // If include time is true, append the time this change was made.
       includeTime ? `  ${$.date(item.doneAt).humanise(true)}` : ""
     }`;
+  }
+
+  /**
+   * Async wrapper around get description if you don't want to supply user information manually.
+   * @static
+   * @param {HistoryItem} item
+   * @param {Boolean} includeTime
+   * @param {Boolean} includeName
+   * @return
+   * @memberof HistoryItem
+   */
+  static async getDescriptionAsync(item, includeTime, includeName) {
+    return await HistoryItem.getDescription(
+      item,
+      includeTime,
+      includeName,
+      await User.get(item.doneBy)
+    );
   }
 
   /**
