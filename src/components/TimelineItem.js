@@ -53,15 +53,13 @@ export default class TimelineItem extends Component {
     if (this.state.eventEditorVisible !== state.eventEditorVisible) return true;
     if (!Project.equal(props.project, this.state.project)) return true;
     if (!User.equal(state.user, this.state.user)) return true;
-    if (JSON.stringify(props.event) !== JSON.stringify(this.state.event))
-      return true;
+    if (JSON.stringify(props.event) !== JSON.stringify(this.state.event)) return true;
     return false;
   }
 
   render() {
     const isComplete =
-      this.state.event.markedAsCompleted ||
-      (this.state.event.autoComplete && this.state.event.date <= Date.now());
+      this.state.event.markedAsCompleted || (this.state.event.autoComplete && this.state.event.date <= Date.now());
     return (
       <div
         style={{
@@ -134,11 +132,7 @@ export default class TimelineItem extends Component {
                     </div>
                   )}
                   {!isComplete &&
-                    (UserGroupDisplay.hasUser(
-                      this.state.event.involvedPeople,
-                      this.state.project,
-                      this.state.user
-                    ) ||
+                    (UserGroupDisplay.hasUser(this.state.event.involvedPeople, this.state.project, this.state.user) ||
                       this.state.event.creator === this.state.user.uid) && (
                       <div style={{ marginBottom: 10, color: "#FFD800" }}>
                         <Icon type="user" />
@@ -146,14 +140,8 @@ export default class TimelineItem extends Component {
                       </div>
                     )}
                   {!isComplete &&
-                    new Moment(this.state.event.date).diff(
-                      new Moment(),
-                      "days"
-                    ) <= 14 &&
-                    new Moment(this.state.event.date).diff(
-                      new Moment(),
-                      "days"
-                    ) >= 0 && (
+                    new Moment(this.state.event.date).diff(new Moment(), "days") <= 14 &&
+                    new Moment(this.state.event.date).diff(new Moment(), "days") >= 0 && (
                       <div style={{ marginBottom: 10 }}>
                         <Icon type="clock-circle-o" />{" "}
                         {Moment(this.state.event.date).calendar(null, {
@@ -179,15 +167,12 @@ export default class TimelineItem extends Component {
                     <br />
                   </div>
                   <div>
-                    <UserGroupDisplay
-                      project={this.state.project}
-                      people={this.state.event.involvedPeople}
-                    />
+                    <UserGroupDisplay project={this.state.project} people={this.state.event.involvedPeople} />
                     {this.state.event.creator ? (
                       <div>
                         Creator:{" "}
                         <UserGroupDisplay
-                          style={{display:'inline-block'}}
+                          style={{ display: "inline-block" }}
                           project={this.state.project}
                           people={{ members: [this.state.user.uid] }}
                         />
@@ -204,6 +189,7 @@ export default class TimelineItem extends Component {
           />
         </Card>
         <Modal
+          getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
           footer={null}
           style={{ top: 20 }}
           visible={this.state.eventEditorVisible}
@@ -217,12 +203,7 @@ export default class TimelineItem extends Component {
             mode="edit"
             onSubmit={event => {
               this.state.project
-                .setEvent(
-                  this.state.event.uid,
-                  new TimelineEvent(
-                    Object.assign(this.state.event, event.values)
-                  )
-                )
+                .setEvent(this.state.event.uid, new TimelineEvent(Object.assign(this.state.event, event.values)))
                 .then(() => {
                   this.setState({
                     event: event.values,

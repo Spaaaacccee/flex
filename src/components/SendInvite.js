@@ -39,9 +39,7 @@ export default class SendInvite extends Component {
       formInstance: this.state.formInstance + 1
     });
     Promise.all(
-      this.state.recipients.map(async item =>
-        (await User.get(item.key)).addInvite(this.state.project.projectID)
-      )
+      this.state.recipients.map(async item => (await User.get(item.key)).addInvite(this.state.project.projectID))
     ).then(() => {
       this.props.onSend(this.state.values);
     });
@@ -55,6 +53,8 @@ export default class SendInvite extends Component {
     return (
       <div>
         <Modal
+          style={{ top: 20 }}
+          getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
           footer={[
             <Button
               key={0}
@@ -64,9 +64,7 @@ export default class SendInvite extends Component {
               onClick={this.handleSend.bind(this)}
               disabled={!this.state.recipients.length}
             >
-              {`Send ${this.state.recipients.length} Invite${
-                this.state.recipients.length === 1 ? "" : "s"
-              }`}
+              {`Send ${this.state.recipients.length} Invite${this.state.recipients.length === 1 ? "" : "s"}`}
             </Button>,
             <Button key={1} onClick={this.handleClose.bind(this)}>
               Cancel
@@ -78,15 +76,9 @@ export default class SendInvite extends Component {
           onCancel={this.handleClose.bind(this)}
         >
           <h2>Invite Users</h2>
-          <p>
-            Give people access to this project so they too can contribute
-            alongside you.
-          </p>
+          <p>Give people access to this project so they too can contribute alongside you.</p>
           <h3>People to invite</h3>
-          <UserSelector
-            key={this.state.formInstance}
-            onValueChanged={this.handleUserSelectionChanged.bind(this)}
-          />
+          <UserSelector key={this.state.formInstance} onValueChanged={this.handleUserSelectionChanged.bind(this)} />
         </Modal>
       </div>
     );

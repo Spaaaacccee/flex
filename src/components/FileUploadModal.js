@@ -22,17 +22,13 @@ export default class FileUploadModal extends Component {
   render() {
     return (
       <Modal
+        getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
         style={{ top: 20 }}
         visible={this.state.visible}
         onCancel={this.props.onClose}
         onOk={this.props.onClose}
         footer={[
-          <Button
-            type="primary"
-            key="0"
-            onClick={this.props.onClose.bind(this)}
-            icon="check"
-          >
+          <Button type="primary" key="0" onClick={this.props.onClose.bind(this)} icon="check">
             Done
           </Button>
         ]}
@@ -47,9 +43,7 @@ export default class FileUploadModal extends Component {
               <div style={{ textAlign: "center", margin: 20 }}>
                 <p>Link a Google Drive file to this project.</p>
                 <GooglePicker
-                  clientId={
-                    "79879287257-rhkuuivs2g1rm3gc8r64rfq0ibumgo06.apps.googleusercontent.com"
-                  }
+                  clientId={"79879287257-rhkuuivs2g1rm3gc8r64rfq0ibumgo06.apps.googleusercontent.com"}
                   developerKey={"AIzaSyDky75Lh8P3sqMCB3MvUVnRjwfquOcMerE"}
                   scope={["https://www.googleapis.com/auth/drive.readonly"]}
                   onChange={data => {

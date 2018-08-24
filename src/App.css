@@ -19,3 +19,17 @@
 .ant-layout-sider-children {
   white-space: nowrap;
 }
+
+.modal-mount {
+  height: 100%;
+}
+
+.modal-mount .ant-modal-mask {
+  z-index: 0;
+}
+
+.modal-mount .ant-modal-wrap {
+  position: static;
+  overflow: visible;
+  pointer-events: all;
+}

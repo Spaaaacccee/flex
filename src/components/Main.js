@@ -123,33 +123,27 @@ export default class Main extends Component {
 
   render() {
     return (
-      <div
-        style={{ height: "100%", width: "100vw" }}
-        className={this.state.currentlyWidescreen ? "widescreen" : ""}
-      >
+      <div style={{ height: "100%", width: "100vw" }} className={this.state.currentlyWidescreen ? "widescreen" : ""}>
         <Layout className="main-layout">
           {/* Project navigation bar */}
           <Sider width={this.state.siderWidth} className="project-sider">
             {/* Project navigation items */}
             <ProjectNavigation
-            onMessage={msg => {
-              switch (msg.type) {
-                case "switchTo":
-                  this.setState({ openedProjectID: msg.content });
-                  break;
-                default:
-                  break;
-              }
-            }}
+              onMessage={msg => {
+                switch (msg.type) {
+                  case "switchTo":
+                    this.setState({ openedProjectID: msg.content });
+                    break;
+                  default:
+                    break;
+                }
+              }}
               pauseUpdate={this.state.navigationCollapsed}
               user={this.state.user}
               // Here we're displaying all user projects, only if they exist
               items={
                 this.state.userData
-                  ? [
-                      ...(this.state.userData.projects || []),
-                      ...(this.state.userData.joinedProjects || [])
-                    ]
+                  ? [...(this.state.userData.projects || []), ...(this.state.userData.joinedProjects || [])]
                   : []
               }
               openedProject={this.state.openedProjectID}
@@ -190,12 +184,7 @@ export default class Main extends Component {
             pauseSiderUpdate={this.state.navigationCollapsed}
             style={{
               // Move the project view left by the sider width when the screen is too narrow to achieve an effect as if the navigation sidebar collapses. This ensures smooth 60fps animation performance on most devices.
-              transform:
-                "translateX(" +
-                (this.state.navigationCollapsed
-                  ? this.state.siderWidth * -1
-                  : 0) +
-                "px)",
+              transform: "translateX(" + (this.state.navigationCollapsed ? this.state.siderWidth * -1 : 0) + "px)",
               height: "100%",
               width: "100%"
             }}
@@ -210,9 +199,7 @@ export default class Main extends Component {
             // Respond to when the main content is pressed by collapsing the sidebar, only if it's currently not widescreen
             onContentPress={() => {
               this.setState({
-                navigationCollapsed: this.state.currentlyWidescreen
-                  ? false
-                  : true
+                navigationCollapsed: this.state.currentlyWidescreen ? false : true
               });
             }}
             // Respond to when a drag gesture is used to open the navigation bar
@@ -231,6 +218,8 @@ export default class Main extends Component {
         <SignIn onLogIn={this.handleLogIn.bind(this)} />
         {/* The create project modal */}
         <Modal
+          style={{ top: 20 }}
+          getContainer={() => document.querySelector(".modal-mount > div:first-child")}
           visible={this.state.modal.visible}
           onCancel={() => {
             this.setState({
@@ -253,9 +242,7 @@ export default class Main extends Component {
               await (await User.getCurrentUser()).newProject(newProject);
               // Invite try to invite the selected users
               await Promise.all(
-                (data.recipients || []).map(async item =>
-                  (await User.get(item.key)).addInvite(newProject.projectID)
-                )
+                (data.recipients || []).map(async item => (await User.get(item.key)).addInvite(newProject.projectID))
               );
               // Update the UI to close the form
               this.setState({
@@ -271,6 +258,8 @@ export default class Main extends Component {
         </Modal>
         {/*The modal that appears when the user is offline*/}
         <Modal
+          style={{ top: 20 }}
+          getContainer={() => document.querySelector(".modal-mount > div:first-child")}
           closable={false}
           footer={null}
           maskClosable={false}
@@ -281,9 +270,7 @@ export default class Main extends Component {
           <br />
           <br />
           <h2>You seem to be offline.</h2>
-          <p>
-            We'll let you resume as soon as we can reconnect to the internet.
-          </p>
+          <p>We'll let you resume as soon as we can reconnect to the internet.</p>
         </Modal>
       </div>
     );

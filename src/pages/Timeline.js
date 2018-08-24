@@ -38,17 +38,12 @@ export default class TIMELINE extends Component {
   }
 
   shouldComponentUpdate(props, state) {
-    if (this.state.eventCreatorVisible !== state.eventCreatorVisible)
-      return true;
+    if (this.state.eventCreatorVisible !== state.eventCreatorVisible) return true;
     if (this.state.eventCreatorKey !== this.state.eventCreatorKey) return true;
     if (this.state.project !== state.project) return true;
     if (this.state.user !== state.user) return true;
     if (!Project.equal(props.project, this.state.project)) return true;
-    if (
-      JSON.stringify(props.project.getEventsInDateOrder()) !==
-      JSON.stringify(this.state.project.events)
-    )
-      return true;
+    if (JSON.stringify(props.project.getEventsInDateOrder()) !== JSON.stringify(this.state.project.events)) return true;
     return false;
   }
 
@@ -68,11 +63,11 @@ export default class TIMELINE extends Component {
                 index
               }));
               let dateNow = Date.now();
-              events.splice(
-                events.map(item => item.date <= dateNow).lastIndexOf(true) + 1,
-                0,
-                { date: dateNow, item: { name: "Today" }, type: "marker" }
-              );
+              events.splice(events.map(item => item.date <= dateNow).lastIndexOf(true) + 1, 0, {
+                date: dateNow,
+                item: { name: "Today" },
+                type: "marker"
+              });
               return events.map((data, index) => (
                 <Timeline.Item key={data.item.uid + index}>
                   {(() => {
@@ -80,7 +75,7 @@ export default class TIMELINE extends Component {
                       case "card":
                         return (
                           <TimelineItem
-                            onMentionButtonPressed={()=>{
+                            onMentionButtonPressed={() => {
                               this.props.passMessage({
                                 type: "prepare-message",
                                 content: new Message({
@@ -117,13 +112,7 @@ export default class TIMELINE extends Component {
                           />
                         );
                       case "marker":
-                        return (
-                          <div>
-                            {`${data.item.name} (${new Date(
-                              data.date
-                            ).toDateString()})`}
-                          </div>
-                        );
+                        return <div>{`${data.item.name} (${new Date(data.date).toDateString()})`}</div>;
                       default:
                         break;
                     }
@@ -152,6 +141,7 @@ export default class TIMELINE extends Component {
           Event
         </Button>
         <Modal
+          getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
           footer={null}
           style={{ top: 20 }}
           visible={this.state.eventCreatorVisible}
@@ -171,15 +161,7 @@ export default class TIMELINE extends Component {
               this.setState(
                 update(this.state, {
                   events: {
-                    $splice: [
-                      [
-                        this.state.events
-                          .map(item => item.date <= Date.now())
-                          .lastIndexOf(true) + 1,
-                        0,
-                        newEvent
-                      ]
-                    ]
+                    $splice: [[this.state.events.map(item => item.date <= Date.now()).lastIndexOf(true) + 1, 0, newEvent]]
                   }
                 })
               );

@@ -82,15 +82,10 @@ export default class Settings extends Component {
   render() {
     return (
       <Modal
+        getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
         style={{ top: 20 }}
         footer={[
-          <Button
-            key={0}
-            icon="check"
-            loading={this.state.saving}
-            type="primary"
-            onClick={this.handleSave.bind(this)}
-          >
+          <Button key={0} icon="check" loading={this.state.saving} type="primary" onClick={this.handleSave.bind(this)}>
             Save Settings
           </Button>,
           <Button key={1} onClick={this.handleClose.bind(this)}>
@@ -142,9 +137,7 @@ export default class Settings extends Component {
                 );
               }}
             />
-            <p style={{ textAlign: "right", opacity: 0.65 }}>
-              100 characters limit
-            </p>
+            <p style={{ textAlign: "right", opacity: 0.65 }}>100 characters limit</p>
             <h3>Project Description</h3>
             <Input.TextArea
               maxLength={2000}
@@ -160,9 +153,7 @@ export default class Settings extends Component {
                 );
               }}
             />
-            <p style={{ textAlign: "right", opacity: 0.65 }}>
-              2000 characters limit
-            </p>
+            <p style={{ textAlign: "right", opacity: 0.65 }}>2000 characters limit</p>
           </TabPane>
           <TabPane
             tab={
@@ -176,9 +167,7 @@ export default class Settings extends Component {
             <RoleEditor
               values={this.state.values.roles}
               onChange={roles => {
-                this.setState(
-                  update(this.state, { values: { roles: { $set: roles } } })
-                );
+                this.setState(update(this.state, { values: { roles: { $set: roles } } }));
               }}
             />
           </TabPane>
@@ -206,27 +195,17 @@ export default class Settings extends Component {
                   onConfirm={() => {
                     this.setState({ saving: true }, () => {
                       Promise.all(
-                        (this.state.sourceProject.members || []).map(
-                          async member =>
-                            (await User.getCurrentUser()).leaveProject(
-                              this.state.sourceProject.projectID,
-                              true
-                            )
+                        (this.state.sourceProject.members || []).map(async member =>
+                          (await User.getCurrentUser()).leaveProject(this.state.sourceProject.projectID, true)
                         )
                       ).then(() => {
-                        this.state.user
-                          .deleteProject(this.state.sourceProject.projectID)
-                          .then(error => {
-                            if (!error) {
-                              message.success(
-                                `Successfully deleted ${
-                                  this.state.sourceProject.name
-                                }`
-                              );
-                            }
+                        this.state.user.deleteProject(this.state.sourceProject.projectID).then(error => {
+                          if (!error) {
+                            message.success(`Successfully deleted ${this.state.sourceProject.name}`);
+                          }
 
-                            this.props.onClose();
-                          });
+                          this.props.onClose();
+                        });
                       });
                     });
                   }}
@@ -238,8 +217,7 @@ export default class Settings extends Component {
                 <br />
                 <div style={{ height: 10 }} />
                 <p>
-                  Permanently delete this project, including all files stored
-                  here. <b>This operation is not reversible.</b>
+                  Permanently delete this project, including all files stored here. <b>This operation is not reversible.</b>
                 </p>
               </div>
             ) : (
@@ -250,18 +228,12 @@ export default class Settings extends Component {
                   onClick={() => {
                     this.setState({ saving: true }, () => {
                       User.getCurrentUser().then(user => {
-                        user
-                          .leaveProject(this.state.sourceProject.projectID)
-                          .then(error => {
-                            if (!error) {
-                              message.success(
-                                `Successfully left ${
-                                  this.state.sourceProject.name
-                                }`
-                              );
-                            }
-                            this.props.onClose();
-                          });
+                        user.leaveProject(this.state.sourceProject.projectID).then(error => {
+                          if (!error) {
+                            message.success(`Successfully left ${this.state.sourceProject.name}`);
+                          }
+                          this.props.onClose();
+                        });
                       });
                     });
                   }}
@@ -270,9 +242,7 @@ export default class Settings extends Component {
                 </Button>
                 <br />
                 <div style={{ height: 10 }} />
-                <p>
-                  You won't be able to rejoin until someone invites you again.
-                </p>
+                <p>You won't be able to rejoin until someone invites you again.</p>
               </div>
             )}
           </TabPane>
