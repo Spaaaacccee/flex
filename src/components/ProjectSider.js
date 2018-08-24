@@ -7,6 +7,7 @@ import Messages from "../classes/Messages";
 import Project from "../classes/Project";
 import User from "../classes/User";
 import shallowEqualArrays from "shallow-equal/arrays";
+import {Scrollbars} from "react-custom-scrollbars";
 const { SubMenu } = Menu;
 
 /**
@@ -179,7 +180,7 @@ export default class ProjectSider extends Component {
 
   render() {
     return (
-      <div className="project-sider">
+      <Scrollbars autoHide hideTracksWhenNotNeeded className="project-sider">
         <Button
           onClick={this.handleInviteUsersPress.bind(this)}
           type="primary"
@@ -236,7 +237,7 @@ export default class ProjectSider extends Component {
             <span>Project Settings</span>
           </Menu.Item>
         </Menu>
-      </div>
+      </Scrollbars>
     );
   }
 }

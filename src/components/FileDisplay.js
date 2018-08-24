@@ -11,6 +11,11 @@ import FileVersionDisplay from "./FileVersionDisplay";
 import Humanize from "humanize-plus";
 import FileUpload from "./FileUpload";
 
+/**
+ * A component to display a single file.
+ * @class FileDisplay
+ * @extends Component
+ */
 class FileDisplay extends Component {
   static defaultProps = {
     onMentionButtonPressed: () => {}
@@ -28,12 +33,12 @@ class FileDisplay extends Component {
   }
 
   shouldComponentUpdate(props, state) {
-    if (state.addVersionModalVisible !== this.state.addVersionModalVisible)
-      return true;
+    if (state.addVersionModalVisible !== this.state.addVersionModalVisible) return true;
     if (!Project.equal(props.project, this.state.project)) return true;
     if (props.readOnly !== this.state.readOnly) return true;
     if (state.deleting !== this.state.deleting) return true;
     if (!this.state.file) return true;
+    // If there is a file, check if the file has changed.  
     if (props.file) {
       if (props.file.source) {
         if (props.file.source.id !== this.state.file.source.id) return true;
@@ -42,10 +47,12 @@ class FileDisplay extends Component {
       if (props.file.uid !== this.state.file.uid) return true;
       if (props.file.files.length !== this.state.file.files.length) return true;
     }
+    // Prevent the component from updating if nothing has changed.
     return false;
   }
 
   componentWillReceiveProps(props) {
+    // Update the current state with new props.
     this.setState({
       project: props.project,
       file: props.file,
@@ -54,12 +61,14 @@ class FileDisplay extends Component {
   }
 
   render() {
+    // If any of the files are unavailable, then make the whole file unavailable.
     let isUnavailable =
       this.state.file.files &&
       !this.state.file.files.find(i => i.state !== "unavailable");
     return (
       <div style={{ textAlign: "left" }}>
         {
+          // Set the card to be slightly invisible and uninteractable when deleting or is unailable.
           <Card
             style={Object.assign(
               {},
@@ -72,6 +81,8 @@ class FileDisplay extends Component {
                   ? { opacity: 0.65 }
                   : {}
             )}
+
+            // Component to display a preview thumbnail. Currently disabled.
             /*cover={
               <div
                 style={{
@@ -122,6 +133,7 @@ class FileDisplay extends Component {
               </div>
             } */
             actions={(() => {
+              // The reply button opens a modal to add new files.
               const replyButton = (
                 <span
                   onClick={() => {
@@ -132,6 +144,7 @@ class FileDisplay extends Component {
                   {" Version"}
                 </span>
               );
+              // The preview button opens a preview window.
               const previewButton = (
                 <span
                   onClick={() => {
@@ -142,6 +155,7 @@ class FileDisplay extends Component {
                   {" Open"}
                 </span>
               );
+              // The mention button switches to messages and sends a prepared message.
               const mentionButton = (
                 <span
                   onClick={() => {
@@ -152,6 +166,7 @@ class FileDisplay extends Component {
                   {" Mention"}
                 </span>
               );
+              // The delete button deletes the file after confirmation.
               const deleteButton = (
                 <Popconfirm
                   title={
@@ -169,10 +184,12 @@ class FileDisplay extends Component {
                   cancelText="Cancel"
                   onConfirm={() => {
                     this.setState({ deleting: true }, () => {
+                      // Try to delete the displayed file
                       this.state.project
                         .tryDelete(this.state.file)
                         .then(isSuccessful => {
                           if (isSuccessful) {
+                            // If the file was deleted, add a history event about it.
                             User.getCurrentUser().then(user => {
                               this.state.project.addHistory(
                                 new HistoryItem({
@@ -194,9 +211,11 @@ class FileDisplay extends Component {
                   </span>
                 </Popconfirm>
               );
-              if (this.state.deleting) return [deleteButton];
+              // Only display the delete button if the deletion is ongoing or the file is unavailable.
+              if (this.state.deleting||isUnavailable) return [deleteButton];
+              // Only display the preview button if the component is read only
               if (this.state.readOnly) return [previewButton];
-              if (isUnavailable) return [deleteButton];
+              // Otherwise, display a set of buttons depending on whether the file is a Google Drive file.
               return this.state.file.uploadType === "cloud"
                 ? [previewButton, mentionButton, deleteButton]
                 : [replyButton, previewButton, mentionButton, deleteButton];

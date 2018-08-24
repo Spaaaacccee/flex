@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 
 import { Layout, Icon, Modal, message, Popover } from "antd";
+import { Scrollbars } from 'react-custom-scrollbars';
 import TopBar from "./TopBar";
 import ProjectSider from "./ProjectSider";
 import PageView from "./PageView";
@@ -237,6 +238,7 @@ export default class ProjectView extends Component {
                 setTimeout(endFn, timeLimit);
               }}
             >
+            <Scrollbars autoHide hideTracksWhenNotNeeded>
               <PageView
                 onLeftButtonPress={this.props.onNavButtonPress}
                 onContentPress={this.props.onContentPress}
@@ -267,7 +269,7 @@ export default class ProjectView extends Component {
                       break;
                   }
                 }).bind(this)}
-              />
+              /></Scrollbars>
             </div>
           </Layout>
         </Layout>

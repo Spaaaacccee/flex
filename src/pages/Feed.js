@@ -133,7 +133,7 @@ export default class FEED extends Component {
               </span>
             ]}
           >
-            <div style={{ margin: "-24px 0" }}>
+            <div style={{ margin: "-24px -24px" }}>
               <List itemLayout="vertical" className="messages">
                 {newMessages.map(item => (
                   <MessageDisplay

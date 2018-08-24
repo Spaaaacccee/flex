@@ -81,7 +81,14 @@ export class HSL {
     this.l = l;
   }
 
-  static toCSSColor(item) {
+  /**
+   * A utility to convert an HSL colour to a CSS colour string
+   * @static
+   * @param  {HSL} item 
+   * @return 
+   * @memberof HSL
+   */
+  static toCSSColour(item) {
     return `hsl(${item.h},${item.s}%,${item.l}%)`;
   }
 }

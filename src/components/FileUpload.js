@@ -1,14 +1,5 @@
 import React, { Component } from "react";
-import {
-  Upload,
-  Icon,
-  message,
-  Button,
-  List,
-  Progress,
-  Modal,
-  Input
-} from "antd";
+import { Upload, Icon, message, Button, List, Progress, Modal, Input } from "antd";
 import update from "immutability-helper";
 import Document, { UploadJob } from "../classes/Document";
 import $ from "../classes/Utils";
@@ -46,20 +37,32 @@ export default class FileUpload extends Component {
     UploadJob.Jobs.off("job_changed", this.updateFiles.bind(this));
   }
   render() {
-    const renderJobs = this.state.jobs.filter(
-      item => !this.state.inProgressOnly || item.status === "uploading"
-    );
+    const renderJobs = this.state.jobs.filter(item => !this.state.inProgressOnly || item.status === "uploading");
     return (
       <div>
         {!this.state.jobListOnly && (
           <div>
             <Upload.Dragger
               customRequest={({ file }) => {
-                if(this.state.specifyFileName && this.state.specifyFileName.split(".").pop().toLowerCase() !== file.name.split(".").pop().toLowerCase()) {
-                  message.error(`We only allow files of the same format to be merged. Instead, you should upload ${file.name} as a separate file.`);
+                if (
+                  this.state.specifyFileName &&
+                  this.state.specifyFileName
+                    .split(".")
+                    .pop()
+                    .toLowerCase() !==
+                    file.name
+                      .split(".")
+                      .pop()
+                      .toLowerCase()
+                ) {
+                  message.error(
+                    `We only allow files of the same format to be merged. Instead, you should upload ${
+                      file.name
+                    } as a separate file.`
+                  );
                   return;
                 }
-                if(file.size > 1024*1024*50) {
+                if (file.size > 1024 * 1024 * 50) {
                   message.error(`${file.name} is larger than the maximum allowed file size (50 MB).`);
                   return;
                 }
@@ -74,9 +77,7 @@ export default class FileUpload extends Component {
               <p className="ant-upload-drag-icon">
                 <Icon type="plus" />
               </p>
-              <p className="ant-upload-text">
-                Click or drag file to this area to upload
-              </p>
+              <p className="ant-upload-text">Click or drag file to this area to upload</p>
             </Upload.Dragger>
           </div>
         )}
@@ -120,12 +121,10 @@ export default class FileUpload extends Component {
                       title={item.name}
                       description={
                         <div>
-                          <span style={{ textTransform: "capitalize" }}>
-                            {item.status}
-                          </span>
+                          <span style={{ textTransform: "capitalize" }}>{item.status}</span>
                           <span>
                             <Progress
-                              percent={Math.min(Math.round(item.percent), 99)}
+                              percent={item.status === "done" || item.status === "error" ? 100 : Math.min(Math.round(item.percent), 99)}
                               status={
                                 item.status === "done"
                                   ? "success"
@@ -166,8 +165,7 @@ export default class FileUpload extends Component {
                 this.setState({ loading: true }, () => {
                   this.state.project.addFile(
                     this.state.selectedFile,
-                    this.state.description.trim() ||
-                      `Made changes to ${this.state.selectedFile.name}`,
+                    this.state.description.trim() || `Made changes to ${this.state.selectedFile.name}`,
                     () => {
                       this.setState({
                         selectedFile: {},
@@ -187,9 +185,7 @@ export default class FileUpload extends Component {
         >
           <div style={{ textAlign: "center", marginTop: 20 }}>
             <Icon
-              type={Document.getFiletypeIcon(
-                this.state.selectedFile.name || ""
-              )}
+              type={Document.getFiletypeIcon(this.state.selectedFile.name || "")}
               style={{
                 fontSize: 48,
                 color: "rgb(24, 144, 255)",
@@ -199,9 +195,7 @@ export default class FileUpload extends Component {
             <h2>{this.state.selectedFile.name || ""}</h2>
             <br />
           </div>
-          <h3>
-            Tell your team why you uploaded {this.state.selectedFile.name}
-          </h3>
+          <h3>Tell your team why you uploaded {this.state.selectedFile.name}</h3>
           <Input
             maxLength={100}
             value={this.state.description}
@@ -212,9 +206,7 @@ export default class FileUpload extends Component {
               });
             }}
           />
-          <p style={{ textAlign: "right", opacity: 0.65 }}>
-          100 characters limit
-        </p>
+          <p style={{ textAlign: "right", opacity: 0.65 }}>100 characters limit</p>
         </Modal>
       </div>
     );

@@ -25,9 +25,17 @@ export default class AddIcon extends Component {
     this.props.onPress();
   }
 
+  /**
+   * Whether this component has already rendered.
+   * @type {Boolean}
+   * @memberof AddIcon
+   */
   rendered = false;
+
   shouldComponentUpdate(props, state) {
+    // We want this component to render only once. So only allow the component to update if rendered is false.
     if (this.rendered) return false;
+    // Set rendered to false immediately after initial rendering.
     this.rendered = true;
     return true;
   }

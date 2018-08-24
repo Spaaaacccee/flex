@@ -903,7 +903,7 @@ export default class Project {
         if (!(item.readBy || {})[user.uid]) {
           item.readBy = {
             ...(item.readBy || {}),
-            [userID]: true
+            [user.uid]: true
           };
         }
       }

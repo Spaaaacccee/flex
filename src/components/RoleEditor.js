@@ -101,7 +101,7 @@ export default class RoleEditor extends Component {
                         height: 30,
                         marginRight: 10,
                         borderRadius: 60,
-                        backgroundColor: HSL.toCSSColor(item.color),
+                        backgroundColor: HSL.toCSSColour(item.color),
                         border: "7px solid white"
                       }}
                     />

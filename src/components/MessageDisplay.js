@@ -226,7 +226,7 @@ class MessageDisplay extends Component {
                         marginBottom: 5,
                         fontSize: 16,
                         display: "inline-block",
-                        color: HSL.toCSSColor(
+                        color: HSL.toCSSColour(
                           (
                             (this.state.project.roles || []).find(
                               role =>

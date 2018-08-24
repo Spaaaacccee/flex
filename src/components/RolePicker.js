@@ -42,7 +42,7 @@ export default class RolePicker extends Component {
           <Tag
             closable={!this.state.readOnly}
             key={item.uid}
-            color={HSL.toCSSColor(item.color)}
+            color={HSL.toCSSColour(item.color)}
             afterClose={() => {
               this.setState(
                 {
@@ -115,7 +115,7 @@ export default class RolePicker extends Component {
                     key={item.uid}
                     value={item.uid}
                     style={{
-                      color: HSL.toCSSColor(item.color)
+                      color: HSL.toCSSColour(item.color)
                     }}
                   >
                     {item.name.slice(0, 15) === item.name

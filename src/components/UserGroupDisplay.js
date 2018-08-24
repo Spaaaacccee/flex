@@ -76,7 +76,7 @@ export default class UserGroupDisplay extends Component {
         ) && this.props.children}
         {this.state.roleInfo
           .map((item, index) => (
-            <Tag color={HSL.toCSSColor(item.color)} key={"R:" + index}>
+            <Tag color={HSL.toCSSColour(item.color)} key={"R:" + index}>
               {<Icon type="tags" />}
               {` `}
               {item.name.slice(0, 15) === item.name

@@ -8,6 +8,8 @@ import User from "../classes/User";
 import Project from "../classes/Project";
 import MessageDisplay from "../components/MessageDisplay";
 import { HSL } from "../classes/Role";
+import { Scrollbars } from "react-custom-scrollbars";
+
 class MESSAGES extends Component {
   /**
    * @type {{messenger:Messages}}
@@ -38,39 +40,32 @@ class MESSAGES extends Component {
     if (!props.project) return;
     if (Project.equal(props.project, this.state.project)) return;
     this.setState({ project: props.project });
-    if (
-      (props.project || {}).projectID !== (this.state.project || {}).projectID
-    ) {
+    if ((props.project || {}).projectID !== (this.state.project || {}).projectID) {
       if (this.state.messenger) {
         this.state.messenger.off();
         this.state.messenger.stopListening();
       }
       this.receivedMessages = {};
       this.setState({ messenger: null, orderedMessages: [] }, () => {
-        Messages.get(props.project.messengerID || props.project.projectID).then(
-          messenger => {
-            if (messenger) {
-              this.setState({ messenger });
-              this.receivedMessages = Object.assign({}, messenger.messages);
-              messenger.on("message", x => this.handleOnReceive(x));
-              messenger.on("edit", x => this.handleOnEdit(x));
-              messenger.on("delete", x => this.handleOnDelete(x.uid));
-              messenger.startListening();
-              this.setState({ cachedUsers: { [props.user.uid]: props.user } });
-              this.cacheUsers();
-              this.cacheItems();
-              this.props.onLoad(this);
-              this.scrollBottom();
-            } else {
-              Messages.forceUpdate(
-                props.project.messengerID || props.project.projectID,
-                new Messages()
-              ).then(() => {
-                this.componentWillReceiveProps(this.props);
-              });
-            }
+        Messages.get(props.project.messengerID || props.project.projectID).then(messenger => {
+          if (messenger) {
+            this.setState({ messenger });
+            this.receivedMessages = Object.assign({}, messenger.messages);
+            messenger.on("message", x => this.handleOnReceive(x));
+            messenger.on("edit", x => this.handleOnEdit(x));
+            messenger.on("delete", x => this.handleOnDelete(x.uid));
+            messenger.startListening();
+            this.setState({ cachedUsers: { [props.user.uid]: props.user } });
+            this.cacheUsers();
+            this.cacheItems();
+            this.props.onLoad(this);
+            this.scrollBottom();
+          } else {
+            Messages.forceUpdate(props.project.messengerID || props.project.projectID, new Messages()).then(() => {
+              this.componentWillReceiveProps(this.props);
+            });
           }
-        );
+        });
       });
     }
   }
@@ -78,16 +73,13 @@ class MESSAGES extends Component {
   lastScrollHeight = 0;
   scrollHeightWatcher = () => {
     cancelAnimationFrame(this.scrollHeightWatcher);
-    if (
-      this.loadingMore &&
-      this.scrollElement.scrollHeight !== this.lastScrollHeight
-    ) {
+    if(!this.scrollElement) return;
+    if (this.loadingMore && this.scrollElement.getScrollHeight() !== this.lastScrollHeight) {
       this.loadingMore = false;
-      this.scrollElement.style.overflow = "";
-      this.scrollElement.scrollTop =
-        this.scrollElement.scrollHeight - this.dist;
+      //this.scrollElement.style.overflow = "";
+      this.scrollElement.scrollTop(this.scrollElement.getScrollHeight() - this.dist);
     } else {
-      this.lastScrollHeight = this.scrollElement.scrollHeight;
+      this.lastScrollHeight = this.scrollElement.getScrollHeight();
     }
     requestAnimationFrame(this.scrollHeightWatcher);
   };
@@ -105,17 +97,19 @@ class MESSAGES extends Component {
     }
   }
   async scrollBottom() {
-    await this.scrollToSmooth(300, this.scrollElement.scrollHeight);
+    if(!this.scrollElement) return;
+    await this.scrollToSmooth(300, this.scrollElement.getScrollHeight());
     this.trySetRead();
   }
+
   loadingMore = false;
   dist = 0;
   loadMore() {
+    if(!this.scrollElement) return;
     if (this.state.orderedMessages.length > this.state.messageDisplayCount) {
       this.loadingMore = true;
-      this.scrollElement.style.overflow = "hidden";
-      this.dist =
-        this.scrollElement.scrollHeight - this.scrollElement.scrollTop;
+      //this.scrollElement.style.overflow = "hidden";
+      this.dist = this.scrollElement.getScrollHeight() - this.scrollElement.getScrollTop();
       this.setState({
         messageDisplayCount: Math.min(
           this.state.orderedMessages.length,
@@ -125,24 +119,22 @@ class MESSAGES extends Component {
     }
   }
   loadLess() {
+    if(!this.scrollElement) return;
     if (this.state.messageDisplayCount > this.initialMessagesCount) {
-      let dist = this.scrollElement.scrollHeight - this.scrollElement.scrollTop;
+      let dist = this.scrollElement.getScrollHeight() - this.scrollElement.getScrollTop();
       this.setState(
         {
           messageDisplayCount: this.initialMessagesCount
         },
         () => {
-          this.scrollElement.scrollTop = this.scrollElement.scrollHeight - dist;
+          this.scrollElement.scrollTop(this.scrollElement.getScrollHeight() - dist);
         }
       );
     }
   }
   trySetRead() {
     if (this.state.messenger) {
-      if (
-        Math.ceil(this.scrollElement.scrollTop) >=
-        this.scrollElement.scrollHeight - this.scrollElement.offsetHeight
-      ) {
+      if (Math.ceil(this.scrollElement.getScrollHeight()) >= this.scrollElement.getScrollHeight() - this.scrollElement.getClientHeight()) {
         $.object(this.receivedMessages)
           .values()
           .forEach(item => this.state.messenger.setRead(item.uid, true));
@@ -152,9 +144,7 @@ class MESSAGES extends Component {
   handleOnDelete(msgID) {
     if (this.receivedMessages[msgID]) {
       delete this.receivedMessages[msgID];
-      const i = $.array(this.state.orderedMessages).indexOf(
-        x => x.uid === msgID
-      );
+      const i = $.array(this.state.orderedMessages).indexOf(x => x.uid === msgID);
       if (i !== -1) {
         this.setState(
           update(this.state, {
@@ -167,9 +157,7 @@ class MESSAGES extends Component {
   handleOnEdit(msg) {
     if (this.receivedMessages[msg.uid]) {
       this.receivedMessages[msg.uid] = msg;
-      const i = $.array(this.state.orderedMessages).indexOf(
-        x => x.uid === msg.uid
-      );
+      const i = $.array(this.state.orderedMessages).indexOf(x => x.uid === msg.uid);
       if (i !== -1) {
         this.setState(
           update(this.state, {
@@ -182,13 +170,10 @@ class MESSAGES extends Component {
   handleOnReceive(msg) {
     if (!this.receivedMessages[msg.uid]) {
       this.receivedMessages[msg.uid] = msg;
-      this.setState(
-        update(this.state, { orderedMessages: { $push: [msg] } }),
-        () => {
-          this.scrollBottom();
-          this.cacheUsers();
-        }
-      );
+      this.setState(update(this.state, { orderedMessages: { $push: [msg] } }), () => {
+        this.scrollBottom();
+        this.cacheUsers();
+      });
     }
   }
   handleDelete(msgID) {
@@ -197,8 +182,7 @@ class MESSAGES extends Component {
         update(this.state, {
           messageStatus: { [msgID]: { $set: "processing" } }
         }),
-        this.state.consoleStatus === "editing" &&
-        msgID === this.state.consoleEditTarget.uid
+        this.state.consoleStatus === "editing" && msgID === this.state.consoleEditTarget.uid
           ? (() => {
               this.setInputValue("");
               return {
@@ -221,9 +205,7 @@ class MESSAGES extends Component {
     let val = Mention.toString(this.state.inputValue).trim();
     if (!val) return;
     if (val.length > maxChars) {
-      message.warn(
-        `We limited your message to ${maxChars} characters. We have this restriction for other users as well.`
-      );
+      message.warn(`We limited your message to ${maxChars} characters. We have this restriction for other users as well.`);
       val = val.substring(0, maxChars);
     }
     let target = Object.assign({}, this.state.consoleEditTarget);
@@ -256,9 +238,7 @@ class MESSAGES extends Component {
     if (!val) return;
     if (this.state.messenger) {
       if (val.length > maxChars) {
-        message.warn(
-          `We limited your message to ${maxChars} characters. We have this restriction for other users as well.`
-        );
+        message.warn(`We limited your message to ${maxChars} characters. We have this restriction for other users as well.`);
         val = val.substring(0, maxChars);
       }
       let msg = new Message({
@@ -312,23 +292,24 @@ class MESSAGES extends Component {
   }
   isAnimating = false;
   scrollToSmooth(duration, endY) {
+    if(!this.scrollElement) return;
     return new Promise((res, rej) => {
       if (this.isAnimating) res();
-      this.scrollElement.style.overflow = "hidden";
+      //this.scrollElement.style.overflow = "hidden";
       this.isAnimating = true;
-      let startY = this.scrollElement.scrollTop;
+      let startY = this.scrollElement.getScrollTop();
       let Ydifference = endY - startY;
       let startTime = Date.now();
       let endTime = startTime + duration;
       let loop = () => {
+        if(!this.scrollElement) return;
         let elapsedTime = Date.now() - startTime;
-        this.scrollElement.scrollTop =
-          startY + (elapsedTime / duration) * Ydifference;
+        this.scrollElement.scrollTop(startY + (elapsedTime / duration) * Ydifference);
         if (Date.now() <= endTime) {
           requestAnimationFrame(loop);
         } else {
-          this.scrollElement.scrollTop = endY;
-          this.scrollElement.style.overflow = "";
+          this.scrollElement.scrollTop(endY);
+          //this.scrollElement.style.overflow = "";
           this.isAnimating = false;
           res();
         }
@@ -350,10 +331,7 @@ class MESSAGES extends Component {
   cacheItems() {
     let orderedMessages = $.object(this.receivedMessages)
       .values()
-      .sort(
-        (a, b) =>
-          a.timeSent === b.timeSent ? 0 : a.timeSent > b.timeSent ? 1 : -1
-      );
+      .sort((a, b) => (a.timeSent === b.timeSent ? 0 : a.timeSent > b.timeSent ? 1 : -1));
     if (orderedMessages.length) {
       this.setState({ orderedMessages }, () => {
         this.scrollBottom();
@@ -373,9 +351,8 @@ class MESSAGES extends Component {
       });
     }
   }
-  lastInputKey = 0;
   inputElement;
-  scrollElement = <div className="placeholder" />;
+  scrollElement;
   render() {
     return (
       <div
@@ -386,20 +363,19 @@ class MESSAGES extends Component {
           overflow: "hidden"
         }}
       >
-        <div
+        <Scrollbars
+          autoHide
+          hideTracksWhenNotNeeded
+          ref={e => (this.scrollElement = e)}
           className="messages"
-          ref={e => (this.scrollElement = e || this.scrollElement)}
-          onScroll={(e => {
+          onScrollStop={(e => {
             if (!this.isAnimating) {
-              if (
-                this.scrollElement.scrollTop <= this.loadMessageTriggerOffset &&
-                !this.loadingMore
-              ) {
+              if (this.scrollElement.getScrollTop() <= this.loadMessageTriggerOffset && !this.loadingMore) {
                 this.loadMore();
               } else if (
-                this.scrollElement.scrollHeight -
-                  this.scrollElement.clientHeight -
-                  this.scrollElement.scrollTop <=
+                this.scrollElement.getScrollHeight() -
+                  this.scrollElement.getClientHeight() -
+                  this.scrollElement.getScrollTop() <=
                 this.clearMessageTriggerOffset
               ) {
                 this.loadLess();
@@ -410,21 +386,13 @@ class MESSAGES extends Component {
         >
           <p style={{ opacity: 0.65, margin: 50 }}>
             {this.state.orderedMessages.length > this.state.messageDisplayCount
-              ? "Keep scrolling to load more messages"
-              : !!this.state.orderedMessages.length &&
-                "This marks the beginning of your conversation"}
+              ? "Stop scrolling here to load more messages"
+              : !!this.state.orderedMessages.length && "This marks the beginning of your conversation"}
           </p>
           {this.state.orderedMessages.length ? (
             <List itemLayout="vertical" style={{ userSelect: "text" }}>
               {this.state.orderedMessages
-                .slice(
-                  Math.max(
-                    this.state.orderedMessages.length -
-                      1 -
-                      this.state.messageDisplayCount,
-                    0
-                  )
-                )
+                .slice(Math.max(this.state.orderedMessages.length - 1 - this.state.messageDisplayCount, 0))
                 .map((item, index) => (
                   <MessageDisplay
                     project={this.state.project}
@@ -434,8 +402,7 @@ class MESSAGES extends Component {
                     key={item.uid}
                     onQuotePressed={() => {
                       this.setInputValue(
-                        `${(this.state.cachedUsers[item.sender] || {}).name ||
-                          item.sender} on ${new Date(
+                        `${(this.state.cachedUsers[item.sender] || {}).name || item.sender} on ${new Date(
                           item.timeSent
                         ).toLocaleString()} said:\n${item.content.bodyText}`,
                         () => {
@@ -486,11 +453,8 @@ class MESSAGES extends Component {
               <br />
             </div>
           )}
-        </div>
-        <div
-          className="message-console"
-          style={{ opacity: this.state.messenger ? 1 : 0 }}
-        >
+        </Scrollbars>
+        <div className="message-console" style={{ opacity: this.state.messenger ? 1 : 0 }}>
           <div>
             {this.state.consoleStatus !== "editing" && (
               <Popover
@@ -536,10 +500,7 @@ class MESSAGES extends Component {
               <div
                 tabIndex="0"
                 onKeyDown={e => {
-                  if (
-                    e.keyCode === 27 &&
-                    this.state.consoleStatus === "editing"
-                  ) {
+                  if (e.keyCode === 27 && this.state.consoleStatus === "editing") {
                     this.setInputValue("");
                   } else if (e.keyCode === 13) {
                     if (!e.shiftKey) {
@@ -552,7 +513,6 @@ class MESSAGES extends Component {
                       }
                     }
                   }
-                  this.lastInputKey = e.key;
                 }}
               >
                 <Mention
@@ -564,24 +524,16 @@ class MESSAGES extends Component {
                     let relevantRoles = $.array(this.state.project.roles || [])
                       .searchString(x => x.name, query)
                       .map(item => (
-                        <Mention.Nav
-                          value={item.name + "#" + $.id().checkSum(item.uid)}
-                          data={item}
-                        >
-                          <span style={{ color: HSL.toCSSColor(item.color) }}>
+                        <Mention.Nav value={item.name + "#" + $.id().checkSum(item.uid)} data={item}>
+                          <span style={{ color: HSL.toCSSColour(item.color) }}>
                             <Icon type="tags-o" /> {item.name}
                           </span>
                         </Mention.Nav>
                       ));
-                    let relevantUsers = $.array(
-                      $.object(this.state.cachedUsers).values()
-                    )
+                    let relevantUsers = $.array($.object(this.state.cachedUsers).values())
                       .searchString(x => x.name, query)
                       .map(item => (
-                        <Mention.Nav
-                          value={item.name + "#" + $.id().checkSum(item.uid)}
-                          data={item}
-                        >
+                        <Mention.Nav value={item.name + "#" + $.id().checkSum(item.uid)} data={item}>
                           <span>
                             <Icon type="user" /> {item.name}
                           </span>
@@ -609,9 +561,7 @@ class MESSAGES extends Component {
                       });
                     }
                   }}
-                  placeholder={
-                    !this.state.messenger ? "Connecting" : "Enter a message"
-                  }
+                  placeholder={!this.state.messenger ? "Connecting" : "Enter a message"}
                   disabled={!this.state.messenger}
                 />
               </div>
@@ -619,15 +569,9 @@ class MESSAGES extends Component {
             <Button
               icon={this.state.consoleStatus === "editing" ? "check" : null}
               style={{ flex: "none" }}
-              onClick={(this.state.consoleStatus === "editing"
-                ? this.handleEdit
-                : this.handleSend
-              ).bind(this)}
+              onClick={(this.state.consoleStatus === "editing" ? this.handleEdit : this.handleSend).bind(this)}
               type="primary"
-              disabled={
-                !this.state.messenger ||
-                !Mention.toString(this.state.inputValue).trim()
-              }
+              disabled={!this.state.messenger || !Mention.toString(this.state.inputValue).trim()}
             >
               {this.state.consoleStatus === "editing" ? "" : "Send"}
             </Button>

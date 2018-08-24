@@ -62,9 +62,7 @@ export default class Document {
         .getDownloadURL();
     } catch (e) {
       // If the file is not found, firebase will return an error, so catch this and display a message instead.
-      message.error(
-        `We couldn't get ${meta.name} because its source file has been removed.`
-      );
+      message.error(`We couldn't get ${meta.name} because its source file has been removed.`);
       return null;
     }
   }
@@ -303,7 +301,7 @@ class JobManager extends EventEmitter {
     // Notify all listeners that a job has changed
     this.emit("job_changed", { job });
     // Update the new job with the old
-    this._uploadJobs[jobID] = { ...(this._uploadJobs[jobID] || {}), ...job };
+    this._uploadJobs[jobID] = Object.assign(this._uploadJobs[jobID] || {}, job);
   }
 }
 
@@ -315,7 +313,7 @@ class JobManager extends EventEmitter {
 export class UploadJob {
   // Create a global job manager.
   static Jobs = new JobManager();
-  
+
   uid = $.id().generateUID();
 
   /**
@@ -341,9 +339,7 @@ export class UploadJob {
    */
   get percent() {
     // Calculate percent of file that has been uploaded. If the total bytes is 0 (which can happen when empty), return 100%
-    return (
-      (this.totalBytes ? this.bytesTransferred / this.totalBytes : 1) * 100
-    );
+    return (this.totalBytes ? this.bytesTransferred / this.totalBytes : 1) * 100;
   }
   /**
    * The name of the file that is uploading.
@@ -351,7 +347,7 @@ export class UploadJob {
    * @memberof UploadJob
    */
   name;
-  
+
   /**
    * The project that this job belongs to.
    * @type {String}

@@ -27,10 +27,8 @@ div.project-view-content {
 
 .project-view-inner-content {
   background: #fcfcfc;
-  min-height: 100%;
-  -webkit-overflow-scrolling: touch;
-  overflow: auto;
   height: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* .project-view-inner-content > div {
@@ -67,7 +65,6 @@ div.project-view-content {
 }
 
 .widescreen .project-view-inner-content {
-  height: auto;
   flex: none;
 }
 

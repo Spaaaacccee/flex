@@ -115,7 +115,14 @@ export default class SignIn extends Component {
             >
               Sign In
             </h2>
-            <p style={{ color: "rgb(26, 146, 255)" }}>
+            <p
+              style={{
+                color: "rgb(26, 146, 255)",
+                textTransform: "uppercase",
+                fontWeight: 600,
+                fontSize: 12
+              }}
+            >
               Get started with Bonfire.
             </p>
             <br />

@@ -362,13 +362,27 @@ export default class User {
     return false;
   }
 
+  /**
+   * Leave a project
+   * @param  {String} projectID
+   * @param  {Boolean} suppressMessages
+   * @return
+   * @memberof User
+   */
   async leaveProject(projectID, suppressMessages) {
+    // If the project is not specified, then return;
+    if (!projectID) return;
+
+    // The project is a project that the user has joined, then continue.
     if ($.array(this.joinedProjects || []).exists(projectID)) {
+      // Remove the item from the user's list of joined projects.
       await this.transaction(user => {
         user.joinedProjects = $.array(user.joinedProjects || []).remove(
           projectID
         );
       });
+
+      // Add a history event in the project that this user has left.
       let project = await Project.get(projectID);
       await project.addHistory(
         new HistoryItem({
@@ -378,25 +392,41 @@ export default class User {
           doneBy: this.uid
         })
       );
+
+      // Remove this user from the list of members.
       await project.setMembers(
         project.members.filter(item => item.uid !== this.uid)
       );
     } else {
-      if (!suppressMessages)
+      // Display an error message, and return 1 to signify the operation was not successful
+      if (!suppressMessages) {
         message.error("You can't leave a project you haven't joined!");
-        return 1;
+      }
+      return 1;
     }
   }
-
-  async deleteProject(projectID) {
+/**
+ * Delete a project
+ * @param  {String} projectID 
+ * @return 
+ * @memberof User
+ */
+async deleteProject(projectID) {
+    if(!projectID) return;
+    // If the project does not belong to this user, then return.
     if ($.array(this.projects || []).exists(projectID)) {
       this.transaction(user => {
+
+        // Remove the item from the list of projects.
         user.projects = $.array(user.projects).remove(projectID);
+
+        // Delete the project
         if (user instanceof User) {
           Project.delete(projectID);
         }
       });
     } else {
+      // Otherwise, display an error message.
       message.error("You don't own the project you're trying to delete.");
       return 1;
     }

@@ -17,6 +17,7 @@ export class EventEmitter {
    * @memberof EventEmitter
    */
   on(eventName, action) {
+    // Record the event handler.
     this.all[eventName] = this.all[eventName] || [];
     this.all[eventName].push(action);
   }
@@ -30,9 +31,12 @@ export class EventEmitter {
   off(eventName, action) {
     this.all[eventName] = this.all[eventName] || [];
     if (action && eventName) {
+      // If an action is provided, only remove handlers that match both action and eventName
       this.all[eventName] = this.all[eventName].filter(item => item !== action);
     } else {
+      // Otherwise, remove all handlers that matches the event name
       if (eventName) this.all[eventName] = [];
+      // If no arguments are supplied, remove everything.
       else this.all = {};
     }
   }
@@ -46,6 +50,7 @@ export class EventEmitter {
    */
   emit(eventName, e) {
     this.all[eventName] = this.all[eventName] || [];
+    // Call every handler that matches the event name.
     this.all[eventName].forEach(element => {
       element(e);
     });
@@ -84,7 +89,6 @@ class IDGen {
 
   /**
    * Generates a random integer between values (inclusive)
-
    * @param  {Number} min
    * @param  {Number} max
    * @return
@@ -96,16 +100,37 @@ class IDGen {
 }
 
 class DateUtils {
+  /**
+   * How much time, in milliseconds, should humanising a date use exact time rather than relative time.
+   * @type {Number}
+   * @memberof DateUtils
+   */
   relativeTimeThreshold = 1000 * 60 * 60;
+
+  /**
+   * Create a human-readable description of a time or date.
+   * @param  {Number} date 
+   * @param  {Boolean} pastOnly 
+   * @return 
+   * @memberof DateUtils
+   */
   humanise(date, pastOnly) {
     if (pastOnly) date = Math.min(date, Date.now());
     let moment = new Moment(date);
     let datenow = Date.now();
+    // Choose whether to use relative time or calendar time depending if the time difference is greater than the relative time threshold. 
     return (datenow - date > this.relativeTimeThreshold
       ? moment.calendar()
       : moment.fromNow()
     ).toLowerCase();
   }
+
+  /**
+   * Create a human-readable description of a date.
+   * @param  {Number} date 
+   * @return 
+   * @memberof DateUtils
+   */
   humaniseDate(date) {
     let moment = new Moment(date);
     return moment
@@ -121,13 +146,20 @@ class DateUtils {
 }
 
 class ArrayUtils {
-  sort (array, comparator) {
+  /**
+   * Quick sort, alias to `Algorithm.quicksort`
+   * @param  {Array} array 
+   * @param  {(a:Object,b:Object)=>Number} comparator 
+   * @return 
+   * @memberof ArrayUtils
+   */
+  sort(array, comparator) {
     return Algorithm.quicksort(array,comparator);
   }
   /**
    * Returns whether an item exists in an array
-   * @param  {any} array
-   * @param  {any} item
+   * @param  {Array} array
+   * @param  {Object} item
    * @return {Boolean}
    * @memberof ArrayUtils
    */
@@ -135,13 +167,19 @@ class ArrayUtils {
     return array.indexOf(item) !== -1;
   }
 
+  /**
+   * Determine whether an item exists with a predicate.
+   * @param  {Array} array 
+   * @param  {(Object)=>Boolean} predicate 
+   * @return 
+   * @memberof ArrayUtils
+   */
   existsIf(array, predicate) {
     return this.indexOf(array, predicate) !== -1;
   }
 
   /**
    * Removes a predetermined item
-
    * @param  {any} array
    * @param  {any} item
    * @return {Array} Resulting array
@@ -153,7 +191,6 @@ class ArrayUtils {
 
   /**
    * Removes all instances in an array that match a condition
-
    * @param  {Array} array
    * @param  {Function<Object,Number>} condition
    * @return {Array}
@@ -171,7 +208,6 @@ class ArrayUtils {
 
   /**
    * Returns the index of the first instance of an element that fulfills a condition
-
    * @param  {Array} array
    * @param  {Function<Object>} condition
    * @return {Numer}
@@ -185,6 +221,14 @@ class ArrayUtils {
     return i;
   }
 
+  /**
+   * Get all of the items in an array that includes a target string.
+   * @param  {Array} array 
+   * @param  {(source:Object)=>String} getString 
+   * @param  {String} value 
+   * @return 
+   * @memberof ArrayUtils
+   */
   searchString(array, getString, value) {
     return array.filter(
       item =>
@@ -196,12 +240,32 @@ class ArrayUtils {
 }
 
 class StringUtils {
+  /**
+   * Remove all whitespace on the left side of a string.
+   * @param  {String} string 
+   * @return 
+   * @memberof StringUtils
+   */
   trimLeft(string) {
     return string.replace(/^\s+/, "");
   }
+
+  /**
+   * Determine whether a letter is a vowel
+   * @param  {String} char 
+   * @return 
+   * @memberof StringUtils
+   */
   isVowel(char) {
     return ["a", "e", "i", "o", "u"].indexOf(char.toLowerCase()) !== -1;
   }
+
+  /**
+   * Capitalise the first letter of a string
+   * @param  {String} string 
+   * @return 
+   * @memberof StringUtils
+   */
   capitaliseFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   }
@@ -217,13 +281,19 @@ class ObjectUtils {
     return item && typeof item === "object" && !Array.isArray(item);
   }
 
+  /**
+   * Get the values of an object.
+   * @param  {any} item 
+   * @return 
+   * @memberof ObjectUtils
+   */
   values(item) {
     return Object.keys(item).map(key => item[key]);
   }
 
   /**
    * Deep merge two objects.
-   * Courtesy of Salakar & Rubens Mariuzzo
+   * Salakar & Rubens Mariuzzo
    *
    * https://stackoverflow.com/questions/27936772/how-to-deep-merge-instead-of-shallow-merge
    *
@@ -240,11 +310,6 @@ class ObjectUtils {
           if (!target[key]) Object.assign(target, { [key]: {} });
           this.mergeDeep(target[key], source[key]);
         } else {
-          /*
-        else if (Array.isArray(source[key]) && Array.isArray(target[key])) {
-          Object.assign(target, { [key]: target[key].concat(source[key]) });
-        } 
-        */
           Object.assign(target, { [key]: source[key] });
         }
       }

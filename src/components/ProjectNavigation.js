@@ -12,6 +12,7 @@ import User from "../classes/User";
 import update from "immutability-helper";
 import $ from "../classes/Utils";
 import Notifier from "../classes/Notifier";
+import {Scrollbars} from "react-custom-scrollbars";
 
 /**
  * Represents a single item that can be displayed by the project navigation sidebar
@@ -238,7 +239,7 @@ export default class ProjectNavigation extends Component {
 
   render() {
     return (
-      <div>
+      <Scrollbars autoHide hideTracksWhenNotNeeded>
         <Badge
           offset={[15, 15]}
           count={
@@ -256,7 +257,6 @@ export default class ProjectNavigation extends Component {
         {this.state.items ? (
           <Menu
             style={{
-              height: "100%",
               background: "transparent",
               border: "none"
             }}
@@ -285,7 +285,7 @@ export default class ProjectNavigation extends Component {
         ) : (
           <ProjectIcon icon={"loading"} />
         )}
-      </div>
+      </Scrollbars>
     );
   }
 }

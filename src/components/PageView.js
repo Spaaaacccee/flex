@@ -55,8 +55,7 @@ export default class PageView extends Component {
     // If the page or the project was switched.
     if (
       !Page.equal(props.page, this.state.page) ||
-      (props.project.projectID !== this.state.project.projectID &&
-        props.project.projectID)
+      (props.project.projectID !== this.state.project.projectID && props.project.projectID)
     ) {
       this.loadingTimeout = true;
       if (this.currentTimeout) {
@@ -88,6 +87,7 @@ export default class PageView extends Component {
     const displayContent = !!this.state.page.content && !this.state.loading;
     return (
       <div
+        className="page-view-wrapper"
         ref={e =>
           e
             ? (e.parentNode.onscroll = () => {
@@ -98,7 +98,7 @@ export default class PageView extends Component {
         style={{
           flex: 1,
           width: "100%",
-          height: "100%"
+          height: "100%",
         }}
       >
         <TopBar
@@ -110,18 +110,13 @@ export default class PageView extends Component {
           }}
           onLeftButtonPress={this.props.onLeftButtonPress}
           onRightButtonPress={() => {
-            (
-              (this.pageContentElement || {}).onExtrasButtonPress || (() => {})
-            ).apply(this.pageContentElement);
+            ((this.pageContentElement || {}).onExtrasButtonPress || (() => {})).apply(this.pageContentElement);
           }}
           leftButtonType={"menu"}
           rightButtonType={this.state.page.extrasButtonType}
           heading={this.state.page.name || "Untitled"}
         />
-        <div
-          onMouseUp={this.props.onContentPress}
-          onTouchStart={this.props.onContentPress}
-        >
+        <div onMouseUp={this.props.onContentPress} onTouchStart={this.props.onContentPress}>
           {displayContent ? (
             <div className={this.state.animation ? "content-fade-in-up" : ""}>
               {React.createElement(this.state.page.content, {
@@ -137,20 +132,13 @@ export default class PageView extends Component {
               })}
               {!(this.state.page || {}).hideFooter && (
                 <p style={{ marginTop: 50 }}>
-                  <img
-                    src="./icons/icon.png"
-                    style={{ width: 25, marginBottom: 50 }}
-                  />
+                  <img src="./icons/icon.png" style={{ width: 25, marginBottom: 50 }} />
                 </p>
               )}
             </div>
           ) : (
             <div style={{ opacity: 0.65, margin: 50 }}>
-              <Icon
-                type="loading"
-                style={{ marginTop: "10vh", marginBottom: 50 }}
-                spin
-              />
+              <Icon type="loading" style={{ marginTop: "10vh", marginBottom: 50 }} spin />
               <p>We're working really hard to load this content.</p>
             </div>
           )}

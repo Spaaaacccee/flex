@@ -3,3 +3,7 @@
 .Home .messages > div {
   padding: 0;
 }
+
+.Home .messages > div .ant-list-item:first-child {
+  border-radius: 7px 7px 0px 0px;
+}

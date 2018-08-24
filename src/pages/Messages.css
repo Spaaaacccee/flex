@@ -1,3 +1,7 @@
+.Discuss .page-view-wrapper {
+  overflow: hidden
+}
+
 div.ant-list-vertical .ant-list-item-content,
 div.ant-list-vertical .ant-list-item-meta,
 div.ant-list-vertical .ant-list-item-meta-title {
@@ -8,11 +12,6 @@ div.ant-list-vertical .ant-list-item-meta-title {
   flex: 1;
   overflow: auto;
 }
-
-.messages > div {
-  padding: 0 2vw;
-}
-
 
 .messages > div .ant-list-item {
   padding: 12px 10px;
@@ -66,6 +65,10 @@ div.ant-list-vertical .ant-list-item-meta-title {
 
 .widescreen .Discuss .project-view-inner-content {
   height: 100%;
+}
+
+.widescreen .Discuss .project-view-inner-content > .content-fade-in-up {
+  height: calc(100% - 52px);
 }
 
 .widescreen .Discuss div.top-bar-wrapper:after {
