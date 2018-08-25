@@ -1,6 +1,6 @@
-![Bonfire](.\public\res\render0.png)
+![Bonfire](https://raw.githubusercontent.com/Spaaaacccee/flex/master/public/res/render0.png)
 
-![Bonfire](.\public\icons\favicon-32x32.png)
+![Bonfire](https://raw.githubusercontent.com/Spaaaacccee/flex/master/public/icons/favicon-32x32.png)
 
 # Bonfire
 
