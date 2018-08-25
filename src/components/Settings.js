@@ -19,14 +19,14 @@ export default class Settings extends Component {
     onClose: () => {}
   };
   state = {
-    sourceProject: {},
-    user: {},
+    sourceProject: {}, // The project to get default settings from.
+    user: {}, // The current user.
     values: {
-      general: { name: "", description: "" },
-      roles: []
+      general: { name: "", description: "" }, // Values from the settings.
+      roles: [] // Roles from the settings.
     },
-    visible: false,
-    saving: false
+    visible: false, // Whether this window is visible.
+    saving: false // Whether this window is currently saving.
   };
 
   componentDidMount() {
@@ -34,6 +34,7 @@ export default class Settings extends Component {
   }
 
   componentWillReceiveProps(props) {
+    // Only update if the visibility state changed.
     if (!this.state.visible && props.visible) {
       this.setState(
         {
@@ -45,6 +46,7 @@ export default class Settings extends Component {
         this.resetToMatchProject
       );
     } else {
+      // Otherwise close the window.
       this.setState({ visible: props.visible });
     }
   }
@@ -54,9 +56,15 @@ export default class Settings extends Component {
     if (this.state.visible !== state.visible) return true;
     if (this.state.values !== state.values) return true;
     if (this.state.saving !== state.saving) return true;
+    // Don't update if nothing has changed.
     return false;
   }
 
+  /**
+   * Reset the fields of this settings component to match the source project.
+   * @return {void}
+   * @memberof Settings
+   */
   resetToMatchProject() {
     this.setState({
       values: {
@@ -69,21 +77,35 @@ export default class Settings extends Component {
     });
   }
 
+  /**
+   * What to do when the close button is pressed.
+   * @return {void}
+   * @memberof Settings
+   */
   handleClose() {
     this.resetToMatchProject();
+    // Inform the parent component of this change.
     this.props.onClose();
   }
 
+  /**
+   * What to do when the save button is pressed.
+   * @return {void}
+   * @memberof Settings
+   */
   handleSave() {
+    // Ask the parent component to save the settings.
     this.props.onSave(this.state.values);
+    // Start a save animation.
     this.setState({ saving: true });
   }
 
   render() {
     return (
+      // The settings window.
       <Modal
         destroyOnClose
-        getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
+        getContainer={() => document.querySelector(".modal-mount > div:first-child")}
         style={{ top: 20 }}
         footer={[
           <Button key={0} icon="check" loading={this.state.saving} type="primary" onClick={this.handleSave.bind(this)}>
@@ -98,6 +120,7 @@ export default class Settings extends Component {
         maskClosable={false}
         onCancel={this.handleClose.bind(this)}
       >
+        {/* General Project settings */}
         <h2>Project Settings</h2>
         <Tabs defaultActiveKey="1">
           <TabPane
@@ -110,10 +133,12 @@ export default class Settings extends Component {
             key="1"
           >
             <h3>Project Name</h3>
+            {/* Project name input */}
             <Input
               maxLength={100}
               onBlur={e => {
                 this.setState(
+                  // When this input loses focus, change this field so it's valid
                   update(this.state, {
                     values: {
                       general: {
@@ -128,6 +153,7 @@ export default class Settings extends Component {
               value={this.state.values.general.name}
               onChange={e => {
                 this.setState(
+                  // Keep trimming the left side of this field to remove spaces on the left side.
                   update(this.state, {
                     values: {
                       general: {
@@ -140,6 +166,7 @@ export default class Settings extends Component {
             />
             <p style={{ textAlign: "right", opacity: 0.65 }}>100 characters limit</p>
             <h3>Project Description</h3>
+            {/* Project description field */}
             <Input.TextArea
               maxLength={2000}
               autosize={{ minRows: 2, maxRows: 6 }}
@@ -168,6 +195,7 @@ export default class Settings extends Component {
             <RoleEditor
               values={this.state.values.roles}
               onChange={roles => {
+                // Reflect the changes done in the role editor in the project settings.
                 this.setState(update(this.state, { values: { roles: { $set: roles } } }));
               }}
             />
@@ -181,6 +209,7 @@ export default class Settings extends Component {
             }
             key="3"
           >
+            {/* Transfer ownership button. May be present in future versions. */}
             <Button disabled>Transfer Ownership</Button>
             <br />
             <div style={{ height: 10 }} />
@@ -194,20 +223,25 @@ export default class Settings extends Component {
                   okType="danger"
                   cancelText="No"
                   onConfirm={() => {
-                    this.setState({ saving: true }, () => {
-                      Promise.all(
+                    // What to do when deleting a project.
+                    this.setState({ saving: true }, async () => {
+                      // Make every member leave the project.
+                      await Promise.all(
                         (this.state.sourceProject.members || []).map(async member =>
-                          (await User.getCurrentUser()).leaveProject(this.state.sourceProject.projectID, true)
+                          (await User.get(member.uid)).leaveProject(this.state.sourceProject.projectID, true)
                         )
-                      ).then(() => {
-                        this.state.user.deleteProject(this.state.sourceProject.projectID).then(error => {
-                          if (!error) {
-                            message.success(`Successfully deleted ${this.state.sourceProject.name}`);
-                          }
-
-                          this.props.onClose();
-                        });
-                      });
+                      );
+                      // Delete all files
+                      await Promise.all(
+                        (this.state.sourceProject.files || []).map(async file => this.state.sourceProject.tryDelete(file))
+                      );
+                      // Delete the project
+                      let error = await this.state.user.deleteProject(this.state.sourceProject.projectID);
+                      // If no errors occured, then display a message, and notify the parent component.
+                      if (!error) {
+                        message.success(`Successfully deleted ${this.state.sourceProject.name}`);
+                      }
+                      this.props.onClose();
                     });
                   }}
                 >
@@ -228,9 +262,12 @@ export default class Settings extends Component {
                   disabled={this.state.saving}
                   onClick={() => {
                     this.setState({ saving: true }, () => {
+                      // What to do when leaving a project.
                       User.getCurrentUser().then(user => {
+                        // Make the current user leave the project.
                         user.leaveProject(this.state.sourceProject.projectID).then(error => {
                           if (!error) {
+                            // If no error occured then display a message.
                             message.success(`Successfully left ${this.state.sourceProject.name}`);
                           }
                           this.props.onClose();

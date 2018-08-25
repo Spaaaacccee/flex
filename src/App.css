@@ -51,8 +51,8 @@
   z-index: 3;
 }
 
-.modal-mount > div > div > div > .secondary-modal > .ant-modal {
-  margin-top: -370px;
+.modal-mount > div > div > div > .secondary-modal {
+  position: absolute;
 }
 
 .modal-mount > div > div > div > .secondary-modal.ant-modal-wrap,

@@ -16,12 +16,17 @@ export default class RolePicker extends Component {
     onRolesChange: () => {}
   };
   state = {
-    roles: [],
-    availableRoles: [],
-    inputVisible: false,
-    selectorIsOpen: false,
-    readOnly: false
+    roles: [], // The list of roles that the user has selected
+    availableRoles: [], // The list of available roles that the user can select.
+    inputVisible: false, // Whether the role selector is visible.
+    selectorIsOpen: false, // Whether the role selector is open.
+    readOnly: false // Whether the component is read only
   };
+
+  componentDidMount() {
+    this.componentWillReceiveProps(this.props);
+  }
+
   componentWillReceiveProps(props) {
     this.setState({ readOnly: props.readOnly });
     if (
@@ -30,6 +35,7 @@ export default class RolePicker extends Component {
         JSON.stringify(props.availableRoles)
     )
       return;
+    // If the roles and and available roles haven't changed then don't update anything.
     this.setState({
       roles: props.roles || [],
       availableRoles: props.availableRoles || []
@@ -39,6 +45,7 @@ export default class RolePicker extends Component {
     return (
       <div className="role-picker">
         {this.state.roles.map((item, index) => (
+          // Draw a tag for each selected role.
           <Tag
             closable={!this.state.readOnly}
             key={item.uid}
@@ -58,6 +65,7 @@ export default class RolePicker extends Component {
               );
             }}
           >
+            {/* Shorten each role name if it's too long */}
             {item.name.slice(0, 15) === item.name
               ? item.name
               : `${item.name.slice(0, 15)}...`}
@@ -73,6 +81,7 @@ export default class RolePicker extends Component {
           }}
         >
           {this.state.inputVisible && (
+            // Role selector
             <Select
               notFoundContent="Configure roles in Project Settings"
               dropdownMatchSelectWidth={false}
@@ -82,6 +91,7 @@ export default class RolePicker extends Component {
               onChange={item => {
                 this.setState(
                   {
+                    // Add the selected role to the list of selected roles.
                     roles: (() => {
                       let newSelection = this.state.roles;
                       newSelection.push(
@@ -93,6 +103,7 @@ export default class RolePicker extends Component {
                     })()
                   },
                   () => {
+                    // Notify the parent of this change.
                     this.props.onRolesChange(this.state.roles);
                   }
                 );
@@ -110,7 +121,8 @@ export default class RolePicker extends Component {
                       compItem => compItem.uid === item.uid
                     )
                 )
-                .map((item, index) => (
+                .map((item) => (
+                  // Draw each selection
                   <Select.Option
                     key={item.uid}
                     value={item.uid}
@@ -128,6 +140,7 @@ export default class RolePicker extends Component {
         </span>
         {!this.state.inputVisible &&
           !this.state.readOnly && (
+            // Draw a placeholder tag when the role selector is invisible.
             <Tag
               onMouseEnter={() => {
                 this.setState({ inputVisible: true }, () => {

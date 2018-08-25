@@ -16,18 +16,19 @@ export default class Root extends Component {
   };
   constructor() {
     super();
+    // Add a listener for when the page has loaded. A 2 second delay is added because the online/offline detector sometimes returns false positive.
     window.addEventListener("load", () => {
       setTimeout(() => {
         this.setState({ loaded: true });
       }, 2000);
     });
-    if(window.Notification) {
+    // Ask the user for notification permission, if notification is supported.
+    if (window.Notification) {
       if (Notification.permission !== "granted") {
         Notification.requestPermission().then(result => {
+          // If the user denies permission, then display a message.
           if (result !== "granted") {
-            message.warn(
-              "You won't receive notifications if you don't give us permission."
-            );
+            message.warn("You won't receive notifications if you don't give us permission.");
             return;
           }
         });
@@ -54,7 +55,7 @@ export default class Root extends Component {
             <img src="/icons/icon.png" style={{ width: 50, height: 50 }} />
           </div>
         </div>
-        <div style={{ height: "100%", opacity: this.state.loaded ? 1 : 0 }}>
+        <div style={{ height: "100%", opacity: this.state.loaded ? 1 : 0, pointerEvents: this.state.loaded ? "all" : "none" }}>
           <Main ref={this.main} />
         </div>
       </div>

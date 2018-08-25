@@ -683,24 +683,29 @@ export default class Project {
   }
 
   /**
-   * Tries to find a delete a file.
+   * Tries to find and delete a file.
    * @param  {any} archive
    * @return
    * @memberof Project
    */
   async tryDelete(archive) {
-    // If there is a uid, try to delete the file as a file archive
-    if (archive.uid) {
-      await this.deleteArchive(archive.uid);
-      return true;
-    }
+    try {
+      // If there is a uid, try to delete the file as a file archive
+      if (archive.uid) {
+        await this.deleteArchive(archive.uid);
+        return true;
+      }
 
-    // Otherwise, try to delete as a Google Drive file
-    if (archive.source.id) {
-      await this.deleteCloudFile(archive.source.id);
-      return true;
+      // Otherwise, try to delete as a Google Drive file
+      if (archive.source.id) {
+        await this.deleteCloudFile(archive.source.id);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      // Catch any errors and return false to signify failure.
+      return false;
     }
-    return false;
   }
 
   /**

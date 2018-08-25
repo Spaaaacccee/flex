@@ -22,6 +22,8 @@ The `public` folder contains any files that are directly accessible and will not
 
 The `build` folder contains compiled code.
 
+The deployed app is a copy of the resources in the build folder.
+
 ## Database & File storage
 
 The application uses Firebase for database and file storage solutions.

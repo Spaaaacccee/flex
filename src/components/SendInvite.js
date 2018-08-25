@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Tabs, Input, Button, Modal, List } from "antd";
+import { Button, Modal } from "antd";
 import UserSelector from "./UserSelector";
 import User from "../classes/User";
 
@@ -11,12 +11,12 @@ import User from "../classes/User";
  */
 export default class SendInvite extends Component {
   state = {
-    saveLoading: false,
-    recipients: [],
-    formInstance: 0,
+    saveLoading: false, // Whether the invite is currently trying to send.
+    recipients: [], // The recipients of the invite.
     project: {}
   };
   componentWillReceiveProps(props) {
+    // If the visibility state changed, then update this component.
     if (this.state.visible !== !!props.visible) {
       this.setState({
         saveLoading: false,
@@ -24,19 +24,16 @@ export default class SendInvite extends Component {
         visible: !!props.visible
       });
     }
+    // Update this project.
     this.setState({
       project: props.project
     });
-  }
-  handleClose() {
-    this.props.onClose();
   }
 
   handleSend() {
     this.setState({
       saveLoading: true,
-      recipients: [],
-      formInstance: this.state.formInstance + 1
+      recipients: []
     });
     Promise.all(
       this.state.recipients.map(async item => (await User.get(item.key)).addInvite(this.state.project.projectID))
@@ -44,18 +41,21 @@ export default class SendInvite extends Component {
       this.props.onSend(this.state.values);
     });
   }
+
   handleUserSelectionChanged(values) {
     this.setState({
       recipients: values || []
     });
   }
+
   render() {
     return (
       <div>
+        {/* The invite users window */}
         <Modal
           destroyOnClose
           style={{ top: 20 }}
-          getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
+          getContainer={() => document.querySelector(".modal-mount > div:first-child")}
           footer={[
             <Button
               key={0}
@@ -65,21 +65,30 @@ export default class SendInvite extends Component {
               onClick={this.handleSend.bind(this)}
               disabled={!this.state.recipients.length}
             >
+              {/* Display the currently selected user count on the send button. */}
               {`Send ${this.state.recipients.length} Invite${this.state.recipients.length === 1 ? "" : "s"}`}
             </Button>,
-            <Button key={1} onClick={this.handleClose.bind(this)}>
+            <Button
+              key={1}
+              onClick={() => {
+                this.props.onClose();
+              }}
+            >
               Cancel
             </Button>
           ]}
           visible={this.state.visible}
           width={800}
           maskClosable={false}
-          onCancel={this.handleClose.bind(this)}
+          onCancel={() => {
+            this.props.onClose();
+          }}
         >
           <h2>Invite Users</h2>
           <p>Give people access to this project so they too can contribute alongside you.</p>
           <h3>People to invite</h3>
-          <UserSelector key={this.state.formInstance} onValueChanged={this.handleUserSelectionChanged.bind(this)} />
+          {/* The user selector */}
+          <UserSelector onValueChanged={this.handleUserSelectionChanged.bind(this)} />
         </Modal>
       </div>
     );
