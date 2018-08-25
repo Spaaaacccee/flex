@@ -1,4 +1,4 @@
 .add-icon > div > span {
-    border: 1.5px dashed #ECECEC;
-    background: transparent
+    border: 1.5px dashed hsla(0, 0%, 100%, 0.72);
+    background: transparent !important;
 }

@@ -122,7 +122,7 @@ class DateUtils {
     return (datenow - date > this.relativeTimeThreshold
       ? moment.calendar()
       : moment.fromNow()
-    ).toLowerCase();
+    ).replace(/^\w/, c => c.toLowerCase());
   }
 
   /**
@@ -267,7 +267,7 @@ class StringUtils {
    * @memberof StringUtils
    */
   capitaliseFirstLetter(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+    return string.replace(/^\w/, c => c.toUpperCase());
   }
 }
 

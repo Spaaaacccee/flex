@@ -53,6 +53,7 @@ export default class SendInvite extends Component {
     return (
       <div>
         <Modal
+          destroyOnClose
           style={{ top: 20 }}
           getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
           footer={[

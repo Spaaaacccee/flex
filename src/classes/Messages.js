@@ -282,6 +282,12 @@ export default class Messages extends EventEmitter {
  */
 export class Message {
   /**
+   * Whether the message has been edited.
+   * @type {Boolean}
+   * @memberof Message
+   */
+  edited = false;
+  /**
    * The content of this message.
    * @type {MessageContent}
    * @memberof Message

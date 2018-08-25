@@ -29,55 +29,58 @@ class HistoryDisplay extends Component {
       <div>
         <Card
           actions={
-            item.type === "name" ||
-            item.type === "description" ||
-            item.type === "project" ||
             this.state.readOnly
               ? null
               : [
-                  <span
-                    onClick={() => {
-                      this.props.onMentionButtonPressed();
-                    }}
-                  >
-                    <Icon type="message" />
-                    {" Mention"}
-                  </span>,
-                  <span
-                    onClick={() => {
-                      this.props.onMessage({
-                        type: "navigate",
-                        content: (() => {
-                          switch (item.type) {
-                            case "member":
-                              return 1;
-                            case "event":
-                              return 2;
-                            case "set of files":
-                            case "file":
-                              return 4;
-                            default:
-                              break;
-                          }
-                        })()
-                      });
-                    }}
-                  >
-                    <Icon type="export" />
-                    {` ${(() => {
-                      switch (item.type) {
-                        case "event":
-                          return "Timeline";
-                        case "set of files":
-                        case "file":
-                          return "Files";
-                        case "member":
-                          return "Members";
-                        default:
-                          break;
-                      }
-                    })()}`}
-                  </span>
+                  [
+                    <span
+                      onClick={() => {
+                        this.props.onMentionButtonPressed();
+                      }}
+                    >
+                      <Icon type="message" />
+                      {" Mention"}
+                    </span>
+                  ],
+                  ...(!(item.type === "name" || item.type === "description" || item.type === "project" || item.type === "roles")
+                    ? [
+                        <span
+                          onClick={() => {
+                            this.props.onMessage({
+                              type: "navigate",
+                              content: (() => {
+                                switch (item.type) {
+                                  case "member":
+                                    return 1;
+                                  case "event":
+                                    return 2;
+                                  case "set of files":
+                                  case "file":
+                                    return 4;
+                                  default:
+                                    break;
+                                }
+                              })()
+                            });
+                          }}
+                        >
+                          <Icon type="export" />
+                          {` ${(() => {
+                            switch (item.type) {
+                              case "event":
+                                return "Timeline";
+                              case "set of files":
+                              case "file":
+                                return "Files";
+                              case "member":
+                                return "Members";
+                              default:
+                                break;
+                            }
+                          })()}`}
+                        </span>
+                      ]
+                    : [])
                 ]
           }
         >
@@ -99,22 +102,16 @@ class HistoryDisplay extends Component {
                 return (
                   <div>
                     <br />
-                    {(this.state.project.events || []).find(
-                      x => x.uid === item.content.uid
-                    ) ? (
+                    {(this.state.project.events || []).find(x => x.uid === item.content.uid) ? (
                       <TimelineItem
                         readOnly
                         user={this.state.user}
                         project={this.state.project}
-                        event={this.state.project.events.find(
-                          x => x.uid === item.content.uid
-                        )}
+                        event={this.state.project.events.find(x => x.uid === item.content.uid)}
                       />
                     ) : (
-                      <div style={{ opacity: 0.65, margin: 'auto', textAlign: 'center' }}>
-                        {
-                          "We can not display this event because it has been deleted."
-                        }
+                      <div style={{ opacity: 0.65, margin: "auto", textAlign: "center" }}>
+                        {"We can not display this event because it has been deleted."}
                       </div>
                     )}
                   </div>
@@ -123,9 +120,7 @@ class HistoryDisplay extends Component {
               case "file":
                 let file;
                 if (item.content) {
-                  file = (this.state.project.files || []).find(
-                    x => x.uid === item.content.uid
-                  );
+                  file = (this.state.project.files || []).find(x => x.uid === item.content.uid);
                   if (!file)
                     file = (this.state.project.files || [])
                       .filter(x => x.uploadType === "cloud")
@@ -135,16 +130,10 @@ class HistoryDisplay extends Component {
                   <div>
                     <br />
                     {file ? (
-                      <FileDisplay
-                        readOnly
-                        project={this.state.project}
-                        file={file}
-                      />
+                      <FileDisplay readOnly project={this.state.project} file={file} />
                     ) : (
-                      <div style={{ opacity: 0.65, margin: 'auto', textAlign: 'center' }}>
-                        {
-                          "We can not display this file because it has been deleted."
-                        }
+                      <div style={{ opacity: 0.65, margin: "auto", textAlign: "center" }}>
+                        {"We can not display this file because it has been deleted."}
                       </div>
                     )}
                   </div>

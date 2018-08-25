@@ -20,12 +20,13 @@ class FileDisplay extends Component {
   static defaultProps = {
     onMentionButtonPressed: () => {}
   };
+
   state = {
     project: {},
-    file: {},
-    readOnly: false,
-    deleting: false,
-    addVersionModalVisible: false
+    file: {}, // The file to display
+    readOnly: false, // Whether this component should allow for user interaction
+    deleting: false, // Whether this component is currently deleting a file
+    addVersionModalVisible: false // Whether the add version window is currently open.
   };
 
   componentDidMount() {
@@ -38,7 +39,7 @@ class FileDisplay extends Component {
     if (props.readOnly !== this.state.readOnly) return true;
     if (state.deleting !== this.state.deleting) return true;
     if (!this.state.file) return true;
-    // If there is a file, check if the file has changed.  
+    // If there is a file, check if the file has changed.
     if (props.file) {
       if (props.file.source) {
         if (props.file.source.id !== this.state.file.source.id) return true;
@@ -62,9 +63,7 @@ class FileDisplay extends Component {
 
   render() {
     // If any of the files are unavailable, then make the whole file unavailable.
-    let isUnavailable =
-      this.state.file.files &&
-      !this.state.file.files.find(i => i.state !== "unavailable");
+    let isUnavailable = this.state.file.files && !this.state.file.files.find(i => i.state !== "unavailable");
     return (
       <div style={{ textAlign: "left" }}>
         {
@@ -81,7 +80,6 @@ class FileDisplay extends Component {
                   ? { opacity: 0.65 }
                   : {}
             )}
-
             // Component to display a preview thumbnail. Currently disabled.
             /*cover={
               <div
@@ -172,12 +170,9 @@ class FileDisplay extends Component {
                   title={
                     isUnavailable
                       ? "Delete this file? This file may still be uploading, or may become available later."
-                      : this.state.file.uploadType === "cloud" ||
-                        (this.state.file.files || []).length === 1
+                      : this.state.file.uploadType === "cloud" || (this.state.file.files || []).length === 1
                         ? "This file will be deleted"
-                        : `${
-                            (this.state.file.files || []).length
-                          } files will be deleted`
+                        : `${(this.state.file.files || []).length} files will be deleted`
                   }
                   okText="OK"
                   okType="danger"
@@ -185,23 +180,21 @@ class FileDisplay extends Component {
                   onConfirm={() => {
                     this.setState({ deleting: true }, () => {
                       // Try to delete the displayed file
-                      this.state.project
-                        .tryDelete(this.state.file)
-                        .then(isSuccessful => {
-                          if (isSuccessful) {
-                            // If the file was deleted, add a history event about it.
-                            User.getCurrentUser().then(user => {
-                              this.state.project.addHistory(
-                                new HistoryItem({
-                                  readBy: { [user.uid]: true },
-                                  action: "removed",
-                                  type: "file",
-                                  doneBy: user.uid
-                                })
-                              );
-                            });
-                          }
-                        });
+                      this.state.project.tryDelete(this.state.file).then(isSuccessful => {
+                        if (isSuccessful) {
+                          // If the file was deleted, add a history event about it.
+                          User.getCurrentUser().then(user => {
+                            this.state.project.addHistory(
+                              new HistoryItem({
+                                readBy: { [user.uid]: true },
+                                action: "removed",
+                                type: "file",
+                                doneBy: user.uid
+                              })
+                            );
+                          });
+                        }
+                      });
                     });
                   }}
                 >
@@ -212,7 +205,7 @@ class FileDisplay extends Component {
                 </Popconfirm>
               );
               // Only display the delete button if the deletion is ongoing or the file is unavailable.
-              if (this.state.deleting||isUnavailable) return [deleteButton];
+              if (this.state.deleting || isUnavailable) return [deleteButton];
               // Only display the preview button if the component is read only
               if (this.state.readOnly) return [previewButton];
               // Otherwise, display a set of buttons depending on whether the file is a Google Drive file.
@@ -222,12 +215,9 @@ class FileDisplay extends Component {
             })()}
           >
             {this.state.file.uid || this.state.file.source ? (
+              // Draw the file icon
               <Card.Meta
-                title={
-                  this.state.file.uploadType === "cloud"
-                    ? this.state.file.source.name
-                    : this.state.file.name
-                }
+                title={this.state.file.uploadType === "cloud" ? this.state.file.source.name : this.state.file.name}
                 avatar={
                   this.state.file.uploadType === "cloud" ? (
                     <Avatar
@@ -252,44 +242,35 @@ class FileDisplay extends Component {
                 }
                 description={
                   <div>
-                    {(this.state.file.type === "cloud" ||
-                      (this.state.file.files || []).length === 1) && (
+                    {(this.state.file.type === "cloud" || (this.state.file.files || []).length === 1) && (
+                      // Display who uploaded the file.
                       <UserGroupDisplay
                         project={this.state.project}
                         people={{
-                          members: [
-                            (
-                              (this.state.file.files || []).sort(
-                                (a, b) => b.dateUploaded - a.dateUploaded
-                              )[0] || {}
-                            ).uploader
-                          ]
+                          members: [this.state.file.files[0].uploader]
                         }}
                       />
                     )}
                     {this.state.file.uploadType === "cloud" ? (
+                      // Display a message that the file was stored
                       <span>
                         <Icon type="cloud-o" />
                         {" Stored in the cloud"}
                       </span>
                     ) : (
                       <div>
+                        {/*If the file is unavailable, display a message that it is unavailable. Otherwise, display how many versions of the file there are.*/}
                         {isUnavailable
                           ? "One or more versions of this file is unavailable"
-                          : this.state.file.files.sort(
-                              (a, b) => b.dateUploaded - a.dateUploaded
-                            )[0].description ||
-                            (this.state.file.files.length > 1
-                              ? `${this.state.file.files.length} versions`
-                              : "")}
+                          : this.state.file.files.sort((a, b) => b.dateUploaded - a.dateUploaded)[0].description ||
+                            (this.state.file.files.length > 1 ? `${this.state.file.files.length} versions` : "")}
                       </div>
                     )}
                     {(this.state.file.files || []).length === 1 && (
+                      // Display the date uploaded and file size.
                       <div>
                         {[
-                          `${new Date(
-                            this.state.file.files[0].dateUploaded
-                          ).toLocaleString()}`,
+                          `${new Date(this.state.file.files[0].dateUploaded).toLocaleString()}`,
                           `${Humanize.fileSize(this.state.file.files[0].size)}`
                         ].map((x, i) => (
                           <div key={i}>{x}</div>
@@ -300,30 +281,27 @@ class FileDisplay extends Component {
                 }
               />
             ) : (
+              // Display a loading icon if not file is available.
               <Icon type="loading" />
             )}
-            {this.state.file.uploadType !== "cloud" &&
-            this.state.file.files &&
-            this.state.file.files.length > 1 ? (
+            {this.state.file.uploadType !== "cloud" && this.state.file.files && this.state.file.files.length > 1 ? (
+              // Display each file version if there are more than one version of the file.
               <div>
                 <br />
                 <List bordered>
-                  {this.state.file.files
-                    .sort((a, b) => b.dateUploaded - a.dateUploaded)
-                    .map((item, index) => (
-                      <FileVersionDisplay
-                        readOnly={this.state.readOnly}
-                        key={item.uid || item.source.id}
-                        sourceFile={this.state.file}
-                        item={item}
-                        project={this.state.project}
-                        onMentionButtonPressed={() => {
-                          this.props.onVersionMentionButtonPressed(
-                            item.uid || item.source.id
-                          );
-                        }}
-                      />
-                    ))}
+                  {this.state.file.files.sort((a, b) => b.dateUploaded - a.dateUploaded).map(item => (
+                    // Sort the files by date uploaded, then display each of them.
+                    <FileVersionDisplay
+                      readOnly={this.state.readOnly}
+                      key={item.uid || item.source.id}
+                      sourceFile={this.state.file}
+                      item={item}
+                      project={this.state.project}
+                      onMentionButtonPressed={() => {
+                        this.props.onVersionMentionButtonPressed(item.uid || item.source.id);
+                      }}
+                    />
+                  ))}
                 </List>
               </div>
             ) : (
@@ -331,7 +309,10 @@ class FileDisplay extends Component {
             )}
           </Card>
         }
+        {/* A modal to upload a new copy of a specific file */}
         <Modal
+          destroyOnClose
+          getContainer={() => document.querySelector(".modal-mount > div:first-child")}
           visible={this.state.addVersionModalVisible}
           style={{ top: 20 }}
           onCancel={() => {
@@ -355,10 +336,8 @@ class FileDisplay extends Component {
         >
           <h2>New Version</h2>
           <br />
-          <FileUpload
-            project={this.state.project}
-            specifyFileName={this.state.file.name}
-          />
+          {/* A file upload component configured to upload a new file as a new version of this archive. */}
+          <FileUpload project={this.state.project} specifyFileName={this.state.file.name} />
         </Modal>
       </div>
     );

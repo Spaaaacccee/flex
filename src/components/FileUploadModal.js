@@ -22,6 +22,7 @@ export default class FileUploadModal extends Component {
   render() {
     return (
       <Modal
+        destroyOnClose
         getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
         style={{ top: 20 }}
         visible={this.state.visible}

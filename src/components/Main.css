@@ -1,6 +1,6 @@
 div.project-sider {
     overflow-x: hidden;
-    background: rgb(255, 255, 255);
+    background: linear-gradient(to bottom right, #1990FF,#22A9FF);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 }

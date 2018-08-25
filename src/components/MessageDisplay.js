@@ -44,10 +44,8 @@ class MessageDisplay extends Component {
     if (this.state.status !== props.status) return true;
     if (this.state.messageID !== props.messageID) return true;
     if ((state.sender || {}).uid !== (this.state.sender || {}).uid) return true;
-    if ((this.state.messenger || {}).uid !== (state.messenger || {}).uid)
-      return true;
-    if ((props.message || {}).uid !== (this.state.message || {}).uid)
-      return true;
+    if ((this.state.messenger || {}).uid !== (state.messenger || {}).uid) return true;
+    if ((props.message || {}).uid !== (this.state.message || {}).uid) return true;
     return false;
   }
 
@@ -85,21 +83,16 @@ class MessageDisplay extends Component {
         this.setState({ sender });
       });
     } else {
-      if (
-        !this.state.messenger ||
-        props.project.messengerID !== this.state.messenger.uid
-      ) {
+      if (!this.state.messenger || props.project.messengerID !== this.state.messenger.uid) {
         this.setState({ messenger: null });
         Messages.get(props.project.messengerID).then(messenger => {
           if (messenger && props.messageID) {
             if (messenger.messages[props.messageID]) {
-              User.get(messenger.messages[props.messageID].sender).then(
-                sender => {
-                  this.setState({ messenger, sender }, () => {
-                    this.props.onReady();
-                  });
-                }
-              );
+              User.get(messenger.messages[props.messageID].sender).then(sender => {
+                this.setState({ messenger, sender }, () => {
+                  this.props.onReady();
+                });
+              });
             }
           }
         });
@@ -108,11 +101,7 @@ class MessageDisplay extends Component {
   }
 
   render() {
-    const item =
-      this.state.message ||
-      (this.state.messenger
-        ? this.state.messenger.messages[this.state.messageID]
-        : null);
+    const item = this.state.message || (this.state.messenger ? this.state.messenger.messages[this.state.messageID] : null);
 
     return item && item.content ? (
       (() => {
@@ -181,9 +170,7 @@ class MessageDisplay extends Component {
             }}
             style={{
               ...{ textAlign: "left" },
-              ...(this.state.messageStatus === "processing"
-                ? { opacity: 0.65, pointerEvents: "none" }
-                : {}),
+              ...(this.state.messageStatus === "processing" ? { opacity: 0.65, pointerEvents: "none" } : {}),
               ...(UserGroupDisplay.hasUser(
                 { members: mentionedMembers, roles: mentionedRoles },
                 this.state.project,
@@ -199,9 +186,7 @@ class MessageDisplay extends Component {
                 content={
                   this.state.project && this.state.project.members ? (
                     <MemberDisplay
-                      member={this.state.project.members.find(
-                        x => x.uid === item.sender
-                      )}
+                      member={this.state.project.members.find(x => x.uid === item.sender)}
                       project={this.state.project}
                       readOnly
                       cardless
@@ -231,11 +216,9 @@ class MessageDisplay extends Component {
                             (this.state.project.roles || []).find(
                               role =>
                                 role.uid ===
-                                ((
-                                  this.state.project.members.find(
-                                    member => member.uid === item.sender
-                                  ).roles || []
-                                ).find(x => x === role.uid) || {})
+                                ((this.state.project.members.find(member => member.uid === item.sender).roles || []).find(
+                                  x => x === role.uid
+                                ) || {})
                             ) || {}
                           ).color || { h: 0, s: 0, l: 15 }
                         )
@@ -284,12 +267,13 @@ class MessageDisplay extends Component {
                                 title="Delete this message?"
                                 okText="Yes"
                                 cancelText="No"
+                                okType="danger"
                                 onConfirm={() => {
                                   this.props.onDeletePressed();
                                 }}
                               >
                                 <List.Item>
-                                  <a>
+                                  <a style={{ color: "#FF4D4F" }}>
                                     <Icon type="delete" />
                                     {" Delete"}
                                   </a>
@@ -301,9 +285,7 @@ class MessageDisplay extends Component {
                       >
                         <Button
                           style={{
-                            visibility: this.state.readOnly
-                              ? "hidden"
-                              : "visible",
+                            visibility: this.state.readOnly ? "hidden" : "visible",
                             border: 0,
                             background: "transparent",
                             position: "absolute",
@@ -316,9 +298,7 @@ class MessageDisplay extends Component {
                       </Popover>
                     </span>
                   }
-                  description={$.string(
-                    $.date(item.timeSent).humanise(true)
-                  ).capitaliseFirstLetter()}
+                  description={$.string($.date(item.timeSent).humanise(true)).capitaliseFirstLetter()}
                 />
                 <div
                   style={{
@@ -331,29 +311,19 @@ class MessageDisplay extends Component {
                 >
                   {!this.state.readOnly &&
                     ((!!item.content.files && item.content.files.length) ||
-                      (!!item.content.histories &&
-                        !!item.content.histories.length) ||
-                      (!!item.content.fileVersions &&
-                        !!item.content.fileVersions.length) ||
-                      (!!item.content.events &&
-                        !!item.content.events.length)) && (
+                      (!!item.content.histories && !!item.content.histories.length) ||
+                      (!!item.content.fileVersions && !!item.content.fileVersions.length) ||
+                      (!!item.content.events && !!item.content.events.length)) && (
                       <div>
                         {!!item.content.events &&
                           item.content.events.map(eventID => {
-                            let event = (this.state.project.events || []).find(
-                              x => x.uid === eventID
-                            );
+                            let event = (this.state.project.events || []).find(x => x.uid === eventID);
                             return (
                               <div>
                                 {event ? (
                                   <div>
                                     <br />
-                                    <TimelineItem
-                                      readOnly
-                                      project={this.state.project}
-                                      user={this.state.user}
-                                      event={event}
-                                    />
+                                    <TimelineItem readOnly project={this.state.project} user={this.state.user} event={event} />
                                   </div>
                                 ) : (
                                   <div>
@@ -366,9 +336,7 @@ class MessageDisplay extends Component {
                                           textAlign: "center"
                                         }}
                                       >
-                                        {
-                                          "We can not display this event because it has been deleted."
-                                        }
+                                        {"We can not display this event because it has been deleted."}
                                       </div>
                                     </Card>
                                   </div>
@@ -380,9 +348,7 @@ class MessageDisplay extends Component {
                           item.content.files.map(fileID => {
                             let file;
                             if (fileID) {
-                              file = (this.state.project.files || []).find(
-                                x => x.uid === fileID
-                              );
+                              file = (this.state.project.files || []).find(x => x.uid === fileID);
                               if (!file)
                                 file = (this.state.project.files || [])
                                   .filter(x => x.uploadType === "cloud")
@@ -393,11 +359,7 @@ class MessageDisplay extends Component {
                                 {file ? (
                                   <div>
                                     <br />
-                                    <FileDisplay
-                                      readOnly
-                                      project={this.state.project}
-                                      file={file}
-                                    />
+                                    <FileDisplay readOnly project={this.state.project} file={file} />
                                   </div>
                                 ) : (
                                   <div>
@@ -410,9 +372,7 @@ class MessageDisplay extends Component {
                                           textAlign: "center"
                                         }}
                                       >
-                                        {
-                                          "We can not display this file because it has been deleted."
-                                        }
+                                        {"We can not display this file because it has been deleted."}
                                       </div>
                                     </Card>
                                   </div>
@@ -422,9 +382,7 @@ class MessageDisplay extends Component {
                           })}
                         {!!item.content.histories &&
                           item.content.histories.map(historyID => {
-                            let historyItem = (
-                              this.state.project.history || []
-                            ).find(x => x.uid === historyID);
+                            let historyItem = (this.state.project.history || []).find(x => x.uid === historyID);
                             return historyItem ? (
                               <div>
                                 <br />
@@ -447,9 +405,7 @@ class MessageDisplay extends Component {
                             let file;
                             for (let item of this.state.project.files || []) {
                               if (item.files) {
-                                file = item.files.find(
-                                  x => x.uid === versionID
-                                );
+                                file = item.files.find(x => x.uid === versionID);
                                 if (file) break;
                               }
                             }
@@ -472,9 +428,7 @@ class MessageDisplay extends Component {
                                             fontWeight: "normal",
                                             flex: "none"
                                           }}
-                                          type={Document.getFiletypeIcon(
-                                            file.name
-                                          )}
+                                          type={Document.getFiletypeIcon(file.name)}
                                         />
                                         <span
                                           style={{
@@ -488,11 +442,7 @@ class MessageDisplay extends Component {
                                   />
                                   <br />
                                   <List bordered>
-                                    <FileVersionDisplay
-                                      readOnly
-                                      project={this.state.project}
-                                      item={file}
-                                    />
+                                    <FileVersionDisplay readOnly project={this.state.project} item={file} />
                                   </List>
                                 </Card>
                               </div>
@@ -514,11 +464,10 @@ class MessageDisplay extends Component {
                   }}
                 >
                   {body}
+                  {item.edited && <span style={{ opacity: 0.65, userSelect: 'none' }}>{" (Edited)"}</span>}
                 </pre>{" "}
                 <span style={{ color: "rgb(25, 144, 255)" }}>
-                  {this.state.status === "processing" && (
-                    <Icon type="loading" />
-                  )}
+                  {this.state.status === "processing" && <Icon type="loading" />}
                   {this.state.status === "sent" && <Icon type="check" />}
                 </span>
               </div>

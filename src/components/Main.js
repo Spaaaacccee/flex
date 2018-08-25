@@ -33,7 +33,6 @@ export default class Main extends Component {
     userData: {}, // The project data of the current user
     modal: {
       visible: false, // Whether the add project modal is currently visible
-      key: 0 // Tells React when to redraw the modal
     },
     useUpdateLoop: false, // An update loop is used to periodically pull data from the database and update the UI. To disable it, set this to false
     updateLoopSleepTime: 75, // The coefficent of the time to wait between each update. Higher means better performance at the cost of a slower update rate
@@ -218,6 +217,7 @@ export default class Main extends Component {
         <SignIn onLogIn={this.handleLogIn.bind(this)} />
         {/* The create project modal */}
         <Modal
+          destroyOnClose
           style={{ top: 20 }}
           getContainer={() => document.querySelector(".modal-mount > div:first-child")}
           visible={this.state.modal.visible}
@@ -247,9 +247,7 @@ export default class Main extends Component {
               // Update the UI to close the form
               this.setState({
                 modal: {
-                  visible: false,
-                  // Due to the way React works, a new key is required every time we want a new modal. This key increments by 1 every time a project is created.
-                  key: this.state.modal.key + 1
+                  visible: false
                 },
                 openedProjectID: newProject.projectID
               });
@@ -258,19 +256,17 @@ export default class Main extends Component {
         </Modal>
         {/*The modal that appears when the user is offline*/}
         <Modal
-          style={{ top: 20 }}
+          destroyOnClose
           getContainer={() => document.querySelector(".modal-mount > div:first-child")}
           closable={false}
           footer={null}
           maskClosable={false}
           visible={this.state.offline}
-          style={{ textAlign: "center", maxWidth: 300, margin: "auto" }}
+          style={{ top:20, textAlign: "center", maxWidth: 150, margin: "auto" }}
         >
-          <Icon type="loading" style={{ color: "#1890FF", fontSize: 24 }} />
+          <Icon type="disconnect" style={{ color: "#FF4D4F", fontSize: 24 }} />
           <br />
-          <br />
-          <h2>You seem to be offline.</h2>
-          <p>We'll let you resume as soon as we can reconnect to the internet.</p>
+          <h3 style={{opacity:0.65}}>Offline</h3>
         </Modal>
       </div>
     );

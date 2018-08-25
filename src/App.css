@@ -33,3 +33,29 @@
   overflow: visible;
   pointer-events: all;
 }
+
+.modal-mount div:last-child {
+  pointer-events: all;
+}
+
+.modal-mount > div > div > div .ant-modal-mask {
+  z-index: 2;
+}
+
+.modal-mount > div > div > div .ant-modal-wrap,
+.modal-mount > div > div > div .ant-modal {
+  z-index: 2;
+}
+
+.modal-mount > div > div > div > .secondary-modal ~ .ant-modal-mask {
+  z-index: 3;
+}
+
+.modal-mount > div > div > div > .secondary-modal > .ant-modal {
+  margin-top: -370px;
+}
+
+.modal-mount > div > div > div > .secondary-modal.ant-modal-wrap,
+.modal-mount > div > div > div > .secondary-modal > .ant-modal {
+  z-index: 4;
+}

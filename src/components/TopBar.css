@@ -3,7 +3,8 @@ div.top-bar-wrapper {
   flex: none;
 }
 
-div.top-bar-wrapper:after, div.top-bar-wrapper .heading {
+div.top-bar-wrapper:after,
+div.top-bar-wrapper .heading {
   transition: opacity 0.2s ease;
 }
 
@@ -61,7 +62,7 @@ div.top.top-bar-wrapper:after {
   height: 36px;
   background: none;
   border: none;
-  color: black;
+  color: #1990ff;
 }
 
 .top-bar > .left-button:hover,
@@ -72,7 +73,23 @@ div.top.top-bar-wrapper:after {
 .top-bar > .right-button:active {
   background: none;
   border: none;
-  color: black;
+}
+
+.top-bar > .right-button,
+.top-bar > .right-button:hover,
+.top-bar > .right-button:focus,
+.top-bar > .right-button:active {
+  color: #1990ff;
+}
+
+
+.widescreen .top-bar > .right-button,
+.widescreen .top-bar > .right-button:hover,
+.widescreen .top-bar > .right-button:focus,
+.widescreen .top-bar > .right-button:active {
+  background: #1990ff;
+  color: white;
+  box-shadow: rgba(4, 111, 210, 0.24) 0px 5px 20px;
 }
 
 .widescreen div.top-bar {

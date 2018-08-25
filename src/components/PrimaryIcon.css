@@ -3,13 +3,19 @@ span.primary-icon {
     border-radius: 52px;
     width: 52px;
     height: 52px;
-    background-color: #F4F4F4;
+    background: linear-gradient(to bottom right, #1990FF,#22A9FF);
     font-size: 20px;
-    color: rgb(187, 187, 187);
+    color: white;
     padding-top: 10px;
     background-size: cover;
     animation: fade-in 0.3s ease forwards;
     text-align: center;
+}
+
+.project-sider span.primary-icon {
+    background: rgba(244, 244, 244, 0.21);
+    color: hsla(0, 0%, 100%, 0.72);
+    background-size: cover;
 }
 
 

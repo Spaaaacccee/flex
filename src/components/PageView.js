@@ -35,7 +35,8 @@ export default class PageView extends Component {
     if (props.page !== this.state.page) return true;
     if (!Project.equal(props.project, this.state.project)) return true;
     if (!User.equal(state.user, this.state.user)) return true;
-    if (state.scrollPostion !== this.state.scrollPosition) return true;
+    if (!state.scrollPostion && this.state.scrollPosition) return true;
+    if (state.scrollPostion && !this.state.scrollPosition) return true;
     if (this.state.animation !== state.animation) return true;
     if (this.state.loading !== state.loading) return true;
     return false;
@@ -98,7 +99,7 @@ export default class PageView extends Component {
         style={{
           flex: 1,
           width: "100%",
-          height: "100%",
+          height: "100%"
         }}
       >
         <TopBar

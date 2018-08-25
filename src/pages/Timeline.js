@@ -17,7 +17,6 @@ export default class TIMELINE extends Component {
     project: {},
     user: {},
     eventCreatorVisible: false,
-    eventCreatorKey: 0,
     events: []
   };
 
@@ -39,7 +38,6 @@ export default class TIMELINE extends Component {
 
   shouldComponentUpdate(props, state) {
     if (this.state.eventCreatorVisible !== state.eventCreatorVisible) return true;
-    if (this.state.eventCreatorKey !== this.state.eventCreatorKey) return true;
     if (this.state.project !== state.project) return true;
     if (this.state.user !== state.user) return true;
     if (!Project.equal(props.project, this.state.project)) return true;
@@ -141,6 +139,7 @@ export default class TIMELINE extends Component {
           Event
         </Button>
         <Modal
+          destroyOnClose
           getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
           footer={null}
           style={{ top: 20 }}
@@ -150,7 +149,6 @@ export default class TIMELINE extends Component {
           }}
         >
           <CreateEvent
-            key={this.state.eventCreatorKey}
             project={this.state.project}
             opened={this.state.eventCreatorVisible}
             onSubmit={e => {
@@ -167,8 +165,7 @@ export default class TIMELINE extends Component {
               );
               this.state.project.addEvent(newEvent).then(() => {
                 this.setState({
-                  eventCreatorVisible: false,
-                  eventCreatorKey: this.state.eventCreatorKey + 1
+                  eventCreatorVisible: false
                 });
               });
             }}

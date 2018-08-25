@@ -47,11 +47,7 @@ export default class FILES extends Component {
     if (state.view !== this.state.view) return true;
     if (!User.equal(props.user, this.state.user)) return true;
     if (state.uploadModalVisible !== this.state.uploadModalVisible) return true;
-    if (
-      state.searchResults &&
-      this.state.searchResults &&
-      state.searchResults.length !== this.state.searchResults.length
-    )
+    if (state.searchResults && this.state.searchResults && state.searchResults.length !== this.state.searchResults.length)
       return true;
     return false;
   }
@@ -66,11 +62,7 @@ export default class FILES extends Component {
         {this.state.project ? (
           <div style={{ textAlign: "center" }}>
             <div style={{ textAlign: "left", maxWidth: 350, margin: "auto" }}>
-              <FileUpload
-                project={this.state.project}
-                jobListOnly
-                inProgressOnly
-              />
+              <FileUpload project={this.state.project} jobListOnly inProgressOnly />
             </div>
             <div
               style={{
@@ -129,10 +121,7 @@ export default class FILES extends Component {
                       gap={10}
                       queries={[
                         {
-                          columns: Math.min(
-                            (filesToRender || []).length || 1,
-                            2
-                          ),
+                          columns: Math.min((filesToRender || []).length || 1, 2),
                           query: "min-width: 1000px"
                         }
                       ]}
@@ -163,8 +152,7 @@ export default class FILES extends Component {
                                   sender: this.state.user.uid,
                                   content: new MessageContent({
                                     fileVersions: [versionID],
-                                    bodyText:
-                                      "(Mentioned a specific version of a file)"
+                                    bodyText: "(Mentioned a specific version of a file)"
                                   })
                                 })
                               });
@@ -185,8 +173,7 @@ export default class FILES extends Component {
                     {(filesToRender || []).map((item, index) => (
                       <List.Item
                         style={
-                          item.files &&
-                          !item.files.find(i => i.state !== "unavailable")
+                          item.files && !item.files.find(i => i.state !== "unavailable")
                             ? {
                                 opacity: 0.65,
                                 pointerEvents: "none"
@@ -248,21 +235,12 @@ export default class FILES extends Component {
                                         }}
                                       >
                                         {item.files
-                                          .sort(
-                                            (a, b) =>
-                                              a.dateUploaded - b.dateUploaded
-                                          )
+                                          .sort((a, b) => a.dateUploaded - b.dateUploaded)
                                           .map((item, index) => (
                                             <List.Item key={index}>
                                               <List.Item.Meta
                                                 title={`Version ${index + 1}`}
-                                                description={
-                                                  <div>
-                                                    {`${new Date(
-                                                      item.dateUploaded
-                                                    ).toLocaleString()}`}
-                                                  </div>
-                                                }
+                                                description={<div>{`${new Date(item.dateUploaded).toLocaleString()}`}</div>}
                                               />
                                             </List.Item>
                                           ))
@@ -292,15 +270,18 @@ export default class FILES extends Component {
               </div>
             )}
             <br />
-            <Button
-              icon="plus"
-              type="primary"
-              onClick={() => {
-                this.setState({ uploadModalVisible: true });
-              }}
-            >
-              File
-            </Button>
+            {this.state.searchResults === null && (
+              <Button
+                icon="plus"
+                type="primary"
+                onClick={() => {
+                  this.setState({ uploadModalVisible: true });
+                }}
+              >
+                File
+              </Button>
+            )}
+
             <FileUploadModal
               onClose={() => {
                 this.setState({ uploadModalVisible: false });

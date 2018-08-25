@@ -38,10 +38,8 @@ export default class TopBar extends Component {
     if (props.leftButtonType !== this.state.leftButtonType) return true;
     if (props.rightButtonType !== this.state.rightButtonType) return true;
     if (props.visibilityMode !== this.state.visibilityMode) return true;
-    if (props.scrollPosition === 0 && this.state.scrollPosition !== 0)
-      return true;
-    if (props.scrollPosition !== 0 && this.state.scrollPosition === 0)
-      return true;
+    if (props.scrollPosition === 0 && this.state.scrollPosition !== 0) return true;
+    if (props.scrollPosition !== 0 && this.state.scrollPosition === 0) return true;
     return false;
   }
 
@@ -49,8 +47,7 @@ export default class TopBar extends Component {
     return (
       <div
         className={`top-bar-wrapper ${
-          this.state.visibilityMode === "adaptive" &&
-          this.state.scrollPosition <= 0
+          this.state.visibilityMode === "adaptive" && this.state.scrollPosition <= 0
             ? "transparent top"
             : this.state.scrollPosition <= 0
               ? "top"
@@ -72,26 +69,26 @@ export default class TopBar extends Component {
             className="left-button"
           />
           <div className="heading">{this.state.heading}</div>
-          <Button
-            shape="circle"
-            icon={
-              typeof this.state.rightButtonType === "string"
-                ? this.state.rightButtonType
-                : null
-            }
-            className="right-button"
-            onTouchEnd={e => {
-              this.props.onRightButtonPress();
-              e.preventDefault();
-              return true;
-            }}
-            onMouseUp={() => {
-              this.props.onRightButtonPress();
-            }}
-          >
-            {typeof this.state.rightButtonType !== "string" &&
-              this.state.rightButtonType}
-          </Button>
+          {!!this.state.rightButtonType ? (
+            <Button
+              type="primary"
+              shape="circle"
+              icon={typeof this.state.rightButtonType === "string" ? this.state.rightButtonType : null}
+              className="right-button"
+              onTouchEnd={e => {
+                this.props.onRightButtonPress();
+                e.preventDefault();
+                return true;
+              }}
+              onMouseUp={() => {
+                this.props.onRightButtonPress();
+              }}
+            >
+              {typeof this.state.rightButtonType !== "string" && this.state.rightButtonType}
+            </Button>
+          ) : (
+            <div style={{ width: 36, height: 36 }} />
+          )}
         </Header>
       </div>
     );

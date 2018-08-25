@@ -49,11 +49,9 @@ class FileVersionDisplay extends Component {
                   cancelText="Cancel"
                   onConfirm={() => {
                     this.setState({ deleting: true }, () => {
-                      this.state.project
-                        .deleteFile(this.state.file.uid, item.uid)
-                        .then(() => {
-                          this.setState({ deleting: false });
-                        });
+                      this.state.project.deleteFile(this.state.file.uid, item.uid).then(() => {
+                        this.setState({ deleting: false });
+                      });
                     });
                   }}
                 >
@@ -79,20 +77,14 @@ class FileVersionDisplay extends Component {
         }
       >
         <List.Item.Meta
-          title={item.description || `No comments`}
+          title={<span style={{ fontSize: 14 }}>{item.description || `No comments`}</span>}
           description={
             <div>
-              {[
-                `${new Date(item.dateUploaded).toLocaleString()}`,
-                `${Humanize.fileSize(item.size)}`
-              ].map((x, i) => (
+              {[`${new Date(item.dateUploaded).toLocaleString()}`, `${Humanize.fileSize(item.size)}`].map((x, i) => (
                 <div key={i}>{x}</div>
               ))}
               <div>
-                <UserGroupDisplay
-                  people={{ members: [item.uploader] }}
-                  project={this.state.project}
-                />
+                <UserGroupDisplay people={{ members: [item.uploader] }} project={this.state.project} />
               </div>
               {!!item.name && <div>Uploaded as {item.name}</div>}
             </div>

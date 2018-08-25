@@ -73,7 +73,7 @@ class MESSAGES extends Component {
   lastScrollHeight = 0;
   scrollHeightWatcher = () => {
     cancelAnimationFrame(this.scrollHeightWatcher);
-    if(!this.scrollElement) return;
+    if (!this.scrollElement) return;
     if (this.loadingMore && this.scrollElement.getScrollHeight() !== this.lastScrollHeight) {
       this.loadingMore = false;
       //this.scrollElement.style.overflow = "";
@@ -97,7 +97,7 @@ class MESSAGES extends Component {
     }
   }
   async scrollBottom() {
-    if(!this.scrollElement) return;
+    if (!this.scrollElement) return;
     await this.scrollToSmooth(300, this.scrollElement.getScrollHeight());
     this.trySetRead();
   }
@@ -105,7 +105,7 @@ class MESSAGES extends Component {
   loadingMore = false;
   dist = 0;
   loadMore() {
-    if(!this.scrollElement) return;
+    if (!this.scrollElement) return;
     if (this.state.orderedMessages.length > this.state.messageDisplayCount) {
       this.loadingMore = true;
       //this.scrollElement.style.overflow = "hidden";
@@ -119,7 +119,7 @@ class MESSAGES extends Component {
     }
   }
   loadLess() {
-    if(!this.scrollElement) return;
+    if (!this.scrollElement) return;
     if (this.state.messageDisplayCount > this.initialMessagesCount) {
       let dist = this.scrollElement.getScrollHeight() - this.scrollElement.getScrollTop();
       this.setState(
@@ -134,7 +134,10 @@ class MESSAGES extends Component {
   }
   trySetRead() {
     if (this.state.messenger) {
-      if (Math.ceil(this.scrollElement.getScrollHeight()) >= this.scrollElement.getScrollHeight() - this.scrollElement.getClientHeight()) {
+      if (
+        Math.ceil(this.scrollElement.getScrollHeight()) >=
+        this.scrollElement.getScrollHeight() - this.scrollElement.getClientHeight()
+      ) {
         $.object(this.receivedMessages)
           .values()
           .forEach(item => this.state.messenger.setRead(item.uid, true));
@@ -217,7 +220,8 @@ class MESSAGES extends Component {
       () => {
         this.setInputValue("", () => {
           let res = update(target, {
-            content: { bodyText: { $set: `${val} (edited)` } }
+            content: { bodyText: { $set: `${val}` } },
+            edited: { $set: true }
           });
           this.state.messenger.setMessage(target.uid, res).then(() => {
             this.setState(
@@ -292,7 +296,7 @@ class MESSAGES extends Component {
   }
   isAnimating = false;
   scrollToSmooth(duration, endY) {
-    if(!this.scrollElement) return;
+    if (!this.scrollElement) return;
     return new Promise((res, rej) => {
       if (this.isAnimating) res();
       //this.scrollElement.style.overflow = "hidden";
@@ -302,7 +306,7 @@ class MESSAGES extends Component {
       let startTime = Date.now();
       let endTime = startTime + duration;
       let loop = () => {
-        if(!this.scrollElement) return;
+        if (!this.scrollElement) return;
         let elapsedTime = Date.now() - startTime;
         this.scrollElement.scrollTop(startY + (elapsedTime / duration) * Ydifference);
         if (Date.now() <= endTime) {
@@ -364,6 +368,12 @@ class MESSAGES extends Component {
         }}
       >
         <Scrollbars
+          onScrollStart={()=>{
+            if(!this.isAnimating) {
+              this.inputElement.onBlur();
+              document.querySelector("div.DraftEditor-editorContainer > div").blur();
+            }
+          }}
           autoHide
           hideTracksWhenNotNeeded
           ref={e => (this.scrollElement = e)}
@@ -385,9 +395,23 @@ class MESSAGES extends Component {
           }).bind(this)}
         >
           <p style={{ opacity: 0.65, margin: 50 }}>
-            {this.state.orderedMessages.length > this.state.messageDisplayCount
-              ? "Stop scrolling here to load more messages"
-              : !!this.state.orderedMessages.length && "This marks the beginning of your conversation"}
+            {this.state.orderedMessages.length > this.state.messageDisplayCount ? (
+              <span>
+                <p>
+                  <Icon type="loading" />
+                </p>
+                Stop scrolling here to load more messages
+              </span>
+            ) : (
+              !!this.state.orderedMessages.length && (
+                <span>
+                  <p>
+                    <Icon type="message" />
+                  </p>
+                  This marks the beginning of your conversation
+                </span>
+              )
+            )}
           </p>
           {this.state.orderedMessages.length ? (
             <List itemLayout="vertical" style={{ userSelect: "text" }}>

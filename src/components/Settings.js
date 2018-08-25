@@ -82,6 +82,7 @@ export default class Settings extends Component {
   render() {
     return (
       <Modal
+        destroyOnClose
         getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
         style={{ top: 20 }}
         footer={[

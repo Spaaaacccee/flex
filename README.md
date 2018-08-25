@@ -1,3 +1,7 @@
+![Bonfire](.\public\res\render0.png)
+
+![Bonfire](.\public\icons\favicon-32x32.png)
+
 # Bonfire
 
 Software development 3/4 project.

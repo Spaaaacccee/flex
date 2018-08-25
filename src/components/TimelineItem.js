@@ -189,7 +189,8 @@ export default class TimelineItem extends Component {
           />
         </Card>
         <Modal
-          getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
+          destroyOnClose
+          getContainer={() => document.querySelector(".modal-mount > div:first-child")}
           footer={null}
           style={{ top: 20 }}
           visible={this.state.eventEditorVisible}

@@ -12,6 +12,7 @@ import ProjectInvitation from "../components/ProjectInvitation";
 import ProjectDisplay from "../components/ProjectDisplay";
 import formatJSON from "format-json-pretty";
 import ContextProvider from "../components/ContextProvider";
+import { Scrollbars } from "react-custom-scrollbars";
 
 export default class USER extends Component {
   state = {
@@ -35,20 +36,25 @@ export default class USER extends Component {
   generateProjectCards(name, notFoundMessage, data, renderComponent) {
     return (
       <Card title={name}>
-        <div style={{ display: "flex" }}>
-          {!!data && !!data.length
-            ? data.map((item, index) => (
-                <div style={{ paddingRight: 20, flex: "none" }} key={index}>
-                  <ContextProvider
-                    projectID={item}
-                    userID={this.state.user.uid}
-                  >
-                    {renderComponent(item)}
-                  </ContextProvider>
-                </div>
-              ))
-            : notFoundMessage}
-        </div>
+        <Scrollbars
+          style={{ margin: -24, width: "calc(100% + 48px)" }}
+          autoHide
+          hideTracksWhenNotNeeded
+          autoHeight
+          autoHeightMax={1000}
+        >
+          <div style={{ display: "flex", padding: 24 }}>
+            {!!data && !!data.length
+              ? data.map((item, index) => (
+                  <div style={{ paddingRight: 20, flex: "none" }} key={index}>
+                    <ContextProvider projectID={item} userID={this.state.user.uid}>
+                      {renderComponent(item)}
+                    </ContextProvider>
+                  </div>
+                ))
+              : notFoundMessage}
+          </div>
+        </Scrollbars>
       </Card>
     );
   }
@@ -69,12 +75,10 @@ export default class USER extends Component {
                     fontWeight: 700
                   }}
                 >
-                  {this.state.user.name || <Icon type="loading"/>}
+                  {this.state.user.name || <Icon type="loading" />}
                 </span>
               </div>
-              <div style={{ marginBottom: 20 }}>
-                {this.state.user.email || <Icon type="loading"/>}
-              </div>
+              <div style={{ marginBottom: 20 }}>{this.state.user.email || <Icon type="loading" />}</div>
               <div>
                 <Button
                   type="primary"
@@ -106,9 +110,7 @@ export default class USER extends Component {
                   }}
                 >
                   <div style={{ fontWeight: 600, fontSize: 36 }}>
-                    {this.state.user.projects
-                      ? this.state.user.projects.length
-                      : 0}
+                    {this.state.user.projects ? this.state.user.projects.length : 0}
                   </div>
                   <p>Projects</p>
                 </div>
@@ -119,9 +121,7 @@ export default class USER extends Component {
                   }}
                 >
                   <div style={{ fontWeight: 600, fontSize: 36 }}>
-                    {this.state.user.joinedProjects
-                      ? this.state.user.joinedProjects.length
-                      : 0}
+                    {this.state.user.joinedProjects ? this.state.user.joinedProjects.length : 0}
                   </div>
                   <p>Joined Projects</p>
                 </div>
@@ -132,9 +132,7 @@ export default class USER extends Component {
                   }}
                 >
                   <div style={{ fontWeight: 600, fontSize: 36 }}>
-                    {this.state.user.pendingInvites
-                      ? this.state.user.pendingInvites.length
-                      : 0}
+                    {this.state.user.pendingInvites ? this.state.user.pendingInvites.length : 0}
                   </div>
                   <p>Invites</p>
                 </div>
@@ -154,18 +152,13 @@ export default class USER extends Component {
               )
             )}
             <br />
-            {this.generateProjectCards(
-              "Joined",
-              "You haven't joined any projects.",
-              this.state.user.joinedProjects,
-              data => (
-                <ProjectDisplay
-                  onOpenPressed={() => {
-                    this.props.passMessage({ type: "switchTo", content: data });
-                  }}
-                />
-              )
-            )}
+            {this.generateProjectCards("Joined", "You haven't joined any projects.", this.state.user.joinedProjects, data => (
+              <ProjectDisplay
+                onOpenPressed={() => {
+                  this.props.passMessage({ type: "switchTo", content: data });
+                }}
+              />
+            ))}
             <br />
             {this.generateProjectCards(
               "Invites",

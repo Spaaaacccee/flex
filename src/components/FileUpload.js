@@ -5,21 +5,28 @@ import Document, { UploadJob } from "../classes/Document";
 import $ from "../classes/Utils";
 
 export default class FileUpload extends Component {
+
   state = {
     project: {},
-    jobs: [],
-    jobListOnly: false,
-    inProgressOnly: false,
-    selectedFile: {},
-    modalVisible: false,
-    description: "",
-    loading: false,
-    specifyFileName: null
+    jobs: [], // A list of all the uploading jobs to display.
+    jobListOnly: false, // Whether to display only the job list, and no way to upload a file.
+    inProgressOnly: false, // Whether the job list should only display jobs that are ongoing.
+    selectedFile: {}, // The currently selected file to upload.
+    modalVisible: false, // Whether the add a description window is open.
+    description: "", // The description for the file entered by the user.
+    loading: false, // Whether the file upload component is loading
+    specifyFileName: null // Whether a file name is specified, and what it is.
   };
 
+  /**
+   * Copy the jobs listed in the job manager to this component
+   * @return {void}
+   * @memberof FileUpload
+   */
   updateFiles() {
     this.setState({ jobs: UploadJob.Jobs.allJobs });
   }
+
   componentWillReceiveProps(props) {
     this.setState({
       project: props.project,
@@ -28,14 +35,19 @@ export default class FileUpload extends Component {
       specifyFileName: props.specifyFileName
     });
   }
+
   componentDidMount() {
+    // Add a listener to update this component when the job list changes.
     UploadJob.Jobs.on("job_changed", this.updateFiles.bind(this));
     this.componentWillReceiveProps(this.props);
     this.updateFiles();
   }
+
   componentWillUnmount() {
+    // Remove the listener for when the job list changes.
     UploadJob.Jobs.off("job_changed", this.updateFiles.bind(this));
   }
+
   render() {
     const renderJobs = this.state.jobs.filter(item => !this.state.inProgressOnly || item.status === "uploading");
     return (
@@ -147,8 +159,10 @@ export default class FileUpload extends Component {
           )}
         </div>
         <Modal
+          wrapClassName="secondary-modal"
+          destroyOnClose
           getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
-          style={{ top: 40 }}
+          style={{ top: 60 }}
           visible={this.state.modalVisible}
           onCancel={() => {
             this.setState({

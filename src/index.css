@@ -60,6 +60,12 @@ h3 {
   -webkit-overflow-scrolling: touch;
 }
 
+div.ant-popover-inner {
+  box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.1),
+  0px 1px 18px rgba(0, 0, 0, 0.02);
+  border-radius: 7px;
+}
+
 .ant-card {
   border: none !important;
   box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.04),
@@ -137,6 +143,7 @@ ul.ant-timeline {
   outline: none !important;
   background: rgba(0, 0, 0, 0.4) !important;
   animation: fade-in 0.4s cubic-bezier(0, 0.65, 0.27, 1) forwards !important;
+  backdrop-filter: blur(2px);
 }
 
 .picker-dialog-content {
@@ -201,6 +208,7 @@ div.ant-modal-body h2 {
   font-weight: 700 !important;
   font-size: 20px;
 }
+
 
 @keyframes fade-in-up {
   from {

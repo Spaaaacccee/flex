@@ -7,7 +7,7 @@ import Messages from "../classes/Messages";
 import Project from "../classes/Project";
 import User from "../classes/User";
 import shallowEqualArrays from "shallow-equal/arrays";
-import {Scrollbars} from "react-custom-scrollbars";
+import { Scrollbars } from "react-custom-scrollbars";
 const { SubMenu } = Menu;
 
 /**
@@ -58,23 +58,14 @@ export default class ProjectSider extends Component {
 
   shouldComponentUpdate(props, state) {
     if (props.index !== this.state.index) return true;
-    if (
-      !shallowEqualArrays(
-        state.notifications || [],
-        this.state.notifications || []
-      )
-    )
-      return true;
-    if (!shallowEqualArrays(props.items || [], this.state.items || []))
-      return true;
+    if (!shallowEqualArrays(state.notifications || [], this.state.notifications || [])) return true;
+    if (!shallowEqualArrays(props.items || [], this.state.items || [])) return true;
     return false;
   }
 
   updateNotifications(items, newProject, newUser, newMessages) {
     this.setState({
-      notifications: items.map(item =>
-        item.getNotificationCount(newProject, newUser, newMessages)
-      )
+      notifications: items.map(item => item.getNotificationCount(newProject, newUser, newMessages))
     });
   }
 
@@ -85,34 +76,19 @@ export default class ProjectSider extends Component {
       items: props.items,
       index: props.index
     });
-    this.updateNotifications(
-      props.items,
-      props.project,
-      props.user,
-      (this.state.messenger||{}).messages
-    );
-    if (
-      props.project &&
-      props.project.projectID !== (this.state.project || {}).projectID
-    ) {
+    this.updateNotifications(props.items, props.project, props.user, (this.state.messenger || {}).messages);
+    if (props.project && props.project.projectID !== (this.state.project || {}).projectID) {
       if (this.state.messenger) {
         this.state.messenger.off();
         this.state.messenger.stopListening();
       }
-      Messages.get(props.project.messengerID || props.project.projectID).then(
-        messenger => {
-          messenger.on("change", messages => {
-            this.updateNotifications(
-              this.state.items,
-              this.state.project,
-              this.state.user,
-              messages
-            );
-          });
-          messenger.startListening();
-          this.setState({ messenger });
-        }
-      );
+      Messages.get(props.project.messengerID || props.project.projectID).then(messenger => {
+        messenger.on("change", messages => {
+          this.updateNotifications(this.state.items, this.state.project, this.state.user, messages);
+        });
+        messenger.startListening();
+        this.setState({ messenger });
+      });
     } else {
       if (!props.project && this.state.messenger) {
         this.state.messenger.off();
@@ -190,11 +166,12 @@ export default class ProjectSider extends Component {
             margin: "18px 22px",
             marginTop: 0,
             height: 40,
-            borderRadius: 80,
-            background: "#E6F7FF",
-            color: "#1990FF",
-            borderColor: "#E6F7FF",
-            fontWeight: 600
+            borderRadius: 20,
+            background: "#1990FF",
+            color: "#FFF",
+            borderColor: "#1990FF",
+            fontWeight: 600,
+            boxShadow: `rgba(4, 111, 210, 0.24) 0px 5px 20px`
           }}
         >
           Invite Users
@@ -214,11 +191,7 @@ export default class ProjectSider extends Component {
                 <Badge
                   style={{ transform: "scale(0.9)" }}
                   offset={[-2, 10]}
-                  count={
-                    this.state.index === index
-                      ? 0
-                      : this.state.notifications[index] || 0
-                  }
+                  count={this.state.index === index ? 0 : this.state.notifications[index] || 0}
                 >
                   {" "}
                 </Badge>
