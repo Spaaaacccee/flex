@@ -16,7 +16,7 @@ export default class RoleEditor extends Component {
     onChange: () => {}
   };
   state = {
-    values: {}
+    values: {} // The roles to edit.
   };
 
   componentDidMount() {
@@ -24,10 +24,17 @@ export default class RoleEditor extends Component {
   }
 
   componentWillReceiveProps(props) {
+    // Update this component to match its state.
     this.setState({ values: props.values });
   }
 
+  /**
+   * The text fields of the roles
+   * @type {Input[]}
+   * @memberof RoleEditor
+   */
   inputRefs = [];
+
   render() {
     this.inputRefs = [];
     return (
@@ -35,6 +42,7 @@ export default class RoleEditor extends Component {
         {this.state.values ? (
           <div style={{ textAlign: "center" }}>
             <List
+              // If no roles are created, display a default message.
               locale={{
                 emptyText: (
                   <div>
@@ -52,13 +60,16 @@ export default class RoleEditor extends Component {
                     alignItems: "center"
                   }}
                   actions={[
+                    // A delete button
                     <a
                       onClick={() => {
+                        // Remove this role from the list.
                         this.setState(
                           update(this.state, {
                             values: { $splice: [[index, 1]] }
                           }),
                           () => {
+                            // Notify the parent of this change.
                             this.props.onChange(this.state.values);
                           }
                         );
@@ -67,16 +78,18 @@ export default class RoleEditor extends Component {
                       <Icon type="close" />
                     </a>
                   ]}
-                  key={item.uid + index}
+                  key={item.uid}
                 >
                   <Popover
                     trigger="click"
                     placement="topLeft"
                     content={
+                      // A hue picker to pick the colour of the role.
                       <HuePicker
                         color={this.state.values[index].color}
                         onChangeComplete={c => {
                           this.setState(
+                            // Set the colour of this role.
                             update(this.state, {
                               values: {
                                 [index]: {
@@ -85,6 +98,7 @@ export default class RoleEditor extends Component {
                               }
                             }),
                             () => {
+                              // Notify the parent about this change.
                               this.props.onChange(this.state.values);
                             }
                           );
@@ -106,6 +120,7 @@ export default class RoleEditor extends Component {
                       }}
                     />
                   </Popover>
+                  {/* The text field for the name of the role */}
                   <Input
                     maxLength={100}
                     ref={e => (this.inputRefs[index] = e)}
@@ -131,6 +146,7 @@ export default class RoleEditor extends Component {
                     placeholder="New Role"
                     onChange={e => {
                       this.setState(
+                        // Set the role name in the list of roles.
                         update(this.state, {
                           values: {
                             [index]: {
@@ -141,6 +157,7 @@ export default class RoleEditor extends Component {
                           }
                         }),
                         () => {
+                          // Inform the parent aboout this change.
                           this.props.onChange(this.state.values);
                         }
                       );
@@ -149,6 +166,7 @@ export default class RoleEditor extends Component {
                 </List.Item>
               )}
             />
+            {/* Add a role button */}
             <Button
               type="primary"
               icon="plus"
@@ -168,6 +186,7 @@ export default class RoleEditor extends Component {
             </Button>
           </div>
         ) : (
+          // Display a loding icon while the list of roles loads.
           <div style={{ textAlign: "center" }}>
             <Icon type="loading" style={{ fontSize: 24 }} spin />
           </div>

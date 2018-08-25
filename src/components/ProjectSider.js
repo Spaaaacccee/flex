@@ -50,19 +50,29 @@ export default class ProjectSider extends Component {
     items: [] // The buttons that will be rendered by default
   };
   state = {
-    items: [],
+    items: [], // The items of the menu to display.
     index: 0, // The index of the menu item that is currently open.
-    notifications: [],
-    messenger: null
+    notifications: [], // The number of notifications for each item of the menu.
+    messenger: null // The messenger to read notifications from.
   };
 
   shouldComponentUpdate(props, state) {
     if (props.index !== this.state.index) return true;
     if (!shallowEqualArrays(state.notifications || [], this.state.notifications || [])) return true;
     if (!shallowEqualArrays(props.items || [], this.state.items || [])) return true;
+    // Don't update this component is no properties have changed.
     return false;
   }
 
+  /**
+   * Update the notification count
+   * @param  {Page} items
+   * @param  {Project} newProject
+   * @param  {User} newUser
+   * @param  {Messages} newMessages
+   * @return {void}
+   * @memberof ProjectSider
+   */
   updateNotifications(items, newProject, newUser, newMessages) {
     this.setState({
       notifications: items.map(item => item.getNotificationCount(newProject, newUser, newMessages))
@@ -70,13 +80,17 @@ export default class ProjectSider extends Component {
   }
 
   componentWillReceiveProps(props) {
+    // Update this component with new properties.
     this.setState({
       project: props.project,
       user: props.user,
       items: props.items,
       index: props.index
     });
+    // Update the notification coount.
     this.updateNotifications(props.items, props.project, props.user, (this.state.messenger || {}).messages);
+
+    // If the project changed, reattach listeners.
     if (props.project && props.project.projectID !== (this.state.project || {}).projectID) {
       if (this.state.messenger) {
         this.state.messenger.off();
@@ -98,6 +112,7 @@ export default class ProjectSider extends Component {
   }
 
   componentWillUnmount() {
+    // Stop the messenger if the component will unmount.
     if (this.state.messenger) {
       this.state.messenger.off();
       this.state.messenger.stopListening();
@@ -115,10 +130,20 @@ export default class ProjectSider extends Component {
     this.props.onItemSelected(new itemSelectedArgs(item, index));
   }
 
-  handleSettingsPress(e) {
+  /**
+   * Respond to when the settings button is pressed.
+   * @return {void}
+   * @memberof ProjectSider
+   */
+  handleSettingsPress() {
     this.props.onSettingsPress();
   }
 
+  /**
+   * Respond to when the invite users button is pressed.
+   * @return {void}
+   * @memberof ProjectSider
+   */
   handleInviteUsersPress() {
     this.props.onInviteUsersPress();
   }
@@ -157,6 +182,7 @@ export default class ProjectSider extends Component {
   render() {
     return (
       <Scrollbars autoHide hideTracksWhenNotNeeded className="project-sider">
+        {/* Invite Users Button */}
         <Button
           onClick={this.handleInviteUsersPress.bind(this)}
           type="primary"
@@ -171,7 +197,7 @@ export default class ProjectSider extends Component {
             color: "#FFF",
             borderColor: "#1990FF",
             fontWeight: 600,
-            boxShadow: `rgba(4, 111, 210, 0.24) 0px 5px 20px`
+            boxShadow: "rgba(4, 111, 210, 0.24) 0px 5px 20px"
           }}
         >
           Invite Users
@@ -185,6 +211,7 @@ export default class ProjectSider extends Component {
             selectedKeys={["" + (this.state.index || 0)]}
           >
             {this.state.items.map((item, index) => (
+              // Render each item of the menu.
               <Menu.Item key={"" + index}>
                 <Icon type={item.icon} />
                 <span>{item.name}</span>
@@ -200,6 +227,7 @@ export default class ProjectSider extends Component {
           </Menu>
         </div>
         <Menu className="sider-menu settings-menu" selectedKeys={null}>
+          {/* Settings Button */}
           <Menu.Item
             key="settings"
             style={{ paddingLeft: 24 }}

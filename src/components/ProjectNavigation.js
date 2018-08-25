@@ -71,14 +71,14 @@ export default class ProjectNavigation extends Component {
   };
 
   state = {
-    items: [],
-    openedProject: null,
-    openedIndex: -1,
-    user: {},
-    userData: {},
-    projects: {},
-    notificationCount: {},
-    pauseUpdate: false
+    items: [], // The project IDs of the projects to display.
+    openedProject: null, // The opened project.
+    openedIndex: -1, // The index of the currently opened item.
+    user: {}, // Data about the user, from the auth source.
+    userData: {}, // Data about the user, from the database.
+    projects: {}, // The projects to display.
+    notificationCount: {}, // A dictionary of notification counts.
+    pauseUpdate: false // Whether to temporarily stop updating.
   };
 
   componentDidMount() {
@@ -92,10 +92,14 @@ export default class ProjectNavigation extends Component {
    * @memberof ProjectNavigation
    */
   componentWillReceiveProps(props) {
+    // If the new properties contain items, then set the new items.
     if (props.items.length) {
       Notifier.setProjects(props.items);
     }
+    // Create a copy of the old items.
     let oldItems = this.state.items.slice();
+
+    // Update the state with new properties.
     this.setState(
       {
         openedProject: props.openedProject,
@@ -106,7 +110,11 @@ export default class ProjectNavigation extends Component {
           : -1
       },
       () => {
+
+        // Get the project info.
         this.getProjects(props.items, oldItems, props.user.uid);
+
+        // Get the user info.
         User.getCurrentUser().then(user => {
           this.setState({ userData: user });
         });
@@ -123,9 +131,16 @@ export default class ProjectNavigation extends Component {
     if (!User.equal(state.userData, this.state.userData)) return true;
     if (state.projects !== this.state.projects) return true;
     if (state.notificationCount !== this.state.notificationCount) return true;
+    // Don't update this component is no properties have changed.
     return false;
   }
 
+  /**
+   * Gets the notification count, which is simply the sum of messages and history events.
+   * @param  {String} projectID 
+   * @return 
+   * @memberof ProjectNavigation
+   */
   getNotificationCount(projectID) {
     return (
       ((this.state.notificationCount[projectID] || {}).messages || 0) +
@@ -133,9 +148,19 @@ export default class ProjectNavigation extends Component {
     );
   }
 
+  /**
+   * Get information about new projects.
+   * @param  {String[]} newItems 
+   * @param  {String[]} oldItems 
+   * @param  {String} userID 
+   * @return {void}
+   * @memberof ProjectNavigation
+   */
   getProjects(newItems, oldItems, userID) {
+    // For each new item, add a message and history event listener if an existing one doesn't exist.
     newItems.forEach(projectID => {
       if (!oldItems.find(x=>x===projectID)) {
+        // Define a messages listener, to update the messages count.
         Project.get(projectID).then(project => {
           Fetch.getMessagesReference(project.messengerID || project.projectID)
             .child("messages")
@@ -166,6 +191,7 @@ export default class ProjectNavigation extends Component {
               }
             });
         });
+        // Define a project listener, to update the project name and notification count.
         let projectCallback = snapshot => {
           if (!this.state.items.find(x => x === projectID))
             snapshot.ref.off("value", projectCallback);
@@ -195,7 +221,7 @@ export default class ProjectNavigation extends Component {
             })
           });
         };
-
+        // Attach the project listener.
         Fetch.getProjectReference(projectID).on("value", projectCallback);
       }
     });
@@ -247,7 +273,8 @@ export default class ProjectNavigation extends Component {
               ? this.state.userData.pendingInvites.length
               : 0
           }
-        >
+        > 
+          {/* Display a user icon. */}
           <UserIcon
             thumbnail={this.state.user ? this.state.user.photoURL : ""}
             onPress={this.handleUserProfilePress.bind(this)}
@@ -255,6 +282,7 @@ export default class ProjectNavigation extends Component {
           />
         </Badge>
         {this.state.items ? (
+          // Display the list of projects.
           <Menu
             style={{
               background: "transparent",

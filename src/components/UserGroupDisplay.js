@@ -10,14 +10,10 @@ export default class UserGroupDisplay extends Component {
     if (!user.uid) return false;
     if (!project.projectID) return false;
     if (!people) return false;
-    if ((people.members || []).find(memberID => memberID === user.uid))
-      return true;
+    if ((people.members || []).find(memberID => memberID === user.uid)) return true;
     if (
       (people.roles || []).find(role =>
-        (
-          (project.members || []).find(memberID => memberID.uid === user.uid)
-            .roles || []
-        ).find(roleID => roleID === role)
+        ((project.members || []).find(memberID => memberID.uid === user.uid).roles || []).find(roleID => roleID === role)
       )
     )
       return true;
@@ -52,36 +48,27 @@ export default class UserGroupDisplay extends Component {
     }
     if (people.roles && project) {
       this.setState({
-        roleInfo: people.roles
-          .map(role => (project.roles || []).find(item => role === item.uid))
-          .filter(item => item)
+        roleInfo: people.roles.map(role => (project.roles || []).find(item => role === item.uid)).filter(item => item)
       });
     }
   }
 
   shouldComponentUpdate(props, state) {
-    if (!shallowEqualArrays(state.roleInfo || [], this.state.roleInfo || []))
-      return true;
-    if (!shallowEqualArrays(state.userInfo || [], this.state.userInfo || []))
-      return true;
+    if (!shallowEqualArrays(state.roleInfo || [], this.state.roleInfo || [])) return true;
+    if (!shallowEqualArrays(state.userInfo || [], this.state.userInfo || [])) return true;
     if (!Project.equal(props.project, this.state.project)) return true;
     return false;
   }
   render() {
     return (
       <div style={this.state.style}>
-        {!!(
-          (this.state.people.members || []).length +
-          (this.state.people.roles || []).length
-        ) && this.props.children}
+        {!!((this.state.people.members || []).length + (this.state.people.roles || []).length) && this.props.children}
         {this.state.roleInfo
           .map((item, index) => (
             <Tag color={HSL.toCSSColour(item.color)} key={"R:" + index}>
               {<Icon type="tags" />}
               {` `}
-              {item.name.slice(0, 15) === item.name
-                ? item.name
-                : `${item.name.slice(0, 15)}...`}
+              {item.name.slice(0, 15) === item.name ? item.name : `${item.name.slice(0, 15)}...`}
             </Tag>
           ))
           .concat(
@@ -92,9 +79,7 @@ export default class UserGroupDisplay extends Component {
                 content={
                   this.state.project && this.state.project.members ? (
                     <MemberDisplay
-                      member={this.state.project.members.find(
-                        x => x.uid === item.uid
-                      )}
+                      member={this.state.project.members.find(x => x.uid === item.uid)}
                       project={this.state.project}
                       readOnly
                       cardless
@@ -110,6 +95,16 @@ export default class UserGroupDisplay extends Component {
               </Popover>
             ))
           )}
+        {Array.apply(null, Array((this.state.people.members || []).length - (this.state.userInfo || []).length)).map(x => (
+          <Tag>
+            <Icon type="user" />{` `}<Icon type="loading" />
+          </Tag>
+        ))}
+        {Array.apply(null, Array((this.state.people.roles || []).length - (this.state.roleInfo || []).length)).map(x => (
+          <Tag>
+            <Icon type="tags" />{` `}<Icon type="loading" />
+          </Tag>
+        ))}
       </div>
     );
   }

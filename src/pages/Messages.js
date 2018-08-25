@@ -335,7 +335,7 @@ class MESSAGES extends Component {
   cacheItems() {
     let orderedMessages = $.object(this.receivedMessages)
       .values()
-      .sort((a, b) => (a.timeSent === b.timeSent ? 0 : a.timeSent > b.timeSent ? 1 : -1));
+      .sort((a, b) => a.timeSent || 0 - b.timeSent || 0);
     if (orderedMessages.length) {
       this.setState({ orderedMessages }, () => {
         this.scrollBottom();
@@ -368,8 +368,8 @@ class MESSAGES extends Component {
         }}
       >
         <Scrollbars
-          onScrollStart={()=>{
-            if(!this.isAnimating) {
+          onScrollStart={() => {
+            if (!this.isAnimating) {
               this.inputElement.onBlur();
               document.querySelector("div.DraftEditor-editorContainer > div").blur();
             }
@@ -525,6 +525,9 @@ class MESSAGES extends Component {
                 tabIndex="0"
                 onKeyDown={e => {
                   if (e.keyCode === 27 && this.state.consoleStatus === "editing") {
+                    this.setState({
+                      consoleStatus: "ready"
+                    });
                     this.setInputValue("");
                   } else if (e.keyCode === 13) {
                     if (!e.shiftKey) {

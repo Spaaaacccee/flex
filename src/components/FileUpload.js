@@ -49,13 +49,18 @@ export default class FileUpload extends Component {
   }
 
   render() {
+    // Set the jobs to render to only uploading jobs if specified.
     const renderJobs = this.state.jobs.filter(item => !this.state.inProgressOnly || item.status === "uploading");
     return (
       <div>
         {!this.state.jobListOnly && (
+          // If the settings does not disable uploading, show the uploader.
           <div>
             <Upload.Dragger
               customRequest={({ file }) => {
+                // What to do when a file is selected:
+
+                // If the file name is specified, and the extension doesn't match the specified file name's extension, prevent uploading.
                 if (
                   this.state.specifyFileName &&
                   this.state.specifyFileName
@@ -74,18 +79,24 @@ export default class FileUpload extends Component {
                   );
                   return;
                 }
+
+                // Otherwise, if the file size is larger than 50 MB, prevent uplading.
                 if (file.size > 1024 * 1024 * 50) {
                   message.error(`${file.name} is larger than the maximum allowed file size (50 MB).`);
                   return;
                 }
+
+                // Otherwise, select the file, and go to the next step.
                 this.setState({
                   selectedFile: file,
                   modalVisible: true,
                   loading: false
                 });
               }}
+
               fileList={[]}
             >
+              {/* The file upload area */}
               <p className="ant-upload-drag-icon">
                 <Icon type="plus" />
               </p>
@@ -95,20 +106,25 @@ export default class FileUpload extends Component {
         )}
         <div>
           {!!renderJobs.length && (
+            // If there are jobs to display, then display them
             <div>
               <br />
               <List bordered>
                 {renderJobs.map((item, index) => (
+                  // A single job
                   <List.Item
                     key={item.uid}
                     actions={
                       item.status === "done" || item.status === "canceled"
                         ? null
                         : [
+                            // If a job is not done or canceled, then display an option to cancel.
                             <Icon
                               type="close"
                               onClick={() => {
+                                // Cancel the job
                                 item.cancelJob();
+                                // Refresh the files so that the canceled job is reflected in the UI
                                 this.updateFiles();
                               }}
                             />
@@ -117,6 +133,7 @@ export default class FileUpload extends Component {
                   >
                     <List.Item.Meta
                       avatar={
+                        // File icon
                         <Icon
                           style={{
                             width: "100%",
@@ -132,6 +149,7 @@ export default class FileUpload extends Component {
                       }
                       title={item.name}
                       description={
+                        // Progress bar
                         <div>
                           <span style={{ textTransform: "capitalize" }}>{item.status}</span>
                           <span>
@@ -158,13 +176,15 @@ export default class FileUpload extends Component {
             </div>
           )}
         </div>
+        {/* Window for uploading new versions of files. */}
         <Modal
           wrapClassName="secondary-modal"
           destroyOnClose
           getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
-          style={{ top: 60 }}
+          style={{ top: 100 }}
           visible={this.state.modalVisible}
           onCancel={() => {
+            // When the modal is closed, then clear the selected file and the description that is entered.
             this.setState({
               selectedFile: {},
               modalVisible: false,
@@ -172,21 +192,29 @@ export default class FileUpload extends Component {
             });
           }}
           footer={[
+            // Submit button
             <Button
               icon="check"
               loading={this.state.loading}
               type="primary"
               onClick={() => {
+                // What to do when the user clicks submit.
+
+                // Display the loading icon
                 this.setState({ loading: true }, () => {
+                  // Add the file.
                   this.state.project.addFile(
                     this.state.selectedFile,
+                    // Trim the name so that it doesn't start or end with spaces. If the result is empty, use a generic description.
                     this.state.description.trim() || `Made changes to ${this.state.selectedFile.name}`,
                     () => {
+                      // Clear the current selected file and description.
                       this.setState({
                         selectedFile: {},
                         modalVisible: false,
                         description: ""
                       });
+                      // Refresh the files so that the canceled job is reflected in the UI.
                       this.updateFiles();
                     },
                     this.state.specifyFileName
@@ -199,6 +227,7 @@ export default class FileUpload extends Component {
           ]}
         >
           <div style={{ textAlign: "center", marginTop: 20 }}>
+            {/* A large file icon for aesthetics. */}
             <Icon
               type={Document.getFiletypeIcon(this.state.selectedFile.name || "")}
               style={{
@@ -211,11 +240,13 @@ export default class FileUpload extends Component {
             <br />
           </div>
           <h3>Tell your team why you uploaded {this.state.selectedFile.name}</h3>
+          {/* Description input, with a 100 character limit. */}
           <Input
             maxLength={100}
             value={this.state.description}
             placeholder={`Made changes to ${this.state.selectedFile.name}`}
             onChange={e => {
+              // Keep removing all whitespace to the left.
               this.setState({
                 description: $.string(e.target.value).trimLeft()
               });

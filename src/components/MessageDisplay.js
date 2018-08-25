@@ -208,7 +208,6 @@ class MessageDisplay extends Component {
                   title={
                     <span
                       style={{
-                        marginBottom: 5,
                         fontSize: 16,
                         display: "inline-block",
                         color: HSL.toCSSColour(
@@ -285,7 +284,7 @@ class MessageDisplay extends Component {
                       >
                         <Button
                           style={{
-                            visibility: this.state.readOnly ? "hidden" : "visible",
+                            visibility: this.state.readOnly || this.state.status === "processing" ? "hidden" : "visible",
                             border: 0,
                             background: "transparent",
                             position: "absolute",
@@ -298,7 +297,11 @@ class MessageDisplay extends Component {
                       </Popover>
                     </span>
                   }
-                  description={$.string($.date(item.timeSent).humanise(true)).capitaliseFirstLetter()}
+                  description={
+                    <span style={{ marginBottom: 5, display: 'inline-block' }}>
+                      {$.string($.date(item.timeSent).humanise(true)).capitaliseFirstLetter()}
+                    </span>
+                  }
                 />
                 <div
                   style={{
@@ -464,7 +467,7 @@ class MessageDisplay extends Component {
                   }}
                 >
                   {body}
-                  {item.edited && <span style={{ opacity: 0.65, userSelect: 'none' }}>{" (Edited)"}</span>}
+                  {item.edited && <span style={{ opacity: 0.65, userSelect: "none" }}>{" (Edited)"}</span>}
                 </pre>{" "}
                 <span style={{ color: "rgb(25, 144, 255)" }}>
                   {this.state.status === "processing" && <Icon type="loading" />}

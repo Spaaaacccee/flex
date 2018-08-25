@@ -1,13 +1,12 @@
 import React, { Component } from "react";
 
-import { Icon, Button, message } from "antd";
+import { Button, message } from "antd";
 
 import Fire from "../classes/Fire";
 import * as firebaseui from "firebaseui";
 import "../../node_modules/firebaseui/dist/firebaseui.css";
 
 import "./SignIn.css";
-import UserIcon from "./UserIcon";
 
 /**
  * Sign in screen for signing into the app
@@ -39,9 +38,7 @@ export default class SignIn extends Component {
     if (this.timeout) clearTimeout(this.timeout);
     this.timeout = setTimeout(() => {
       this.setState({ loading: false }, () => {
-        message.error(
-          "We couldn't sign you in because the operation timed out. Try signing in again."
-        );
+        message.error("We couldn't sign you in because the operation timed out. Try signing in again.");
       });
     }, 20000);
   }
@@ -64,11 +61,9 @@ export default class SignIn extends Component {
             .setPersistence("session");
           var uiConfig = {
             signInFlow: "redirect",
-            signInOptions: [
-              Fire.firebase().auth.GoogleAuthProvider.PROVIDER_ID
-            ],
+            signInOptions: [Fire.firebase().auth.GoogleAuthProvider.PROVIDER_ID],
             callbacks: {
-              signInSuccessWithAuthResult: (authResult, redirectUrl) => {
+              signInSuccessWithAuthResult: authResult => {
                 Fire.authenticateGoogleAPIs(() => {
                   this.handleLogIn(authResult.user);
                 });
@@ -103,37 +98,31 @@ export default class SignIn extends Component {
         <div className="sign-in">
           <div className="sign-in-text">
             <img src="./icons/icon.png" style={{ width: 50, marginTop: 10 }} />
-            <br />
-            <h2
+            <div
               style={{
-                fontSize: 32,
-                fontWeight: 400,
                 color: `rgb(40, 166, 240)`,
-                marginTop: 10,
-                marginBottom: 15
-              }}
-            >
-              Sign In
-            </h2>
-            <p
-              style={{
-                color: "rgb(26, 146, 255)",
+                marginTop: 20,
+                fontSize: 14,
                 textTransform: "uppercase",
-                fontWeight: 600,
-                fontSize: 12
+                letterSpacing: 3,
+                marginBottom: 30
               }}
             >
-              Get started with Bonfire.
-            </p>
-            <br />
+              Bonfire
+            </div>
             <Button
               style={{
                 background: "rgb(42, 166, 253)",
-                borderColor: "rgb(42, 166, 253)"
+                borderColor: "rgb(42, 166, 253)",
+                padding: "5px 25px",
+                width: 180,
+                textAlign: "center",
+                boxShadow: "rgba(4, 111, 210, 0.24) 0px 5px 20px"
               }}
               loading={this.state.loading || Fire.firebase().auth().currentUser}
               type="primary"
-              icon="login"
+              icon="google"
+              size="large"
               onClick={() => {
                 this.setState({ loading: true }, () => {
                   this.startTimeout();
@@ -146,16 +135,28 @@ export default class SignIn extends Component {
                 }, 250);
               }}
             >
-              Google
+              Sign In
             </Button>
             <br />
             <br />
+            <a href="https://github.com/Spaaaacccee/flex" target="_blank" rel="noopener noreferrer">
+              <Button
+                icon="github"
+                size="large"
+                ghost
+                style={{
+                  width: 180,
+                  borderColor: "rgb(42, 166, 253)",
+                  color: "rgb(42, 166, 253)"
+                }}
+              >
+                Docs on Github
+              </Button>
+            </a>
             <br />
-            <a
-              href="https://accounts.google.com/signup"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <br />
+            <br />
+            <a href="https://accounts.google.com/signup" target="_blank" rel="noopener noreferrer">
               <p
                 style={{
                   color: "black",
@@ -171,27 +172,6 @@ export default class SignIn extends Component {
             style={{ display: "none", marginTop: -25 }}
             id="firebaseui-auth-container"
           />
-          {
-            //   <Button
-            //   icon="key"
-            //   size="large"
-            //   style={{
-            //     textAlign: "left",
-            //     margin: 31.5,
-            //     width: 168
-            //   }}
-            //   onClick={() => {
-            //     this.setState({
-            //       loading: true
-            //     });
-            //     Fire.firebase()
-            //       .auth()
-            //       .signInAnonymously();
-            //   }}
-            // >
-            //   Sign in as guest
-            // </Button>
-          }
         </div>
       </div>
     );

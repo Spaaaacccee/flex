@@ -39,12 +39,12 @@
 }
 
 .modal-mount > div > div > div .ant-modal-mask {
-  z-index: 2;
+  z-index: 0;
 }
 
 .modal-mount > div > div > div .ant-modal-wrap,
 .modal-mount > div > div > div .ant-modal {
-  z-index: 2;
+  z-index: 0;
 }
 
 .modal-mount > div > div > div > .secondary-modal ~ .ant-modal-mask {

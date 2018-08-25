@@ -55,6 +55,7 @@ export default class FILES extends Component {
   onExtrasButtonPress() {
     this.setState({ uploadModalVisible: true });
   }
+
   render() {
     let filesToRender = this.state.searchResults || this.state.project.files;
     return (
@@ -235,7 +236,7 @@ export default class FILES extends Component {
                                         }}
                                       >
                                         {item.files
-                                          .sort((a, b) => a.dateUploaded - b.dateUploaded)
+                                          .sort((a, b) => a.dateUploaded || 0 - b.dateUploaded || 0)
                                           .map((item, index) => (
                                             <List.Item key={index}>
                                               <List.Item.Meta

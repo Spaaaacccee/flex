@@ -6,14 +6,20 @@ import FileDisplay from "./FileDisplay";
 import TimelineItem from "./TimelineItem";
 import { HistoryItem } from "../classes/History";
 
+/**
+ * A component to display a single history item.
+ * @class HistoryDisplay
+ * @extends Component
+ */
 class HistoryDisplay extends Component {
   state = { project: {}, user: {}, item: null, readOnly: false };
 
   componentDidMount() {
-    this.setState(this.props);
+    this.componentWillReceiveProps(this.props);
   }
 
   componentWillReceiveProps(props) {
+    // Update this component with new properties.
     this.setState({
       project: props.project,
       user: props.user,
@@ -24,14 +30,17 @@ class HistoryDisplay extends Component {
 
   render() {
     let item = this.state.item;
+    // If there's no item to render, then just return an empty div.
     if (!item) return <div />;
     return (
       <div>
         <Card
           actions={
             this.state.readOnly
-              ? null
+              ? // If component is set to read only, display no options.
+                null
               : [
+                  // Otherwise, display an option to mention this history item.
                   [
                     <span
                       onClick={() => {
@@ -42,42 +51,33 @@ class HistoryDisplay extends Component {
                       {" Mention"}
                     </span>
                   ],
+                  // If the type of this history item is not name, description, project, or roles, then display an option to go to their associated page.
                   ...(!(item.type === "name" || item.type === "description" || item.type === "project" || item.type === "roles")
                     ? [
                         <span
                           onClick={() => {
+                            // Go to the relevant page for the type of item that is displayed.
                             this.props.onMessage({
                               type: "navigate",
-                              content: (() => {
-                                switch (item.type) {
-                                  case "member":
-                                    return 1;
-                                  case "event":
-                                    return 2;
-                                  case "set of files":
-                                  case "file":
-                                    return 4;
-                                  default:
-                                    break;
-                                }
-                              })()
+                              content: {
+                                ["event"]: 2,
+                                ["set of files"]: 4,
+                                ["file"]: 4,
+                                ["member"]: 1
+                              }[item.type]
                             });
                           }}
                         >
                           <Icon type="export" />
-                          {` ${(() => {
-                            switch (item.type) {
-                              case "event":
-                                return "Timeline";
-                              case "set of files":
-                              case "file":
-                                return "Files";
-                              case "member":
-                                return "Members";
-                              default:
-                                break;
-                            }
-                          })()}`}
+                          {
+                            // Display a relevant name for the navigate button depending on the type of item that is displayed.
+                            {
+                              ["event"]: " Timeline",
+                              ["set of files"]: " Files",
+                              ["file"]: " Files",
+                              ["member"]: " Members"
+                            }[item.type]
+                          }
                         </span>
                       ]
                     : [])
@@ -85,20 +85,21 @@ class HistoryDisplay extends Component {
           }
         >
           <div style={{ textAlign: "center" }}>
-            {
-              <span>
-                <UserGroupDisplay
-                  style={{ display: "inline-block", marginBottom: -8 }}
-                  people={{ members: [item.doneBy] }}
-                  project={this.state.project}
-                />
-                {HistoryItem.getDescription(item, true, false, this.state.user)}
-              </span>
-            }
+            {/* Display a description about this change. */}
+            <span>
+              <UserGroupDisplay
+                style={{ display: "inline-block", marginBottom: -8 }}
+                people={{ members: [item.doneBy] }}
+                project={this.state.project}
+              />
+              {HistoryItem.getDescription(item, true, false, this.state.user)}
+            </span>
           </div>
           {(() => {
+            // Display a relevant item preview.
             switch (item.type) {
               case "event":
+                // If the item is an event, display an event preview.
                 return (
                   <div>
                     <br />
@@ -116,6 +117,7 @@ class HistoryDisplay extends Component {
                     )}
                   </div>
                 );
+              // If the item is a file, display a file preview
               case "set of files":
               case "file":
                 let file;
@@ -132,14 +134,13 @@ class HistoryDisplay extends Component {
                     {file ? (
                       <FileDisplay readOnly project={this.state.project} file={file} />
                     ) : (
+                      // If the file cannot be found, display a message
                       <div style={{ opacity: 0.65, margin: "auto", textAlign: "center" }}>
                         {"We can not display this file because it has been deleted."}
                       </div>
                     )}
                   </div>
                 );
-              case "member":
-                break;
               default:
                 break;
             }

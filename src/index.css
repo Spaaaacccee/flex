@@ -128,6 +128,10 @@ ul.ant-timeline {
   margin: auto;
 }
 
+.ant-select-search__field {
+  margin-left: 7px;
+}
+
 .picker-dialog-bg {
   display: none !important;
   border: none !important;

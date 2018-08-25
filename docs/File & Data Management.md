@@ -1,3 +1,5 @@
+![Bonfire](https://raw.githubusercontent.com/Spaaaacccee/flex/master/public/icons/favicon-32x32.png)
+
 # File & Data Management
 
 ## Local

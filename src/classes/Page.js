@@ -93,7 +93,8 @@ export const Pages = [
   new Page({
     name: "Members",
     icon: "team",
-    content: MEMBERS
+    content: MEMBERS,
+    extrasButtonType: "plus"
   }),
   new Page({
     name: "Timeline",

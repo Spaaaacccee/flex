@@ -9,12 +9,7 @@ import TimelineEvent from "./TimelineEvent";
 import { message } from "antd";
 import update from "immutability-helper";
 import Fetch from "./Fetch";
-import Document, {
-  DocumentMeta,
-  DocumentArchive,
-  UploadJob,
-  CloudDocument
-} from "./Document";
+import Document, { DocumentMeta, DocumentArchive, UploadJob, CloudDocument } from "./Document";
 import User from "./User";
 import Messages from "./Messages";
 import { HistoryItem, HistoryItemContent } from "./History";
@@ -49,9 +44,7 @@ export default class Project {
    * @memberof Project
    */
   static async exists(projectID) {
-    return (await (await Fetch.getProjectReference(projectID)).once(
-      "value"
-    )).exists();
+    return (await (await Fetch.getProjectReference(projectID)).once("value")).exists();
   }
 
   /**
@@ -376,9 +369,7 @@ export default class Project {
     await this.transaction(project => {
       // Modify the roles of the target member.
       // Note that if the user doesn't exist, no change will be made.
-      project.members = (project.members || []).map(
-        item => (item.uid === memberID ? Object.assign(item, { roles }) : item)
-      );
+      project.members = (project.members || []).map(item => (item.uid === memberID ? Object.assign(item, { roles }) : item));
     });
   }
 
@@ -396,9 +387,7 @@ export default class Project {
     await this.transaction(project => {
       // Modify the data of the target event.
       // Note that if the event doesn't exist, no change will be made.
-      project.events = (project.events || []).map(
-        item => (item.uid === uid ? Object.assign(eventData, { uid }) : item)
-      );
+      project.events = (project.events || []).map(item => (item.uid === uid ? Object.assign(eventData, { uid }) : item));
       // Add a history event about this transaction
       if (project instanceof Project) {
         User.getCurrentUser().then(user => {
@@ -483,7 +472,7 @@ export default class Project {
     // Create a copy of the events.
     const events = (this.events || []).slice();
     // Return the events, sorted in ascending order.
-    return events.sort((a, b) => a.date - b.date);
+    return events.sort((a, b) => a.date || 0 - b.date || 0);
   }
 
   /**
@@ -543,19 +532,13 @@ export default class Project {
         await this.transaction(project => {
           project.files = project.files || [];
           // Find an existing file where the type and name is the same.
-          let existingArchive = $.array(project.files).indexOf(
-            item => item.name === fileName && item.type === meta.type
-          );
+          let existingArchive = $.array(project.files).indexOf(item => item.name === fileName && item.type === meta.type);
           if (existingArchive !== -1) {
             // If a file is found, then check if any versions of the file has exactly the same hash, and is therefore exactly the same.
-            let existingFile =
-              $.array(project.files[existingArchive].files).indexOf(
-                item => item.hash === meta.hash
-              ) !== -1;
+            let existingFile = $.array(project.files[existingArchive].files).indexOf(item => item.hash === meta.hash) !== -1;
             // If such file is found, display an error
             if (existingFile) {
-              if (project instanceof Project)
-                message.error("A file that's exactly the same already exists");
+              if (project instanceof Project) message.error("A file that's exactly the same already exists");
             } else {
               // Otherwise, set the archiveID as the existing file's ID
               archiveID = project.files[existingArchive].uid;
@@ -564,13 +547,10 @@ export default class Project {
               if (project instanceof Project) {
                 // Set the callback after the document has been uploaded to add the file meta into the database.
                 afterDone = prj => {
-                  prj.files[existingArchive].files =
-                    prj.files[existingArchive].files || [];
+                  prj.files[existingArchive].files = prj.files[existingArchive].files || [];
                   prj.files[existingArchive].files.push(meta);
                 };
-                message.info(
-                  `We're putting ${file.name} together with an existing copy.`
-                );
+                message.info(`We're putting ${file.name} together with an existing copy.`);
                 // Start the upload.
                 task = Document.upload(file, meta);
               }
@@ -670,14 +650,7 @@ export default class Project {
       this.transaction(project => {
         project.files = project.files || [];
         // An existing file exists for the same file, then display an error.
-        if (
-          project.files.find(
-            item =>
-              item.uploadType === "cloud" &&
-              item.source.id &&
-              item.source.id === file.id
-          )
-        ) {
+        if (project.files.find(item => item.uploadType === "cloud" && item.source.id && item.source.id === file.id)) {
           if (project instanceof Project) {
             message.error(`${file.name} already exists!`);
           }
@@ -747,11 +720,7 @@ export default class Project {
       .set(this.files.filter(x => x.uid !== archiveID));
 
     // Find and delete all versions of the file with the specified ID.
-    await Promise.all(
-      (this.files.find(x => x.uid === archiveID).files || []).map(x =>
-        Document.delete(x)
-      )
-    );
+    await Promise.all((this.files.find(x => x.uid === archiveID).files || []).map(x => Document.delete(x)));
 
     // Register this change in the database.
     this.files = (this.files || []).filter(x => x.uid !== archiveID);
@@ -788,14 +757,10 @@ export default class Project {
       .child("files")
       .child(archiveIndex)
       .child("files")
-      .set(
-        (this.files[archiveIndex].files || []).filter(x => x.uid !== fileID)
-      );
+      .set((this.files[archiveIndex].files || []).filter(x => x.uid !== fileID));
 
     // Delete the file.
-    await Document.delete(
-      this.files[archiveIndex].files.find(x => x.uid === fileID)
-    );
+    await Document.delete(this.files[archiveIndex].files.find(x => x.uid === fileID));
 
     // Remove the file from the local copy of the project.
     this.files = this.files[archiveIndex].files.filter(x => x.uid !== fileID);
@@ -899,7 +864,7 @@ export default class Project {
   async trySetReadHistory() {
     let user = await User.getCurrentUser();
     await this.transaction(project => {
-      for (let item of (project.history || []).reverse()) {
+      for (let item of project.history || []) {
         if (!(item.readBy || {})[user.uid]) {
           item.readBy = {
             ...(item.readBy || {}),

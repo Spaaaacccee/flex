@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import { Card, Icon, Popconfirm } from "antd";
+import { Card, Icon } from "antd";
 import ProjectIcon from "./ProjectIcon";
 
 /**
- * Displays an invitation in a card
+ * Display a project in a card.
  * @export
- * @class ProjectInvitation
+ * @class ProjectDisplay
  * @extends Component
  */
 export default class ProjectDisplay extends Component {
@@ -13,11 +13,12 @@ export default class ProjectDisplay extends Component {
     onOpenPressed: () => {}
   };
   state = {
-    project: {},
-    style: {},
-    readOnly: false
+    project: {}, // The project to display.
+    style: {}, // Any style supplied.
+    readOnly: false // Whether this component is read only.
   };
   componentWillReceiveProps(props) {
+    // Update this component with new properties.
     this.setState({
       project: props.project || this.state.project,
       style: props.style || {},
@@ -28,30 +29,32 @@ export default class ProjectDisplay extends Component {
     return (
       <div>
         <Card
-          actions={!this.state.readOnly?[
-            <span
-              onClick={() => {
-                this.props.onOpenPressed();
-              }}
-            >
-              <Icon type="export" />
-              {" Open"}
-            </span>
-          ]:null}
-          style={Object.assign(
-            { width: 250, textAlign: "center", display: "inline-block" },
-            this.state.style
-          )}
+          loading={!(this.state.project || {}).name}
+          actions={
+            !this.state.readOnly
+              ? [
+                  // If the component is not read only, the display an option to open this project.
+                  <span
+                    onClick={() => {
+                      this.props.onOpenPressed();
+                    }}
+                  >
+                    <Icon type="export" />
+                    {" Open"}
+                  </span>
+                ]
+              : null
+          }
+          style={{
+            ...{ width: 250, textAlign: "center", display: "inline-block" },
+            ...this.state.style
+          }}
         >
-          <ProjectIcon
-            name={this.state.project.name}
-            readOnly
-          />
+          {/* Display a project icon */}
+          <ProjectIcon name={this.state.project.name} readOnly />
           <br />
-          <Card.Meta
-            title={this.state.project.name}
-            description={this.state.project.description}
-          />
+          {/* Display the project name and description */}
+          <Card.Meta title={this.state.project.name} description={this.state.project.description} />
         </Card>
       </div>
     );

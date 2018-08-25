@@ -14,13 +14,12 @@ import UserIcon from "./UserIcon";
  * @extends Component
  */
 export default class MemberDisplay extends Component {
-
   state = {
-    member: {},
-    project: {},
-    user: {},
-    readOnly: false,
-    cardless: false
+    member: {}, // UID of the member to display
+    project: {}, // The project that the member is from.
+    user: {}, // User info.
+    readOnly: false, // Whether this component is read only.
+    cardless: false // Whether this component should be in a card.
   };
 
   componentDidMount() {
@@ -43,15 +42,12 @@ export default class MemberDisplay extends Component {
   }
 
   shouldComponentUpdate(props, state) {
-    if (props.cardless !== this.state.cardless) return true;
     if (state.cardless !== this.state.cardless) return true;
-    if (props.readOnly !== this.state.readOnly) return true;
     if (state.readOnly !== this.state.readOnly) return true;
     // If the new properties are not different to the values in the existing state, then don't update anything.
     if (!Project.equal(props.project, this.state.project)) return true;
     if (!User.equal(this.state.user, state.user)) return true;
-    if (JSON.stringify(props.member) !== JSON.stringify(this.state.member))
-      return true;
+    if (JSON.stringify(props.member) !== JSON.stringify(this.state.member)) return true;
     return false;
   }
 
@@ -59,8 +55,10 @@ export default class MemberDisplay extends Component {
     return (
       <div>
         <Card
+          loading={!(this.state.user || {}).name}
           style={Object.assign(
             { textAlign: "center" },
+            // If the component is carless, remove the box shadow so that it would look as if the content is by itself.
             this.state.cardless ? { background: "none", boxShadow: "none" } : {}
           )}
         >
@@ -72,11 +70,14 @@ export default class MemberDisplay extends Component {
                   fontWeight: 700
                 }}
               >
+                {/* Display the user profile image */}
                 <UserIcon thumbnail={this.state.user.profilePhoto} />
                 <div style={{ paddingBottom: 10 }} />
+                {/* Display the user name */}
                 {this.state.user.name || <Icon type="loading" />}{" "}
                 {this.state.user.uid &&
                   this.state.user.uid === this.state.project.owner && (
+                    // If the user is the owner, display a little star.
                     <Popover content="Owner">
                       <Icon
                         type="star"
@@ -93,30 +94,27 @@ export default class MemberDisplay extends Component {
             }
             description={
               <div>
+                {/* Display the user's email. */}
                 {this.state.user.email || <Icon type="loading" />}
                 <br />
                 <br />
+                {/* Display the user's roles, and allow the user to edit them. */}
                 <RolePicker
+                  // If the component is readonly, then don't allow the user to edit the roles.
                   readOnly={this.state.readOnly}
                   roles={(this.state.project.roles || []).filter(item =>
-                    $.array(this.state.member.roles || []).existsIf(
-                      x => x === item.uid
-                    )
+                    // Get the roles that the user has selected
+                    $.array(this.state.member.roles || []).existsIf(x => x === item.uid)
                   )}
                   availableRoles={(this.state.project.roles || []).filter(
-                    item =>
-                      !$.array(this.state.member.roles || []).exists(
-                        x => x === item.uid
-                      )
+                    // The roles that are available are all the roles that the user hasn't selected.
+                    item => !$.array(this.state.member.roles || []).exists(x => x === item.uid)
                   )}
                   onRolesChange={roles => {
-                    this.setState(
-                      update(this.state, { member: { roles: { $set: roles } } })
-                    );
-                    this.state.project.setMember(
-                      this.state.member.uid,
-                      roles.map(item => item.uid)
-                    );
+                    // When the roles change, update the information locally.
+                    this.setState(update(this.state, { member: { roles: { $set: roles } } }));
+                    // Set the same information on the database.
+                    this.state.project.setMember(this.state.member.uid, roles.map(item => item.uid));
                   }}
                 />
               </div>

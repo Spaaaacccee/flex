@@ -2,11 +2,13 @@ import React, { Component } from "react";
 import { Tabs, List, Icon } from "antd";
 import MemberDisplay from "../components/MemberDisplay";
 import Columns from "react-columns";
+import SendInvite from "../components/SendInvite";
 
 export default class MEMBERS extends Component {
   state = {
     user: {},
-    project: {}
+    project: {},
+    inviteModalVisible: false
   };
 
   componentDidMount() {
@@ -19,6 +21,11 @@ export default class MEMBERS extends Component {
       project: props.project
     });
   }
+
+  onExtrasButtonPress() {
+    this.setState({ inviteModalVisible: true });
+  }
+
   render() {
     return (
       <div>
@@ -49,12 +56,16 @@ export default class MEMBERS extends Component {
         ) : (
           ""
         )}
-        <p>
-          <span style={{ fontWeight: "bold" }}>
-            <Icon type="user-add" /> Invite Users
-          </span>
-          <span> to add more members to this project</span>
-        </p>
+        <SendInvite
+        project={this.state.project}
+        visible={this.state.inviteModalVisible}
+        onClose={() => {
+          this.setState({ inviteModalVisible: false });
+        }}
+        onSend={() => {
+          this.setState({ inviteModalVisible: false });
+        }}
+      />
       </div>
     );
   }

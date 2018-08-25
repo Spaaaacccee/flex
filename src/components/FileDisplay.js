@@ -180,21 +180,7 @@ class FileDisplay extends Component {
                   onConfirm={() => {
                     this.setState({ deleting: true }, () => {
                       // Try to delete the displayed file
-                      this.state.project.tryDelete(this.state.file).then(isSuccessful => {
-                        if (isSuccessful) {
-                          // If the file was deleted, add a history event about it.
-                          User.getCurrentUser().then(user => {
-                            this.state.project.addHistory(
-                              new HistoryItem({
-                                readBy: { [user.uid]: true },
-                                action: "removed",
-                                type: "file",
-                                doneBy: user.uid
-                              })
-                            );
-                          });
-                        }
-                      });
+                      this.state.project.tryDelete(this.state.file);
                     });
                   }}
                 >
@@ -262,7 +248,7 @@ class FileDisplay extends Component {
                         {/*If the file is unavailable, display a message that it is unavailable. Otherwise, display how many versions of the file there are.*/}
                         {isUnavailable
                           ? "One or more versions of this file is unavailable"
-                          : this.state.file.files.sort((a, b) => b.dateUploaded - a.dateUploaded)[0].description ||
+                          : this.state.file.files.sort((a, b) => b.dateUploaded || 0 - a.dateUploaded || 0)[0].description ||
                             (this.state.file.files.length > 1 ? `${this.state.file.files.length} versions` : "")}
                       </div>
                     )}
@@ -289,7 +275,7 @@ class FileDisplay extends Component {
               <div>
                 <br />
                 <List bordered>
-                  {this.state.file.files.sort((a, b) => b.dateUploaded - a.dateUploaded).map(item => (
+                  {this.state.file.files.sort((a, b) => b.dateUploaded || 0 - a.dateUploaded || 0).map(item => (
                     // Sort the files by date uploaded, then display each of them.
                     <FileVersionDisplay
                       readOnly={this.state.readOnly}

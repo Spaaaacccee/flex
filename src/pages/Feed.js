@@ -43,8 +43,7 @@ export default class FEED extends Component {
     if (
       this.state.project &&
       Object.keys(this.state.project).length &&
-      ((prevState.project || {}).history || []).length !==
-        ((this.state.project || {}).history || []).length
+      ((prevState.project || {}).history || []).length !== ((this.state.project || {}).history || []).length
     ) {
       this.state.project.trySetReadHistory();
     }
@@ -55,33 +54,26 @@ export default class FEED extends Component {
       project: props.project,
       user: props.user
     });
-    if (
-      !this.state.mesenger ||
-      this.state.messenger.uid !== props.project.messengerID
-    ) {
-      Messages.get(props.project.messengerID || props.project.projectID).then(
-        messenger => {
-          if (messenger) {
-            this.setState(
-              {
-                messenger,
-                messages: $.object(messenger.messages)
-                  .values()
-                  .sort((a, b) => a.timeSent - b.timeSent)
-              },
-              () => {
-                messenger.on("message", msg => {
-                  if (!this.state.messages.find(x => x.uid === msg.uid))
-                    this.setState(
-                      update(this.state, { messages: { $push: [msg] } })
-                    );
-                });
-                messenger.startListening();
-              }
-            );
-          }
+    if (!this.state.mesenger || this.state.messenger.uid !== props.project.messengerID) {
+      Messages.get(props.project.messengerID || props.project.projectID).then(messenger => {
+        if (messenger) {
+          this.setState(
+            {
+              messenger,
+              messages: $.object(messenger.messages)
+                .values()
+                .sort((a, b) => a.timeSent || 0 - b.timeSent || 0)
+            },
+            () => {
+              messenger.on("message", msg => {
+                if (!this.state.messages.find(x => x.uid === msg.uid))
+                  this.setState(update(this.state, { messages: { $push: [msg] } }));
+              });
+              messenger.startListening();
+            }
+          );
         }
-      );
+      });
     }
   }
 
@@ -90,22 +82,15 @@ export default class FEED extends Component {
   }
 
   shouldComponentUpdate(props, state) {
-    if (
-      state.totalHistoryRenderCount &&
-      this.state.totalHistoryRenderCount !== state.totalHistoryRenderCount
-    )
-      return true;
+    if (state.totalHistoryRenderCount && this.state.totalHistoryRenderCount !== state.totalHistoryRenderCount) return true;
     if (!Project.equal(props.project, this.state.project)) return true;
-    if ((state.messages || []).length !== (this.state.messages || []).length)
-      return true;
+    if ((state.messages || []).length !== (this.state.messages || []).length) return true;
     return false;
   }
 
   renderMessages(project, messages) {
     if (project && messages) {
-      let newMessages = messages
-        .filter(item => !(item.readBy || {})[this.state.user.uid])
-        .slice(0, 5);
+      let newMessages = messages.filter(item => !(item.readBy || {})[this.state.user.uid]).slice(0, 5);
       return messages.length && newMessages.length ? (
         <div>
           <h2
@@ -136,13 +121,7 @@ export default class FEED extends Component {
             <div style={{ margin: "-24px -24px" }}>
               <List itemLayout="vertical" className="messages">
                 {newMessages.map(item => (
-                  <MessageDisplay
-                    readOnly
-                    key={item.uid}
-                    message={item}
-                    project={this.state.project}
-                    user={this.state.user}
-                  />
+                  <MessageDisplay readOnly key={item.uid} message={item} project={this.state.project} user={this.state.user} />
                 ))}
               </List>
             </div>
@@ -160,9 +139,7 @@ export default class FEED extends Component {
       let events = project
         .getEventsInDateOrder()
         .filter(
-          item =>
-            new Moment(item.date).diff(new Moment(), "days") <= 5 &&
-            new Moment(item.date).diff(new Moment(), "days") >= 0
+          item => new Moment(item.date).diff(new Moment(), "days") <= 5 && new Moment(item.date).diff(new Moment(), "days") >= 0
         )
         .filter(item => !item.markedAsCompleted);
       if (events.length) {
@@ -236,24 +213,15 @@ export default class FEED extends Component {
           gap={10}
           queries={[
             {
-              columns: Math.min(
-                (this.state.project.history || []).length || 1,
-                2
-              ),
+              columns: Math.min((this.state.project.history || []).length || 1, 2),
               query: "min-width: 1000px"
             }
           ]}
         >
           {(this.state.project.history || [])
             .slice()
-            .sort((a, b) => b.doneAt - a.doneAt)
-            .slice(
-              0,
-              Math.min(
-                (this.state.project.history || []).length,
-                this.state.totalHistoryRenderCount
-              )
-            )
+            .sort((a, b) => b.doneAt || 0 - a.doneAt || 0)
+            .slice(0, Math.min((this.state.project.history || []).length, this.state.totalHistoryRenderCount))
             .map(item => (
               <div key={item.uid}>
                 <HistoryDisplay
@@ -281,8 +249,7 @@ export default class FEED extends Component {
               </div>
             ))}
         </Columns>
-        {this.state.totalHistoryRenderCount <
-        (this.state.project.history || []).length ? (
+        {this.state.totalHistoryRenderCount < (this.state.project.history || []).length ? (
           <Button
             icon="sync"
             style={{
@@ -290,8 +257,7 @@ export default class FEED extends Component {
             }}
             onClick={() => {
               this.setState({
-                totalHistoryRenderCount:
-                  this.state.totalHistoryRenderCount + this.renderBatchSize
+                totalHistoryRenderCount: this.state.totalHistoryRenderCount + this.renderBatchSize
               });
             }}
           >
@@ -325,14 +291,8 @@ export default class FEED extends Component {
             padding: 10
           }}
         >
-          <ProjectIcon
-            name={this.state.project.name}
-            style={{ margin: -5 }}
-            readOnly
-          />
-          <h2 style={{ fontWeight: 700, fontSize: 20, marginTop: 10 }}>
-            {this.state.project.name}
-          </h2>
+          <ProjectIcon name={this.state.project.name} style={{ margin: -5 }} readOnly />
+          <h2 style={{ fontWeight: 700, fontSize: 20, marginTop: 10 }}>{this.state.project.name}</h2>
           {!!this.state.project.description && (
             <p style={{ opacity: 0.65 }}>
               {this.state.project.description}
@@ -359,10 +319,7 @@ export default class FEED extends Component {
             gap={10}
             queries={[
               {
-                columns: Math.min(
-                  (this.state.project.history || []).length || 1,
-                  2
-                ),
+                columns: Math.min((this.state.project.history || []).length || 1, 2),
                 query: "min-width: 1000px"
               }
             ]}
