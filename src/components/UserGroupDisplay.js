@@ -103,7 +103,9 @@ export default class UserGroupDisplay extends Component {
                   <UserGroupDisplay
                     project={this.state.project}
                     people={{
-                      members: this.state.project.members.filter(x => x.roles.find(role => role === item.uid)).map(x => x.uid)
+                      members: this.state.project.members
+                        .filter(x => (x.roles || []).find(role => role === item.uid))
+                        .map(x => x.uid)
                     }}
                   />
                 ) : null

@@ -5,17 +5,17 @@ EXTENSION VERSION - 0.1.7
 
 ***
 
-count time - 2018-08-27 02:05:37  
+count time - 2018-08-27 02:44:07  
 count workspace - c:\Users\ZHE0104\Google Drive\Synced\School\2018\Software Development\Projects\SAT\Application\flex  
 total files - 77  
-total code lines - 8538  
-total comment lines - 2665  
-total blank lines - 637  
+total code lines - 8583  
+total comment lines - 2860  
+total blank lines - 658  
 
 
 |filename | code | comment | blank|
 |----|----|----|----|
-|src\pages\Messages.js | 605 | 39 | 14|
+|src\pages\Messages.js | 601 | 204 | 36|
 |src\components\MessageDisplay.js | 479 | 0 | 8|
 |src\pages\Feed.js | 324 | 45 | 13|
 |src\forms\CreateEvent.js | 288 | 59 | 13|
@@ -30,26 +30,26 @@ total blank lines - 637
 |src\components\Main.js | 217 | 59 | 11|
 |src\classes\User.js | 202 | 175 | 22|
 |src\index.css | 193 | 3 | 38|
-|src\pages\User.js | 182 | 0 | 9|
+|src\pages\User.js | 182 | 12 | 9|
 |src\pages\Files.js | 176 | 24 | 8|
 |src\components\SignIn.js | 175 | 48 | 15|
+|src\pages\Timeline.js | 172 | 14 | 5|
 |src\classes\Utils.js | 169 | 224 | 34|
-|src\components\RoleEditor.js | 168 | 25 | 5|
 |src\components\ProjectSider.js | 168 | 95 | 18|
-|src\components\RolePicker.js | 156 | 18 | 3|
+|src\components\RoleEditor.js | 168 | 25 | 5|
 |src\classes\Messages.js | 156 | 190 | 18|
+|src\components\RolePicker.js | 156 | 18 | 3|
 |src\components\MemberGroupSelector.js | 143 | 47 | 10|
 |src\classes\Notifier.js | 137 | 92 | 23|
 |src\components\HistoryDisplay.js | 134 | 16 | 5|
 |src\components\PageView.js | 132 | 40 | 11|
 |src\components\UserGroupDisplay.js | 132 | 32 | 9|
-|src\pages\Timeline.js | 122 | 0 | 5|
 |src\components\MemberDisplay.js | 108 | 21 | 4|
 |src\components\FileUploadModal.js | 107 | 14 | 4|
 |src\components\FileVersionDisplay.js | 102 | 24 | 5|
-|src\components\ProjectIcon.js | 89 | 28 | 8|
 |src\classes\Fetch.js | 89 | 116 | 12|
 |src\components\TopBar.js | 89 | 15 | 6|
+|src\components\ProjectIcon.js | 89 | 28 | 8|
 |src\classes\Page.js | 87 | 55 | 8|
 |src\components\TopBar.css | 86 | 0 | 16|
 |src\components\SendInvite.js | 84 | 10 | 4|
@@ -66,15 +66,15 @@ total blank lines - 637
 |src\App.css | 49 | 0 | 12|
 |src\classes\Fire.js | 45 | 24 | 4|
 |src\classes\History.js | 44 | 88 | 12|
-|src\classes\Backup.js | 41 | 51 | 5|
 |src\components\PrimaryIcon.js | 41 | 10 | 7|
+|src\classes\Backup.js | 41 | 51 | 5|
 |src\components\UserIcon.js | 38 | 9 | 3|
 |src\components\UploadLoader.js | 34 | 7 | 1|
 |src\components\SignIn.css | 34 | 0 | 2|
 |src\classes\Role.js | 33 | 57 | 4|
-|src\App.js | 32 | 1 | 2|
-|src\components\AddIcon.js | 31 | 21 | 5|
+|src\App.js | 31 | 5 | 1|
 |src\classes\Algorithm.js | 31 | 32 | 6|
+|src\components\AddIcon.js | 31 | 21 | 5|
 |src\classes\Document.js | 30 | 33 | 2|
 |src\components\PrimaryIcon.css | 28 | 0 | 5|
 |src\components\RolePicker.css | 22 | 0 | 4|
@@ -86,8 +86,8 @@ total blank lines - 637
 |src\components\ProjectSider.css | 12 | 4 | 3|
 |src\components\ProjectIcon.css | 10 | 0 | 1|
 |src\App.test.js | 8 | 0 | 1|
-|src\logo.svg | 7 | 0 | 0|
 |src\index.js | 7 | 0 | 1|
+|src\logo.svg | 7 | 0 | 0|
 |src\pages\Feed.css | 6 | 0 | 3|
 |src\components\AddIcon.css | 4 | 0 | 0|
 |src\components\UserIcon.css | 4 | 0 | 0|
