@@ -80,7 +80,7 @@ export default class Notifier extends EventEmitter {
   stopListening = () => {};
 
   /**
-   *
+   * Start the notifier.
    * @return {void}
    * @memberof Notifier
    */
@@ -137,45 +137,35 @@ export default class Notifier extends EventEmitter {
         if (
           !(() => {
             // If the item is set to never notify, then don't notify.
-            if ((!item.notify && item.notify !== 0) || item.notify === -1)
-              return;
+            if ((!item.notify && item.notify !== 0) || item.notify === -1) return;
             // Get the difference in time between now and the date of the event. If the date of the event is before the current date, then this value will be negative.
-            let timeDifference = new Moment(item.date).diff(
-              new Moment(),
-              "days"
-            );
+            let timeDifference = item.date - Date.now();
+
             // If the difference in time is smaller than the set notification time, then continue displaying a notification.
-            if (timeDifference < item.notify) {
+            // This means a notification would also be displayed if the item has past.
+            if (timeDifference <= item.notify * 1000 * 60 * 60 * 24) {
+
               // If the item is completed or marked to complete by itself, then return.
-              if (
-                item.markedAsCompleted ||
-                (item.autoComplete && item.date <= Date.now())
-              )
-                return;
+              if (item.markedAsCompleted || (item.autoComplete && item.date <= Date.now())) return;
+
               // If the event doesn't involve the current user, then return.
-              if (
-                UserGroupDisplay.hasUser(
-                  item.involvedPeople,
-                  this.project,
-                  this.user
-                ) ||
-                item.creator === this.user.uid
-              ) {
+              if (UserGroupDisplay.hasUser(item.involvedPeople, this.project, this.user) || item.creator === this.user.uid) {
+
                 // Send the notification
                 new Notify(`Bonfire - ${this.project.name}`, {
-                  body: `${timeDifference < 0 ? "(Overdue) " : ""}${
-                    item.name
-                  } - ${$.string(
+                  body: `${timeDifference < 0 ? "(Overdue) " : ""}${item.name} - ${$.string(
                     $.date(item.date).humaniseDate()
                   ).capitaliseFirstLetter()}`,
                   icon: "./icons/icon.png",
                   notifyClick: () => {
                     // Focus the window. This doesn't work in many browsers due to security concerns but sometimes works.
                     window.focus();
+
                     // On click, notify other components that the user has clicked on the item.
                     this.emit("event", { projectID: this.projectID, item });
                   }
                 }).show();
+
                 // Return true to sisgnify that a notification has been sent.
                 return true;
               }
@@ -186,14 +176,10 @@ export default class Notifier extends EventEmitter {
           const retryIn = 15;
           setTimeout(() => {
             Project.get(this.projectID).then(project => {
-              let freshEvent = (project.events || []).find(
-                x => x.uid === item.uid
-              );
+              let freshEvent = (project.events || []).find(x => x.uid === item.uid);
+
               // Only retry if the same event is exactly the same.
-              if (
-                freshEvent &&
-                JSON.stringify(freshEvent) === JSON.stringify(item)
-              ) {
+              if (freshEvent && JSON.stringify(freshEvent) === JSON.stringify(item)) {
                 checkEventChanges([item]);
               }
             });
@@ -214,15 +200,13 @@ export default class Notifier extends EventEmitter {
       .on("child_changed", eventsListener);
 
     // Get the revelant messenger instance.
-    this.messenger = await Messages.get(
-      this.project.messengerID || this.project.projectID
-    );
+    this.messenger = await Messages.get(this.project.messengerID || this.project.projectID);
     // Define a listener to display notifications for messages.
     let newMessageListener = msg => {
       // Only display a message if the browser is not in focus.
       if (!document.hasFocus()) {
         // If the sender of the message is the current user, then don't display the message.
-        if(msg.sender && msg.sender === this.user.uid) return;
+        if (msg.sender && msg.sender === this.user.uid) return;
         // Display the notification
         User.get(msg.sender).then(user => {
           new Notify(`Bonfire - ${this.project.name}`, {
@@ -258,7 +242,7 @@ export default class Notifier extends EventEmitter {
 
   /**
    * Creates an instance of Notifier.
-   * @param  {String} projectID 
+   * @param  {String} projectID
    * @memberof Notifier
    */
   constructor(projectID) {

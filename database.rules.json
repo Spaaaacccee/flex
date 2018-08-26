@@ -1,16 +1,107 @@
 {
   "rules": {
-    ".read": "auth !=null",
-    ".write": "auth != null",
+    ".read": "auth != null",
+    ".write": "false",
     "users": {
       ".indexOn": "email",
       "$uid": {
-        ".write": "$uid===auth.uid"
+        ".write": "auth !== null",
+        "joinedProjects": {
+          ".write": "auth !== null"
+        },
+        "lastUpdatedTimestamp": {
+          ".write": "auth !== null"
+        },
+        "email": {
+          ".write": "auth.uid === $uid"
+        },
+        "lastLogInTimestamp": {
+          ".write": "auth.uid === $uid"
+        },
+        "name": {
+          ".write": "auth.uid === $uid"
+        },
+        "profilePhoto": {
+          ".write": "auth.uid === $uid"
+        },
+        "projects": {
+          ".write": "auth.uid === $uid"
+        }
+      }
+    },
+    "projects": {
+      ".write": "auth !== null",
+      "$projectID": {
+        "creator": {
+          ".write": "auth !== null && newData.val() === auth.uid"
+        },
+        "created": {
+          ".write": " auth !== null"
+        },
+        "description": {
+          ".write": "auth !== null"
+        },
+        "lastUpdatedTimestamp": {
+          ".write": "auth !== null"
+        },
+        "members": {
+          ".write": "auth !== null"
+        },
+        "events": {
+          ".write": "auth !== null"
+        },
+        "history": {
+          ".write": "auth !== null"
+        },
+        "files": {
+          ".write": "auth !== null"
+        },
+        "name": {
+          ".write": "auth !== null"
+        },
+        "owner": {
+          ".write": "root.child('projects').child($projectID).child('owner').val() === auth.uid"
+        },
+        "roles": {
+          ".write": "auth !== null"
+        },
+        "deleted": {
+          ".write": "root.child('projects').child($projectID).child('owner').val() === auth.uid"
+        }
       }
     },
     "messages": {
+      ".write": "auth !== null",
       "$messengerID": {
-        "messages": { ".indexOn": "timeSent" }
+        "lastUpdatedTimestamp": {
+          ".write": "auth !== null"
+        },
+        "uid": {
+          ".write": "auth !== null"
+        },
+        "messages": {
+          ".write": "auth !== null",
+          ".indexOn": "timeSent",
+          "$message": {
+            "content": {
+              ".write": "auth !== null"
+            },
+            "readBy": {
+              "$msgReadBy": {
+                ".write": "auth.uid === $msgReadBy"
+              }
+            },
+            "sender": {
+              ".write": "auth.uid === newData.val()"
+            },
+            "timeSent": {
+              ".write": "auth !== null"
+            },
+            "uid": {
+              ".write": "auth !== null"
+            }
+          }
+        }
       }
     }
   }

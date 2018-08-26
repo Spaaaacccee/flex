@@ -472,7 +472,7 @@ export default class Project {
     // Create a copy of the events.
     const events = (this.events || []).slice();
     // Return the events, sorted in ascending order.
-    return events.sort((a, b) => a.date || 0 - b.date || 0);
+    return events.sort((a, b) => (a.date || 0) - (b.date || 0));
   }
 
   /**

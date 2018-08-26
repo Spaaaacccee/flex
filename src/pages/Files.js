@@ -1,32 +1,32 @@
 import React, { Component } from "react";
 
-import Fire from "../classes/Fire";
-
-import { Card, Icon, Avatar, Button, Radio, List, Input } from "antd";
+import { Icon, Button, Input } from "antd";
 import FileUpload from "../components/FileUpload";
 import FileUploadModal from "../components/FileUploadModal";
 import FileDisplay from "../components/FileDisplay";
-import UserGroupDisplay from "../components/UserGroupDisplay";
-import Document from "../classes/Document";
 import $ from "../classes/Utils";
 import Project from "../classes/Project";
 import User from "../classes/User";
 import Columns from "react-columns";
 import { Message, MessageContent } from "../classes/Messages";
-const { Meta } = Card;
 
+/**
+ * Page for displaying a project's files.
+ * @export
+ * @class FILES
+ * @extends Component
+ */
 export default class FILES extends Component {
   static defaultProps = {
     project: null,
     user: {}
   };
   state = {
-    project: {},
-    user: {},
-    searchResults: null,
-    uploadModalVisible: false,
-    view: "thumbnail",
-    searchQuery: ""
+    project: {}, // The source project.
+    user: {}, // The current user.
+    searchResults: null, // The resulting files from a search query.
+    uploadModalVisible: false, // Whether the upload file window is visible.
+    searchQuery: "" // The current search query.
   };
 
   componentDidMount() {
@@ -34,6 +34,7 @@ export default class FILES extends Component {
   }
 
   componentWillReceiveProps(props) {
+    // Update this component with new properties.
     this.setState({
       searchResults: null,
       project: props.project,
@@ -44,25 +45,28 @@ export default class FILES extends Component {
   shouldComponentUpdate(props, state) {
     if (!Project.equal(props.project, this.state.project)) return true;
     if (this.state.searchQuery !== state.searchQuery) return true;
-    if (state.view !== this.state.view) return true;
     if (!User.equal(props.user, this.state.user)) return true;
     if (state.uploadModalVisible !== this.state.uploadModalVisible) return true;
     if (state.searchResults && this.state.searchResults && state.searchResults.length !== this.state.searchResults.length)
       return true;
+      // Don't update this component if no properties have changed.
     return false;
   }
 
   onExtrasButtonPress() {
+    // Display the upload window if the extras button is pressed.
     this.setState({ uploadModalVisible: true });
   }
 
   render() {
+    // If there are search results, display search results instead.
     let filesToRender = this.state.searchResults || this.state.project.files;
     return (
       <div>
         {this.state.project ? (
           <div style={{ textAlign: "center" }}>
             <div style={{ textAlign: "left", maxWidth: 350, margin: "auto" }}>
+              {/* Display the currently ongoing file uploads */}
               <FileUpload project={this.state.project} jobListOnly inProgressOnly />
             </div>
             <div
@@ -72,21 +76,25 @@ export default class FILES extends Component {
                 margin: "auto"
               }}
             >
+              {/* Search for files */}
               <Input.Search
                 key={this.state.project.projectID || "1"}
                 placeholder="Search for a file"
                 onChange={(e => {
                   if (e.target.value) {
                     let files = this.state.project.files || [];
+                    // If there is a search query, search for relevant files.
                     let results = $.array(files).searchString(
                       item => (item.name || item.source.name).toLowerCase(),
                       e.target.value
                     );
+                    // Update this page with the new search results. 
                     this.setState({
                       searchResults: results,
                       searchQuery: e.target.value
                     });
                   } else {
+                    // Otherwise, display all files instead.
                     this.setState({
                       searchResults: null,
                       searchQuery: e.target.value
@@ -94,28 +102,11 @@ export default class FILES extends Component {
                   }
                 }).bind(this)}
               />
-              <Radio.Group
-                style={{
-                  display: "none",
-                  flex: "none"
-                }}
-                value={this.state.view}
-                onChange={(e => {
-                  this.setState({ view: e.target.value });
-                }).bind(this)}
-              >
-                <Radio.Button value="thumbnail">
-                  <Icon type="appstore-o" />
-                </Radio.Button>
-                <Radio.Button value="list">
-                  <Icon type="bars" />
-                </Radio.Button>
-              </Radio.Group>
             </div>
             <br />
             {filesToRender && filesToRender.length ? (
+              // If there are files to render, then render them
               <div>
-                {this.state.view === "thumbnail" ? (
                   <div>
                     <Columns
                       rootStyles={{ maxWidth: 950, margin: "auto" }}
@@ -127,12 +118,14 @@ export default class FILES extends Component {
                         }
                       ]}
                     >
-                      {(filesToRender || []).map((item, index) => (
+                      {(filesToRender || []).map((item) => (
+                        // Display each file.
                         <div key={item.uid || item.source.id}>
                           <FileDisplay
                             project={this.state.project}
                             file={item}
                             onMentionButtonPressed={() => {
+                              // Prepare and send a message when a file is mentioned.
                               this.props.passMessage({
                                 type: "prepare-message",
                                 content: new Message({
@@ -146,6 +139,7 @@ export default class FILES extends Component {
                               });
                             }}
                             onVersionMentionButtonPressed={versionID => {
+                              // Prepare and send a message when a specific version of a file is mentioned.
                               this.props.passMessage({
                                 type: "prepare-message",
                                 content: new Message({
@@ -164,101 +158,9 @@ export default class FILES extends Component {
                       ))}
                     </Columns>
                   </div>
-                ) : (
-                  <List
-                    style={{
-                      textAlign: "left",
-                      margin: "0 2vw"
-                    }}
-                  >
-                    {(filesToRender || []).map((item, index) => (
-                      <List.Item
-                        style={
-                          item.files && !item.files.find(i => i.state !== "unavailable")
-                            ? {
-                                opacity: 0.65,
-                                pointerEvents: "none"
-                              }
-                            : {}
-                        }
-                        key={index}
-                        actions={[
-                          <Button
-                            type="primary"
-                            shape="circle"
-                            icon="export"
-                            onClick={() => {
-                              Document.tryPreviewWindow(item);
-                            }}
-                          />
-                        ]}
-                      >
-                        <List.Item.Meta
-                          avatar={
-                            item.uploadType === "cloud" ? (
-                              <Avatar
-                                shape="square"
-                                style={{
-                                  transform: "scale(0.7)",
-                                  imageRendering: "crisp-edges"
-                                }}
-                                src={item.source.iconUrl}
-                              />
-                            ) : (
-                              <Icon
-                                style={{
-                                  fontSize: 24,
-                                  margin: 5,
-                                  marginLeft: 0,
-                                  color: "rgb(25, 144, 255)"
-                                }}
-                                type={Document.getFiletypeIcon(item.name)}
-                              />
-                            )
-                          }
-                          title={item.name || item.source.name}
-                          description={
-                            item.uploadType === "cloud" ? (
-                              <span>
-                                <Icon type="cloud-o" />
-                                {" Stored in the cloud"}
-                              </span>
-                            ) : (
-                              <div>
-                                {`${item.files.length} versions`}
-                                {!!item.files &&
-                                  item.files.length > 1 && (
-                                    <div>
-                                      <br />
-                                      <List
-                                        style={{
-                                          borderTop: "1px solid #e8e8e8"
-                                        }}
-                                      >
-                                        {item.files
-                                          .sort((a, b) => a.dateUploaded || 0 - b.dateUploaded || 0)
-                                          .map((item, index) => (
-                                            <List.Item key={index}>
-                                              <List.Item.Meta
-                                                title={`Version ${index + 1}`}
-                                                description={<div>{`${new Date(item.dateUploaded).toLocaleString()}`}</div>}
-                                              />
-                                            </List.Item>
-                                          ))
-                                          .reverse()}
-                                      </List>
-                                    </div>
-                                  )}
-                              </div>
-                            )
-                          }
-                        />
-                      </List.Item>
-                    ))}
-                  </List>
-                )}
               </div>
             ) : (
+              // Otherwise, show an error message.
               <div style={{ opacity: 0.65, margin: 50 }}>
                 <Icon type="file" />
                 <br />
@@ -272,6 +174,7 @@ export default class FILES extends Component {
             )}
             <br />
             {this.state.searchResults === null && (
+              // Display an add file button.
               <Button
                 icon="plus"
                 type="primary"

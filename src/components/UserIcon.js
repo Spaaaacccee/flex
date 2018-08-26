@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import ProjectIcon from "./ProjectIcon";
-import './UserIcon.css';
-import { Icon } from "antd";
+import "./UserIcon.css";
 
 /**
  * Displays a user as an icon
@@ -13,12 +12,11 @@ export default class UserIcon extends Component {
   static defaultProps = {
     onPress: () => {},
     selected: false,
-    thumbnail: ''
+    thumbnail: ""
   };
   state = {
-    onPress: () => {},
-    selected: false,
-    thumbnail:''
+    selected: false, // Whether this item is selected.
+    thumbnail: "" // The thumbnail image of the user.
   };
 
   componentDidMount() {
@@ -26,20 +24,21 @@ export default class UserIcon extends Component {
   }
 
   componentWillReceiveProps(props) {
+    // Apply the supplied properties.
     this.setState({
-      onPress: props.onPress,
       selected: props.selected,
-      thumbnail:props.thumbnail
+      thumbnail: props.thumbnail
     });
   }
   render() {
     return (
       <div className="user-icon">
+        {/* Display the user */}
         <ProjectIcon
           icon="user"
           thumbnail={this.state.thumbnail}
           onPress={() => {
-            this.state.onPress();
+            this.props.onPress();
           }}
           selected={this.state.selected}
         />

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Layout, Button, Popover } from "antd";
+import { Layout, Button } from "antd";
 import "./TopBar.css";
 const { Header } = Layout;
 
@@ -15,15 +15,18 @@ export default class TopBar extends Component {
     onLeftButtonPress: () => {},
     onRightButtonPress: () => {}
   };
+
   state = {
     heading: "Heading",
     leftButtonType: "menu", //"menu", "back", "hidden"
     style: "solid", //"solid" or "blended"
     rightButtonType: "", //icon type
-    visibilityMode: "default",
-    scrollPosition: 0
+    visibilityMode: "default", // Whether the top bar is visible when scrolled down, "default", "adaptive"
+    scrollPosition: 0 // The current vertical page scroll position
   };
+
   componentWillReceiveProps(props) {
+    // Update this component with new properties.
     this.setState({
       heading: props.heading,
       leftButtonType: props.leftButtonType,
@@ -33,19 +36,21 @@ export default class TopBar extends Component {
     });
   }
 
-  shouldComponentUpdate(props, state) {
+  shouldComponentUpdate(props) {
     if (props.heading !== this.state.heading) return true;
     if (props.leftButtonType !== this.state.leftButtonType) return true;
     if (props.rightButtonType !== this.state.rightButtonType) return true;
     if (props.visibilityMode !== this.state.visibilityMode) return true;
     if (props.scrollPosition === 0 && this.state.scrollPosition !== 0) return true;
     if (props.scrollPosition !== 0 && this.state.scrollPosition === 0) return true;
+    // Don't update anything if no properties have changed.
     return false;
   }
 
   render() {
     return (
       <div
+        // If the visibility mode is adaptive, make the top transparent if the scroll position is at 0.
         className={`top-bar-wrapper ${
           this.state.visibilityMode === "adaptive" && this.state.scrollPosition <= 0
             ? "transparent top"
@@ -54,7 +59,8 @@ export default class TopBar extends Component {
               : ""
         }`}
       >
-        <Header className={`top-bar`}>
+        <Header className="top-bar">
+          {/* Display the left button */}
           <Button
             onTouchEnd={e => {
               this.props.onLeftButtonPress();
@@ -68,8 +74,10 @@ export default class TopBar extends Component {
             icon={this.state.leftButtonType === "menu" ? "menu-unfold" : "left"}
             className="left-button"
           />
+          {/* Display the name */}
           <div className="heading">{this.state.heading}</div>
-          {!!this.state.rightButtonType ? (
+          {this.state.rightButtonType ? (
+            // If the right button type exists, then display it
             <Button
               type="primary"
               shape="circle"
@@ -84,6 +92,7 @@ export default class TopBar extends Component {
                 this.props.onRightButtonPress();
               }}
             >
+              {/* If the right button type exists and is a string, then display it */}
               {typeof this.state.rightButtonType !== "string" && this.state.rightButtonType}
             </Button>
           ) : (

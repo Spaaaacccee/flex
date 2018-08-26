@@ -1,29 +1,40 @@
 import React, { Component } from "react";
-import { Form, Button, Input, Icon } from "antd";
+import { Button, Input } from "antd";
 import UserSelector from "../components/UserSelector";
 import $ from "../classes/Utils";
 
+/**
+ * A form to create a project.
+ * @export
+ * @class CreateProject
+ * @extends Component
+ */
 export default class CreateProject extends Component {
   state = {
-    projectName: "",
-    description: "",
-    recipients: [],
-    submitted: false,
-    opened: false
+    projectName: "", // The name of the project.
+    description: "", // The description of the project.
+    recipients: [], // The recipients that would receive a project invitation.
+    submitted: false, // Whether this component is submitted.
+    opened: false // Whether this component is opened.
   };
   handleSubmit() {
+    // Show this component as submitted.
     this.setState({
       submitted: true
     });
+
+    // Notify the parent component of this change.
     this.props.onSubmit(this.state);
   }
 
   componentWillReceiveProps(props) {
     if (!this.state.opened && !!props.opened) {
+      // If the component has just opened, set submitted to false.
       this.setState({
         submitted: false
       });
     }
+    // Set whether this form is opened.
     this.setState({ opened: props.opened });
   }
 

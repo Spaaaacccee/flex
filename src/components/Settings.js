@@ -169,7 +169,6 @@ export default class Settings extends Component {
             {/* Project description field */}
             <Input.TextArea
               maxLength={2000}
-              autosize={{ minRows: 2, maxRows: 6 }}
               value={this.state.values.general.description}
               onChange={e => {
                 this.setState(

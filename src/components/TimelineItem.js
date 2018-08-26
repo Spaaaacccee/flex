@@ -17,16 +17,15 @@ import User from "../classes/User";
 export default class TimelineItem extends Component {
   static defaultProps = {
     onComplete: () => {},
-    onEdit: () => {},
     onMentionButtonPressed: () => {}
   };
   state = {
-    project: {},
-    user: {},
-    event: {},
-    eventEditorVisible: false,
-    frozen: false,
-    readOnly: false
+    project: {}, // The project associated wth this item.
+    user: {}, // The current user.
+    event: {}, // The event to display.
+    eventEditorVisible: false, // Whether the edit window is visible.
+    frozen: false, // Whether the user should be able to interact with this item.
+    readOnly: false // Whether the item is read only.
   };
 
   componentDidMount() {
@@ -34,6 +33,7 @@ export default class TimelineItem extends Component {
   }
 
   componentWillReceiveProps(props) {
+    // Update this component with new properties.
     this.setState({
       event: props.event,
       project: props.project,
@@ -58,10 +58,12 @@ export default class TimelineItem extends Component {
   }
 
   render() {
+    // To be complete is to mean that either the event is marked as complete or is marked as to be completed automatically and the date has passed.
     const isComplete =
       this.state.event.markedAsCompleted || (this.state.event.autoComplete && this.state.event.date <= Date.now());
     return (
       <div
+        // Set user interaction to none is this componenent is frozen.
         style={{
           textAlign: "left",
           pointerEvents: this.state.frozen ? "none" : "all"
@@ -72,10 +74,11 @@ export default class TimelineItem extends Component {
           actions={
             this.state.event.uid && !this.state.readOnly
               ? [
+                  // An edit button
                   <span
                     onClick={() => {
+                      // Open the event editor.
                       this.setState({ eventEditorVisible: true });
-                      this.props.onEdit();
                     }}
                   >
                     <Icon type="edit" />
@@ -83,6 +86,7 @@ export default class TimelineItem extends Component {
                   </span>,
                   <span
                     onClick={() => {
+                      // Notify the parent component that the mention button is pressed.
                       this.props.onMentionButtonPressed();
                     }}
                   >
@@ -91,6 +95,7 @@ export default class TimelineItem extends Component {
                   </span>,
                   ...(!isComplete
                     ? [
+                        // Display the mark as completed button if the event has yet to be completed.
                         <span
                           onClick={() => {
                             this.props.onComplete();
@@ -126,12 +131,14 @@ export default class TimelineItem extends Component {
                   }}
                 >
                   {isComplete && (
+                    // Display a tick if the item is completed.
                     <div style={{ marginBottom: 10 }}>
                       <Icon type="check" />
                       {" complete"}
                     </div>
                   )}
                   {!isComplete &&
+                    // Display a You're Involved phrase if the item is not complete and the current user is involved.
                     (UserGroupDisplay.hasUser(this.state.event.involvedPeople, this.state.project, this.state.user) ||
                       this.state.event.creator === this.state.user.uid) && (
                       <div style={{ marginBottom: 10, color: "#FFD800" }}>
@@ -140,8 +147,9 @@ export default class TimelineItem extends Component {
                       </div>
                     )}
                   {!isComplete &&
-                    new Moment(this.state.event.date).diff(new Moment(), "days") <= 14 &&
-                    new Moment(this.state.event.date).diff(new Moment(), "days") >= 0 && (
+                    // Display a relative date if the event is within 2 weeks ahead of today.
+                    this.state.event.date - Date.now() <= 1000 * 60 * 60 * 24 * 14 &&
+                    this.state.event.date - Date.now() >= 0 && (
                       <div style={{ marginBottom: 10 }}>
                         <Icon type="clock-circle-o" />{" "}
                         {Moment(this.state.event.date).calendar(null, {
@@ -155,11 +163,13 @@ export default class TimelineItem extends Component {
                       </div>
                     )}
                 </span>
+                {/* Display the event name */}
                 <span>{this.state.event.name}</span>
               </span>
             }
             description={
               this.state.event.date ? (
+                // Display the event date and description.
                 <div>
                   <div>
                     <div>{new Date(this.state.event.date).toDateString()}</div>
@@ -167,8 +177,10 @@ export default class TimelineItem extends Component {
                     <br />
                   </div>
                   <div>
+                    {/* Display the people involved */}
                     <UserGroupDisplay project={this.state.project} people={this.state.event.involvedPeople} />
                     {this.state.event.creator ? (
+                      // Display the creator of this event
                       <div>
                         Creator:{" "}
                         <UserGroupDisplay
@@ -188,6 +200,7 @@ export default class TimelineItem extends Component {
             }
           />
         </Card>
+        {/* The edit event modal */}
         <Modal
           destroyOnClose
           getContainer={() => document.querySelector(".modal-mount > div:first-child")}
@@ -204,7 +217,7 @@ export default class TimelineItem extends Component {
             mode="edit"
             onSubmit={event => {
               this.state.project
-                .setEvent(this.state.event.uid, new TimelineEvent(Object.assign(this.state.event, event.values)))
+                .setEvent(this.state.event.uid, new TimelineEvent({ ...this.state.event, ...event.values }))
                 .then(() => {
                   this.setState({
                     event: event.values,
@@ -213,6 +226,9 @@ export default class TimelineItem extends Component {
                 });
             }}
             onDelete={() => {
+              // What to do when the user deletes an event
+
+              // Set this component as frozen, and mark it as complete to prevent user interaction.
               this.setState(
                 {
                   frozen: true,
@@ -222,7 +238,10 @@ export default class TimelineItem extends Component {
                   eventEditorVisible: false
                 },
                 () => {
-                  this.state.project.deleteEvent(this.state.event.uid);
+                  // Delete the event. A delay is set to smooth out the animation.
+                  setTimeout(() => {
+                    this.state.project.deleteEvent(this.state.event.uid);
+                  }, 250);
                 }
               );
             }}

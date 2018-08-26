@@ -16,7 +16,7 @@ import { Scrollbars } from "react-custom-scrollbars";
 
 export default class USER extends Component {
   state = {
-    user: {}
+    user: {} // The current user.
   };
 
   componentDidMount() {
@@ -24,15 +24,26 @@ export default class USER extends Component {
   }
 
   componentWillReceiveProps(props) {
+    // Update the user to match the properties.
     this.setState({ user: props.user });
   }
 
   shouldComponentUpdate(props, state) {
     if (!User.equal(this.state.user, props.user)) return true;
     if (!User.equal(this.state.user, state.user)) return true;
+    // If the user hasn't changed then don't update anything.
     return false;
   }
 
+  /**
+   * Generate a gallery of project cards.
+   * @param  {String} name 
+   * @param  {String} notFoundMessage 
+   * @param  {Object[]} data 
+   * @param  {(data:Object)=>{}:JSX.ELement} renderComponent 
+   * @return 
+   * @memberof USER
+   */
   generateProjectCards(name, notFoundMessage, data, renderComponent) {
     return (
       <Card title={name}>

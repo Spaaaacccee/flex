@@ -20,51 +20,94 @@ export default class SignIn extends Component {
   };
 
   state = {
-    signedIn: false,
-    loading: false
+    signedIn: false, // Whether the user is signed in.
+    loading: false // Whether the sign in screen is currently loading.
   };
 
+  /**
+   * What to do when the user logs in.
+   * @param  {any} user
+   * @return {void}
+   * @memberof SignIn
+   */
   handleLogIn(user) {
+    // Set this component to a signed in state.
     this.setState({
       signedIn: true,
       loading: false
     });
-    if (this.timeout) clearTimeout(this.timeout);
+
+    // Notify the parent component.
     this.props.onLogIn(new logInArgs(user));
   }
 
-  timeout;
-  startTimeout() {
-    if (this.timeout) clearTimeout(this.timeout);
-    this.timeout = setTimeout(() => {
-      this.setState({ loading: false }, () => {
-        message.error("We couldn't sign you in because the operation timed out. Try signing in again.");
+  lastErrorMessage;
+
+  /**
+   * A loop to draw the log in button continuously. This is required to use a custom button along with the firebase log in UI.
+   * @memberof SignIn
+   */
+  animationFrameLoop = () => {
+    cancelAnimationFrame(this.animationFrameLoop);
+    // If the user is logged in then stop the loop.
+    if (this.state.signedIn) return;
+
+    // If an error occured.
+    let error = document.querySelector("p.firebaseui-info-bar-message");
+    if (error) {
+      if (this.lastErrorMessage !== error.textContent) {
+        // If the error message is first shown, display a message. This avoids the messaage being shown multiple times.
+        this.lastErrorMessage = error.textContent;
+        message.error(error.textContent.replace("Dismiss", "").trim());
+      }
+    }
+    let loading = !!document.querySelector("div.firebaseui-busy-indicator");
+    let button = !!document.querySelector("button.firebaseui-idp-button");
+    // If the loading state switched, reflect this change in the loading button.
+    if ((loading || !button) && !this.state.loading) {
+      this.setState({ loading: true }, () => {
+        requestAnimationFrame(this.animationFrameLoop);
       });
-    }, 20000);
-  }
+      return;
+    } else if ((!loading && button) && this.state.loading) {
+      this.setState({ loading: false }, () => {
+        requestAnimationFrame(this.animationFrameLoop);
+      });
+      return;
+    }
+    // Repeat the loop.
+    requestAnimationFrame(this.animationFrameLoop);
+  };
 
   componentDidMount() {
-    if (sessionStorage.getItem("firebaseui::pendingRedirect") === '"pending"')
-      this.setState({ loading: true }, () => {
-        this.startTimeout();
-      });
+    // Start the loading animation loop.
+    requestAnimationFrame(this.animationFrameLoop);
+
+    // Log in.
     Fire.firebase()
       .auth()
       .onAuthStateChanged(user => {
         if (user) {
+          // What to do if the user has logged in.
           Fire.authenticateGoogleAPIs(() => {
+            // Notify the parent component.
             this.handleLogIn(user);
           });
         } else {
+          // Remember the user so that they don't have to keep signing in every time.
           Fire.firebase()
             .auth()
-            .setPersistence("session");
+            .setPersistence("local");
+
+          // Configure firebase ui sign in.
           var uiConfig = {
             signInFlow: "redirect",
             signInOptions: [Fire.firebase().auth.GoogleAuthProvider.PROVIDER_ID],
             callbacks: {
               signInSuccessWithAuthResult: authResult => {
+                // What to do if sign in is successful.
                 Fire.authenticateGoogleAPIs(() => {
+                  // Notify the parent component.
                   this.handleLogIn(authResult.user);
                 });
                 return false;
@@ -97,10 +140,12 @@ export default class SignIn extends Component {
       >
         <div className="sign-in">
           <div className="sign-in-text">
+            {/* The logo */}
             <img src="./icons/icon.png" style={{ width: 50, marginTop: 10 }} />
+            {/* The logo title */}
             <div
               style={{
-                color: `rgb(40, 166, 240)`,
+                color: "rgb(40, 166, 240)",
                 marginTop: 20,
                 fontSize: 14,
                 textTransform: "uppercase",
@@ -110,6 +155,7 @@ export default class SignIn extends Component {
             >
               Bonfire
             </div>
+            {/* The sign in button */}
             <Button
               style={{
                 background: "rgb(42, 166, 253)",
@@ -124,21 +170,14 @@ export default class SignIn extends Component {
               icon="google"
               size="large"
               onClick={() => {
-                this.setState({ loading: true }, () => {
-                  this.startTimeout();
-                });
-                let x = setInterval(() => {
-                  if (this.firebaseUIElement.querySelector("button")) {
-                    this.firebaseUIElement.querySelector("button").click();
-                    clearInterval(x);
-                  }
-                }, 250);
+                document.querySelector("button.firebaseui-idp-button").click();
               }}
             >
               Sign In
             </Button>
             <br />
             <br />
+            {/* A link to the github page */}
             <a href="https://github.com/Spaaaacccee/flex" target="_blank" rel="noopener noreferrer">
               <Button
                 icon="github"
@@ -156,6 +195,7 @@ export default class SignIn extends Component {
             <br />
             <br />
             <br />
+            {/* A link to creating a Google account. */}
             <a href="https://accounts.google.com/signup" target="_blank" rel="noopener noreferrer">
               <p
                 style={{
@@ -167,19 +207,29 @@ export default class SignIn extends Component {
               </p>
             </a>
           </div>
-          <div
-            ref={el => (this.firebaseUIElement = el)}
-            style={{ display: "none", marginTop: -25 }}
-            id="firebaseui-auth-container"
-          />
+          {/* Holds the original firebase ui */}
+          <div style={{ display: "none", marginTop: -25 }} id="firebaseui-auth-container" />
         </div>
       </div>
     );
   }
 }
 
+/**
+ * A simple class to pass user info to the parent component when they have logged in.
+ * @class logInArgs
+ */
 class logInArgs {
+  /**
+   * The information of the user who has logged in.
+   * @memberof logInArgs
+   */
   user;
+  /**
+   * Creates an instance of logInArgs.
+   * @param  {any} user
+   * @memberof logInArgs
+   */
   constructor(user) {
     this.user = user;
   }

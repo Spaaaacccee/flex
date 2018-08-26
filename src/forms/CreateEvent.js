@@ -1,36 +1,37 @@
-import TimelineEvent from "../classes/TimelineEvent";
 import update from "immutability-helper";
 import { Input, DatePicker, Button, Switch, Select, Popconfirm } from "antd";
 import React, { Component } from "react";
 import MemberGroupSelector from "../components/MemberGroupSelector";
-import Project from "../classes/Project";
 import Moment from "moment";
 import UserGroupDisplay from "../components/UserGroupDisplay";
 import User from "../classes/User";
 
+/**
+ * A 
+ * @export
+ * @class CreateEvent
+ * @extends Component
+ */
 export default class CreateEvent extends Component {
-  /**
-   * @type {{mode:"create"|"edit"}}
-   * @memberof CreateEvent
-   */
+
   state = {
-    creator: null,
+    creator: null, // The creator of this event.
     values: {
-      name: "Untitled Event",
-      description: "",
-      date: Moment.now(),
-      autoComplete: false,
+      name: "Untitled Event", // The name of this event.
+      description: "", // The description of this event.
+      date: Moment.now(), // The date of this event. Defaults to the current time.
+      autoComplete: false, // Whether the event is set to autocomplete itself after the time passes.
       involvedPeople: {
-        members: [],
-        roles: []
+        members: [], // The members that are involved in this event.
+        roles: [] // The roles that are involved in this event.
       },
-      notify: -1,
-      markedAsCompleted: false
+      notify: -1, // When to notify the involved people. -1 signifies to never notify.
+      markedAsCompleted: false // Whether this event is marked as completed.
     },
-    submitted: false,
-    opened: false,
-    project: {},
-    mode: "create"
+    submitted: false, // Whether this form is submitted.
+    opened: false, // Whether this form is opened.
+    project: {}, // The project this event is from.
+    mode: "create" // Whether this form is meant to edit an existing event. "edit" | "create"
   };
 
   handleSubmit() {
@@ -40,8 +41,10 @@ export default class CreateEvent extends Component {
       },
       () => {
         if (this.state.mode === "create") {
+          // If the mode is set to create, then notify the parent component of submission.
           this.props.onSubmit(this.state);
         } else {
+          // Otherwise, update the existing event.
           User.getCurrentUser().then(user => {
             this.props.onSubmit(
               update(this.state, {
@@ -56,9 +59,8 @@ export default class CreateEvent extends Component {
 
   handleDelete() {
     this.setState({ submitted: true }, () => {
-      setTimeout(() => {
+        // Notify the parent component of the deletion.
         this.props.onDelete();
-      }, 250);
     });
   }
 
@@ -69,11 +71,13 @@ export default class CreateEvent extends Component {
   shouldComponentUpdate(props, state) {
     if (this.state.submitted !== state.submitted) return true;
     if (this.state.opened !== props.opened) return true;
+    // Don't update anything unless the form was just opened/closed.
     return false;
   }
 
   componentWillReceiveProps(props) {
     if (this.state.opened !== props.opened) {
+      // If the form just opened or just closed, then reset the form.
       this.setState(
         {
           creator: (props.values || {}).creator || null,
@@ -85,6 +89,7 @@ export default class CreateEvent extends Component {
           project: props.project || {}
         },
         () => {
+          // If the mode is set to edit, reset the input values too.
           if (props.mode === "edit" && props.values) {
             this.setValues(props.values);
           }
@@ -93,6 +98,12 @@ export default class CreateEvent extends Component {
     }
   }
 
+  /**
+   * Reset the values of every input to match an object.
+   * @param  {any} values 
+   * @return {void}
+   * @memberof CreateEvent
+   */
   setValues(values) {
     values.name = values.name || "";
     values.description = values.description || "";
@@ -110,12 +121,40 @@ export default class CreateEvent extends Component {
     this.setState({ values });
   }
 
+  /**
+   * Reference to the name text field
+   * @memberof CreateEvent
+   */
   nameField;
+  /**
+   * Reference to the description text field
+   * @memberof CreateEvent
+   */
   descriptionField;
+  /**
+   * Reference to the date field
+   * @memberof CreateEvent
+   */
   dateField;
+  /**
+   * Reference to the involved people field.
+   * @memberof CreateEvent
+   */
   peopleField;
+  /**
+   * Reference to the notify field.
+   * @memberof CreateEvent
+   */
   notifyField;
+  /**
+   * Reference to the auto complete field.
+   * @memberof CreateEvent
+   */
   autoCompleteField;
+  /**
+   * Reference to the marked as completed field.
+   * @memberof CreateEvent
+   */
   markedAsCompletedField;
 
   render() {

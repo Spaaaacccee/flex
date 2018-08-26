@@ -8,16 +8,22 @@ import Project from "../classes/Project";
 import update from "immutability-helper";
 import { Message, MessageContent } from "../classes/Messages";
 
+/**
+ * The timeline page.
+ * @export
+ * @class TIMELINE
+ * @extends Component
+ */
 export default class TIMELINE extends Component {
   static defaultProps = {
     project: {},
     user: {}
   };
   state = {
-    project: {},
-    user: {},
-    eventCreatorVisible: false,
-    events: []
+    project: {}, // The source project. 
+    user: {}, // The current user.
+    eventCreatorVisible: false, // Whether the create event window is open.
+    events: [] // The events to display.
   };
 
   componentDidMount() {
@@ -25,11 +31,13 @@ export default class TIMELINE extends Component {
   }
 
   componentWillReceiveProps(props) {
+    // Update this component to match its properties.
     this.setState({
       user: props.user,
       project: props.project
     });
     if (props.project && props.project.getEventsInDateOrder) {
+      // Get all of the events in date order and save it to this component.
       this.setState({ events: props.project.getEventsInDateOrder() });
     } else {
       this.setState({ events: [] });
@@ -41,11 +49,13 @@ export default class TIMELINE extends Component {
     if (this.state.project !== state.project) return true;
     if (this.state.user !== state.user) return true;
     if (!Project.equal(props.project, this.state.project)) return true;
-    if (JSON.stringify(props.project.getEventsInDateOrder()) !== JSON.stringify(this.state.project.events)) return true;
+    if (JSON.stringify(props.project.getEventsInDateOrder()) !== JSON.stringify(this.state.events)) return true;
+    // If no properties have changed then don't update.
     return false;
   }
 
   onExtrasButtonPress() {
+    // When the extras button is pressed, open the event creator.
     this.setState({ eventCreatorVisible: true });
   }
   render() {
@@ -124,7 +134,7 @@ export default class TIMELINE extends Component {
             <Icon type="calendar" />
             <br />
             <br />
-            Your team's events will appear here.
+            {"Your team's events will appear here."}
             <br />
             <br />
           </div>
