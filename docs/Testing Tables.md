@@ -16,6 +16,10 @@ Variables and data structures used below are for demonstrative purposes only, an
 
 e.g. `btnState=loading` may actually be a button that is controlled by a property `state = { status: "loading" }` and have the code / behaviour `<Button loading={this.state.status==="loading" ? true : false} />`
 
+Sometimes that value that is actually used in a test may be too absurd in some way to be written literally in the tables. Paraphrased values will be inclosed in the hash character. e.g. `# A string of 100 characters #`.
+
+If data existed in an object but is not relevant to a test, they may be ommitted of represented by ellipsis. e.g. `user = { ... id:# Kevin Zheng's id #}`
+
 Some syntax that will ensure the following tests are clear to read:
 
 | Notation | Description                                                                            |
@@ -27,14 +31,12 @@ Some syntax that will ensure the following tests are clear to read:
 | `{x:y}`  | An object with a property named x with the value y                                     |
 | `x=y`    | A variable named x with the value y, or the value y was assigned to a variable named x |
 
-Sometimes that value that is actually used in a test may be too absurd in some way to be written literally in the tables. Paraphrased values will be inclosed in the hash character. e.g. `# A string of 100 characters #`.
-
 UI Elements have built-in input validation or intrinsic restrictions that prevent invalid data from being entered. The following will not be tested individually as it has been verified that it is impossible to enter invalid data of this kind:
 
 | Type                 | Native Input Restrictions                                                                                                                                        |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Text field           | Allow any UTF-8 Character, except characters that require a new line (line break, carriage return etc.). new line characters will be converted to a space (" "). |
-| Multiline text field | Allow any UTF Character.                                                                                                                                         |
+| Multiline text field | Allow any UTF-8 Character.                                                                                                                                       |
 | Date picker          | Follows the same restrictions as text field. Disallows any input that does not match the format yyyy-mm-dd.                                                      |
 | File Open dialog     | Allow any file. Selection of folders or multiple files is disallowed.                                                                                            |
 |                      |
@@ -120,43 +122,102 @@ UI Elements have built-in input validation or intrinsic restrictions that preven
 | 5.1.8 | Invite Users Button | `selectedUsers=["x@e.com"]`                                                                            | enable button                                                         | As expected ![Select User Button Enabled](./img/img19.png)  | -   |
 | 5.1.9 | Invite Users Button | `selectedUsers=["x@e.com","2x@e.com","y@x.com"]`                                                       | request add users for `["x@e.com","2x@e.com","y@x.com"]`, close panel | As expected                                                 | -   |
 
+### 5.2 Add Event
+
+> For tests on limiting the length of the name and description fields, see 5.3.2, 5.3.3, 5.3.4, 5.3.5 as the same code is used.
+
+| ID    | Element   | Data                                                                                                                                                                    | Expected                                                                                                                                     | Actual                                      | Fix |
+| ----- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | --- |
+| 5.2.1 | Add event | input data: `{name:"a", description:"b", "date":1533866631775 ,notify:1,autoComplete:false, involvedPeople: null}`, environment: `user.uid = # Kevin Zheng's user id #` | Event created with data `{... name:"a", description:"b",date:1533866631775,notify:1,autoComplete:false, creator: # Kevin Zheng's user id #}` | As expected                                 | -   |
+| 5.2.2 | Add event | input data: `{}`, environment: `user.uid = # Kevin Zheng's user id #`                                                                                                   | Event created with data `{... name:"Untitled Event", description:null, creator: "Kevin Zheng's user id", date:# current date #}`             | As expected ![Empty Event](./img/img23.png) | -   |
+
+### 5.3 Add Project
+
+| ID    | Element     | Data                                                                                                       | Expected                                                                                                                                                | Actual                                               | Fix |
+| ----- | ----------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | --- |
+| 5.3.1 | New Project | input data: `{name:null, description: null, invitePeople: null}`                                           | project created with `{name: "Untitled Project": description: null}`                                                                                    | As expected                                          | -   |
+| 5.3.2 | New Project | input data: `{name: "Project", description: "Project Description", invitePeople: null}`                    | project created with `{name: "Project", description: "Project Description"}`                                                                            | As expected                                          | -   |
+| 5.3.3 | New Project | input data: `{name: # String of 100 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`                                                         | As expected                                          | -   |
+| 5.3.4 | New Project | input data: `{name: # String of 101 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`, final character trimmed.                               | As expected ![Project Name Trimmed](./img/img21.png) | -   |
+| 5.3.5 | New Project | input data: `{name: " X ", description: "Project Description", invitePeople: null}`                        | project created with `{name: "X", description: "Project Description"}`                                                                                  | As expected                                          | -   |
+| 5.3.6 | New Project | input data: `{name: "Project Name", description: # String of 2000 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`                                                                          | As expected                                          | -   |
+| 5.3.7 | New Project | input data: `{name: "Project Name", description: # String of 2001 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`, final character trimmed ![Project Description Trimmed](./img/img22.png) | As expected                                          | -   |
+
+### 5.4 Add File
+
+> Test files created with `fsutil file createnew <filename> <filesize>`
+> For comment file length tests, see 5.3.3.
+
+| ID    | Element        | Data                                     | Expected                                       | Actual                                                                        | Fix                                                                       |
+| ----- | -------------- | ---------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 5.4.1 | Add File Panel | file: `{... size=52,428,800}`            | File allowed, show window to enter description | As expected ![Test files](./img/img23.png) ![File Size Pass](./img/img25.png) | -                                                                         |
+| 5.4.2 | Add File Panel | file: `{... size=52,428,801}`            | File denied, show error                        | As expected ![File Size Fail](./img/img24.png)                                | -                                                                         |
+| 5.4.3 | Add File Panel | file: `{... size=0}`                     | File allowed, show window to enter description | As expected                                                                   | -                                                                         |
+| 5.4.4 | Drag & Drop    | file: Empty folder                       | Folder denied                                  | Folder starts uploading, displays error.                                      | Add a check for when a folder is dropped into the upload zone. See below. |
+| 5.4.5 | File Comment   | comment="", file: `{... name: test.txt}` | file.description = "Made Changes to test.txt"  | As expected                                                                   | -                                                                         |
+
+```javascript
+// Test if the file size is a multiple of 4096, since all folders have this property.
+if (file.size % 4096 === 0) {
+  let reader = new FileReader();
+  // If the file has such a size, read the file to check if its a folder. This may take time, which is why the file size check is performed first.
+  reader.onload = () => {
+    // Otherwise, select the file, and go to the next step.
+    this.setState({
+      selectedFile: file,
+      modalVisible: true,
+      loading: false
+    });
+  };
+  reader.onerror = () => {
+    message.error("Unfortunately, we currently don't support uploading folders.");
+  };
+  reader.readAsText(file);
+  return;
+}
+```
+
+### S.5 Settings
+
+#### 5.5.1 General Settings
+
+#### 5.5.2 Roles
+
+#### 5.5.3 Advanced
+
 ## 6 Data & Fetching
 
 > Tests for adding and setting data to users and projects are avaible in Section 7
 
-| ID  | Element         | Data                                               | Expected      | Actual      | Fix |
-| --- | --------------- | -------------------------------------------------- | ------------- | ----------- | --- |
-| 6.1 | User Fetcher    | `userID=null`                                      | return `null` | As expected | -   |
-| 6.2 | User Fetcher    | `userID="x"`, `database.users=["x","y","z"]`       | return `"x"`  | As expected | -   |
-| 6.3 | User Fetcher    | `userID="x"`, `database.users=["a","b","c"]`       | return `null` | As expected | -   |
-| 6.4 | Project Fetcher | `projectID=null`                                   | return `null` | As expected | -   |
-| 6.5 | Project Fetcher | `projectID="x"`, `database.projects=["x","y","z"]` | return `"x"`  | As expected | -   |
-| 6.6 | Project Fetcher | `projectID="x"`, `database.projects=["a","b","c"]` | return `null` | As expected | -   |
+| ID  | Element         | Data                                                                                                | Expected                      | Actual      | Fix |
+| --- | --------------- | --------------------------------------------------------------------------------------------------- | ----------------------------- | ----------- | --- |
+| 6.1 | User Fetcher    | `userID=null`                                                                                       | return `null`                 | As expected | -   |
+| 6.2 | User Fetcher    | `userID="x"`, `database.projects=[{... userID: "x"},{... userID:"y"},{... userID:"z"}]`             | return `{... userID: "x"}`    | As expected | -   |
+| 6.3 | User Fetcher    | `userID="x"`, `database.projects=[{... userID: "a"},{... userID:"b"},{... userID:"c"}]`             | As expected                   | -           |
+| 6.4 | Project Fetcher | `projectID=null`                                                                                    | return `null`                 | As expected | -   |
+| 6.5 | Project Fetcher | `projectID="x"`, `database.projects=[{... projectID: "x"},{... projectID:"y"},{... projectID:"z"}]` | return `{... projectID: "x"}` | As expected | -   |
+| 6.6 | Project Fetcher | `projectID="x"`, `database.projects=[{... projectID: "a"},{... projectID:"b"},{... projectID:"c"}]` | return `null`                 | As expected | -   |
 
 ## 7 Core Objects
 
 ### 7.1 Project
 
-| ID    | Element   | Data                                                                                       | Expected                                                                                               | Actual      | Fix |
-| ----- | --------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ | ----------- | --- |
-| 7.1.1 | Add event | input data: `{name:"a", description:"b","date":1533866631775,notify:1,autoComplete:false}` | Event created with data `{name:"a", description:"b","date":1533866631775,notify:1,autoComplete:false}` | As expected | -   |
-| 7.1.1 | Add event | `{}`                                                                                       | Event created with data `{name:"a", description:"b","date":1533866631775}`                             | As expected | -   |
+> For adding events to a project, see 5.2
 
 ### 7.2 User
 
+> For texts related to creating a new project, see 5.3.
 > For tests related to inviting users, see 5.1, as the one here uses the same logic. These tests will not be repeated.
 
-| ID    | Element     | Data                                                                                                       | Expected                                                                                                                                                | Actual                                               | Fix |
-| ----- | ----------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | --- |
-| 7.2.1 | New Project | input data: `{name:null, description: null, invitePeople: null}`                                           | project created with `{name: "Untitled Project": description: null}`                                                                                    | As expected                                          | -   |
-| 7.2.2 | New Project | input data: `{name: "Project", description: "Project Description", invitePeople: null}`                    | project created with `{name: "Project", description: "Project Description"}`                                                                            | As expected                                          | -   |
-| 7.2.3 | New Project | input data: `{name: # String of 100 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`                                                         | As expected                                          | -   |
-| 7.2.4 | New Project | input data: `{name: # String of 101 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`, final character trimmed.                               | As expected ![Project Name Trimmed](./img/img21.png) | -   |
-| 7.2.5 | New Project | input data: `{name: " X ", description: "Project Description", invitePeople: null}`                        | project created with `{name: "X", description: "Project Description"}`                                                                                  | As expected                                          | -   |
-| 7.2.6 | New Project | input data: `{name: "Project Name", description: # String of 2000 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`                                                                          | As expected                                          | -   |
-| 7.2.7 | New Project | input data: `{name: "Project Name", description: # String of 2001 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`, final character trimmed ![Project Description Trimmed](./img/img22.png) | As expected                                          | -   |
+### 7.3 Messenger / Messages
 
 ## 8 Utilities
+
+### 8.1 Quicksort
+
+### 8.2 Notifier
+
+### 8.3 Backup
 
 | ID  | Element | Data | Expected | Actual | Fix |
 | --- | ------- | ---- | -------- | ------ | --- |

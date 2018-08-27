@@ -35,6 +35,7 @@ export default class ProjectDisplay extends Component {
               ? [
                   // If the component is not read only, the display an option to open this project.
                   <span
+                    key={0}
                     onClick={() => {
                       this.props.onOpenPressed();
                     }}
@@ -54,7 +55,10 @@ export default class ProjectDisplay extends Component {
           <ProjectIcon name={this.state.project.name} readOnly />
           <br />
           {/* Display the project name and description */}
-          <Card.Meta title={this.state.project.name} description={this.state.project.description} />
+          <Card.Meta
+            title={(this.state.project.name || "").substring(0, 15)}
+            description={(this.state.project.description || "").substring(0, 30)}
+          />
         </Card>
       </div>
     );

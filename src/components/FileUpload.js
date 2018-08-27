@@ -1,11 +1,9 @@
 import React, { Component } from "react";
 import { Upload, Icon, message, Button, List, Progress, Modal, Input } from "antd";
-import update from "immutability-helper";
 import Document, { UploadJob } from "../classes/Document";
 import $ from "../classes/Utils";
 
 export default class FileUpload extends Component {
-
   state = {
     project: {},
     jobs: [], // A list of all the uploading jobs to display.
@@ -86,6 +84,25 @@ export default class FileUpload extends Component {
                   return;
                 }
 
+                // Test if the file size is a multiple of 4096, since all folders have this property.
+                if (file.size % 4096 === 0) {
+                  let reader = new FileReader();
+                  // If the file has such a size, read the file to check if its a folder. This may take time, which is why the file size check is performed first.
+                  reader.onload = () => {
+                    // Otherwise, select the file, and go to the next step.
+                    this.setState({
+                      selectedFile: file,
+                      modalVisible: true,
+                      loading: false
+                    });
+                  };
+                  reader.onerror = () => {
+                    message.error("Unfortunately, we currently don't support uploading folders.");
+                  };
+                  reader.readAsText(file);
+                  return;
+                }
+
                 // Otherwise, select the file, and go to the next step.
                 this.setState({
                   selectedFile: file,
@@ -93,7 +110,6 @@ export default class FileUpload extends Component {
                   loading: false
                 });
               }}
-
               fileList={[]}
             >
               {/* The file upload area */}
@@ -110,7 +126,7 @@ export default class FileUpload extends Component {
             <div>
               <br />
               <List bordered>
-                {renderJobs.map((item, index) => (
+                {renderJobs.map(item => (
                   // A single job
                   <List.Item
                     key={item.uid}
@@ -120,6 +136,7 @@ export default class FileUpload extends Component {
                         : [
                             // If a job is not done or canceled, then display an option to cancel.
                             <Icon
+                              key={0}
                               type="close"
                               onClick={() => {
                                 // Cancel the job
@@ -154,7 +171,9 @@ export default class FileUpload extends Component {
                           <span style={{ textTransform: "capitalize" }}>{item.status}</span>
                           <span>
                             <Progress
-                              percent={item.status === "done" || item.status === "error" ? 100 : Math.min(Math.round(item.percent), 99)}
+                              percent={
+                                item.status === "done" || item.status === "error" ? 100 : Math.min(Math.round(item.percent), 99)
+                              }
                               status={
                                 item.status === "done"
                                   ? "success"
@@ -180,7 +199,7 @@ export default class FileUpload extends Component {
         <Modal
           wrapClassName="secondary-modal"
           destroyOnClose
-          getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
+          getContainer={() => document.querySelector(".modal-mount > div:first-child")}
           style={{ top: 40 }}
           visible={this.state.modalVisible}
           onCancel={() => {
@@ -194,6 +213,7 @@ export default class FileUpload extends Component {
           footer={[
             // Submit button
             <Button
+              key={0}
               icon="check"
               loading={this.state.loading}
               type="primary"

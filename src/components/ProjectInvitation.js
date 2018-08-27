@@ -21,7 +21,7 @@ export default class ProjectInvitation extends Component {
 
   componentWillReceiveProps(props) {
     // Update this component with new properties.
-    this.setState({ project: props.project||this.state.project });
+    this.setState({ project: props.project || this.state.project });
   }
 
   render() {
@@ -33,7 +33,7 @@ export default class ProjectInvitation extends Component {
             // If the project was not deleted, then display an accept button.
             !this.state.project.deleted
               ? [
-                  <span onClick={this.props.onAcceptInvite}>
+                  <span onClick={this.props.onAcceptInvite} key={0}>
                     <Icon type="check" />
                     {" Accept"}
                   </span>
@@ -41,6 +41,7 @@ export default class ProjectInvitation extends Component {
               : [],
             ...[
               <Popconfirm
+                key={1}
                 title="Are you sure you want to reject this invite?"
                 okText="Yes"
                 cancelText="No"
@@ -55,17 +56,14 @@ export default class ProjectInvitation extends Component {
           ]}
         >
           {/* Display a project icon. If the project was deleted, then only display a question mark. */}
-          <ProjectIcon
-            name={!this.state.project.deleted ? this.state.project.name : "?"}
-            readOnly
-          />
+          <ProjectIcon name={!this.state.project.deleted ? this.state.project.name : "?"} readOnly />
           <br />
           {/* Display the name and description of the project */}
           <Card.Meta
-            title={!this.state.project.deleted ? this.state.project.name : "Deleted"}
+            title={!this.state.project.deleted ? (this.state.project.name || "").substring(0, 15) : "Deleted"}
             description={
               !this.state.project.deleted
-                ? this.state.project.description
+                ? (this.state.project.description || "").substring(0, 30)
                 : "The owner has deleted this project."
             }
           />

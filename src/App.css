@@ -30,7 +30,6 @@
 
 .modal-mount .ant-modal-wrap {
   position: static;
-  overflow: visible;
   pointer-events: all;
 }
 
