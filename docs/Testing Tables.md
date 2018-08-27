@@ -14,14 +14,20 @@ All tests are verified in both environments
 
 Variables and data structures used below are for demonstrative purposes only, and does not exactly match the source code - sometimes data irrelevant to a specific test in objects are omitted - to ensure clarity and understandability - but represents the original code to the greatest extent.
 
-Some basic Javascript syntax that will ensure the following tests are clear to read:
+e.g. `btnState=loading` may actually be a button that is controlled by a property `state = { status: "loading" }` and have the code / behaviour `<Button loading={this.state.status==="loading" ? true : false} />`
 
-| Notation | Description                                              |
-| -------- | -------------------------------------------------------- |
-| `{}`     | Empty object                                             |
-| `[]`     | Empty array                                              |
-| `""`     | Empty string                                             |
-| `null`   | Any value that equals null, including null and undefined |
+Some syntax that will ensure the following tests are clear to read:
+
+| Notation | Description                                                                            |
+| -------- | -------------------------------------------------------------------------------------- |
+| `{}`     | Empty object                                                                           |
+| `[]`     | Empty array                                                                            |
+| `""`     | Empty string                                                                           |
+| `null`   | Any value that equals null, including null and undefined                               |
+| `{x:y}`  | An object with a property named x with the value y                                     |
+| `x=y`    | A variable named x with the value y, or the value y was assigned to a variable named x |
+
+Sometimes that value that is actually used in a test may be too absurd in some way to be written literally in the tables. Paraphrased values will be inclosed in the hash character. e.g. `# A string of 100 characters #`.
 
 UI Elements have built-in input validation or intrinsic restrictions that prevent invalid data from being entered. The following will not be tested individually as it has been verified that it is impossible to enter invalid data of this kind:
 
@@ -44,9 +50,9 @@ UI Elements have built-in input validation or intrinsic restrictions that preven
 | 0.1 | Sign In | App loaded, no Google authentication data in cookies & web storage             | Do nothing                                                         | As expected                                    | -   |
 | 0.2 | Sign In | Sign In button pressed, no Google authentication data in cookies & web storage | signIn.buttonState=loading, redirect to Google sign in             | As expected                                    | -   |
 | 0.3 | Sign In | App loaded, Google authentication data in cookies & web storage                | signIn.buttonState=loading, Sign in visible=false, user page shown | As expected                                    | -   |
-| 0.4 | Sign In | Firebase UI is loading.                                                        | `signIn.btnState = loading`                                        | As expected                                    | -   |
-| 0.5 | Sign In | Firebase UI is ready.                                                          | `signIn.btnState = ready`                                          | As expected ![Sign In Loading](./img/img9.png) | -   |
-| 0.6 | Sign In | Firebase UI is ready. Sign in button pressed.                                  | Start sign in, `signIn.buttonState = loading`                      | As expected ![Sign In Ready](./img/img10.png)  | -   |
+| 0.4 | Sign In | Firebase UI is loading.                                                        | `signInBtnState = loading`                                         | As expected                                    | -   |
+| 0.5 | Sign In | Firebase UI is ready.                                                          | `signInBtnState = ready`                                           | As expected ![Sign In Loading](./img/img9.png) | -   |
+| 0.6 | Sign In | Firebase UI is ready. Sign in button pressed.                                  | Start sign in, `signInBtnState = loading`                          | As expected ![Sign In Ready](./img/img10.png)  | -   |
 | 0.6 | Sign In | Firebase UI is loading. Sign in button pressed.                                | Do nothing                                                         | As expected                                    | -   |
 
 ## 1 Layout
@@ -138,8 +144,17 @@ UI Elements have built-in input validation or intrinsic restrictions that preven
 
 ### 7.2 User
 
-| ID | Element | Data | Expected | Actual | Fix |
-| 7.2.1 | New Project | input data: `{name:null, description: null, invitePeople: null}` | project created with `{name: "Untitled Project": description: null, members: []}`
+> For tests related to inviting users, see 5.1, as the one here uses the same logic. These tests will not be repeated.
+
+| ID    | Element     | Data                                                                                                       | Expected                                                                                                                                                | Actual                                               | Fix |
+| ----- | ----------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | --- |
+| 7.2.1 | New Project | input data: `{name:null, description: null, invitePeople: null}`                                           | project created with `{name: "Untitled Project": description: null}`                                                                                    | As expected                                          | -   |
+| 7.2.2 | New Project | input data: `{name: "Project", description: "Project Description", invitePeople: null}`                    | project created with `{name: "Project", description: "Project Description"}`                                                                            | As expected                                          | -   |
+| 7.2.3 | New Project | input data: `{name: # String of 100 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`                                                         | As expected                                          | -   |
+| 7.2.4 | New Project | input data: `{name: # String of 101 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`, final character trimmed.                               | As expected ![Project Name Trimmed](./img/img21.png) | -   |
+| 7.2.5 | New Project | input data: `{name: " X ", description: "Project Description", invitePeople: null}`                        | project created with `{name: "X", description: "Project Description"}`                                                                                  | As expected                                          | -   |
+| 7.2.6 | New Project | input data: `{name: "Project Name", description: # String of 2000 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`                                                                          | As expected                                          | -   |
+| 7.2.7 | New Project | input data: `{name: "Project Name", description: # String of 2001 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`, final character trimmed ![Project Description Trimmed](./img/img22.png) | As expected                                          | -   |
 
 ## 8 Utilities
 

@@ -69,6 +69,7 @@ export default class ProjectView extends Component {
     };
 
     // Set a backup timer to backup the project every x minutes.
+    if(this.backupTimer) clearInterval(this.backupTimer); 
     this.backupTimer = setInterval(() => {
       if (!this.state.project || !Object.keys(this.state.project).length) return;
       Backup.backupProject(this.state.project.projectID, this.state.project);
@@ -76,6 +77,7 @@ export default class ProjectView extends Component {
   }
 
   componentWillUnmount() {
+    // Remove the callback for when the window closes.
     window.onbeforeunload = () => {};
     // Remove back up timer when the component unmounts.
     clearInterval(this.backupTimer);
