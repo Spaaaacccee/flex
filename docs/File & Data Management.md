@@ -92,7 +92,17 @@ Here's how it looks like in the Firebase Console
 
 ### Database security and Accessibility
 
-- Database operations are protected via security configurations that permits only authenticated users from making specific changes.
+- Database operations are protected via security configurations that permits only authenticated users from making specific changes. e.g. Only invited users of a project can make changes to it.
+
+```json
+  "projects": {
+      "$projectID": {
+        ".write": "root.child('projects').child($projectID).child('permissions').child(auth.uid).val()===true || root.child('projects').child($projectID).child('owner').val()===auth.uid"
+      }
+  }
+```
+
+- These security rules are run on the server, and is impossible to bypass.
 
 - Most database operations are done through _transactions_, which guarantee that the operation can be performed on the latest version of the data, and can merge successfully with operations done at the same time by other users.
 
