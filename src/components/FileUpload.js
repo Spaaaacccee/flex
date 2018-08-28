@@ -200,7 +200,6 @@ export default class FileUpload extends Component {
           wrapClassName="secondary-modal"
           destroyOnClose
           getContainer={() => document.querySelector(".modal-mount > div:first-child")}
-          style={{ top: 40 }}
           visible={this.state.modalVisible}
           onCancel={() => {
             // When the modal is closed, then clear the selected file and the description that is entered.

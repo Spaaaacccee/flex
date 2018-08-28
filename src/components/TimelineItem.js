@@ -205,7 +205,6 @@ export default class TimelineItem extends Component {
           destroyOnClose
           getContainer={() => document.querySelector(".modal-mount > div:first-child")}
           footer={null}
-          style={{ top: 20 }}
           visible={this.state.eventEditorVisible}
           onCancel={() => {
             this.setState({ eventEditorVisible: false });

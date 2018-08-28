@@ -22,14 +22,15 @@ If data existed in an object but is not relevant to a test, they may be ommitted
 
 Some syntax that will ensure the following tests are clear to read:
 
-| Notation | Description                                                                            |
-| -------- | -------------------------------------------------------------------------------------- |
-| `{}`     | Empty object                                                                           |
-| `[]`     | Empty array                                                                            |
-| `""`     | Empty string                                                                           |
-| `null`   | Any value that equals null, including null and undefined                               |
-| `{x:y}`  | An object with a property named x with the value y                                     |
-| `x=y`    | A variable named x with the value y, or the value y was assigned to a variable named x |
+| Notation          | Description                                                                            |
+| ----------------- | -------------------------------------------------------------------------------------- |
+| `{}`              | Empty object                                                                           |
+| `[]`              | Empty array                                                                            |
+| `""`              | Empty string                                                                           |
+| `null`            | Any value that equals null, including `null`, empty string, or `undefined`             |
+| `{x:y}`           | An object with a property named x with the value y                                     |
+| `x=y`             | A variable named x with the value y, or the value y was assigned to a variable named x |
+| description: `{}` | A description of what the data is, and the value is                                    |
 
 UI Elements have built-in input validation or intrinsic restrictions that prevent invalid data from being entered. The following will not be tested individually as it has been verified that it is impossible to enter invalid data of this kind:
 
@@ -124,29 +125,32 @@ UI Elements have built-in input validation or intrinsic restrictions that preven
 
 ### 5.2 Add Event
 
-> For tests on limiting the length of the name and description fields, see 5.3.2, 5.3.3, 5.3.4, 5.3.5 as the same code is used.
+> For tests on limiting the length of the name and description fields, see 5.3.3, 5.3.4, 5.3.5, 5.3.6, 5.3.7, 5.3.8 as the same code is used.
 
-| ID    | Element   | Data                                                                                                                                                                    | Expected                                                                                                                                     | Actual                                      | Fix |
-| ----- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | --- |
-| 5.2.1 | Add event | input data: `{name:"a", description:"b", "date":1533866631775 ,notify:1,autoComplete:false, involvedPeople: null}`, environment: `user.uid = # Kevin Zheng's user id #` | Event created with data `{... name:"a", description:"b",date:1533866631775,notify:1,autoComplete:false, creator: # Kevin Zheng's user id #}` | As expected                                 | -   |
-| 5.2.2 | Add event | input data: `{}`, environment: `user.uid = # Kevin Zheng's user id #`                                                                                                   | Event created with data `{... name:"Untitled Event", description:null, creator: "Kevin Zheng's user id", date:# current date #}`             | As expected ![Empty Event](./img/img23.png) | -   |
+| ID    | Element   | Data                                                                                                                                                                    | Expected                                                                                                                                                          | Actual                                      | Fix |
+| ----- | --------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- | --- |
+| 5.2.1 | Add event | input data: `{name:"a", description:"b", "date":1533866631775 ,notify:1,autoComplete:false, involvedPeople: null}`, environment: `user.uid = # Kevin Zheng's user id #` | Event created with data `{... name:"a", description:"b",date:1533866631775,notify:1,autoComplete:false, creator: # Kevin Zheng's user id #}`                      | As expected                                 | -   |
+| 5.2.2 | Add event | input data: `{}`, environment: `user.uid = # Kevin Zheng's user id #`                                                                                                   | Event created with data `{... name:"Untitled Event", description:null, creator: "Kevin Zheng's user id", date:# current date #, notify: -1, autoComplete: false}` | As expected ![Empty Event](./img/img23.png) | -   |
+
+|
 
 ### 5.3 Add Project
 
-| ID    | Element     | Data                                                                                                       | Expected                                                                                                                                                | Actual                                               | Fix |
-| ----- | ----------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | --- |
-| 5.3.1 | New Project | input data: `{name:null, description: null, invitePeople: null}`                                           | project created with `{name: "Untitled Project": description: null}`                                                                                    | As expected                                          | -   |
-| 5.3.2 | New Project | input data: `{name: "Project", description: "Project Description", invitePeople: null}`                    | project created with `{name: "Project", description: "Project Description"}`                                                                            | As expected                                          | -   |
-| 5.3.3 | New Project | input data: `{name: # String of 100 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`                                                         | As expected                                          | -   |
-| 5.3.4 | New Project | input data: `{name: # String of 101 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`, final character trimmed.                               | As expected ![Project Name Trimmed](./img/img21.png) | -   |
-| 5.3.5 | New Project | input data: `{name: " X ", description: "Project Description", invitePeople: null}`                        | project created with `{name: "X", description: "Project Description"}`                                                                                  | As expected                                          | -   |
-| 5.3.6 | New Project | input data: `{name: "Project Name", description: # String of 2000 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`                                                                          | As expected                                          | -   |
-| 5.3.7 | New Project | input data: `{name: "Project Name", description: # String of 2001 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`, final character trimmed ![Project Description Trimmed](./img/img22.png) | As expected                                          | -   |
+| ID    | Element     | Data                                                                                                       | Expected                                                                                                                                                 | Actual                                               | Fix |
+| ----- | ----------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | --- |
+| 5.3.1 | New Project | input data: `{name:null, description: null, invitePeople: null}`                                           | project created with `{name: "Untitled Project": description: null}`                                                                                     | As expected                                          | -   |
+| 5.3.2 | New Project | input data: `{name: "Project", description: "Project Description", invitePeople: null}`                    | project created with `{name: "Project", description: "Project Description"}`                                                                             | As expected                                          | -   |
+| 5.3.3 | New Project | input data: `{name: # String of 100 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`                                                          | As expected                                          | -   |
+| 5.3.4 | New Project | input data: `{name: # String of 101 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`, final character trimmed.                                | As expected ![Project Name Trimmed](./img/img21.png) | -   |
+| 5.3.5 | New Project | input data: `{name: " X ", description: "Project Description", invitePeople: null}`                        | project created with `{name: "X", description: "Project Description"}`                                                                                   | As expected                                          | -   |
+| 5.3.6 | New Project | input data: `{name: "Project Name", description: " X ", invitePeople: null}`                               | project created with `{name: "Project Name", description: " X "}` (Not trimmed. )                                                                        | As expected                                          | -   |
+| 5.3.7 | New Project | input data: `{name: "Project Name", description: # String of 2000 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`                                                                           | As expected                                          | -   |
+| 5.3.8 | New Project | input data: `{name: "Project Name", description: # String of 2001 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`, final character trimmed. ![Project Description Trimmed](./img/img22.png) | As expected                                          | -   |
 
 ### 5.4 Add File
 
 > Test files created with `fsutil file createnew <filename> <filesize>`
-> For comment file length tests, see 5.3.3.
+> For comment file length tests, see 5.3.3, 5.3.4, 5.3.5
 
 | ID    | Element        | Data                                     | Expected                                       | Actual                                                                        | Fix                                                                       |
 | ----- | -------------- | ---------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
@@ -154,7 +158,8 @@ UI Elements have built-in input validation or intrinsic restrictions that preven
 | 5.4.2 | Add File Panel | file: `{... size=52,428,801}`            | File denied, show error                        | As expected ![File Size Fail](./img/img24.png)                                | -                                                                         |
 | 5.4.3 | Add File Panel | file: `{... size=0}`                     | File allowed, show window to enter description | As expected                                                                   | -                                                                         |
 | 5.4.4 | Drag & Drop    | file: Empty folder                       | Folder denied                                  | Folder starts uploading, displays error.                                      | Add a check for when a folder is dropped into the upload zone. See below. |
-| 5.4.5 | File Comment   | comment="", file: `{... name: test.txt}` | file.description = "Made Changes to test.txt"  | As expected                                                                   | -                                                                         |
+| 5.4.5 | Drag & Drop    | files: `[{file}{file}]`                  | First file acceptd                             | As expected.                                                                  | -                                                                         |
+| 5.4.6 | File Comment   | comment="", file: `{... name: test.txt}` | file.description = "Made Changes to test.txt"  | As expected                                                                   | -                                                                         |
 
 ```javascript
 // Test if the file size is a multiple of 4096, since all folders have this property.
@@ -177,47 +182,61 @@ if (file.size % 4096 === 0) {
 }
 ```
 
-### S.5 Settings
+### 5.5 Settings
+
+| ID    | Element          | Data                                                                    | Expected                                                                  | Actual      | Fix |
+| ----- | ---------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------- | ----------- | --- |
+| 5.5.1 | Settings on save | selected roles:`[{ name: "New Role" }]`, project roles: `[]`            | project roles: `[{ name: "New Role" }]`, changed recorded as history item | As expected | -   |
+| 5.5.1 | Settings on save | roles:`[{ name: "New Role" }]`, project roles: `[{ name: "New Role" }]` | project roles: `[{ name: "New Role" }]`                                   | As expected | -   |
 
 #### 5.5.1 General Settings
 
+> For tests relating to project name, refer to 5.3.3, 5.3.4, 5.3.5
+> For tests relating to project description, refer to 5.3.6, 5.3.7, 5.3.8
+
 #### 5.5.2 Roles
 
+| ID      | Element            | Data                                                                                                        | Expected                                                                                             | Actual                                   | Fix |
+| ------- | ------------------ | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------- | --- |
+| 5.5.2.1 | Add Role Button    | selected roles: `[]`, button pressed.                                                                       | roles: `[{uid: # Randomly genenrated ID #, name: "New Role", color: # Randomly generated colour #}]` | As expected ![New Role](./img/img26.png) | -   |
+| 5.5.2.2 | Remove Role Button | selected roles: `[{... name: "New Role"}, {... name: "New Role 2"}]`, Delete button pressed for second role | roles: `[{name: "New Role"}]`                                                                        | As expected                              | -   |
+| 5.5.2.3 | Role Text Field    | role data: `{... name: null}`                                                                               | role created with `{... name: "New Role"}`                                                           | As expected                              | -   |
+| 5.5.2.4 | Role Text Field    | role data: `{... name: # String of 100 characters #}`                                                       | role created with `{... name: # String of 100 characters #}`                                         | As expected                              | -   |
+| 5.5.2.5 | Role Text Field    | role data: `{... name: # String of 101 characters #}`                                                       | role created with `{... name: # String of 100 characters #}`, final character trimmed                | As expected                              | -   |
+| 5.5.2.6 | Role Text Field    | role data: `{... name: " New Role "}`                                                                       | role created with `{... name: "New Role"}`                                                           | As expected                              | -   |
+
 #### 5.5.3 Advanced
+
+| ID      | Element               | Data                                                         | Expected                     | Actual      | Fix |
+| ------- | --------------------- | ------------------------------------------------------------ | ---------------------------- | ----------- | --- |
+| 5.5.3.1 | Delete Project Button | project: `{... owner: "x" }`, current user: `{... uid: "x"}` | `button.visible=true`        | As expected | -   |
+| 5.5.3.2 | Delete Project Button | project: `{... owner: "x" }`, current user: `{... uid: "y"}` | `button.visible=false`       | As expected | -   |
+| 5.5.3.3 | Delete Project        | project: `{... owner: "x" }`, current user: `{... uid: "x"}` | project: `{deleted: true}`   | As expected | -   |
+| 5.5.3.4 | Delete Project        | project: `{... owner: "x" }`, current user: `{... uid: "y"}` | Show "not the owner" message | As expected | -   |
 
 ## 6 Data & Fetching
 
 > Tests for adding and setting data to users and projects are avaible in Section 7
 
-| ID  | Element         | Data                                                                                                | Expected                      | Actual      | Fix |
-| --- | --------------- | --------------------------------------------------------------------------------------------------- | ----------------------------- | ----------- | --- |
-| 6.1 | User Fetcher    | `userID=null`                                                                                       | return `null`                 | As expected | -   |
-| 6.2 | User Fetcher    | `userID="x"`, `database.projects=[{... userID: "x"},{... userID:"y"},{... userID:"z"}]`             | return `{... userID: "x"}`    | As expected | -   |
-| 6.3 | User Fetcher    | `userID="x"`, `database.projects=[{... userID: "a"},{... userID:"b"},{... userID:"c"}]`             | As expected                   | -           |
-| 6.4 | Project Fetcher | `projectID=null`                                                                                    | return `null`                 | As expected | -   |
-| 6.5 | Project Fetcher | `projectID="x"`, `database.projects=[{... projectID: "x"},{... projectID:"y"},{... projectID:"z"}]` | return `{... projectID: "x"}` | As expected | -   |
-| 6.6 | Project Fetcher | `projectID="x"`, `database.projects=[{... projectID: "a"},{... projectID:"b"},{... projectID:"c"}]` | return `null`                 | As expected | -   |
+| ID  | Element           | Data                                                                                                        | Expected                        | Actual      | Fix |
+| --- | ----------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------- | ----------- | --- |
+| 6.1 | User Fetcher      | `userID=null`                                                                                               | return `null`                   | As expected | -   |
+| 6.2 | User Fetcher      | `userID="x"`, `database.users=[{... userID: "x"},{... userID:"y"},{... userID:"z"}]`                        | return `{... userID: "x"}`      | As expected | -   |
+| 6.3 | User Fetcher      | `userID="x"`, `database.users=[{... userID: "a"},{... userID:"b"},{... userID:"c"}]`                        | As expected                     | -           |
+| 6.4 | Project Fetcher   | `projectID=null`                                                                                            | return `null`                   | As expected | -   |
+| 6.5 | Project Fetcher   | `projectID="x"`, `database.projects=[{... projectID: "x"},{... projectID:"y"},{... projectID:"z"}]`         | return `{... projectID: "x"}`   | As expected | -   |
+| 6.6 | Project Fetcher   | `projectID="x"`, `database.projects=[{... projectID: "a"},{... projectID:"b"},{... projectID:"c"}]`         | return `null`                   | As expected | -   |
+| 6.7 | Messenger Fetcher | `messengerID=null`                                                                                          | return `null`                   | As expected | -   |
+| 6.8 | Messenger Fetcher | `messengerID="x"`, `database.messages=[{... messengerID: "x"},{... messengerID:"y"},{... messengerID:"z"}]` | return `{... messengerID: "x"}` | As expected | -   |
+| 6.9 | Messenger Fetcher | `messengerID="x"`, `database.messages=[{... messengerID: "a"},{... messengerID:"b"},{... messengerID:"c"}]` | return `null`                   | As expected | -   |
 
-## 7 Core Objects
+## 7 Utilities
 
-### 7.1 Project
+### 7.1 Quicksort
 
-> For adding events to a project, see 5.2
+### 7.2 Notifier
 
-### 7.2 User
-
-> For texts related to creating a new project, see 5.3.
-> For tests related to inviting users, see 5.1, as the one here uses the same logic. These tests will not be repeated.
-
-### 7.3 Messenger / Messages
-
-## 8 Utilities
-
-### 8.1 Quicksort
-
-### 8.2 Notifier
-
-### 8.3 Backup
+### 7.3 Backup
 
 | ID  | Element | Data | Expected | Actual | Fix |
 | --- | ------- | ---- | -------- | ------ | --- |

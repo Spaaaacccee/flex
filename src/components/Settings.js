@@ -106,7 +106,6 @@ export default class Settings extends Component {
       <Modal
         destroyOnClose
         getContainer={() => document.querySelector(".modal-mount > div:first-child")}
-        style={{ top: 20 }}
         footer={[
           <Button key={0} icon="check" loading={this.state.saving} type="primary" onClick={this.handleSave.bind(this)}>
             Save Settings

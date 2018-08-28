@@ -152,7 +152,6 @@ export default class TIMELINE extends Component {
           destroyOnClose
           getContainer={()=>document.querySelector(".modal-mount > div:first-child")}
           footer={null}
-          style={{ top: 20 }}
           visible={this.state.eventCreatorVisible}
           onCancel={() => {
             this.setState({ eventCreatorVisible: false });

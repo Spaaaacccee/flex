@@ -218,7 +218,6 @@ export default class Main extends Component {
         {/* The create project modal */}
         <Modal
           destroyOnClose
-          style={{ top: 20 }}
           getContainer={() => document.querySelector(".modal-mount > div:first-child")}
           visible={this.state.modal.visible}
           onCancel={() => {
@@ -262,7 +261,7 @@ export default class Main extends Component {
           footer={null}
           maskClosable={false}
           visible={this.state.offline}
-          style={{ top:20, textAlign: "center", maxWidth: 150, margin: "auto" }}
+          style={{ textAlign: "center", maxWidth: 150, margin: "auto" }}
         >
           <Icon type="disconnect" style={{ color: "#FF4D4F", fontSize: 24 }} />
           <br />
