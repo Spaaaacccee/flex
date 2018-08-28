@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button, Modal } from "antd";
+import { Button, Modal, message } from "antd";
 import UserSelector from "./UserSelector";
 import User from "../classes/User";
 
@@ -30,16 +30,26 @@ export default class SendInvite extends Component {
     });
   }
 
-  handleSend() {
+  async handleSend() {
     this.setState({
       saveLoading: true,
       recipients: []
     });
-    Promise.all(
+    // Grant all selected users permission to use the project.
+    await Promise.all(
+      this.state.recipients.map(async item => {
+        // Grant permission if they do not already have permission.
+        if (!(this.state.project.permissions || {})[item.key]) {
+          await this.state.project.setPermission(item.key, true);
+          message.info(`We gave permission to ${(await User.get(item.key)).name} to make changes. `);
+        }
+      })
+    );
+    // Invite all selected users.
+    await Promise.all(
       this.state.recipients.map(async item => (await User.get(item.key)).addInvite(this.state.project.projectID))
-    ).then(() => {
-      this.props.onSend(this.state.values);
-    });
+    );
+    this.props.onSend(this.state.values);
   }
 
   handleUserSelectionChanged(values) {

@@ -48,7 +48,9 @@ export default class Root extends Component {
             height: "100%",
             fontSize: 24,
             flexDirection: "column",
-            background: "rgb(252, 252, 252)"
+            background: "rgb(252, 252, 252)",
+            opacity: this.state.loaded ? 0 : 1,
+            pointerEvents: this.state.loaded ? "none" : "all" 
           }}
         >
           <div>

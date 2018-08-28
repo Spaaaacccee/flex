@@ -32,7 +32,7 @@ export default class Main extends Component {
     user: {}, // The auth data current user
     userData: {}, // The project data of the current user
     modal: {
-      visible: false, // Whether the add project modal is currently visible
+      visible: false // Whether the add project modal is currently visible
     },
     useUpdateLoop: false, // An update loop is used to periodically pull data from the database and update the UI. To disable it, set this to false
     updateLoopSleepTime: 75, // The coefficent of the time to wait between each update. Higher means better performance at the cost of a slower update rate
@@ -265,7 +265,7 @@ export default class Main extends Component {
         >
           <Icon type="disconnect" style={{ color: "#FF4D4F", fontSize: 24 }} />
           <br />
-          <h3 style={{opacity:0.65}}>Offline</h3>
+          <h3 style={{ opacity: 0.65 }}>Offline</h3>
         </Modal>
       </div>
     );

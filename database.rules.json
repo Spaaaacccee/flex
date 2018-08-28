@@ -5,103 +5,23 @@
     "users": {
       ".indexOn": "email",
       "$uid": {
-        ".write": "auth !== null",
-        "joinedProjects": {
+        ".write": "auth.uid===$uid",
+        "pendingInvites": {
           ".write": "auth !== null"
         },
         "lastUpdatedTimestamp": {
           ".write": "auth !== null"
-        },
-        "email": {
-          ".write": "auth.uid === $uid"
-        },
-        "lastLogInTimestamp": {
-          ".write": "auth.uid === $uid"
-        },
-        "name": {
-          ".write": "auth.uid === $uid"
-        },
-        "profilePhoto": {
-          ".write": "auth.uid === $uid"
-        },
-        "projects": {
-          ".write": "auth.uid === $uid"
         }
       }
     },
     "projects": {
-      ".write": "auth !== null",
       "$projectID": {
-        "creator": {
-          ".write": "auth !== null && newData.val() === auth.uid"
-        },
-        "created": {
-          ".write": " auth !== null"
-        },
-        "description": {
-          ".write": "auth !== null"
-        },
-        "lastUpdatedTimestamp": {
-          ".write": "auth !== null"
-        },
-        "members": {
-          ".write": "auth !== null"
-        },
-        "events": {
-          ".write": "auth !== null"
-        },
-        "history": {
-          ".write": "auth !== null"
-        },
-        "files": {
-          ".write": "auth !== null"
-        },
-        "name": {
-          ".write": "auth !== null"
-        },
-        "owner": {
-          ".write": "root.child('projects').child($projectID).child('owner').val() === auth.uid"
-        },
-        "roles": {
-          ".write": "auth !== null"
-        },
-        "deleted": {
-          ".write": "root.child('projects').child($projectID).child('owner').val() === auth.uid"
-        }
+        ".write": "root.child('projects').child($projectID).child('permissions').child(auth.uid).val()===true || root.child('projects').child($projectID).child('owner').val()===auth.uid"
       }
     },
     "messages": {
-      ".write": "auth !== null",
       "$messengerID": {
-        "lastUpdatedTimestamp": {
-          ".write": "auth !== null"
-        },
-        "uid": {
-          ".write": "auth !== null"
-        },
-        "messages": {
-          ".write": "auth !== null",
-          ".indexOn": "timeSent",
-          "$message": {
-            "content": {
-              ".write": "auth !== null"
-            },
-            "readBy": {
-              "$msgReadBy": {
-                ".write": "auth.uid === $msgReadBy"
-              }
-            },
-            "sender": {
-              ".write": "auth.uid === newData.val()"
-            },
-            "timeSent": {
-              ".write": "auth !== null"
-            },
-            "uid": {
-              ".write": "auth !== null"
-            }
-          }
-        }
+        ".write": "root.child('projects').child($messengerID).child('permissions').child(auth.uid).val()===true||root.child('projects').child($messengerID).child('owner').val()===auth.uid||(root.child('messages').child($messengerID).child('project').exists()&&root.child('projects').child(root.child('messages').child($messengerID).child('project').val()).child('permissions').child(auth.uid).val()===true)||(root.child('messages').child($messengerID).child('project').exists()&&root.child('projects').child(root.child('messages').child($messengerID).child('project').val()).child('owner').val()===auth.uid)"
       }
     }
   }

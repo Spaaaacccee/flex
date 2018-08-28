@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { Layout, Icon, message, Popover } from "antd";
+import { Layout, Icon, message, Popover, Card } from "antd";
 import { Scrollbars } from "react-custom-scrollbars";
 import ProjectSider from "./ProjectSider";
 import PageView from "./PageView";
@@ -69,7 +69,7 @@ export default class ProjectView extends Component {
     };
 
     // Set a backup timer to backup the project every x minutes.
-    if(this.backupTimer) clearInterval(this.backupTimer); 
+    if (this.backupTimer) clearInterval(this.backupTimer);
     this.backupTimer = setInterval(() => {
       if (!this.state.project || !Object.keys(this.state.project).length) return;
       Backup.backupProject(this.state.project.projectID, this.state.project);
@@ -151,17 +151,28 @@ export default class ProjectView extends Component {
     const openedPage = displayPages[openIndex];
     // If the page that is displayed is the user page, set the project to an empty object.
     const displayProject = Page.equal(openedPage, UserPage) ? {} : this.state.project;
+    const hasPermission =
+      !this.state.project ||
+      !Object.keys(this.state.project).length ||
+      (this.state.project.permissions || {})[this.state.user.uid] ||
+      this.state.project.owner === this.state.user.uid;
     return (
       <div
         className={openedPage.name}
         style={{
           flex: 1,
           height: "100%",
-          width: 0,
-          ...(this.state.project.deleted ? { pointerEvents: "none", opacity: 0.65 } : {})
+          pointerEvents: "all",
+          ...(this.state.project.deleted || !hasPermission ? { cursor: "not-allowed" } : {})
         }}
       >
-        <Layout className="project-view-wrapper" style={this.state.style}>
+        <Layout
+          className="project-view-wrapper"
+          style={{
+            ...this.state.style,
+            ...(this.state.project.deleted || !hasPermission ? { pointerEvents: "none", opacity: 0 } : {})
+          }}
+        >
           {/* The project sider*/}
           <Sider
             className="project-view-sider"
@@ -322,6 +333,20 @@ export default class ProjectView extends Component {
             this.setState({ inviteUsersVisible: false });
           }}
         />
+        <Card
+          style={{
+            position: "fixed",
+            top: 20,
+            left: " 50%",
+            transform: "translateX(-50%)",
+            maxWidth: 300,
+            display: !hasPermission ? "block" : "none"
+          }}
+        >
+          <Icon type="close-circle" style={{ color: "#FF4D4F", fontSize: 24, marginBottom: 10 }} />
+          <br />
+          {`You don't have permission to make changes to ${this.state.project.name}. Ask the owner to invite you.`}
+        </Card>
       </div>
     );
   }

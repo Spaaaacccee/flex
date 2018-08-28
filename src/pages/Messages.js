@@ -80,7 +80,10 @@ class MESSAGES extends Component {
             this.scrollBottom();
           } else {
             // If no messenger is associated with a project then create one and try again.
-            Messages.forceUpdate(props.project.messengerID || props.project.projectID, new Messages()).then(() => {
+            Messages.forceUpdate(
+              props.project.messengerID || props.project.projectID,
+              new Messages({ project: props.project.projectID })
+            ).then(() => {
               this.componentWillReceiveProps(this.props);
             });
           }
@@ -558,7 +561,7 @@ class MESSAGES extends Component {
    * @memberof MESSAGES
    */
   scrollElement;
-  
+
   render() {
     return (
       <div

@@ -8,6 +8,7 @@ import { message } from "antd";
 import $ from "./Utils";
 import Messages from "./Messages";
 import { HistoryItem } from "./History";
+import { isValidTimestamp } from "@firebase/util";
 
 /**
  * Represents a single user
@@ -52,9 +53,7 @@ export default class User {
    * @memberof User
    */
   static async exists(userID) {
-    return (await (await Fetch.getUserReference(userID)).once(
-      "value"
-    )).exists();
+    return (await (await Fetch.getUserReference(userID)).once("value")).exists();
   }
 
   /**
@@ -207,6 +206,11 @@ export default class User {
       user.pendingInvites = user.pendingInvites || [];
       user.pendingInvites = $.array(user.pendingInvites).remove(projectID);
     });
+    await Project.get(projectID).then(prj => {
+      if (prj && !prj.deleted) {
+        prj.setPermission(this.uid, false);
+      }
+    });
   }
 
   /**
@@ -216,53 +220,40 @@ export default class User {
    * @memberof User
    */
   async addInvite(projectID) {
-    await this.transaction(user => {
-      // Conditionally initialise pendingInvites with an empty array so it is not undefined.
-      user.pendingInvites = user.pendingInvites || [];
-      // Test whether the current user already has an invite for the same project.
-      if ($.array(user.pendingInvites).exists(projectID)) {
-        // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
-        if (user instanceof User) {
-          message.error(
-            `We couldn't send an invite to ${
-              user.name
-            } because there's already a pending invite.`
-          );
-        }
-        return;
-      }
-      // Conditionally initialise joinedProjects with an empty array so it is not undefined.
-      user.joinedProjects = user.joinedProjects || [];
-      // Test whether the current user already has joined the project.
-      if ($.array(user.joinedProjects).exists(projectID)) {
-        // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
-        if (user instanceof User) {
-          message.error(
-            `We couldn't send an invite to ${
-              user.name
-            } because they're already part of this project.`
-          );
-        }
-        return;
-      }
+    // If the project is one that the user owns then don't send an invite.
+    if (this.projects.find(x => x === projectID)) {
+      message.error("Don't send an invite to yourself!");
+      return;
+    }
 
-      // Conditionally initialise projects with an empty array so it is not undefined.
-      user.projects = user.projects || [];
-      // Test whether the current user owns the project.
-      if ($.array(user.projects).exists(projectID)) {
-        // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
-        if (user instanceof User) {
-          message.error(`Don't send an invite to yourself!`);
+    // If the project is one that the user has joined then don't send an invite.
+    if (this.joinedProjects.find(x => x === projectID)) {
+      message.error(`${this.name} is already a member of the project.`);
+      return;
+    }
+
+    await Fetch.getUserReference(this.uid)
+      .child("pendingInvites")
+      .transaction(pendingInvites => {
+        pendingInvites = pendingInvites || [];
+        // If there's already a pending invite then don't send another one.
+        if (pendingInvites.find(x => x === projectID)) {
+          message.error(`We couldn't send an invite to ${this.name} because there's already a pending invite.`);
+        } else {
+          // Add the new invite.
+          message.success(`Invitation sent to ${this.name}!`);
+          return [...pendingInvites, projectID];
         }
-        return;
-      }
-
-      // Otherwise, add the project into the pendingInvites array of this User.
-      user.pendingInvites.push(projectID);
-
-      if (user instanceof User)
-        message.success(`Invitation sent to ${user.name}!`);
-    });
+      });
+    await Fetch.getUserReference(this.uid)
+      .child("lastUpdatedTimestamp")
+      .transaction(time => {
+        // Update the last updated timestamp to match current time.
+        if (time || 0 <= Date.now()) {
+          return Date.now();
+        }
+        return time;
+      });
   }
 
   /**
@@ -275,26 +266,16 @@ export default class User {
     if (await Project.get(projectID)) {
       this.transaction(user => {
         // Check if pendingInvites is not empty and contains the specified project ID.
-        if (
-          user.pendingInvites &&
-          $.array(user.pendingInvites).exists(projectID)
-        ) {
+        if (user.pendingInvites && $.array(user.pendingInvites).exists(projectID)) {
           // Initialise required properties so they're not undefined.
           user.joinedProjects = user.joinedProjects || [];
           user.projects = user.projects || [];
           // Check if the user has already joined, or is part of, this project. This check is redundant as adding an invite already has a check for the same thing but this is here just in case.
-          if (
-            !(
-              $.array(user.projects).exists(projectID) ||
-              $.array(user.joinedProjects).exists(projectID)
-            )
-          ) {
+          if (!($.array(user.projects).exists(projectID) || $.array(user.joinedProjects).exists(projectID))) {
             // Add the project to joinedProjects
             user.joinedProjects.push(projectID);
             // Remove the project invite
-            user.pendingInvites = $.array(user.pendingInvites).remove(
-              projectID
-            );
+            user.pendingInvites = $.array(user.pendingInvites).remove(projectID);
             // Since transaction is run twice, once with the local User object, and once with the database JSON object, we can display an error once by testing if the transaction is being run on the local User object.
             if (user instanceof User) {
               Project.get(projectID).then(project => {
@@ -331,33 +312,29 @@ export default class User {
    * @memberof User
    */
   async newProject(project) {
-    try {
-      // Continue only if `project` is of type `Project`
-      if (project instanceof Project) {
-        // Set the owner of the project to this user
-        project.creator = this.uid;
-        project.owner = this.uid;
-        project.members = project.members || [];
-        project.members.push(new Member(this.uid, []));
-        project.history = project.history || [];
-        project.history.push(
-          new HistoryItem({
-            readBy: { [this.uid]: true },
-            action: "created",
-            type: "project",
-            doneBy: this.uid
-          })
-        );
-        // Create a new messages instance in the database
-        await Messages.forceUpdate(project.projectID, new Messages());
-        // Update the database with this project
-        await Project.forceUpdate(project.projectID, project);
-        this.projects.push(project.projectID);
-        // Update the database with this user
-        await User.forceUpdate(this.uid, this);
-      }
-    } catch (e) {
-      console.log(e);
+    // Continue only if `project` is of type `Project`
+    if (project instanceof Project) {
+      // Set the owner of the project to this user
+      project.creator = this.uid;
+      project.owner = this.uid;
+      project.members = project.members || [];
+      project.members.push(new Member(this.uid, []));
+      project.history = project.history || [];
+      project.history.push(
+        new HistoryItem({
+          readBy: { [this.uid]: true },
+          action: "created",
+          type: "project",
+          doneBy: this.uid
+        })
+      );
+      // Create a new messages instance in the database
+      await Messages.forceUpdate(project.projectID, new Messages({ project: project.projectID }));
+      // Update the database with this project
+      await Project.forceUpdate(project.projectID, project);
+      this.projects.push(project.projectID);
+      // Update the database with this user
+      await User.forceUpdate(this.uid, this);
     }
     return false;
   }
@@ -377,9 +354,7 @@ export default class User {
     if ($.array(this.joinedProjects || []).exists(projectID)) {
       // Remove the item from the user's list of joined projects.
       await this.transaction(user => {
-        user.joinedProjects = $.array(user.joinedProjects || []).remove(
-          projectID
-        );
+        user.joinedProjects = $.array(user.joinedProjects || []).remove(projectID);
       });
 
       // Add a history event in the project that this user has left.
@@ -394,9 +369,9 @@ export default class User {
       );
 
       // Remove this user from the list of members.
-      await project.setMembers(
-        project.members.filter(item => item.uid !== this.uid)
-      );
+      await project.setMembers(project.members.filter(item => item.uid !== this.uid));
+      // Remove access for this user.
+      await project.setPermission(this.uid, false);
     } else {
       // Display an error message, and return 1 to signify the operation was not successful
       if (!suppressMessages) {
@@ -405,18 +380,17 @@ export default class User {
       return 1;
     }
   }
-/**
- * Delete a project
- * @param  {String} projectID 
- * @return 
- * @memberof User
- */
-async deleteProject(projectID) {
-    if(!projectID) return;
+  /**
+   * Delete a project
+   * @param  {String} projectID
+   * @return
+   * @memberof User
+   */
+  async deleteProject(projectID) {
+    if (!projectID) return;
     // If the project does not belong to this user, then return.
     if ($.array(this.projects || []).exists(projectID)) {
       this.transaction(user => {
-
         // Remove the item from the list of projects.
         user.projects = $.array(user.projects).remove(projectID);
 

@@ -45,10 +45,7 @@ export default class Messages extends EventEmitter {
   static async forceUpdate(collectionID, messages) {
     try {
       // Merge the old user with the new. If no old user is found then an empty object will be used.
-      messages = Object.assign(
-        (await Messages.get(collectionID)) || {},
-        messages
-      );
+      messages = Object.assign((await Messages.get(collectionID)) || {}, messages);
       messages.uid = collectionID;
       // Set the last updated timestamp to now.
       messages.lastUpdatedTimestamp = Date.now();
@@ -78,6 +75,13 @@ export default class Messages extends EventEmitter {
    * @memberof Messages
    */
   messages = {};
+
+  /**
+   * The project associataed with this messenger
+   * @type {String}
+   * @memberof Messages
+   */
+  project;
 
   /**
    * Performs an operation on the latest version of the messenger
@@ -151,6 +155,8 @@ export default class Messages extends EventEmitter {
   async setRead(id, isRead) {
     // The ID is a null or undefined value, cancel setting a message as read.
     if (!id) return 0;
+    // If the user's read status is the same then do nothing.
+    if ((this.messages[id].readBy || {})[(await User.getCurrentUser()).uid] === isRead) return;
     // Get the current version of the message. If it doesn't exist, then cancel setting the message as read.
     let current = await Fetch.getMessagesReference(this.uid)
       .child("messages")

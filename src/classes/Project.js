@@ -11,7 +11,6 @@ import update from "immutability-helper";
 import Fetch from "./Fetch";
 import Document, { DocumentMeta, DocumentArchive, UploadJob, CloudDocument } from "./Document";
 import User from "./User";
-import Messages from "./Messages";
 import { HistoryItem, HistoryItemContent } from "./History";
 
 /**
@@ -104,6 +103,12 @@ export default class Project {
     }
     return false;
   }
+
+  /**
+   * Defines who gets write access to this project.
+   * @memberof Project
+   */
+  permissions = {};
 
   /**
    * The unique id of the project
@@ -239,6 +244,13 @@ export default class Project {
     this.lastUpdatedTimestamp = dateNow;
     // Return true to signify the operation was successful.
     return true;
+  }
+
+  async setPermission(userID, access) {
+    await this.transaction(project => {
+      project.permissions = project.permissions || {};
+      project.permissions[userID] = access;
+    });
   }
 
   /**
