@@ -95,21 +95,69 @@ UI Elements have built-in input validation or intrinsic restrictions that preven
 
 ## 4 Pages
 
-> Pages are displayed by the PageView component, which supplies each page with Project and User information, along with other functionalities.
-> The user page is an exception and does not expect Project information to be supplied to it.
+> Pages are displayed by the PageView component, which supplies each page with Project and User information, along with other functionalities. The user page is an exception and does not expect Project information to be supplied to it.
 
 ### 4.1 User Page
 
-| ID    | Element | Data        | Expected                      | Actual                                  | Fix |
-| ----- | ------- | ----------- | ----------------------------- | --------------------------------------- | --- |
-| 4.1.1 | Page    | user = null | Display loading icon and text | As expected ![Loading](./img/img17.png) | -   |
+| ID    | Element                 | Data                                                              | Expected                                               | Actual                                  | Fix |
+| ----- | ----------------------- | ----------------------------------------------------------------- | ------------------------------------------------------ | --------------------------------------- | --- |
+| 4.1.1 | Page                    | user = `null`                                                     | Display loading icon and text                          | As expected ![Loading](./img/img17.png) | -   |
+| 4.1.2 | User Statistics         | user: `{... projects: null, joinedProjects: null, invites: null}` | Display `"Projects: 0, Joined Projects: 0 Invites: 0"` | As expected                             | -   |
+| 4.1.3 | Projects Gallery        | user: `{... projects: null}`                                      | Display no projects message                            | As expected                             | -   |
+| 4.1.4 | Projects Gallery        | user: `{... projects: [{...}, {...}]}`                            | Display two projects                                   | As expected                             | -   |
+| 4.1.5 | Joined Projects Gallery | user: `{... joinedProjects: null}`                                | Display no joined projects message                     | As expected                             | -   |
+| 4.1.6 | Joined Projects Gallery | user: `{... joinedProjects: [{...},{...}]}`                       | Display two joined projects                            | As expected                             | -   |
+| 4.1.7 | Invites Gallery         | user: `{... pendingInvites: null}`                                | Display no pending invites message                     | As expected                             | -   |
+| 4.1.8 | Invites Gallery         | user: `{... pendingInvites: [{...}, {...}]}`                      | Display two invitations                                | As expected                             | -   |
 
-## 5 Forms & Panels
+### 4.2 Feed Page
+
+| ID     | Element                              | Data                                                                                                                                          | Expected                             | Actual      | Fix |
+| ------ | ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ----------- | --- |
+| 4.2.1  | Page                                 | project = `null`                                                                                                                              | Display loading icon and text        | As expected | -   |
+| 4.2.2  | Unread Messages Gallery              | project: `{... messengerID: "x"}`, messengers: `{...x: {messages: null}}`, user: `{uid: "y"}`                                                 | Display nothing                      | As expected | -   |
+| 4.2.3  | Unread Messages Gallery              | project: `{... messengerID: "x"}`, messengers: `{...x: {messages: {...readBy: {y: true}}}}`, user: `{uid: "y"}`                               | Display nothing                      | As expected | -   |
+| 4.2.4  | Unread Messages Gallery              | project: `{... messengerID: "x"}`, messengers: `{...x: {messages: {...content: {bodyText: "Test"}, readBy: null}}}`, user: `{uid: "y"}`       | Display one message "Test"           | As expected | -   |
+| 4.2.5  | Unread Messages Gallery              | project: `{... messengerID: "x"}`, messengers: `{...x: {messages: {...content: {bodyText: "Test"}, readBy: {y: false}}}}`, user: `{uid: "y"}` | Display one message "Test"           | As expected | -   |
+| 4.2.6  | Upcoming Events Gallery              | project: `{... events: null}`                                                                                                                 | Display nothing                      | As expected | -   |
+| 4.2.7  | Upcoming Events Gallery              | project: `{... events: [{date: # Time before current time #}]}`                                                                               | Display nothing                      | As expected | -   |
+| 4.2.8  | Upcoming Events Gallery              | project: `{... events: [{date: # Time exactly equal to current time #}]}`                                                                     | Event displayed                      | As expected | -   |
+| 4.2.9  | Upcoming Events Gallery              | project: `{... events: [{date: # Time equal to exactly 5 days after current time #}]}`                                                        | Event displayed                      | As expected | -   |
+| 4.2.10 | Upcoming Events Gallery              | project: `{... events: [{date: # Time equal to more than 5 days after current time #}]}`                                                      | Display nothing                      | As expected | -   |
+| 4.2.11 | Upcoming Events Gallery              | project: `{... events: [{markedAsCompleted: true}]}`                                                                                          | Display nothing                      | As expected | -   |
+| 4.2.12 | Changes Gallery                      | project: `{... history: null}`                                                                                                                | Display nothing                      | As expected | -   |
+| 4.2.13 | Changes Gallery                      | project: `{... history: [{ ...}, {...}]}`                                                                                                     | Display 2 events                     | As expected | -   |
+| 4.2.14 | History Event Item                   | change: `{}`                                                                                                                                  |
+| 4.2.15 | History Event Description Generation | change: `{action: "added", type: "event", doneBy:"x", doneAt: # 12 minutes ago # }` users `{uid: x, name: "Name"}`                            | "Name added an event 12 minutes ago" | As expected | -   |
+| 4.2.16 | History Event Description Generation | change: `{action: "added", type: "event", doneBy:"x", doneAt: # 12 minutes ago # }` users `{uid: x, name: "Name"}`                            | "Name added an event 12 minutes ago" | As expected | -   |
+
+### 4.3 Members Page
+
+| ID  | Element | Data | Expected | Actual | Fix |
+| --- | ------- | ---- | -------- | ------ | --- |
+
+
+### 4.4 Timeline Page
+
+| ID  | Element | Data | Expected | Actual | Fix |
+| --- | ------- | ---- | -------- | ------ | --- |
+
+
+### 4.5 Files Page
+
+| ID  | Element | Data | Expected | Actual | Fix |
+| --- | ------- | ---- | -------- | ------ | --- |
+
+
+### 4.6 Discuss Page
+
+| ID  | Element | Data | Expected | Actual | Fix |
+| --- | ------- | ---- | -------- | ------ | --- |
+
 
 ### 5.1 Invite Users Panel
 
-> The User Picker is a component that directly searches and returns registered users from the database based on their email using a search string.
-> The component restricts user input to be plain text with no line breaks.
+> The User Picker is a component that directly searches and returns registered users from the database based on their email using a search string. The component restricts user input to be plain text with no line breaks.
 
 | ID    | Element             | Data                                                                                                   | Expected                                                              | Actual                                                      | Fix |
 | ----- | ------------------- | ------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- | ----------------------------------------------------------- | --- |
@@ -136,30 +184,29 @@ UI Elements have built-in input validation or intrinsic restrictions that preven
 
 ### 5.3 Add Project
 
-| ID    | Element     | Data                                                                                                       | Expected                                                                                                                                                 | Actual                                               | Fix |
-| ----- | ----------- | ---------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | --- |
-| 5.3.1 | New Project | input data: `{name:null, description: null, invitePeople: null}`                                           | project created with `{name: "Untitled Project": description: null}`                                                                                     | As expected                                          | -   |
-| 5.3.2 | New Project | input data: `{name: "Project", description: "Project Description", invitePeople: null}`                    | project created with `{name: "Project", description: "Project Description"}`                                                                             | As expected                                          | -   |
-| 5.3.3 | New Project | input data: `{name: # String of 100 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`                                                          | As expected                                          | -   |
-| 5.3.4 | New Project | input data: `{name: # String of 101 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`, final character trimmed.                                | As expected ![Project Name Trimmed](./img/img21.png) | -   |
-| 5.3.5 | New Project | input data: `{name: " X ", description: "Project Description", invitePeople: null}`                        | project created with `{name: "X", description: "Project Description"}`                                                                                   | As expected                                          | -   |
-| 5.3.6 | New Project | input data: `{name: "Project Name", description: " X ", invitePeople: null}`                               | project created with `{name: "Project Name", description: " X "}` (Not trimmed. )                                                                        | As expected                                          | -   |
-| 5.3.7 | New Project | input data: `{name: "Project Name", description: # String of 2000 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`                                                                           | As expected                                          | -   |
-| 5.3.8 | New Project | input data: `{name: "Project Name", description: # String of 2001 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`, final character trimmed. ![Project Description Trimmed](./img/img22.png) | As expected                                          | -   |
+| ID    | Element     | Data                                                                                                       | Expected                                                                                                                  | Actual                                                      | Fix |
+| ----- | ----------- | ---------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | --- |
+| 5.3.1 | New Project | input data: `{name:null, description: null, invitePeople: null}`                                           | project created with `{name: "Untitled Project": description: null}`                                                      | As expected                                                 | -   |
+| 5.3.2 | New Project | input data: `{name: "Project", description: "Project Description", invitePeople: null}`                    | project created with `{name: "Project", description: "Project Description"}`                                              | As expected                                                 | -   |
+| 5.3.3 | New Project | input data: `{name: # String of 100 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`                           | As expected                                                 | -   |
+| 5.3.4 | New Project | input data: `{name: # String of 101 characters #, description: "Project Description", invitePeople: null}` | project created with `{name: # String of 100 characters #, description: "Project Description"}`, final character trimmed. | As expected ![Project Name Trimmed](./img/img21.png)        | -   |
+| 5.3.5 | New Project | input data: `{name: " X ", description: "Project Description", invitePeople: null}`                        | project created with `{name: "X", description: "Project Description"}`                                                    | As expected                                                 | -   |
+| 5.3.6 | New Project | input data: `{name: "Project Name", description: " X ", invitePeople: null}`                               | project created with `{name: "Project Name", description: " X "}` (Not trimmed. )                                         | As expected                                                 | -   |
+| 5.3.7 | New Project | input data: `{name: "Project Name", description: # String of 2000 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`                                            | As expected                                                 | -   |
+| 5.3.8 | New Project | input data: `{name: "Project Name", description: # String of 2001 #, invitePeople: null}`                  | project created with `{name: "Project Name", description: # String of 2000 #}`, final character trimmed.                  | As expected ![Project Description Trimmed](./img/img22.png) | -   |
 
 ### 5.4 Add File
 
-> Test files created with `fsutil file createnew <filename> <filesize>`
-> For comment file length tests, see 5.3.3, 5.3.4, 5.3.5
+> Test files created with `fsutil file createnew <filename> <filesize>` For comment file length tests, see 5.3.3, 5.3.4, 5.3.5
 
-| ID    | Element        | Data                                     | Expected                                       | Actual                                                                        | Fix                                                                       |
-| ----- | -------------- | ---------------------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| 5.4.1 | Add File Panel | file: `{... size=52,428,800}`            | File allowed, show window to enter description | As expected ![Test files](./img/img23.png) ![File Size Pass](./img/img25.png) | -                                                                         |
-| 5.4.2 | Add File Panel | file: `{... size=52,428,801}`            | File denied, show error                        | As expected ![File Size Fail](./img/img24.png)                                | -                                                                         |
-| 5.4.3 | Add File Panel | file: `{... size=0}`                     | File allowed, show window to enter description | As expected                                                                   | -                                                                         |
-| 5.4.4 | Drag & Drop    | file: Empty folder                       | Folder denied                                  | Folder starts uploading, displays error.                                      | Add a check for when a folder is dropped into the upload zone. See below. |
-| 5.4.5 | Drag & Drop    | files: `[{file}{file}]`                  | First file acceptd                             | As expected.                                                                  | -                                                                         |
-| 5.4.6 | File Comment   | comment="", file: `{... name: test.txt}` | file.description = "Made Changes to test.txt"  | As expected                                                                   | -                                                                         |
+| ID    | Element        | Data                                       | Expected                                        | Actual                                                                        | Fix                                                                                                       |
+| ----- | -------------- | ------------------------------------------ | ----------------------------------------------- | ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| 5.4.1 | Add File Panel | file: `{... size=52,428,800}`              | File allowed, show window to enter description  | As expected ![Test files](./img/img23.png) ![File Size Pass](./img/img25.png) | -                                                                                                         |
+| 5.4.2 | Add File Panel | file: `{... size=52,428,801}`              | File denied, show error                         | As expected ![File Size Fail](./img/img24.png)                                | -                                                                                                         |
+| 5.4.3 | Add File Panel | file: `{... size=0}`                       | File allowed, show window to enter description  | As expected                                                                   | -                                                                                                         |
+| 5.4.4 | Drag & Drop    | file: Empty folder                         | Folder denied                                   | Folder starts uploading, displays error.                                      | Add a check for when a folder is dropped into the upload zone. See below. ![FolderError](./img/img28.png) |
+| 5.4.5 | Drag & Drop    | files: `[{file}{file}]`                    | First file accepted                             | As expected.                                                                  | -                                                                                                         |
+| 5.4.6 | File Comment   | `comment=""`, file: `{... name: test.txt}` | `file.description = "Made Changes to test.txt"` | As expected                                                                   | -                                                                                                         |
 
 ```javascript
 // Test if the file size is a multiple of 4096, since all folders have this property.
@@ -191,8 +238,7 @@ if (file.size % 4096 === 0) {
 
 #### 5.5.1 General Settings
 
-> For tests relating to project name, refer to 5.3.3, 5.3.4, 5.3.5
-> For tests relating to project description, refer to 5.3.6, 5.3.7, 5.3.8
+> For tests relating to project name, refer to 5.3.3, 5.3.4, 5.3.5 For tests relating to project description, refer to 5.3.6, 5.3.7, 5.3.8
 
 #### 5.5.2 Roles
 
@@ -207,16 +253,19 @@ if (file.size % 4096 === 0) {
 
 #### 5.5.3 Advanced
 
-| ID      | Element               | Data                                                         | Expected                     | Actual      | Fix |
-| ------- | --------------------- | ------------------------------------------------------------ | ---------------------------- | ----------- | --- |
-| 5.5.3.1 | Delete Project Button | project: `{... owner: "x" }`, current user: `{... uid: "x"}` | `button.visible=true`        | As expected | -   |
-| 5.5.3.2 | Delete Project Button | project: `{... owner: "x" }`, current user: `{... uid: "y"}` | `button.visible=false`       | As expected | -   |
-| 5.5.3.3 | Delete Project        | project: `{... owner: "x" }`, current user: `{... uid: "x"}` | project: `{deleted: true}`   | As expected | -   |
-| 5.5.3.4 | Delete Project        | project: `{... owner: "x" }`, current user: `{... uid: "y"}` | Show "not the owner" message | As expected | -   |
+| ID      | Element               | Data                                                                                        | Expected                                         | Actual      | Fix |
+| ------- | --------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------ | ----------- | --- |
+| 5.5.3.1 | Delete Project Button | project: `{... owner: "x" }`, current user: `{... uid: "x"}`                                | `button.visible=true`                            | As expected | -   |
+| 5.5.3.2 | Delete Project Button | project: `{... owner: "x" }`, current user: `{... uid: "y"}`                                | `button.visible=false`                           | As expected | -   |
+| 5.5.3.3 | Leave Project Button  | project: `{... owner: "x" }`, current user: `{... uid: "x"}`                                | `button.visible=false`                           | As expected | -   |
+| 5.5.3.4 | Leave Project Button  | project: `{... owner: "x" }`, current user: `{... uid: "y"}`                                | `button.visible=true`                            | As expected | -   |
+| 5.5.3.5 | Delete Project        | project: `{... owner: "x" }`, current user: `{... uid: "x"}`                                | project: `{deleted: true}`                       | As expected | -   |
+| 5.5.3.6 | Delete Project        | project: `{... owner: "x" }`, current user: `{... uid: "y"}`                                | Show "not the owner" message, project unchanged. | As expected | -   |
+| 5.5.3.7 | Leave Project Button  | project: `{... owner: "x", members: [... {... uid: "y"}] }`, current user: `{... uid: "y"}` | project: `{... owner: "x", members: [...] }`     | As expected | -   |
 
 ## 6 Data & Fetching
 
-> Tests for adding and setting data to users and projects are avaible in Section 7
+> Tests for adding and setting data to users and projects are available in Section 7
 
 | ID  | Element           | Data                                                                                                        | Expected                        | Actual      | Fix |
 | --- | ----------------- | ----------------------------------------------------------------------------------------------------------- | ------------------------------- | ----------- | --- |
@@ -240,4 +289,6 @@ if (file.size % 4096 === 0) {
 
 | ID  | Element | Data | Expected | Actual | Fix |
 | --- | ------- | ---- | -------- | ------ | --- |
+|     |
 
+## 8 Security

@@ -153,7 +153,7 @@ export default class FEED extends Component {
 
   /**
    * Render all the upcoming events.
-   * @param  {any} project 
+   * @param  {Project} project 
    * @return 
    * @memberof FEED
    */
