@@ -97,6 +97,7 @@ export default class UserGroupDisplay extends Component {
             // Display every role.
             <Popover
               key={"R:" + index}
+              placement="rightTop"
               trigger="click"
               content={
                 this.state.project &&
@@ -127,17 +128,27 @@ export default class UserGroupDisplay extends Component {
             this.state.userInfo.map((item, index) => (
               // Use a popover to display information about the user when clicked.
               <Popover
+                placement="rightTop"
                 trigger="click"
                 key={"U:" + index}
                 content={
-                  this.state.project && this.state.project.members ? (
-                    <MemberDisplay
-                      member={this.state.project.members.find(x => x.uid === item.uid)}
-                      project={this.state.project}
-                      readOnly
-                      cardless
-                    />
-                  ) : null
+                  this.state.project &&
+                  this.state.project.members &&
+                  this.state.project.members.find(x => x.uid === item.uid) ? (
+                    <div style={{ minWidth: 200 }}>
+                      <MemberDisplay
+                        member={this.state.project.members.find(x => x.uid === item.uid)}
+                        project={this.state.project}
+                        readOnly
+                        cardless
+                      />
+                    </div>
+                  ) : (
+                    <span>
+                      {(item || {}).name || <Icon type="loading" />}
+                      {" has left this project."}
+                    </span>
+                  )
                 }
               >
                 {/* Display every user. */}

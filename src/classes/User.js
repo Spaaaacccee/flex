@@ -235,35 +235,18 @@ export default class User {
       message.error(`${this.name} is already a member of the project.`);
       return;
     }
-    let sent = false;
+    if (this.pendingInvites.find(x => x === projectID)) {
+      message.error(`We couldn't send an invite to ${this.name} because there's already a pending invite.`);
+      return;
+    }
     await Fetch.getUserReference(this.uid)
       .child("pendingInvites")
-      .transaction(pendingInvites => {
-        if (!sent) {
-          pendingInvites = pendingInvites || [];
-          // If there's already a pending invite then don't send another one.
-          if (pendingInvites.find(x => x === projectID)) {
-            message.error(`We couldn't send an invite to ${this.name} because there's already a pending invite.`);
-            return pendingInvites;
-          } else {
-            // Add the new invite.
-            message.success(`Invitation sent to ${this.name}!`);
-            sent = true;
-            return [...pendingInvites, projectID];
-          }
-        }
-      });
-    if (sent) {
-      await Fetch.getUserReference(this.uid)
-        .child("lastUpdatedTimestamp")
-        .transaction(time => {
-          // Update the last updated timestamp to match current time.
-          if (time || 0 <= Date.now()) {
-            return Date.now();
-          }
-          return time;
-        });
-    }
+      .transaction(pendingInvites => [...(pendingInvites || []), projectID]);
+
+    await Fetch.getUserReference(this.uid)
+      .child("lastUpdatedTimestamp")
+      .transaction(time => (time || 0 <= Date.now() ? Date.now() : time));
+    message.success(`We invited ${this.name}`);
   }
 
   /**
@@ -368,7 +351,9 @@ export default class User {
         .transaction(joinedProjects => {
           return $.array(joinedProjects || []).remove(projectID);
         });
-        
+      await Fetch.getUserReference(this.uid)
+        .child("lastUpdatedTimestamp")
+        .set(Date.now());
       // Add a history event in the project that this user has left.
       let project = await Project.get(projectID);
       await project.addHistory(

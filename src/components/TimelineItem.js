@@ -150,9 +150,9 @@ export default class TimelineItem extends Component {
                       </div>
                     )}
                   {!isComplete &&
-                    // Display a relative date if the event is within 2 weeks ahead of today.
-                    this.state.event.date + (1000 * 60 * 60 * 24 - 1) - Date.now() <= 1000 * 60 * 60 * 24 * 14 &&
-                    this.state.event.date + (1000 * 60 * 60 * 24 - 1) - Date.now() >= 0 && (
+                    // Display a relative date if the event is within a week of today.
+                    this.state.event.date + (1000 * 60 * 60 * 24 - 1) - Date.now() <= 1000 * 60 * 60 * 24 * 7 &&
+                    this.state.event.date - Date.now() >= 0 && (
                       <div style={{ marginBottom: 10 }}>
                         <Icon type="clock-circle-o" />{" "}
                         {Moment(this.state.event.date).calendar(null, {

@@ -183,15 +183,25 @@ class MessageDisplay extends Component {
             <div style={{ display: "flex" }}>
               <Popover
                 trigger="click"
+                placement="rightTop"
                 content={
-                  this.state.project && this.state.project.members ? (
-                    <MemberDisplay
-                      member={this.state.project.members.find(x => x.uid === item.sender)}
-                      project={this.state.project}
-                      readOnly
-                      cardless
-                    />
-                  ) : null
+                  this.state.project &&
+                  this.state.project.members &&
+                  this.state.project.members.find(x => x.uid === item.sender) ? (
+                    <div style={{ minWidth: 200 }}>
+                      <MemberDisplay
+                        member={this.state.project.members.find(x => x.uid === item.sender)}
+                        project={this.state.project}
+                        readOnly
+                        cardless
+                      />
+                    </div>
+                  ) : (
+                    <span>
+                      {(sender || {}).name || <Icon type="loading" />}
+                      {" has left this project."}
+                    </span>
+                  )
                 }
               >
                 <Avatar
@@ -215,9 +225,9 @@ class MessageDisplay extends Component {
                             (this.state.project.roles || []).find(
                               role =>
                                 role.uid ===
-                                ((this.state.project.members.find(member => member.uid === item.sender).roles || []).find(
-                                  x => x === role.uid
-                                ) || {})
+                                ((
+                                  (this.state.project.members.find(member => member.uid === item.sender) || {}).roles || []
+                                ).find(x => x === role.uid) || {})
                             ) || {}
                           ).color || { h: 0, s: 0, l: 15 }
                         )
@@ -298,7 +308,7 @@ class MessageDisplay extends Component {
                     </span>
                   }
                   description={
-                    <span style={{ marginBottom: 5, display: 'inline-block' }}>
+                    <span style={{ marginBottom: 5, display: "inline-block" }}>
                       {$.string($.date(item.timeSent).humanise(true)).capitaliseFirstLetter()}
                     </span>
                   }

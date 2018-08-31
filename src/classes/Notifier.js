@@ -152,7 +152,7 @@ export default class Notifier extends EventEmitter {
               if (UserGroupDisplay.hasUser(item.involvedPeople, this.project, this.user) || item.creator === this.user.uid) {
                 // Send the notification
                 new Notify(`Bonfire - ${this.project.name}`, {
-                  body: `${timeDifference < 0 ? "(Overdue) " : ""}${item.name} - ${$.string(
+                  body: `${item.date - Date.now() < 0 ? "(Overdue) " : ""}${item.name} - ${$.string(
                     $.date(item.date).humaniseDate()
                   ).capitaliseFirstLetter()}`,
                   icon: "./icons/icon.png",
