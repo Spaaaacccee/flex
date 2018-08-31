@@ -2,7 +2,7 @@
 
 # User Acceptance Testing
 
-# Procedure
+# 1 Procedure
 
 The test involves the client, and a few associates (4).
 
@@ -15,18 +15,23 @@ The simulated project must be completed over three days and involves a list of s
 - Assigning people roles and tasks to do.
 - Creating clear goals and deadlines.
 - Sharing documents through Google Drive.
-- Sharing documents through uploading files.
+- Sharing documents through files.
 - Staying up-to-date with the progress of the project.
 
 Users will fill out a Google Forms survey after the test, to evaluate user experience.
+
+## 1.1 Testing Data
+
+Over the course of 3 days, the users must 
 
 # Results
 
 ## 2.1 Test Results
 
-| ID  | Transactions to be tested | Resources | Test Result Code |
-| --- | ------------------------- | --------- | ---------------- |
-
+| ID  | Transactions to be tested | Resources                                        | Test Result Code |
+| --- | ------------------------- | ------------------------------------------------ | ---------------- |
+| 1   | Creating a project        | Client, Laptop with internet connection, Bonfire | `A`              |
+| 2   | 
 
 ## 2.2 Review of Test Results
 

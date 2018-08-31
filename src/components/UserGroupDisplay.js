@@ -99,7 +99,9 @@ export default class UserGroupDisplay extends Component {
               key={"R:" + index}
               trigger="click"
               content={
-                this.state.project && this.state.project.members ? (
+                this.state.project &&
+                this.state.project.members &&
+                this.state.project.members.filter(x => (x.roles || []).find(role => role === item.uid)) ? (
                   <UserGroupDisplay
                     project={this.state.project}
                     people={{
@@ -108,7 +110,9 @@ export default class UserGroupDisplay extends Component {
                         .map(x => x.uid)
                     }}
                   />
-                ) : null
+                ) : (
+                  `No one has the role ${item.name}`
+                )
               }
             >
               <Tag color={HSL.toCSSColour(item.color)}>

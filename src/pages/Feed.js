@@ -97,9 +97,9 @@ export default class FEED extends Component {
 
   /**
    * Render all the unread messages.
-   * @param  {any} project 
-   * @param  {any} messages 
-   * @return 
+   * @param  {any} project
+   * @param  {any} messages
+   * @return
    * @memberof FEED
    */
   renderMessages(project, messages) {
@@ -153,8 +153,8 @@ export default class FEED extends Component {
 
   /**
    * Render all the upcoming events.
-   * @param  {Project} project 
-   * @return 
+   * @param  {Project} project
+   * @return
    * @memberof FEED
    */
   renderEvents(project) {
@@ -162,7 +162,12 @@ export default class FEED extends Component {
       // Display only events that are not completed and 5 days away.
       let events = project
         .getEventsInDateOrder()
-        .filter(item => item.date - Date.now() <= 5 * 1000 * 60 * 60 * 24 && item.date - Date.now() >= 0)
+        // 1 millisecond less than 1 day to push the date to the midnight of the stored date.
+        .filter(
+          item =>
+            item.date + (1000 * 60 * 60 * 24 - 1) - Date.now() <= 5 * 1000 * 60 * 60 * 24 &&
+            item.date + (1000 * 60 * 60 * 24 - 1) - Date.now() >= 0
+        )
         .filter(item => !item.markedAsCompleted);
       // Display the events if there are any.
       if (events.length) {

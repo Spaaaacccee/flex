@@ -139,18 +139,17 @@ export default class Notifier extends EventEmitter {
             // If the item is set to never notify, then don't notify.
             if ((!item.notify && item.notify !== 0) || item.notify === -1) return;
             // Get the difference in time between now and the date of the event. If the date of the event is before the current date, then this value will be negative.
-            let timeDifference = item.date - Date.now();
+            // 1 millisecond less than 1 day to push the date to the midnight of the stored date.
+            let timeDifference = item.date + (1000 * 60 * 60 * 24 - 1) - Date.now();
 
             // If the difference in time is smaller than the set notification time, then continue displaying a notification.
             // This means a notification would also be displayed if the item has past.
-            if (timeDifference <= item.notify * 1000 * 60 * 60 * 24) {
-
+            if (timeDifference <= (item.notify + 1) * 1000 * 60 * 60 * 24) {
               // If the item is completed or marked to complete by itself, then return.
               if (item.markedAsCompleted || (item.autoComplete && item.date <= Date.now())) return;
 
               // If the event doesn't involve the current user, then return.
               if (UserGroupDisplay.hasUser(item.involvedPeople, this.project, this.user) || item.creator === this.user.uid) {
-
                 // Send the notification
                 new Notify(`Bonfire - ${this.project.name}`, {
                   body: `${timeDifference < 0 ? "(Overdue) " : ""}${item.name} - ${$.string(
