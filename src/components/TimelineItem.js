@@ -189,7 +189,7 @@ export default class TimelineItem extends Component {
                         <UserGroupDisplay
                           style={{ display: "inline-block" }}
                           project={this.state.project}
-                          people={{ members: [this.state.user.uid] }}
+                          people={{ members: [this.state.event.creator] }}
                         />
                       </div>
                     ) : (

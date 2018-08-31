@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Layout, Modal, Icon } from "antd";
+import { Layout, Modal, Icon, message } from "antd";
 
 import ProjectView from "./ProjectView";
 import ProjectNavigation from "./ProjectNavigation";
@@ -239,9 +239,19 @@ export default class Main extends Component {
               newProject.description = data.description;
               // Wait for the application to create a new project
               await (await User.getCurrentUser()).newProject(newProject);
-              // Invite try to invite the selected users
+              // Grant all selected users permission to use the project.
+              Promise.all(
+                data.recipients.map(async item => {
+                  // Grant permission if they do not already have permission.
+                  if (!(newProject.permissions || {})[item.key]) {
+                    await newProject.setPermission(item.key, true);
+                    message.info(`We gave permission to ${(await User.get(item.key)).name} to make changes. `);
+                  }
+                })
+              );
+              // Invite all selected users.
               await Promise.all(
-                (data.recipients || []).map(async item => (await User.get(item.key)).addInvite(newProject.projectID))
+                data.recipients.map(async item => (await User.get(item.key)).addInvite(newProject.projectID))
               );
               // Update the UI to close the form
               this.setState({

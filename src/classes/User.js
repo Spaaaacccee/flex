@@ -8,7 +8,6 @@ import { message } from "antd";
 import $ from "./Utils";
 import Messages from "./Messages";
 import { HistoryItem } from "./History";
-import { isValidTimestamp } from "@firebase/util";
 
 /**
  * Represents a single user
@@ -220,9 +219,14 @@ export default class User {
    * @memberof User
    */
   async addInvite(projectID) {
+    let currentUser = await User.getCurrentUser();
+    if (currentUser.uid === this.uid) {
+      message.error("Don't send an invite to yourself!");
+      return;
+    }
     // If the project is one that the user owns then don't send an invite.
     if (this.projects.find(x => x === projectID)) {
-      message.error("Don't send an invite to yourself!");
+      message.error(`${this.name} owns this project`);
       return;
     }
 
@@ -231,29 +235,35 @@ export default class User {
       message.error(`${this.name} is already a member of the project.`);
       return;
     }
-
+    let sent = false;
     await Fetch.getUserReference(this.uid)
       .child("pendingInvites")
       .transaction(pendingInvites => {
-        pendingInvites = pendingInvites || [];
-        // If there's already a pending invite then don't send another one.
-        if (pendingInvites.find(x => x === projectID)) {
-          message.error(`We couldn't send an invite to ${this.name} because there's already a pending invite.`);
-        } else {
-          // Add the new invite.
-          message.success(`Invitation sent to ${this.name}!`);
-          return [...pendingInvites, projectID];
+        if (!sent) {
+          pendingInvites = pendingInvites || [];
+          // If there's already a pending invite then don't send another one.
+          if (pendingInvites.find(x => x === projectID)) {
+            message.error(`We couldn't send an invite to ${this.name} because there's already a pending invite.`);
+            return pendingInvites;
+          } else {
+            // Add the new invite.
+            message.success(`Invitation sent to ${this.name}!`);
+            sent = true;
+            return [...pendingInvites, projectID];
+          }
         }
       });
-    await Fetch.getUserReference(this.uid)
-      .child("lastUpdatedTimestamp")
-      .transaction(time => {
-        // Update the last updated timestamp to match current time.
-        if (time || 0 <= Date.now()) {
-          return Date.now();
-        }
-        return time;
-      });
+    if (sent) {
+      await Fetch.getUserReference(this.uid)
+        .child("lastUpdatedTimestamp")
+        .transaction(time => {
+          // Update the last updated timestamp to match current time.
+          if (time || 0 <= Date.now()) {
+            return Date.now();
+          }
+          return time;
+        });
+    }
   }
 
   /**
@@ -353,10 +363,12 @@ export default class User {
     // The project is a project that the user has joined, then continue.
     if ($.array(this.joinedProjects || []).exists(projectID)) {
       // Remove the item from the user's list of joined projects.
-      await this.transaction(user => {
-        user.joinedProjects = $.array(user.joinedProjects || []).remove(projectID);
-      });
-
+      await Fetch.getUserReference(this.uid)
+        .child("joinedProjects")
+        .transaction(joinedProjects => {
+          return $.array(joinedProjects || []).remove(projectID);
+        });
+        
       // Add a history event in the project that this user has left.
       let project = await Project.get(projectID);
       await project.addHistory(

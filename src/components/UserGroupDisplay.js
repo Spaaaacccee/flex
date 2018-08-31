@@ -101,7 +101,7 @@ export default class UserGroupDisplay extends Component {
               content={
                 this.state.project &&
                 this.state.project.members &&
-                this.state.project.members.filter(x => (x.roles || []).find(role => role === item.uid)) ? (
+                this.state.project.members.filter(x => (x.roles || []).find(role => role === item.uid)).length ? (
                   <UserGroupDisplay
                     project={this.state.project}
                     people={{
@@ -111,7 +111,10 @@ export default class UserGroupDisplay extends Component {
                     }}
                   />
                 ) : (
-                  `No one has the role ${item.name}`
+                  <span>
+                    <Icon type="tags" />
+                    {" No one has this role."}
+                  </span>
                 )
               }
             >

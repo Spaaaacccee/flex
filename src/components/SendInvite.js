@@ -36,7 +36,7 @@ export default class SendInvite extends Component {
       recipients: []
     });
     // Grant all selected users permission to use the project.
-    await Promise.all(
+    Promise.all(
       this.state.recipients.map(async item => {
         // Grant permission if they do not already have permission.
         if (!(this.state.project.permissions || {})[item.key]) {

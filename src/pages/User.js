@@ -173,7 +173,7 @@ export default class USER extends Component {
             <br />
             {this.generateProjectCards(
               "Invites",
-              "You haven't been invited to any project",
+              "You haven't been invited to any projects.",
               this.state.user.pendingInvites,
               data => (
                 <ProjectInvitation

@@ -102,12 +102,12 @@ export default class Notifier extends EventEmitter {
       // Only notify the user when the window is not in focus.
       if (!document.hasFocus()) {
         // Evaluate the new change.
-
         let item = snapshot.val();
+        
         // If the new value is null, then return. This is just in case something went wrong getting or setting the new change.
         if (!item) return;
 
-        // If the item is already read by the user, just in case, then return.
+        // Check if the item is already read by the user, just in case, then return.
         if ((item.readBy || {})[this.user.uid]) return;
 
         // Create the notification and display it
@@ -117,16 +117,16 @@ export default class Notifier extends EventEmitter {
           notifyClick: () => {
             // Focus the window. This doesn't work in many browsers due to security concerns but sometimes works.
             window.focus();
-            // On click, notify other components that the user has clicked on the item.
-            this.emit("new_change", { projectID: this.projectID, item });
           }
         }).show();
       }
     };
 
+    //
     // Register the changes listener.
     Fetch.getProjectReference(this.projectID)
       .child("history")
+      .limitToLast(1)
       .on("child_added", historyChildListener);
 
     // Define the listener for events.
@@ -159,9 +159,6 @@ export default class Notifier extends EventEmitter {
                   notifyClick: () => {
                     // Focus the window. This doesn't work in many browsers due to security concerns but sometimes works.
                     window.focus();
-
-                    // On click, notify other components that the user has clicked on the item.
-                    this.emit("event", { projectID: this.projectID, item });
                   }
                 }).show();
 
@@ -214,8 +211,6 @@ export default class Notifier extends EventEmitter {
             notifyClick: () => {
               // Focus the window. This doesn't work in many browsers due to security concerns but sometimes works.
               window.focus();
-              // On click, notify other components that the user has clicked on the item.
-              this.emit("message", { projectID: this.projectID, msg });
             }
           }).show();
         });

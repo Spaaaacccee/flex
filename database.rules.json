@@ -6,6 +6,9 @@
       ".indexOn": "email",
       "$uid": {
         ".write": "auth.uid===$uid",
+        "joinedProjects": {
+          ".write": "auth !== null"
+        },
         "pendingInvites": {
           ".write": "auth !== null"
         },
@@ -16,12 +19,12 @@
     },
     "projects": {
       "$projectID": {
-        ".write": "root.child('projects').child($projectID).child('permissions').child(auth.uid).val()===true || root.child('projects').child($projectID).child('owner').val()===auth.uid"
+        ".write": "(auth != null && !root.child('projects').child($projectID).exists()) || root.child('projects').child($projectID).child('permissions').child(auth.uid).val()===true || root.child('projects').child($projectID).child('owner').val()===auth.uid"
       }
     },
     "messages": {
       "$messengerID": {
-        ".write": "root.child('projects').child($messengerID).child('permissions').child(auth.uid).val()===true||root.child('projects').child($messengerID).child('owner').val()===auth.uid||(root.child('messages').child($messengerID).child('project').exists()&&root.child('projects').child(root.child('messages').child($messengerID).child('project').val()).child('permissions').child(auth.uid).val()===true)||(root.child('messages').child($messengerID).child('project').exists()&&root.child('projects').child(root.child('messages').child($messengerID).child('project').val()).child('owner').val()===auth.uid)"
+        ".write": "(auth != null && !root.child('messages').child($messengerID).exists()) || root.child('projects').child($messengerID).child('permissions').child(auth.uid).val()===true||root.child('projects').child($messengerID).child('owner').val()===auth.uid||(root.child('messages').child($messengerID).child('project').exists()&&root.child('projects').child(root.child('messages').child($messengerID).child('project').val()).child('permissions').child(auth.uid).val()===true)||(root.child('messages').child($messengerID).child('project').exists()&&root.child('projects').child(root.child('messages').child($messengerID).child('project').val()).child('owner').val()===auth.uid)"
       }
     }
   }
