@@ -2,7 +2,7 @@
 
 # User Acceptance Testing
 
-# 1 Procedure
+## 1 Procedure
 
 The test involves the client, and a few collaborators (4).
 
@@ -22,9 +22,9 @@ The tests will incorporate the following:
 
 Users will then complete a Google Forms survey after the test, to evaluate user experience.
 
-# 2 Results
+## 2 Results
 
-## 2.1 Test Results
+### 2.1 Test Results
 
 | ID  | Transactions to be tested            | Resources                                                                   | Test Result Code |
 | --- | ------------------------------------ | --------------------------------------------------------------------------- | ---------------- |
@@ -40,11 +40,11 @@ Users will then complete a Google Forms survey after the test, to evaluate user 
 | 9   | Noticing changes                     |
 | 10  | General user experience              | Google Forms Survey                                                         |                  |
 
-## 2.2 Review of Test Results
+### 2.2 Review of Test Results
 
-## 2.3 Corrective Action
+### 2.3 Corrective Action
 
-## 2.4 Appendix
+### 2.4 Appendix
 
 ![Create Project](./img/img29.png)
 
