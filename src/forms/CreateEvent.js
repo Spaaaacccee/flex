@@ -248,6 +248,7 @@ export default class CreateEvent extends Component {
             onChange={date => {
               this.setState(
                 update(this.state, {
+                  // Update the state with the numeric value of the selected date
                   values: { date: { $set: date.valueOf() } }
                 })
               );
@@ -261,6 +262,7 @@ export default class CreateEvent extends Component {
           onSelectionChanged={people => {
             this.setState(
               update(this.state, {
+                // Update the state with the selected people.
                 values: { involvedPeople: { $set: people } }
               })
             );

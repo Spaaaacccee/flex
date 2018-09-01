@@ -2,6 +2,10 @@
 
 # Validation & Algorithms
 
+## Complex Algorithm
+
+[See the source code of the Asynchronous quicksort](../src/classes/Algorithm.js)
+
 ## Validation
 
 There are various stages where the user is required to enter data.
@@ -160,9 +164,95 @@ The blur mechanic remains the same.
 
 ### Create Event
 
+![Create event](./img/img34.png)
 
+The name and description fields use the same code as the name and description fields in creating a new project. The difference is however, due to performance concerns, the fields do not validate until it is submitted.
 
+The built-in date selector allows selection of only dates, in the format yyyy-mm-dd.
 
-## Complex Algorithm
+```javascript
+<DatePicker
+  allowClear={false}
+  style={{ marginBottom: 10 }}
+  onChange={date => {
+    this.setState(
+      update(this.state, {
+        // Update the state with the numeric value of the selected date
+        values: { date: { $set: date.valueOf() } }
+      })
+    );
+  }}
+  ref={e => (this.dateField = e)}
+/>
+```
 
-[Asynchronous quicksort](../src/classes/Algorithm.js)
+The people selector allows selection of only people or roles.
+
+The notify field only allows the user to select one of the available options.
+
+The complete automatically switch can only be on or off.
+
+### Upload File
+
+![Create event](./img/img25.png)
+
+The file uploader allows dragging files into a zone or selecting a file.
+
+File selection using a dialog restricts the user to selecting a file.
+
+```javascript
+// Otherwise, if the file size is larger than 50 MB, prevent uplading.
+if (file.size > 1024 * 1024 * 50) {
+  message.error(`${file.name} is larger than the maximum allowed file size (50 MB).`);
+  return;
+}
+```
+
+There is validation to ensure the file size is less than or equal to 50MB.
+
+There is validation involved to ensure the selected item via drag and dropping is a file, and not a folder.
+
+```javascript
+// Test if the file size is a multiple of 4096, since all folders have this property.
+if (file.size % 4096 === 0) {
+  let reader = new FileReader();
+  // If the file has such a size, read the file to check if its a folder. This may take time, which is why the file size check is performed first.
+  reader.onload = () => {
+    // Otherwise, select the file, and go to the next step.
+    this.setState({
+      selectedFile: file,
+      modalVisible: true,
+      loading: false
+    });
+  };
+  reader.onerror = () => {
+    message.error("Unfortunately, we currently don't support uploading folders.");
+  };
+  reader.readAsText(file);
+  return;
+}
+```
+
+If the file uploader is configured to update an existing file, it will check whether the file type matches the source file type.
+
+```javascript
+// If the file name is specified, and the extension doesn't match the specified file name's extension, prevent uploading.
+if (
+  this.state.specifyFileName &&
+  this.state.specifyFileName
+    .split(".")
+    .pop()
+    .toLowerCase() !==
+    file.name
+      .split(".")
+      .pop()
+      .toLowerCase()
+) {
+  message.error(
+    `We only allow files of the same format to be merged. Instead, you should upload ${file.name} as a separate file.`
+  );
+  return;
+}
+```
+
+The description field uses the same validation for project names.
