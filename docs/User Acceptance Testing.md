@@ -85,11 +85,11 @@ Files, and screenshots are available in the appendix.
 | 15  | Leaving a project                                            | Collaborator with a laptop with internet connection, Bonfire                              | `✔`              |
 | 16  | User satisfaction & experience                               | Client, collaborators, Google Forms Survey                                                | `✔`              |
 
-Tests Results Scale
+#### Tests Results Scale
 
 | Not Tested | Complete Failure | Partial Failure | Acceptable |
 | ---------- | ---------------- | --------------- | ---------- |
-| `-`        | `✖`              | `○`             | `✔`        |
+| `-`        | `✖`              | `●`             | `✔`        |
 
 ### 2.2 Review of Test Results
 
