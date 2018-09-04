@@ -89,7 +89,7 @@ Files, and screenshots are available in the appendix.
 | 7   | Editing a goal or deadline                                   | Collaborator with a laptop with internet connection, Bonfire                              | `✔`    |
 | 8   | Completion of a goal                                         | Collaborator with a laptop with internet connection, Bonfire                              | `✔`    |
 | 9   | Deletion of a goal                                           | Collaborator with a laptop with internet connection, Bonfire                              | `✔`    |
-| 9   | Sharing a file                                               | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`    |
+| 10   | Sharing a file                                               | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`    |
 | 11  | Using versioning to update a file                            | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`    |
 | 12  | Sharing a Google Drive file                                  | Client, Google Drive, collaborators, each with a laptop with internet connection, Bonfire | `✔`    |
 | 13  | Deletion of a file                                           | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`    |
