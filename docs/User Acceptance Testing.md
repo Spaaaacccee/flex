@@ -70,7 +70,7 @@ Files, and screenshots are available in the appendix.
 
 ### 2.1 Test Results
 
-| ID  | Transactions to be tested                                    | Resources                                                                                 | Test Result Code |
+| ID  | Transactions to be tested                                    | Resources                                                                                 | Result |
 | --- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------- | ---------------- |
 | 1   | Creating and naming a project                                | Client, Laptop with internet connection, Bonfire                                          | `✔`              |
 | 2   | Inviting users to a project                                  | Client, Laptop with internet connection, Bonfire                                          | `✔`              |
