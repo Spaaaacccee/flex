@@ -30,11 +30,15 @@ A mock project will be used, detailed as follows:
 
 #### Key dates
 
-First Prototype, September 04 2018
-Second Prototype, September 28 2018 (To be edited and deleted)
-Alpha Release - Require Discussion
-Beta Release - Require Discussion
-Final Build, June 01 2022
+- First Prototype, September 04 2018
+
+- Second Prototype, September 28 2018 (To be edited and deleted)
+
+- Alpha Release - Require Discussion
+
+- Beta Release - Require Discussion
+
+- Final Build, June 01 2022
 
 #### Resources
 
@@ -46,7 +50,7 @@ Final Build, June 01 2022
 
 - `File` Track 1.1 (draft).wav
 
-- `File` Track 1.2 (draft).wav (Compare and evaluate with Track 1.1 in Discussion. The inferior version is to be deleted.)
+- `File` Track 1.2 (draft).wav (Compare and evaluate with Track 1.1 in Discussion. The poorer version is to be deleted.)
 
 - `File` Prototype - script.docx
 
