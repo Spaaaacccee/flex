@@ -11,13 +11,21 @@ The individuals as a group must complete common tasks required in a team project
 The tests will incorporate the following:
 
 - Creating and inviting users to a project.
+
 - The ability to clearly communicate with each member what they are responsible for.
+
 - Assigning people roles and tasks to do.
+
 - Creating clear goals and deadlines.
+
 - Completing a goal.
+
 - Sharing documents through Google Drive.
+
 - Sharing documents through files.
+
 - Updating documents.
+
 - Staying up-to-date with the progress of the project.
 
 Users will then complete a Google Forms survey after the test, to evaluate user experience. An average rating of 4/5 is considered a success.
@@ -71,23 +79,23 @@ Files, and screenshots are available in the appendix.
 ### 2.1 Test Results
 
 | ID  | Transactions to be tested                                    | Resources                                                                                 | Result |
-| --- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------- | ---------------- |
-| 1   | Creating and naming a project                                | Client, Laptop with internet connection, Bonfire                                          | `✔`              |
-| 2   | Inviting users to a project                                  | Client, Laptop with internet connection, Bonfire                                          | `✔`              |
-| 3   | Joining a project                                            | Collaborator with a laptop with internet connection, Bonfire                              | `✔`              |
-| 4   | Assignment of roles                                          | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`              |
-| 5   | Discussion of when goals must be set, agreeing to a schedule | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`              |
-| 6   | Creation of goals and deadlines                              | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`              |
-| 7   | Editing a goal or deadline                                   | Collaborator with a laptop with internet connection, Bonfire                              | `✔`              |
-| 8   | Completion of a goal                                         | Collaborator with a laptop with internet connection, Bonfire                              | `✔`              |
-| 9   | Deletion of a goal                                           | Collaborator with a laptop with internet connection, Bonfire                              | `✔`              |
-| 9   | Sharing a file                                               | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`              |
-| 11  | Using versioning to update a file                            | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`              |
-| 12  | Sharing a Google Drive file                                  | Client, Google Drive, collaborators, each with a laptop with internet connection, Bonfire | `✔`              |
-| 13  | Deletion of a file                                           | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`              |
-| 14  | Deletion of the project                                      | Client, laptop with internet connection, Bonfire                                          | `✔`              |
-| 15  | Leaving a project                                            | Collaborator with a laptop with internet connection, Bonfire                              | `✔`              |
-| 16  | User satisfaction & experience                               | Client, collaborators, Google Forms Survey                                                | `✔`              |
+| --- | ------------------------------------------------------------ | ----------------------------------------------------------------------------------------- | ------ |
+| 1   | Creating and naming a project                                | Client, Laptop with internet connection, Bonfire                                          | `✔`    |
+| 2   | Inviting users to a project                                  | Client, Laptop with internet connection, Bonfire                                          | `✔`    |
+| 3   | Joining a project                                            | Collaborator with a laptop with internet connection, Bonfire                              | `✔`    |
+| 4   | Assignment of roles                                          | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`    |
+| 5   | Discussion of when goals must be set, agreeing to a schedule | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`    |
+| 6   | Creation of goals and deadlines                              | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`    |
+| 7   | Editing a goal or deadline                                   | Collaborator with a laptop with internet connection, Bonfire                              | `✔`    |
+| 8   | Completion of a goal                                         | Collaborator with a laptop with internet connection, Bonfire                              | `✔`    |
+| 9   | Deletion of a goal                                           | Collaborator with a laptop with internet connection, Bonfire                              | `✔`    |
+| 9   | Sharing a file                                               | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`    |
+| 11  | Using versioning to update a file                            | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`    |
+| 12  | Sharing a Google Drive file                                  | Client, Google Drive, collaborators, each with a laptop with internet connection, Bonfire | `✔`    |
+| 13  | Deletion of a file                                           | Client, collaborators, each with a laptop with internet connection, Bonfire               | `✔`    |
+| 14  | Deletion of the project                                      | Client, laptop with internet connection, Bonfire                                          | `✔`    |
+| 15  | Leaving a project                                            | Collaborator with a laptop with internet connection, Bonfire                              | `✔`    |
+| 16  | User satisfaction & experience                               | Client, collaborators, Google Forms Survey                                                | `✔`    |
 
 #### Tests Results Scale
 
