@@ -199,9 +199,13 @@ The post-testing survey indicated that the weakest aspect of the app is its abil
 
 ### 2.4 Appendix
 
+#### Survey
+
 [Survey](https://goo.gl/forms/1D7BXpst1PpFZSOl1)
 
 [Survey Results](https://docs.google.com/spreadsheets/d/1JU5eCGHKv4KW6esdgXqrJqfo11nfqA_q92UOUcPiqZk/edit?usp=sharing)
+
+#### Files
 
 [Project Tokyo [Info & Ideas]](https://docs.google.com/document/d/1z3-NwxMMGrpvi_foIJMPi22NNRyf5VvlsZF94Q2Aft8/edit?usp=drive_web)
 
