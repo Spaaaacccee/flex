@@ -36,7 +36,7 @@ A mock project will be used, detailed as follows:
 
 2022 Science Fiction Game
 
-### Members
+#### Members
 
 **Edward Tang** _Project Owner_
 silky_ok@hotmail.com
@@ -181,7 +181,7 @@ Though not all of the procedure was followed exactly, all tests were considered 
 
 - Discussion for the alpha release date was omitted because the disussion for the beta release date already tested the same functionality.
 
-- Deletion took place using another project because the client felt very attached to the newly created project.
+- Deletion took place using another project with the same name because the client felt very attached to the newly created project.
 
 A post-testing survey was used to evaluate user experience. On average, the test showed an average rating of 4.4/5, which is above the acceptable score of 4/5.
 
@@ -200,6 +200,8 @@ A post-testing survey was used to evaluate user experience. On average, the test
 #### **Joining the project** _Client_
 
 ![Joining the project](./uatImg/img11.png)
+
+![Joining the project 2](./uatImg/img10.png)
 
 #### **Creating roles** _Client_
 
