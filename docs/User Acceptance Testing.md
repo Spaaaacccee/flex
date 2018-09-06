@@ -187,6 +187,16 @@ A post-testing survey was used to evaluate user experience. On average, the test
 
 ### 2.3 Corrective Action
 
+The post-testing survey indicated that the weakest aspect of the app is its ability to keep users on track, scoring an average of 4/5. Perhaps this can be improved upon by:
+
+- Maintaining an always-visible, personalised sidebar of upcoming events and tasks.
+
+- Introducing a percentage progress feature for events, rather than a completed/uncompleted status.
+
+- Introducing the ability to set an event to be completed upon a condition, for example a file submission.
+
+- More detailed, or clearer history record.
+
 ### 2.4 Appendix
 
 [Survey](https://goo.gl/forms/1D7BXpst1PpFZSOl1)
