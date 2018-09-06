@@ -193,6 +193,26 @@ A post-testing survey was used to evaluate user experience. On average, the test
 
 [Survey Results](https://docs.google.com/spreadsheets/d/1JU5eCGHKv4KW6esdgXqrJqfo11nfqA_q92UOUcPiqZk/edit?usp=sharing)
 
+[Project Tokyo [Info & Ideas]](https://docs.google.com/document/d/1z3-NwxMMGrpvi_foIJMPi22NNRyf5VvlsZF94Q2Aft8/edit?usp=drive_web)
+
+[Project Tokyo [Documentation]](https://docs.google.com/document/d/1ycAX1ghIu3LHRFAUF_-VIWi7csPe8uG5Qw7FDUgYxQY/edit?usp=drive_web)
+
+[Project Tokyo [Schedule]](https://docs.google.com/spreadsheets/d/1WiDZeZEiTNWsRLnytY26HPLp1SOsX5Hpl_l2bVMwrTA/edit?usp=drive_web)
+
+[Track 1.1 (draft).wav](./res/t1.wav)
+
+[Track 1.2 (draft).wav](./res/t2.wav)
+
+[Prototype - script.docx](./res/s1.docx)
+
+[Script_Edit_1.docx](./res/s2.docx)
+
+[Concept Art 1 (environment).png](./res/c1.png)
+
+[Concept Art 2 (environment).png](./res/c2.png)
+
+[Concept Art 3 (environment).png](./res/c3.png)
+
 #### **Creating the project & Inviting users** _Client_
 
 ![Creating Project](./uatImg/img1.png)
@@ -235,11 +255,11 @@ A post-testing survey was used to evaluate user experience. On average, the test
 
 ![Completing an event](./uatImg/img13.png)
 
-#### **Deleting an event** _Everyone_
+#### **Deleting an event** _Collaborator_
 
 ![Deleting an event](./uatImg/img7.png)
 
-#### **Leaving the project** _Everyone_
+#### **Leaving the project** _Collaborator_
 
 ![Leaving the project](./uatImg/img12.png)
 
