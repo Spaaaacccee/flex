@@ -3,6 +3,7 @@
   box-shadow: rgba(4, 111, 210, 0.24) 0px 5px 20px;
   color: rgb(25, 144, 255);
   border-radius: 20px;
+  font-weight: bold;
 }
 
 .project-icon span {

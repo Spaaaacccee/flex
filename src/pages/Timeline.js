@@ -71,7 +71,7 @@ export default class TIMELINE extends Component {
                 index
               }));
               let dateNow = Date.now();
-              events.splice(events.map(item => item.date <= dateNow).lastIndexOf(true) + 1, 0, {
+              events.splice(events.map(item => item.date + (1000 * 60 * 60 * 24 - 1) >= dateNow).indexOf(true), 0, {
                 date: dateNow,
                 item: { name: "Today" },
                 type: "marker"

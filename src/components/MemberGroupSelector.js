@@ -155,7 +155,7 @@ export default class MemberGroupSelector extends Component {
               {roles.map(item => (
                 <Select.Option key={item.uid} value={`R:${item.uid}:${item.name}`}>
                   <div>
-                    <Icon type="tags" />
+                    <Icon type="tag" theme="filled"/>
                     {/* Trim the name of the role if it's too long */}
                     {` ${item.name.slice(0, 15) === item.name ? item.name : `${item.name.slice(0, 15)}...`} (${
                       members.filter(member => (member.roles || []).find(role => role === item.uid)).length

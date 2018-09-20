@@ -103,7 +103,7 @@ export default class Notifier extends EventEmitter {
       if (!document.hasFocus()) {
         // Evaluate the new change.
         let item = snapshot.val();
-        
+
         // If the new value is null, then return. This is just in case something went wrong getting or setting the new change.
         if (!item) return;
 

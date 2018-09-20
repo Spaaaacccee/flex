@@ -63,6 +63,7 @@ div.top.top-bar-wrapper:after {
   background: none;
   border: none;
   color: #1990ff;
+  box-shadow: none;
 }
 
 .top-bar > .left-button:hover,

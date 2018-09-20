@@ -11,7 +11,7 @@ ul.sider-menu {
 }
 
 ul.sider-menu > li.ant-menu-item-selected {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* .widescreen ul.sider-menu {

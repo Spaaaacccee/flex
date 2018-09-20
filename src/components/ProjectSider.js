@@ -213,7 +213,7 @@ export default class ProjectSider extends Component {
             {this.state.items.map((item, index) => (
               // Render each item of the menu.
               <Menu.Item key={"" + index}>
-                <Icon type={item.icon} />
+                <Icon type={item.icon} theme={this.state.index===index?"filled":null}/>
                 <span>{item.name}</span>
                 <Badge
                   style={{ transform: "scale(0.9)" }}

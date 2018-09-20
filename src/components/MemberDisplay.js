@@ -80,7 +80,8 @@ export default class MemberDisplay extends Component {
                     // If the user is the owner, display a little star.
                     <Popover content="Owner">
                       <Icon
-                        type="star"
+                        type="crown"
+                        theme="filled"
                         style={{
                           fontSize: 14,
                           position: "absolute",

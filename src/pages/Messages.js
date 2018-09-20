@@ -758,7 +758,7 @@ class MESSAGES extends Component {
                       .map(item => (
                         <Mention.Nav key={item.uid} value={item.name + "#" + $.id().checkSum(item.uid)} data={item}>
                           <span style={{ color: HSL.toCSSColour(item.color) }}>
-                            <Icon type="tags-o" /> {item.name}
+                            <Icon  type="tag" theme="filled" /> {item.name}
                           </span>
                         </Mention.Nav>
                       ));

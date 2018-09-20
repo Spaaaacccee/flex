@@ -166,7 +166,7 @@ export default class FEED extends Component {
         .filter(
           item =>
             item.date + (1000 * 60 * 60 * 24 - 1) - Date.now() <= 5 * 1000 * 60 * 60 * 24 &&
-            item.date - Date.now() >= 0
+            item.date + (1000 * 60 * 60 * 24 - 1) - Date.now() >= 0
         )
         .filter(item => !item.markedAsCompleted);
       // Display the events if there are any.

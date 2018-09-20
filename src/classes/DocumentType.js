@@ -3,7 +3,7 @@ export default class DocumentType {
    * Get an antd file icon name from an extension. This list only contains definitions for popular file types. A result is not guaranteed.
    * Referenced https://github.com/arthurvr/image-extensions
    * @static
-   * @param  {String} ext 
+   * @param  {String} ext
    * @return {String}
    * @memberof DocumentType
    */
@@ -51,9 +51,10 @@ export default class DocumentType {
       case "csv":
       case "numbers":
         return "file-excel";
+      case "pdf":
+        return "file-pdf";
       case "txt":
       case "rtf":
-      case "pdf":
       case "xps":
       case "asp":
       case "aspx":
@@ -101,7 +102,7 @@ export default class DocumentType {
       case "apk":
       case "com":
       case "jar":
-        return "database";
+        return "build";
       case "aif":
       case "cda":
       case "mid":
@@ -209,7 +210,6 @@ export default class DocumentType {
       case "cmx":
       case "dxf":
       case "e2d":
-      case "egt":
       case "eps":
       case "fs":
       case "gbr":
@@ -223,7 +223,6 @@ export default class DocumentType {
       case "vnd":
       case "wmf":
       case "emf":
-      case "art":
       case "xar":
       case "png":
       case "webp":
@@ -232,23 +231,15 @@ export default class DocumentType {
       case "wdp":
       case "cur":
       case "ecw":
-      case "iff":
-      case "lbm":
       case "liff":
       case "nrrd":
       case "pam":
-      case "pcx":
       case "pgf":
-      case "sgi":
-      case "rgb":
       case "rgba":
-      case "bw":
-      case "int":
       case "inta":
       case "sid":
       case "ras":
       case "sun":
-      case "tga":
         return "picture";
       default:
         return "file";

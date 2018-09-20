@@ -222,6 +222,7 @@ class FileDisplay extends Component {
                         marginLeft: 0,
                         color: "rgb(25, 144, 255)"
                       }}
+                      theme="filled"
                       type={Document.getFiletypeIcon(this.state.file.name)}
                     />
                   )

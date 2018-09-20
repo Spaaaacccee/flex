@@ -106,7 +106,7 @@ export default class ProjectIcon extends Component {
               ) : this.state.name ? (
                 this.state.name.substring(0, 2).trim()
               ) : (
-                <Icon type="loading" />
+                <Icon type="fire" theme="filled" />
               )
             }
           />

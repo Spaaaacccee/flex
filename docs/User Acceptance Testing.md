@@ -4,7 +4,7 @@
 
 ## 1 Procedure
 
-The test involves the client, and a few collaborators (3).
+The test involves the client, and a few collaborators (4).
 
 The individuals as a group must complete common tasks required in a team project.
 
@@ -162,9 +162,9 @@ Files, and screenshots are available in the appendix.
 | 11  | Using versioning to update a file                            | Concept Art 2 (environment).png, Concept Art 3 (environment).png, Track 1.2 (draft).wav             | `✔`    |
 | 12  | Sharing a Google Drive file                                  | Project Tokyo [Info & Ideas], Project Tokyo [Documentation], Project Tokyo [Schedule]               | `✔`    |
 | 13  | Deletion of a file                                           | Track 1.1 (draft).wav, Track 1.2 (draft).wav                                                        | `✔`    |
-| 14  | Deletion of the project                                      | -                                                                                                   | `✔`    |
-| 15  | Leaving a project                                            | -                                                                                                   | `✔`    |
-| 16  | Receiving notifications                                      | -                                                                                                   | `✔`    |
+| 14  | Deletion of the project                                      | The previously created project                                                                      | `✔`    |
+| 15  | Leaving a project                                            | The previously created project                                                                      | `✔`    |
+| 16  | Receiving notifications                                      | The previously created project                                                                      | `✔`    |
 | 17  | User satisfaction & experience                               | Google Forms Survey                                                                                 | `✔`    |
 
 #### Tests Results Scale
@@ -187,6 +187,8 @@ A post-testing survey was used to evaluate user experience. On average, the test
 
 ### 2.3 Corrective Action
 
+All tests were completed successfully.  
+
 The post-testing survey indicated that the weakest aspect of the app is its ability to keep users on track, scoring an average of 4/5. Perhaps this can be improved upon by:
 
 - Maintaining an always-visible, personalised sidebar of upcoming events and tasks.
@@ -196,6 +198,8 @@ The post-testing survey indicated that the weakest aspect of the app is its abil
 - Introducing the ability to set an event to be completed upon a condition, for example a file submission.
 
 - More detailed, or clearer history record.
+
+However adding any of these features is not a priority, as the app is already working very well.
 
 ### 2.4 Appendix
 

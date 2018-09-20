@@ -19,6 +19,7 @@ export default class Settings extends Component {
     onClose: () => {}
   };
   state = {
+    openedTabIndex: "1",
     sourceProject: {}, // The project to get default settings from.
     user: {}, // The current user.
     values: {
@@ -52,6 +53,7 @@ export default class Settings extends Component {
   }
 
   shouldComponentUpdate(props, state) {
+    if (this.state.openedTabIndex !== state.openedTabIndex) return true;
     if (props.visible !== this.state.visible) return true;
     if (this.state.visible !== state.visible) return true;
     if (this.state.values !== state.values) return true;
@@ -121,11 +123,16 @@ export default class Settings extends Component {
       >
         {/* General Project settings */}
         <h2>Project Settings</h2>
-        <Tabs defaultActiveKey="1">
+        <Tabs
+          defaultActiveKey="1"
+          onChange={e => {
+            this.setState({ openedTabIndex: e });
+          }}
+        >
           <TabPane
             tab={
               <span>
-                <Icon type="setting" />
+                <Icon type="sliders" theme={this.state.openedTabIndex === "1" ? "filled" : null} />
                 {"General"}
               </span>
             }
@@ -184,7 +191,7 @@ export default class Settings extends Component {
           <TabPane
             tab={
               <span>
-                <Icon type="tags-o" />
+                <Icon type="tags" theme={this.state.openedTabIndex === "2" ? "filled" : null} />
                 {"Roles"}
               </span>
             }
@@ -201,7 +208,7 @@ export default class Settings extends Component {
           <TabPane
             tab={
               <span>
-                <Icon type="warning" />
+                <Icon type="warning" theme={this.state.openedTabIndex === "3" ? "filled" : null} />
                 {"Advanced"}
               </span>
             }
@@ -278,11 +285,19 @@ export default class Settings extends Component {
                 </Button>
                 <br />
                 <div style={{ height: 10 }} />
-                <p>You won't be able to rejoin until someone invites you again.</p>
+                <p>{"You won't be able to rejoin until someone invites you again."}</p>
               </div>
             )}
           </TabPane>
-          <TabPane tab="Debug" key="5">
+          <TabPane
+            tab={
+              <span>
+                <Icon type="api" theme={this.state.openedTabIndex === "5" ? "filled" : null} />
+                {"Debug"}
+              </span>
+            }
+            key="5"
+          >
             <pre>{formatJSON(this.state.sourceProject)}</pre>
           </TabPane>
         </Tabs>

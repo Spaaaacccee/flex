@@ -113,14 +113,14 @@ export default class UserGroupDisplay extends Component {
                   />
                 ) : (
                   <span>
-                    <Icon type="tags" />
+                    <Icon type="tag" theme="filled" />
                     {" No one has this role."}
                   </span>
                 )
               }
             >
               <Tag color={HSL.toCSSColour(item.color)}>
-                {<Icon type="tags" />} {item.name.slice(0, 15) === item.name ? item.name : `${item.name.slice(0, 15)}...`}
+                {<Icon  type="tag" theme="filled"/>} {item.name.slice(0, 15) === item.name ? item.name : `${item.name.slice(0, 15)}...`}
               </Tag>
             </Popover>
           ))
@@ -179,7 +179,7 @@ export default class UserGroupDisplay extends Component {
         ).map((x, i) => (
           // Display a placeholder for every role that has yet to load.
           <Tag key={i}>
-            <Icon type="tags" /> <Icon type="loading" />
+            <Icon  type="tag" theme="filled"/> <Icon type="loading" />
           </Tag>
         ))}
       </div>

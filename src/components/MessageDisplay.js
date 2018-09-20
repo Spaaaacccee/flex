@@ -441,6 +441,7 @@ class MessageDisplay extends Component {
                                             fontWeight: "normal",
                                             flex: "none"
                                           }}
+                                          theme="filled"
                                           type={Document.getFiletypeIcon(file.name)}
                                         />
                                         <span

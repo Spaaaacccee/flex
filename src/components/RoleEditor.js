@@ -46,7 +46,7 @@ export default class RoleEditor extends Component {
               locale={{
                 emptyText: (
                   <div>
-                    <Icon type="tags" /> <br />
+                    <Icon type="tags" theme="filled"/> <br />
                     This project has no roles.
                   </div>
                 )

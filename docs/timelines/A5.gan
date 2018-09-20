@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2018-01-28" view-index="1" gantt-divider-location="447" resource-divider-location="300" version="2.8.4" locale="en_AU">
+    <description/>
+    <view zooming-state="default:5" id="gantt-chart">
+        <field id="tpd3" name="Name" width="283" order="0"/>
+        <field id="tpd4" name="Begin date" width="75" order="1"/>
+        <field id="tpd5" name="End date" width="69" order="2"/>
+        <option id="taskLabelUp" value="name"/>
+        <option id="color.recent"><![CDATA[#5bc0be #4b5f78 #ff0000 #6fffe9 #1c2541 #0b132b #f0f0f0 #785f4b #437e8e #4b9e9c]]></option>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="209" order="0"/>
+        <field id="1" name="Default role" width="88" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="0" mon="0" tue="0" wed="0" thu="0" fri="0" sat="0"/>
+            <only-show-weekends value="true"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="41" name="SAT Part A" color="#0b132b" meeting="false" project="true" start="2018-03-21" duration="69" complete="0" expand="true">
+            <depend id="62" type="2" difference="0" hardness="Strong"/>
+            <task id="415" name="Produce Gantt Chart" color="#1c2541" meeting="false" start="2018-03-29" duration="59" complete="0" expand="true">
+                <depend id="0" type="2" difference="0" hardness="Strong"/>
+                <task id="416" name="Gantt First Draft" color="#5bc0be" shape="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" meeting="false" start="2018-03-29" duration="20" complete="0" expand="true">
+                    <depend id="417" type="2" difference="0" hardness="Rubber"/>
+                    <depend id="418" type="2" difference="0" hardness="Rubber"/>
+                </task>
+                <task id="417" name="Gantt Chart Draft Finished" color="#6fffe9" meeting="true" start="2018-04-18" duration="0" complete="0" expand="true"/>
+                <task id="418" name="Progressive Gantt improvements" color="#5bc0be" meeting="false" start="2018-04-19" duration="38" complete="0" expand="true"/>
+            </task>
+            <task id="419" name="SUBMISSION | Gantt First Draft" color="#ff0000" shape="0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0" meeting="true" start="2018-04-20" duration="0" complete="0" expand="true"/>
+            <task id="410" name="Analysis" meeting="false" start="2018-03-21" duration="51" complete="0" expand="true">
+                <task id="411" name="Find Client" meeting="false" start="2018-03-21" duration="1" complete="0" expand="true"/>
+                <task id="412" name="Find Project" meeting="false" start="2018-03-22" duration="2" complete="0" expand="true"/>
+                <task id="413" name="Create SAT Proposal" meeting="false" start="2018-03-24" duration="2" complete="0" expand="true"/>
+                <task id="414" name="SUBMISSION | SAT Proposal" color="#ff0000" meeting="true" start="2018-03-26" duration="0" complete="0" expand="true"/>
+                <task id="420" name="Produce Analysis" color="#1c2541" meeting="false" start="2018-04-20" duration="21" complete="0" expand="true">
+                    <depend id="451" type="2" difference="0" hardness="Strong"/>
+                    <task id="421" name="Collect Data" color="#4b5f78" meeting="false" start="2018-04-20" duration="12" complete="0" expand="true">
+                        <task id="422" name="Conduct Interviews" color="#437e8e" meeting="false" start="2018-04-20" duration="3" complete="0" expand="true">
+                            <depend id="430" type="2" difference="0" hardness="Rubber"/>
+                            <task id="423" name="Write interview questions" color="#5bc0be" meeting="false" start="2018-04-20" duration="1" complete="0" expand="true">
+                                <depend id="424" type="2" difference="0" hardness="Strong"/>
+                            </task>
+                            <task id="424" name="Interview main client" color="#5bc0be" meeting="false" start="2018-04-21" duration="2" complete="0" expand="true" cost-manual-value="0.0" cost-calculated="true">
+                                <depend id="425" type="2" difference="0" hardness="Strong"/>
+                                <depend id="430" type="2" difference="0" hardness="Rubber"/>
+                            </task>
+                        </task>
+                        <task id="425" name="Survey" color="#437e8e" meeting="false" start="2018-04-23" duration="9" complete="0" expand="true">
+                            <depend id="439" type="2" difference="0" hardness="Rubber"/>
+                            <task id="426" name="Create Survey" color="#5bc0be" meeting="false" start="2018-04-23" duration="1" complete="0" expand="true">
+                                <depend id="427" type="2" difference="0" hardness="Rubber"/>
+                            </task>
+                            <task id="427" name="Survey Sent" color="#6fffe9" meeting="true" start="2018-04-24" duration="0" complete="0" expand="true">
+                                <depend id="428" type="2" difference="0" hardness="Rubber"/>
+                            </task>
+                            <task id="428" name="Await survey results" color="#5bc0be" meeting="false" start="2018-04-24" duration="8" complete="0" expand="true">
+                                <depend id="429" type="2" difference="0" hardness="Rubber"/>
+                            </task>
+                            <task id="472" name="PROGRESS CHECK | Data Collection" color="#ff0000" meeting="true" start="2018-04-27" duration="0" complete="0" expand="true"/>
+                            <task id="429" name="Survey results collected" color="#6fffe9" meeting="true" start="2018-05-02" duration="0" complete="0" expand="true">
+                                <depend id="430" type="2" difference="0" hardness="Rubber"/>
+                            </task>
+                        </task>
+                        <task id="430" name="All data collected" color="#6fffe9" meeting="true" start="2018-05-02" duration="0" complete="0" expand="true">
+                            <depend id="439" type="2" difference="0" hardness="Rubber"/>
+                        </task>
+                    </task>
+                    <task id="432" name="Write Diagrams" color="#4b5f78" meeting="false" start="2018-05-02" duration="9" complete="0" expand="true">
+                        <task id="433" name="Use Case Diagram" color="#5bc0be" meeting="false" start="2018-05-02" duration="3" complete="0" expand="true">
+                            <depend id="434" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="434" name="Context Diagram" color="#5bc0be" meeting="false" start="2018-05-05" duration="2" complete="0" expand="true">
+                            <depend id="435" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="435" name="Data Flow Diagram" color="#5bc0be" meeting="false" start="2018-05-07" duration="4" complete="0" expand="true">
+                            <depend id="438" type="2" difference="0" hardness="Strong"/>
+                            <task id="436" name="Level 0" color="#5bc0be" meeting="false" start="2018-05-07" duration="3" complete="0" expand="true">
+                                <depend id="437" type="2" difference="0" hardness="Rubber"/>
+                                <depend id="438" type="2" difference="0" hardness="Strong"/>
+                            </task>
+                            <task id="437" name="Level 1" color="#5bc0be" meeting="false" start="2018-05-10" duration="1" complete="0" expand="true">
+                                <depend id="438" type="2" difference="0" hardness="Strong"/>
+                            </task>
+                        </task>
+                        <task id="438" name="Diagrams Completed" color="#6fffe9" meeting="true" start="2018-05-11" duration="0" complete="0" expand="true"/>
+                    </task>
+                    <task id="439" name="Write SRS" color="#4b5f78" meeting="false" start="2018-05-05" duration="6" complete="0" expand="true">
+                        <task id="440" name="Purpose" meeting="false" start="2018-05-05" duration="1" complete="0" expand="true">
+                            <depend id="441" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="441" name="Audience" meeting="false" start="2018-05-06" duration="1" complete="0" expand="true">
+                            <depend id="442" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="442" name="Scope" meeting="false" start="2018-05-07" duration="1" complete="0" expand="true">
+                            <depend id="443" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="443" name="Constraints" meeting="false" start="2018-05-08" duration="1" complete="0" expand="true">
+                            <depend id="444" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="444" name="Functional &amp; Non-functional requirements" meeting="false" start="2018-05-09" duration="2" complete="0" expand="true">
+                            <depend id="446" type="2" difference="0" hardness="Rubber"/>
+                        </task>
+                        <task id="446" name="SRS Completed" color="#6fffe9" meeting="true" start="2018-05-11" duration="0" complete="0" expand="true"/>
+                        <task id="447" name="PROGRESS CHECK | SRS (including Use Case, Context/DFD))" color="#ff0000" meeting="true" start="2018-05-11" duration="0" complete="0" expand="true"/>
+                    </task>
+                </task>
+            </task>
+            <task id="450" name="Design" meeting="false" start="2018-05-11" duration="18" complete="0" expand="true">
+                <task id="451" name="Folio" color="#1c2541" meeting="false" start="2018-05-11" duration="18" complete="0" expand="true">
+                    <depend id="2" type="2" difference="0" hardness="Strong"/>
+                    <task id="452" name="Write Evaluation Criteria" color="#4b5f78" meeting="false" start="2018-05-11" duration="3" complete="0" expand="true">
+                        <depend id="455" type="2" difference="0" hardness="Strong"/>
+                        <depend id="466" type="2" difference="0" hardness="Strong"/>
+                        <task id="453" name="Criteria for UI" color="#5bc0be" meeting="false" start="2018-05-11" duration="1" complete="0" expand="true">
+                            <depend id="455" type="2" difference="0" hardness="Strong"/>
+                            <depend id="466" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="454" name="Criteria for software solution" color="#5bc0be" meeting="false" start="2018-05-11" duration="3" complete="0" expand="true">
+                            <depend id="455" type="2" difference="0" hardness="Strong"/>
+                            <depend id="466" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                    </task>
+                    <task id="455" name="Produce Designs" color="#4b5f78" meeting="false" start="2018-05-14" duration="10" complete="0" expand="true">
+                        <task id="456" name="Produce UX Design" color="#5bc0be" meeting="false" start="2018-05-14" duration="2" complete="0" expand="true">
+                            <depend id="458" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="457" name="Produce UI Design Desktop" color="#5bc0be" meeting="false" start="2018-05-14" duration="4" complete="0" expand="true">
+                            <depend id="458" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="458" name="Produce UI Design Mobile" color="#5bc0be" meeting="false" start="2018-05-18" duration="2" complete="0" expand="true">
+                            <depend id="459" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="459" name="Evaluate UI &amp; UX Designs (with client)" color="#5bc0be" meeting="false" start="2018-05-20" duration="1" complete="0" expand="true" cost-manual-value="0.0" cost-calculated="true">
+                            <depend id="460" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="460" name="Finalise UI Design (Both Mobile and Desktop)" color="#5bc0be" meeting="false" start="2018-05-21" duration="3" complete="0" expand="true">
+                            <depend id="461" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="461" name="Design Complete" color="#6fffe9" meeting="true" start="2018-05-24" duration="0" complete="0" expand="true">
+                            <depend id="462" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                    </task>
+                    <task id="462" name="Write IPO Charts" color="#5bc0be" meeting="false" start="2018-05-24" duration="1" complete="0" expand="true">
+                        <depend id="463" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="463" name="Write Data Structure Diagrams" color="#5bc0be" meeting="false" start="2018-05-25" duration="1" complete="0" expand="true">
+                        <depend id="464" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="464" name="Write Data Dictionary" color="#5bc0be" meeting="false" start="2018-05-26" duration="1" complete="0" expand="true">
+                        <depend id="465" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="465" name="Write Object Description" color="#5bc0be" meeting="false" start="2018-05-27" duration="1" complete="0" expand="true"/>
+                    <task id="466" name="Write Pseudocode" color="#4b5f78" meeting="false" start="2018-05-19" duration="10" complete="0" expand="true">
+                        <task id="467" name="Write Framework Pseudocode" color="#5bc0be" meeting="false" start="2018-05-19" duration="4" complete="0" expand="true">
+                            <depend id="468" type="2" difference="0" hardness="Strong"/>
+                            <depend id="469" type="2" difference="0" hardness="Strong"/>
+                        </task>
+                        <task id="468" name="Write Components Pseudocode" color="#5bc0be" meeting="false" start="2018-05-23" duration="6" complete="0" expand="true"/>
+                        <task id="469" name="Write Components Documentation" color="#5bc0be" meeting="false" start="2018-05-23" duration="6" complete="0" expand="true"/>
+                    </task>
+                </task>
+                <task id="471" name="PROGRESS CHECK | Evaluation Criteria and Interface Design" color="#ff0000" meeting="true" start="2018-05-22" duration="0" complete="0" expand="true"/>
+            </task>
+            <task id="0" name="Gantt Chart Completed" color="#6fffe9" meeting="true" start="2018-05-27" duration="0" complete="0" expand="true">
+                <depend id="470" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="2" name="Folio of Designs Completed" color="#6fffe9" meeting="true" start="2018-05-29" duration="0" complete="0" expand="true">
+                <depend id="470" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="470" name="Part A Completed" color="#6fffe9" meeting="true" start="2018-05-29" duration="0" complete="0" expand="true">
+                <depend id="62" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="13" name="SUBMISSION | Part A" color="#ff0000" meeting="true" start="2018-05-29" duration="0" complete="0" expand="true"/>
+        </task>
+        <task id="62" name="SAC Part B" color="#0b132b" meeting="false" start="2018-06-01" duration="112" complete="0" expand="true">
+            <task id="79" name="Development" color="#1c2541" meeting="false" start="2018-06-01" duration="97" complete="0" expand="true">
+                <task id="92" name="Internal Documentation" color="#5bc0be" meeting="false" start="2018-06-01" duration="70" complete="0" expand="true">
+                    <depend id="251" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="94" name="Code Testing" color="#5bc0be" meeting="false" start="2018-06-01" duration="70" complete="0" expand="true">
+                    <depend id="253" type="2" difference="0" hardness="Strong"/>
+                </task>
+                <task id="251" name="Proofread &amp; Finalise Internal Documentation" color="#5bc0be" meeting="false" start="2018-08-10" duration="4" complete="0" expand="true"/>
+                <task id="253" name="Code Review" color="#5bc0be" meeting="false" start="2018-08-10" duration="9" complete="0" expand="true"/>
+                <task id="221" name="Alpha" color="#4b5f78" meeting="false" start="2018-06-01" duration="79" complete="0" expand="true">
+                    <depend id="229" type="2" difference="0" hardness="Strong"/>
+                    <task id="223" name="Alpha 1.0 (Framework &amp; key functionality)" color="#5bc0be" meeting="false" start="2018-06-01" duration="31" complete="0" expand="true">
+                        <depend id="225" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="224" name="PROGRESS CHECK | Development of Software Solution (including Testing) 1" color="#ff0000" meeting="true" start="2018-06-29" duration="0" complete="0" expand="true"/>
+                    <task id="225" name="Alpha 1.1 (Secondary functionality)" color="#5bc0be" meeting="false" start="2018-07-02" duration="39" complete="0" expand="true">
+                        <depend id="226" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                    <task id="227" name="PROGRESS CHECK | Development of Software Solution (including Testing) 2" color="#ff0000" meeting="true" start="2018-08-03" duration="0" complete="0" expand="true"/>
+                    <task id="226" name="Alpha 1.2 (Visual &amp; User Experience)" color="#5bc0be" meeting="false" start="2018-08-10" duration="9" complete="0" expand="true">
+                        <depend id="233" type="2" difference="0" hardness="Strong"/>
+                        <depend id="234" type="2" difference="0" hardness="Strong"/>
+                        <depend id="237" type="2" difference="0" hardness="Strong"/>
+                    </task>
+                </task>
+                <task id="229" name="Beta" color="#4b5f78" meeting="false" start="2018-08-19" duration="18" complete="0" expand="true">
+                    <depend id="242" type="2" difference="0" hardness="Strong"/>
+                    <task id="233" name="Open Testing (Client &amp; others)" color="#5bc0be" meeting="false" start="2018-08-19" duration="9" complete="0" expand="true"/>
+                    <task id="237" name="Usability &amp; User Acceptance Testing (Client only)" color="#5bc0be" meeting="false" start="2018-08-19" duration="18" complete="0" expand="true"/>
+                    <task id="234" name="Beta 1.0 (Fixes and improvements)" color="#5bc0be" meeting="false" start="2018-08-19" duration="18" complete="0" expand="true"/>
+                    <task id="249" name="PROGRESS CHECK | Usability testing" color="#ff0000" meeting="true" start="2018-08-31" duration="0" complete="0" expand="true"/>
+                    <task id="248" name="Software Completed" color="#6fffe9" meeting="true" start="2018-09-06" duration="0" complete="0" expand="true"/>
+                </task>
+            </task>
+            <task id="242" name="Evaluation" color="#4b5f78" meeting="false" start="2018-09-06" duration="15" complete="0" expand="true">
+                <depend id="89" type="2" difference="0" hardness="Strong"/>
+                <task id="246" name="Write Software Evaluation" color="#5bc0be" meeting="false" start="2018-09-06" duration="15" complete="0" expand="true"/>
+                <task id="351" name="Wrote Project Plan Report" color="#5bc0be" meeting="false" start="2018-09-06" duration="15" complete="0" expand="true"/>
+                <task id="247" name="PROGRESS CHECK | Evaluation &amp; Project Plan Assessment" color="#ff0000" meeting="true" start="2018-09-14" duration="0" complete="0" expand="true"/>
+            </task>
+            <task id="89" name="Assessment Completed" color="#6fffe9" meeting="true" start="2018-09-21" duration="0" complete="0" expand="true"/>
+            <task id="78" name="SUBMISSION | Part B" color="#ff0000" meeting="true" start="2018-09-21" duration="0" complete="0" expand="true"/>
+        </task>
+    </tasks>
+    <resources>
+        <resource id="0" name="Edward Tang" function="1" contacts="" phone=""/>
+        <resource id="1" name="Sub-Clients" function="SoftwareDevelopment:4" contacts="" phone=""/>
+    </resources>
+    <allocations>
+        <allocation task-id="237" resource-id="0" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="233" resource-id="0" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="424" resource-id="0" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="459" resource-id="0" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="233" resource-id="1" function="Default:0" responsible="false" load="100.0"/>
+    </allocations>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+    <roles roleset-name="SoftwareDevelopment"/>
+    <roles>
+        <role id="1" name="client"/>
+    </roles>
+</project>

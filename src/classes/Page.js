@@ -81,8 +81,8 @@ export default class Page {
  */
 export const Pages = [
   new Page({
-    name: "Home",
-    icon: "appstore-o",
+    name: "Dashboard",
+    icon: "dashboard",
     content: FEED,
     topBarMode: "adaptive",
     getNotificationCount: (project, user) => {
@@ -92,7 +92,7 @@ export const Pages = [
   }),
   new Page({
     name: "Members",
-    icon: "team",
+    icon: "idcard",
     content: MEMBERS,
     extrasButtonType: "plus"
   }),

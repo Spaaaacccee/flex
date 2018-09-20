@@ -314,15 +314,31 @@ if (file.size % 4096 === 0) {
 
 #### 5.5.3 Advanced
 
-| ID      | Element               | Data                                                                                        | Expected                                         | Actual      | Fix |
-| ------- | --------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------ | ----------- | --- |
-| 5.5.3.1 | Delete Project Button | project: `{... owner: "x" }`, current user: `{... uid: "x"}`                                | `button.visible=true`                            | As expected | -   |
-| 5.5.3.2 | Delete Project Button | project: `{... owner: "x" }`, current user: `{... uid: "y"}`                                | `button.visible=false`                           | As expected | -   |
-| 5.5.3.3 | Leave Project Button  | project: `{... owner: "x" }`, current user: `{... uid: "x"}`                                | `button.visible=false`                           | As expected | -   |
-| 5.5.3.4 | Leave Project Button  | project: `{... owner: "x" }`, current user: `{... uid: "y"}`                                | `button.visible=true`                            | As expected | -   |
-| 5.5.3.5 | Delete Project        | project: `{... owner: "x" }`, current user: `{... uid: "x"}`                                | project: `{deleted: true}`                       | As expected | -   |
-| 5.5.3.6 | Delete Project        | project: `{... owner: "x" }`, current user: `{... uid: "y"}`                                | Show "not the owner" message, project unchanged. | As expected | -   |
-| 5.5.3.7 | Leave Project Button  | project: `{... owner: "x", members: [... {... uid: "y"}] }`, current user: `{... uid: "y"}` | project: `{... owner: "x", members: [...] }`     | As expected | -   |
+| ID      | Element               | Data                                                                                        | Expected                                         | Actual                                         | Fix                                                                                                                                                                                              |
+| ------- | --------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------ | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 5.5.3.1 | Delete Project Button | project: `{... owner: "x" }`, current user: `{... uid: "x"}`                                | `button.visible=true`                            | As expected                                    | -                                                                                                                                                                                                |
+| 5.5.3.2 | Delete Project Button | project: `{... owner: "x" }`, current user: `{... uid: "y"}`                                | `button.visible=false`                           | As expected                                    | -                                                                                                                                                                                                |
+| 5.5.3.3 | Leave Project Button  | project: `{... owner: "x" }`, current user: `{... uid: "x"}`                                | `button.visible=false`                           | As expected                                    | -                                                                                                                                                                                                |
+| 5.5.3.4 | Leave Project Button  | project: `{... owner: "x" }`, current user: `{... uid: "y"}`                                | `button.visible=true`                            | As expected                                    | -                                                                                                                                                                                                |
+| 5.5.3.5 | Delete Project        | project: `{... owner: "x" }`, current user: `{... uid: "x"}`                                | project: `{deleted: true}`                       | As expected                                    | -                                                                                                                                                                                                |
+| 5.5.3.6 | Delete Project        | project: `{... owner: "x" }`, current user: `{... uid: "y"}`                                | Show "not the owner" message, project unchanged. | As expected                                    | -                                                                                                                                                                                                |
+| 5.5.3.7 | Leave Project Button  | project: `{... owner: "x", members: [... {... uid: "y"}] }`, current user: `{... uid: "y"}` | project: `{... owner: "x", members: [...] }`     | Error: Max Retry ![Max Retry](./img/img35.png) | A built in security measure in the Firebase API prevents transactions from changing too much data. Errors are occuring when the members are set. Instead, values can be set manually. See below. |
+
+```javascript
+  async setMembers(members) {
+    // Get a reference to where the project is stored on the database.
+    let project = await Fetch.getProjectReference(this.projectID);
+    let dateNow = Date.now();
+    // Set the members on the database
+    await project.child("members").set(members);
+    // Set the last modified timestamp
+    await project.child("lastUpdatedTimestamp").set(dateNow);
+    // Set the last modified timestamp
+    this.lastUpdatedTimestamp = dateNow;
+    // Set the members locally
+    this.members = members;
+  }
+```
 
 ## 6 Data & Fetching
 
@@ -354,9 +370,14 @@ if (file.size % 4096 === 0) {
 
 ### 7.2 Notifier
 
-| ID    | Element                  | Data                                                                                                                               | Expected                                                                         | Actual      | Fix |
-| ----- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ----------- | --- |
-| 7.2.1 | Message notifications    | Window defocused, new message: `{... sender: "x", bodyText: "y"}`, project.name: `"Project"`                                       | Display notification `{title: "Project - x", body: "y"}`                         | As expected | -   |
-| 7.2.2 | Message notifications    | Window focused, new message: `{... sender: "x", bodyText: "y"}`                                                                    | Display nothing                                                                  | As expected | -   |
-| 7.2.3 | New change notifications | Window defocused, change: `{action: "added", type: "event", doneBy:"x"}` users `{uid: x, name: "Name"}`, project.name: `"Project"` | Display notification `{title: "Bonfire - Project", body: "Name added an event"}` | As expected | -   |
-| 7.2.4 | New change notifications | Window focused, change: `{action: "added", type: "event", doneBy:"x"}` users `{uid: x, name: "Name"}`, project.name: `"Project"`   | Display nothing                                                                  | As expected | -   |
+| ID    | Element                  | Data                                                                                                                               | Expected                                                                         | Actual                                             | Fix |
+| ----- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------- | --- |
+| 7.2.1 | Message notifications    | Window defocused, new message: `{... sender: "x", bodyText: "y"}`, project.name: `"Project"`                                       | Display notification `{title: "Project - x", body: "y"}`                         | As expected                                        | -   |
+| 7.2.2 | Message notifications    | Window focused, new message: `{... sender: "x", bodyText: "y"}`                                                                    | Display nothing                                                                  | As expected                                        | -   |
+| 7.2.3 | New change notifications | Window defocused, change: `{action: "added", type: "event", doneBy:"x"}` users `{uid: x, name: "Name"}`, project.name: `"Project"` | Display notification `{title: "Bonfire - Project", body: "Name added an event"}` | As expected                                        | -   |
+| 7.2.4 | New change notifications | Window focused, change: `{action: "added", type: "event", doneBy:"x"}` users `{uid: x, name: "Name"}`, project.name: `"Project"`   | Display nothing                                                                  | As expected                                        | -   |
+| 7.2.5 | Event notification       | event: `{name: "y", date: # Tomorrow #, notify: -1}`                                                                               | Display nothing                                                                  | As expected                                        | -   |
+| 7.2.6 | Event notification       | event: `{name: "y", date: # Tomorrow #, notify: 0}`                                                                                | Display nothing                                                                  | As expected                                        | -   |
+| 7.2.7 | Event notification       | event: `{name: "y", date: # Tomorrow #, notify: 1}`                                                                                | Display notification `{description: "y - Tomorrow"}`                                                        | As expected ![Event notification](./img/img36.png) | -   |
+| 7.2.8 | Event notification       | event: `{name: "y", date: # Tomorrow #, notify: 2}`                                                                                | Display notification `{description: "y - Tomorrow"}`                                                        | As expected ![Event notification](./img/img36.png) | -   |
+| 7.2.9 | Event notification       | event: `{name: "y", date: # Tomorrow #, notify: 2, markedAsCompleted: true}`                                                                                | Display nothing                                                              | As expected ![Event notification](./img/img36.png) | -   |

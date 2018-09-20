@@ -17,3 +17,7 @@ Software development 3/4 project.
 [File & Data Management](./docs/File%20&%20Data%20Management.md)
 
 [User Acceptance Testing](./docs/User%20Acceptance%20Testing.md)
+
+[Software Evaluation Plan](./docs/Evaluation%20Plan.md)
+
+[Project Plan Assessment](./docs/Project%20Plan%20Assessment.md)

@@ -161,6 +161,7 @@ export default class FileUpload extends Component {
                             marginLeft: 0,
                             color: "rgb(25, 144, 255)"
                           }}
+                          theme="filled"
                           type={Document.getFiletypeIcon(item.name)}
                         />
                       }
