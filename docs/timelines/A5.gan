@@ -1,6 +1,6 @@
-<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2018-01-28" view-index="1" gantt-divider-location="447" resource-divider-location="300" version="2.8.4" locale="en_AU">
+<?xml version="1.0" encoding="UTF-8"?><project name="Untitled Gantt Project" company="" webLink="http://" view-date="2018-01-28" view-index="0" gantt-divider-location="447" resource-divider-location="300" version="2.8.4" locale="en_AU">
     <description/>
-    <view zooming-state="default:5" id="gantt-chart">
+    <view zooming-state="default:7" id="gantt-chart">
         <field id="tpd3" name="Name" width="283" order="0"/>
         <field id="tpd4" name="Begin date" width="75" order="1"/>
         <field id="tpd5" name="End date" width="69" order="2"/>
@@ -37,24 +37,24 @@
         </taskproperties>
         <task id="41" name="SAT Part A" color="#0b132b" meeting="false" project="true" start="2018-03-21" duration="69" complete="0" expand="true">
             <depend id="62" type="2" difference="0" hardness="Strong"/>
-            <task id="415" name="Produce Gantt Chart" color="#1c2541" meeting="false" start="2018-03-29" duration="59" complete="0" expand="true">
-                <depend id="0" type="2" difference="0" hardness="Strong"/>
-                <task id="416" name="Gantt First Draft" color="#5bc0be" shape="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" meeting="false" start="2018-03-29" duration="20" complete="0" expand="true">
-                    <depend id="417" type="2" difference="0" hardness="Rubber"/>
-                    <depend id="418" type="2" difference="0" hardness="Rubber"/>
-                </task>
-                <task id="417" name="Gantt Chart Draft Finished" color="#6fffe9" meeting="true" start="2018-04-18" duration="0" complete="0" expand="true"/>
-                <task id="418" name="Progressive Gantt improvements" color="#5bc0be" meeting="false" start="2018-04-19" duration="38" complete="0" expand="true"/>
-            </task>
             <task id="419" name="SUBMISSION | Gantt First Draft" color="#ff0000" shape="0,0,0,1,0,0,1,0,0,1,0,0,1,0,0,0" meeting="true" start="2018-04-20" duration="0" complete="0" expand="true"/>
-            <task id="410" name="Analysis" meeting="false" start="2018-03-21" duration="51" complete="0" expand="true">
+            <task id="410" name="Analysis" meeting="false" start="2018-03-21" duration="67" complete="0" expand="false">
                 <task id="411" name="Find Client" meeting="false" start="2018-03-21" duration="1" complete="0" expand="true"/>
                 <task id="412" name="Find Project" meeting="false" start="2018-03-22" duration="2" complete="0" expand="true"/>
                 <task id="413" name="Create SAT Proposal" meeting="false" start="2018-03-24" duration="2" complete="0" expand="true"/>
                 <task id="414" name="SUBMISSION | SAT Proposal" color="#ff0000" meeting="true" start="2018-03-26" duration="0" complete="0" expand="true"/>
+                <task id="473" name="Produce Gantt Chart" color="#1c2541" meeting="false" start="2018-04-14" duration="43" complete="0" expand="true">
+                    <depend id="0" type="2" difference="0" hardness="Strong"/>
+                    <task id="474" name="Gantt First Draft" color="#5bc0be" shape="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" meeting="false" start="2018-04-14" duration="4" complete="0" expand="true">
+                        <depend id="475" type="2" difference="0" hardness="Rubber"/>
+                        <depend id="476" type="2" difference="0" hardness="Rubber"/>
+                    </task>
+                    <task id="475" name="Gantt Chart Draft Finished" color="#6fffe9" meeting="true" start="2018-04-18" duration="0" complete="0" expand="true"/>
+                    <task id="476" name="Progressive Gantt improvements" color="#5bc0be" meeting="false" start="2018-04-19" duration="38" complete="0" expand="true"/>
+                </task>
                 <task id="420" name="Produce Analysis" color="#1c2541" meeting="false" start="2018-04-20" duration="21" complete="0" expand="true">
                     <depend id="451" type="2" difference="0" hardness="Strong"/>
-                    <task id="421" name="Collect Data" color="#4b5f78" meeting="false" start="2018-04-20" duration="12" complete="0" expand="true">
+                    <task id="421" name="Collect Data" color="#4b5f78" meeting="false" start="2018-04-20" duration="12" complete="0" expand="false">
                         <task id="422" name="Conduct Interviews" color="#437e8e" meeting="false" start="2018-04-20" duration="3" complete="0" expand="true">
                             <depend id="430" type="2" difference="0" hardness="Rubber"/>
                             <task id="423" name="Write interview questions" color="#5bc0be" meeting="false" start="2018-04-20" duration="1" complete="0" expand="true">
@@ -85,7 +85,7 @@
                             <depend id="439" type="2" difference="0" hardness="Rubber"/>
                         </task>
                     </task>
-                    <task id="432" name="Write Diagrams" color="#4b5f78" meeting="false" start="2018-05-02" duration="9" complete="0" expand="true">
+                    <task id="432" name="Write Diagrams" color="#4b5f78" meeting="false" start="2018-05-02" duration="9" complete="0" expand="false">
                         <task id="433" name="Use Case Diagram" color="#5bc0be" meeting="false" start="2018-05-02" duration="3" complete="0" expand="true">
                             <depend id="434" type="2" difference="0" hardness="Strong"/>
                         </task>
@@ -104,7 +104,7 @@
                         </task>
                         <task id="438" name="Diagrams Completed" color="#6fffe9" meeting="true" start="2018-05-11" duration="0" complete="0" expand="true"/>
                     </task>
-                    <task id="439" name="Write SRS" color="#4b5f78" meeting="false" start="2018-05-05" duration="6" complete="0" expand="true">
+                    <task id="439" name="Write SRS" color="#4b5f78" meeting="false" start="2018-05-05" duration="6" complete="0" expand="false">
                         <task id="440" name="Purpose" meeting="false" start="2018-05-05" duration="1" complete="0" expand="true">
                             <depend id="441" type="2" difference="0" hardness="Strong"/>
                         </task>
@@ -125,7 +125,7 @@
                     </task>
                 </task>
             </task>
-            <task id="450" name="Design" meeting="false" start="2018-05-11" duration="18" complete="0" expand="true">
+            <task id="450" name="Design" color="#000000" meeting="false" start="2018-05-11" duration="18" complete="0" expand="true">
                 <task id="451" name="Folio" color="#1c2541" meeting="false" start="2018-05-11" duration="18" complete="0" expand="true">
                     <depend id="2" type="2" difference="0" hardness="Strong"/>
                     <task id="452" name="Write Evaluation Criteria" color="#4b5f78" meeting="false" start="2018-05-11" duration="3" complete="0" expand="true">
@@ -240,6 +240,13 @@
     <resources>
         <resource id="0" name="Edward Tang" function="1" contacts="" phone=""/>
         <resource id="1" name="Sub-Clients" function="SoftwareDevelopment:4" contacts="" phone=""/>
+        <resource id="2" name="Microphone" function="Default:0" contacts="" phone=""/>
+        <resource id="3" name="Google Survey Hosting" function="6" contacts="" phone=""/>
+        <resource id="4" name="Web Server" function="5" contacts="" phone=""/>
+        <resource id="5" name="Interview Room" function="2" contacts="" phone=""/>
+        <resource id="6" name="Laptop" function="4" contacts="" phone=""/>
+        <resource id="8" name="Messaging Software" function="Default:0" contacts="" phone=""/>
+        <resource id="9" name="Google Web Services" function="5" contacts="" phone=""/>
     </resources>
     <allocations>
         <allocation task-id="237" resource-id="0" function="Default:0" responsible="true" load="100.0"/>
@@ -247,6 +254,24 @@
         <allocation task-id="424" resource-id="0" function="Default:0" responsible="false" load="100.0"/>
         <allocation task-id="459" resource-id="0" function="Default:0" responsible="true" load="100.0"/>
         <allocation task-id="233" resource-id="1" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="424" resource-id="2" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="237" resource-id="2" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="426" resource-id="3" function="6" responsible="true" load="100.0"/>
+        <allocation task-id="221" resource-id="4" function="5" responsible="false" load="100.0"/>
+        <allocation task-id="229" resource-id="4" function="5" responsible="false" load="100.0"/>
+        <allocation task-id="424" resource-id="5" function="2" responsible="false" load="100.0"/>
+        <allocation task-id="237" resource-id="5" function="2" responsible="false" load="100.0"/>
+        <allocation task-id="452" resource-id="6" function="4" responsible="true" load="100.0"/>
+        <allocation task-id="450" resource-id="6" function="4" responsible="true" load="100.0"/>
+        <allocation task-id="455" resource-id="6" function="4" responsible="true" load="100.0"/>
+        <allocation task-id="79" resource-id="6" function="4" responsible="true" load="100.0"/>
+        <allocation task-id="221" resource-id="6" function="4" responsible="false" load="100.0"/>
+        <allocation task-id="229" resource-id="6" function="4" responsible="true" load="100.0"/>
+        <allocation task-id="242" resource-id="6" function="4" responsible="true" load="100.0"/>
+        <allocation task-id="459" resource-id="8" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="233" resource-id="8" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="221" resource-id="9" function="5" responsible="false" load="100.0"/>
+        <allocation task-id="229" resource-id="9" function="5" responsible="false" load="100.0"/>
     </allocations>
     <vacations/>
     <previous/>
@@ -254,5 +279,10 @@
     <roles roleset-name="SoftwareDevelopment"/>
     <roles>
         <role id="1" name="client"/>
+        <role id="2" name="interview room"/>
+        <role id="3" name="microphone"/>
+        <role id="4" name="laptop"/>
+        <role id="5" name="server"/>
+        <role id="6" name="survey hoster"/>
     </roles>
 </project>

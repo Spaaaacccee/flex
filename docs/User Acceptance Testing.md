@@ -2,9 +2,11 @@
 
 # User Acceptance Testing
 
+> This page is distributed to participants as instructions.
+
 ## 1 Procedure
 
-The test involves the client, and a few collaborators (4).
+The test will involve the client, and a few collaborators (4).
 
 The individuals as a group must complete common tasks required in a team project.
 
