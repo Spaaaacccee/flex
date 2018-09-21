@@ -138,11 +138,11 @@ The client and users will also be asked to complete the evaluation criteria form
 
 - **Is the software helping your group projects run smoothly?**
 
-  Has the discussion feature helped the team in assigning tasks and roles?
+  Has the discussion feature helped the team in assigning tasks and roles? Y/N
 
-  Has the timeline feature helped the team in managing a project schedule?
+  Has the timeline feature helped the team in managing a project schedule? Y/N
 
-  Has the file management feature helped the team in managing versions of files?
+  Has the file management feature helped the team in managing versions of files? Y/N
 
   Successfulness rating: -/3
 
@@ -206,11 +206,11 @@ An online survey or questionnaire will be distributed to users of the applicatio
 
 - **Is the software helping your group projects run smoothly?**
 
-  Has the discussion feature helped the team in assigning tasks and roles?
+  Has the discussion feature helped the team in assigning tasks and roles? Y/N
 
-  Has the timeline feature helped the team in managing a project schedule?
+  Has the timeline feature helped the team in managing a project schedule? Y/N
 
-  Has the file management feature helped the team in managing versions of files?
+  Has the file management feature helped the team in managing versions of files? Y/N
 
   Successfulness rating: -/3
 
