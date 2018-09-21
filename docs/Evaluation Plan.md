@@ -35,7 +35,7 @@ Prior to client signing off on the finished software
   Interfaces loaded under 1 second, animations helped in the feeling of fluidity and responsiveness, but generally did not detract from the experience. Software generally did not perform under 60fps. The software may perform better when the performance sampler is not running.
 
   Requests generally did not exceed 500KB.
-  
+
   The above data was obtained using the Google Chrome Performance Sampling tools and Network Sampling tools.
 
   Successfulness rating: 4/5
@@ -43,7 +43,7 @@ Prior to client signing off on the finished software
 - **Did the users find the software easy to understand and enjoyable to use?**
 
   Survey results indicated that overall, the software was easy, and enjoyable to use. On average, users rated the usability of the app 4.5/5.
-  
+
   All text are clear and legible, colours and icons aid the experience. Users overall reported no issues, or very minimal issues in understanding the software.
 
   Successfulness rating: 4/5
@@ -108,41 +108,57 @@ The client and users will also be asked to complete the evaluation criteria form
 
 - **Is the app running smoothly?**
 
-  _[Response here]_
+  Is the app running at 60 fps at all times? Y/N
 
-  Successfulness rating: -/5
+  Does the app transfer any more than 500KB when fetching for data? Y/N
+
+  Does the pages load under 1 second? Y/N
+
+  Successfulness rating: -/3
 
 - **Is the app enjoyable and easy to use?**
 
-  _[Response here]_
+  Does the user feel satisfied when using the app? Y/N
 
-  Successfulness rating: -/5
+  Does the user feel highly about the visuals and animations of the app? Y/N
+
+  Does the user have trouble interpreting or understanding what certain parts of the app does? Y/N
+
+  Successfulness rating: -/3
 
 #### Effectiveness
 
 - **Is the software accessible and running without issues?**
 
-  _[Response here]_
+  Was any errors logged in the browser console? Y/N
 
-  Successfulness rating: -/5
+  Are all data that is produced 100% correct? Y/N
+
+  Successfulness rating: -/2
 
 - **Is the software helping your group projects run smoothly?**
 
-  _[Response here]_
+  Has the discussion feature helped the team in assigning tasks and roles?
 
-  Successfulness rating: -/5
+  Has the timeline feature helped the team in managing a project schedule?
+
+  Has the file management feature helped the team in managing versions of files?
+
+  Successfulness rating: -/3
 
 - **Is there anything that could be done to improve the integration of the app?**
 
-  Note: More suggestions of changes that could improve the app will lead to a lower successfulness rating.
+  Opened ended question demanding the user to give deeper insight into their use of the app.
 
-  _[Response here]_
+  More suggestions of changes that could improve the app will lead to a lower successfulness rating.
 
   Successfulness rating: -/5
 
 ### Explanation
 
 After the installation, it should be ensured that the software is installed correctly and integrated well into the usage environment. As the software has not had a chance yet of being used extensively, tests must be done assuming the user has not interacted with the software much.
+
+The evaluation criteria from part A is based on a comprehensive set of functional and non-functional requirements as outlined in the SRS. It is designed to be efficient to use for both a developer or user to judge whether has met its requirements. For example, the evaluation criteria allows the evaluator to mark how successful an aspect was out of 5 stars.
 
 ## Stage 3
 
@@ -160,38 +176,54 @@ An online survey or questionnaire will be distributed to users of the applicatio
 
 - **Is the app running smoothly?**
 
-  _[Response here]_
+  Is the app running at 60 fps at all times? Y/N
 
-  Successfulness rating: -/5
+  Does the app transfer any more than 500KB when fetching for data? Y/N
+
+  Does the pages load under 1 second? Y/N
+
+  Successfulness rating: -/3
 
 - **Is the app enjoyable and easy to use?**
 
-  _[Response here]_
+  Does the user feel satisfied when using the app? Y/N
 
-  Successfulness rating: -/5
+  Does the user feel highly about the visuals and animations of the app? Y/N
+
+  Does the user have trouble interpreting or understanding what certain parts of the app does? Y/N
+
+  Successfulness rating: -/3
 
 #### Effectiveness
 
 - **Is the software accessible and running without issues?**
 
-  _[Response here]_
+  Was any errors logged in the browser console? Y/N
 
-  Successfulness rating: -/5
+  Are all data that is produced 100% correct? Y/N
+
+  Successfulness rating: -/2
 
 - **Is the software helping your group projects run smoothly?**
 
-  _[Response here]_
+  Has the discussion feature helped the team in assigning tasks and roles?
 
-  Successfulness rating: -/5
+  Has the timeline feature helped the team in managing a project schedule?
+
+  Has the file management feature helped the team in managing versions of files?
+
+  Successfulness rating: -/3
 
 - **Is there anything that could be done to improve the integration of the app?**
 
-  Note: More suggestions of changes that could improve the app will lead to a lower successfulness rating.
+  Opened ended question demanding the user to give deeper insight into their use of the app.
 
-  _[Response here]_
+  More suggestions of changes that could improve the app will lead to a lower successfulness rating.
 
   Successfulness rating: -/5
 
 ### Explanation
 
 The same criteria will be used to evaluate the integration of the app after 5 months. This will ensure the results a directly comparable and help achieve a valid conclusion.
+
+See the explanation above for more details.

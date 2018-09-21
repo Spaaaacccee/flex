@@ -6,6 +6,18 @@
 
 [See the source code of the Asynchronous quicksort](../src/classes/Algorithm.js)
 
+The complex algorithm is an asynchronous quicksort. The quicksort is asynchronous as each time the array is divided, the next recursion can be handled at the same time, increasing performance. The quicksort supports a custom sorting comparator. This means it accepts a function as a parameter which is used to determine how the items are sorted.
+
+For example, (a, b) => a - b will result in a positive number when a is larger, a negative number when b is larger, and 0 when the two are the same.
+
+The will tell the algorithm to place 2 after 1, which is larger.
+
+The algorithm will sort _around_ invalid values, if the comparison fails.
+
+The algorithm will not ever end up with infinite recursion, which is a problem with the built in sorting algorithm, as the number of iterations is determined by array length.
+
+The algorithm is very flexible, and is used in the application primarily for sorting items by date order.
+
 ## Validation
 
 There are various stages where the user is required to enter data.

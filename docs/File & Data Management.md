@@ -24,6 +24,8 @@ The `build` folder contains compiled code.
 
 The deployed app is a copy of the resources in the build folder.
 
+This structure is commonly used among React developers, and can be easily understood by a new developer if changes need to be made.
+
 ## Database & File storage
 
 The application uses Firebase for database and file storage solutions.
@@ -102,7 +104,9 @@ Here's how it looks like in the Firebase Console
   }
 ```
 
-- These security rules are run on the server, and is impossible to bypass.
+- These security rules are run on the server, and is (almost) impossible to bypass.
+
+Data on firebase is always encrypted. Encryption is managed by Google.
 
 - Most database operations are done through _transactions_, which guarantee that the operation can be performed on the latest version of the data, and can merge successfully with operations done at the same time by other users.
 
@@ -134,6 +138,8 @@ Backup is again saved as a JSON hierarchy tree, with the following format
 }
 ```
 
-Here's what it looks like in Chrome Dev Tools
+Backups are not visible by any other app or service except for Bonfire.
+
+Here's what it looks like in Chrome Dev Tools.
 
 ![Local Backups in Chrome Developer Tools](./img/img0.png)
