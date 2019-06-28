@@ -216,8 +216,7 @@ export default class ProjectSider extends Component {
                 <Icon type={item.icon} theme={this.state.index===index?"filled":null}/>
                 <span>{item.name}</span>
                 <Badge
-                  style={{ transform: "scale(0.9)" }}
-                  offset={[-2, 10]}
+                  style={{ marginRight:-20 }}
                   count={this.state.index === index ? 0 : this.state.notifications[index] || 0}
                 >
                   {" "}

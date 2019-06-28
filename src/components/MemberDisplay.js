@@ -71,7 +71,7 @@ export default class MemberDisplay extends Component {
                 }}
               >
                 {/* Display the user profile image */}
-                <UserIcon thumbnail={this.state.user.profilePhoto} />
+                <UserIcon thumbnail={this.state.user.profilePhoto} name={this.state.user.name} />
                 <div style={{ paddingBottom: 10 }} />
                 {/* Display the user name */}
                 {this.state.user.name || <Icon type="loading" />}{" "}

@@ -12,6 +12,7 @@
     "crypto-js": "^3.1.9-1",
     "fastclick": "^1.0.6",
     "firebase": "^5.0.4",
+    "firebase-tools": "^5.1.1",
     "firebaseui": "^3.0.0",
     "format-json-pretty": "^1.0.1",
     "googleapis": "^27.0.0",

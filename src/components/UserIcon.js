@@ -12,9 +12,11 @@ export default class UserIcon extends Component {
   static defaultProps = {
     onPress: () => {},
     selected: false,
-    thumbnail: ""
+    thumbnail: "",
+    name: ""
   };
   state = {
+    name: "",
     selected: false, // Whether this item is selected.
     thumbnail: "" // The thumbnail image of the user.
   };
@@ -27,7 +29,8 @@ export default class UserIcon extends Component {
     // Apply the supplied properties.
     this.setState({
       selected: props.selected,
-      thumbnail: props.thumbnail
+      thumbnail: props.thumbnail,
+      name: props.name
     });
   }
   render() {
@@ -37,6 +40,7 @@ export default class UserIcon extends Component {
         <ProjectIcon
           icon="user"
           thumbnail={this.state.thumbnail}
+          name={this.state.name}
           onPress={() => {
             this.props.onPress();
           }}

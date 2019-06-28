@@ -96,7 +96,10 @@ export default class ProjectIcon extends Component {
         onTouchStart={this.handlePress.bind(this)}
       >
         {/* Display a badge showing how many notifications there are */}
-        <Badge count={this.state.notificationCount} offset={[15, 15]}>
+        <Badge count={this.state.notificationCount} offset={[0,45]}
+          style={{
+            marginRight: "18px"
+          }}>
           {/* Display the icon */}
           <PrimaryIcon
             background={this.thumbnailToCSS()}

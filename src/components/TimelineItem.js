@@ -177,11 +177,12 @@ export default class TimelineItem extends Component {
                   <div>
                     <div>{new Date(this.state.event.date).toDateString()}</div>
                     <div>{this.state.event.description || ""}</div>
-                    <br />
+                    <div style={{marginBottom:5}}/>
                   </div>
                   <div>
                     {/* Display the people involved */}
                     <UserGroupDisplay project={this.state.project} people={this.state.event.involvedPeople} />
+                    <div style={{marginBottom:3}}/>
                     {this.state.event.creator ? (
                       // Display the creator of this event
                       <div>

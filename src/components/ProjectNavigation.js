@@ -267,7 +267,10 @@ export default class ProjectNavigation extends Component {
     return (
       <Scrollbars autoHide hideTracksWhenNotNeeded>
         <Badge
-          offset={[15, 15]}
+          offset={[0,43]}
+          style={{
+              marginRight: 19
+            }}
           count={
             !!this.state.userData && !!this.state.userData.pendingInvites
               ? this.state.userData.pendingInvites.length
