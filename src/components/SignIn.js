@@ -215,6 +215,9 @@ export default class SignIn extends Component {
           {/* Holds the original firebase ui */}
           <div style={{ display: "none", marginTop: -25 }} id="firebaseui-auth-container" />
         </div>
+        <p style={{opacity: 0.5, position: "absolute", bottom: 25}}>
+        2.0a Development Preview
+        </p>
       </div>
     );
   }
