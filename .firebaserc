@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "flex-space"
+    "default": "flex-space",
+    "bonfire": "project-bonfire"
   }
 }

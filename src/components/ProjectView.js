@@ -4,7 +4,7 @@ import { Layout, Icon, message, Popover, Card } from "antd";
 import { Scrollbars } from "react-custom-scrollbars";
 import ProjectSider from "./ProjectSider";
 import PageView from "./PageView";
-import Page, { Pages, UserPage } from "../classes/Page";
+import Page, { Pages, HomePage, UserPage } from "../classes/Page";
 import Fetch from "../classes/Fetch";
 import Project from "../classes/Project";
 
@@ -28,7 +28,13 @@ export default class ProjectView extends Component {
     onMessage: () => {}
   };
 
+  projectIndex={
+    [-1]:HomePage,
+    [-2]:UserPage,
+  }
+
   state = {
+    openedProjectIndex:-1,
     style: {}, // Pass the style attribute from the Component to the DOM element
     projectID: null, // The project ID of the project that should be displayed
     project: {}, // The associated project.
@@ -110,6 +116,7 @@ export default class ProjectView extends Component {
     // Update this component to match its properties.
     this.setState(
       {
+        openedProjectIndex: props.openedProjectIndex,
         style: props.style || this.state.style,
         pauseSiderUpdate: props.pauseSiderUpdate,
         navigationCollapsed: props.navigationCollapsed ? true : false,
@@ -146,12 +153,12 @@ export default class ProjectView extends Component {
 
   render() {
     // Default to displaying the user page if no project is selected.
-    const displayPages = this.state.projectID ? Pages : UserPage;
+    const displayPages = this.state.projectID ? Pages : (this.projectIndex[this.state.openedProjectIndex]);
     // If the selected index is more than the available pages, cap the index at the last available option.
     const openIndex = Math.min(this.state.openedPageIndex, displayPages.length - 1);
     const openedPage = displayPages[openIndex];
     // If the page that is displayed is the user page, set the project to an empty object.
-    const displayProject = Page.equal(openedPage, UserPage) ? {} : this.state.project;
+    const displayProject = Page.equal(openedPage, HomePage) ? {} : this.state.project;
     const hasPermission =
       !this.state.project ||
       !Object.keys(this.state.project).length ||

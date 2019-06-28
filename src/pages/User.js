@@ -74,6 +74,7 @@ export default class USER extends Component {
     return (
       <div>
         {this.state.user && this.state.user.uid ? (
+          <Card>
           <div style={{ textAlign: "left" }}>
             <div style={{ textAlign: "center" }}>
               <div className="user-page-icon">
@@ -106,87 +107,8 @@ export default class USER extends Component {
               <br />
               <br />
             </div>
-            <Card>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "baseline",
-                  justifyContent: "center"
-                }}
-              >
-                <div
-                  style={{
-                    margin: "0 2.5vw",
-                    textAlign: "center"
-                  }}
-                >
-                  <div style={{ fontWeight: 600, fontSize: 36 }}>
-                    {this.state.user.projects ? this.state.user.projects.length : 0}
-                  </div>
-                  <p>Projects</p>
-                </div>
-                <div
-                  style={{
-                    margin: "0 2.5vw",
-                    textAlign: "center"
-                  }}
-                >
-                  <div style={{ fontWeight: 600, fontSize: 36 }}>
-                    {this.state.user.joinedProjects ? this.state.user.joinedProjects.length : 0}
-                  </div>
-                  <p>Joined Projects</p>
-                </div>
-                <div
-                  style={{
-                    margin: "0 2.5vw",
-                    textAlign: "center"
-                  }}
-                >
-                  <div style={{ fontWeight: 600, fontSize: 36 }}>
-                    {this.state.user.pendingInvites ? this.state.user.pendingInvites.length : 0}
-                  </div>
-                  <p>Invites</p>
-                </div>
-              </div>
-            </Card>
-            <br />
-            {this.generateProjectCards(
-              "Projects",
-              "Create a project by selecting the + icon on the navigation bar.",
-              this.state.user.projects,
-              data => (
-                <ProjectDisplay
-                  onOpenPressed={() => {
-                    this.props.passMessage({ type: "switchTo", content: data });
-                  }}
-                />
-              )
-            )}
-            <br />
-            {this.generateProjectCards("Joined", "You haven't joined any projects.", this.state.user.joinedProjects, data => (
-              <ProjectDisplay
-                onOpenPressed={() => {
-                  this.props.passMessage({ type: "switchTo", content: data });
-                }}
-              />
-            ))}
-            <br />
-            {this.generateProjectCards(
-              "Invites",
-              "You haven't been invited to any projects.",
-              this.state.user.pendingInvites,
-              data => (
-                <ProjectInvitation
-                  onAcceptInvite={() => {
-                    this.state.user.acceptInvite(data);
-                  }}
-                  onRejectInvite={() => {
-                    this.state.user.rejectInvite(data);
-                  }}
-                />
-              )
-            )}
           </div>
+          </Card>
         ) : (
             <div>
               <Icon type="loading" />

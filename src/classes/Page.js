@@ -4,12 +4,13 @@ import $ from "./Utils";
 
 import { Icon } from "antd";
 
-import USER from "../pages/User";
+import HOME from "../pages/Home";
 import MEMBERS from "../pages/Members";
 import FEED from "../pages/Feed";
 import TIMELINE from "../pages/Timeline";
 import FILES from "../pages/Files";
 import MESSAGES from "../pages/Messages";
+import USER from "../pages/User";
 
 /**
  * Represents a single page that can be displayed within the app.
@@ -128,6 +129,19 @@ export const Pages = [
 ];
 
 /**
+ * A list of pages that will be used for the home page.
+ */
+export const HomePage = [
+  new Page({
+    name: "Home",
+    icon: "file",
+    content: HOME,
+    requireProject: false,
+    topBarMode: "adaptive",
+  })
+];
+
+/**
  * A list of pages that will be used for the user page.
  */
 export const UserPage = [
@@ -148,3 +162,4 @@ export const UserPage = [
     )
   })
 ];
+

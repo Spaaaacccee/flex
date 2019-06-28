@@ -1,0 +1,76 @@
+[debug] [2019-06-28T15:00:07.323Z] ----------------------------------------------------------------------
+[debug] [2019-06-28T15:00:07.326Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\ZHE0104\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2019-06-28T15:00:07.326Z] CLI Version:   7.0.2
+[debug] [2019-06-28T15:00:07.326Z] Platform:      win32
+[debug] [2019-06-28T15:00:07.326Z] Node Version:  v10.16.0
+[debug] [2019-06-28T15:00:07.327Z] Time:          Sat Jun 29 2019 01:00:07 GMT+1000 (Australian Eastern Standard Time)
+[debug] [2019-06-28T15:00:07.327Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2019-06-28T15:00:07.341Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-06-28T15:00:07.342Z] > authorizing via signed-in user
+[debug] [2019-06-28T15:00:07.342Z] [iam] checking project project-bonfire for permissions ["firebase.projects.get","firebasedatabase.instances.update","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
+[debug] [2019-06-28T15:00:07.344Z] >>> HTTP REQUEST POST https://cloudresourcemanager.googleapis.com/v1/projects/project-bonfire:testIamPermissions  
+
+[debug] [2019-06-28T15:00:08.761Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-28T15:00:08.764Z] >>> HTTP REQUEST GET https://firebase.googleapis.com/v1beta1/projects/project-bonfire  
+ 
+[debug] [2019-06-28T15:00:09.229Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Deploying to 'project-bonfire'...
+[info] 
+[info] i  deploying database, storage, hosting
+[info] i  database: checking rules syntax...
+[debug] [2019-06-28T15:00:09.235Z] >>> HTTP REQUEST PUT https://project-bonfire.firebaseio.com/.settings/rules.json?dryRun=true  
+ {
+  "rules": {
+    ".read": "auth != null",
+    ".write": "false",
+    "users": {
+      ".indexOn": "email",
+      "$uid": {
+        ".write": "auth.uid===$uid",
+        "joinedProjects": {
+          ".write": "auth !== null"
+        },
+        "pendingInvites": {
+          ".write": "auth !== null"
+        },
+        "lastUpdatedTimestamp": {
+          ".write": "auth !== null"
+        }
+      }
+    },
+    "projects": {
+      "$projectID": {
+        ".write": "(auth != null && !root.child('projects').child($projectID).exists()) || root.child('projects').child($projectID).child('permissions').child(auth.uid).val()===true || root.child('projects').child($projectID).child('owner').val()===auth.uid"
+      }
+    },
+    "messages": {
+      "$messengerID": {
+        ".write": "(auth != null && !root.child('messages').child($messengerID).exists()) || root.child('projects').child($messengerID).child('permissions').child(auth.uid).val()===true||root.child('projects').child($messengerID).child('owner').val()===auth.uid||(root.child('messages').child($messengerID).child('project').exists()&&root.child('projects').child(root.child('messages').child($messengerID).child('project').val()).child('permissions').child(auth.uid).val()===true)||(root.child('messages').child($messengerID).child('project').exists()&&root.child('projects').child(root.child('messages').child($messengerID).child('project').val()).child('owner').val()===auth.uid)"
+      }
+    }
+  }
+}
+
+[debug] [2019-06-28T15:00:10.269Z] <<< HTTP RESPONSE 200
+[info] +  database: rules syntax for database project-bonfire is valid
+[debug] [2019-06-28T15:00:10.271Z] >>> HTTP REQUEST GET https://appengine.googleapis.com/v1/apps/project-bonfire  
+ 
+[debug] [2019-06-28T15:00:12.469Z] <<< HTTP RESPONSE 200
+[info] i  storage: checking storage.rules for compilation errors...
+[debug] [2019-06-28T15:00:12.472Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/project-bonfire:test  
+
+[debug] [2019-06-28T15:00:14.391Z] <<< HTTP RESPONSE 200
+[info] +  storage: rules file storage.rules compiled successfully
+[debug] [2019-06-28T15:00:14.394Z] >>> HTTP REQUEST POST https://firebasehosting.googleapis.com/v1beta1/sites/project-bonfire/versions  
+
+[debug] [2019-06-28T15:00:17.302Z] <<< HTTP RESPONSE 200
+[info] i  storage: uploading rules storage.rules...
+[debug] [2019-06-28T15:00:17.305Z] >>> HTTP REQUEST POST https://firebaserules.googleapis.com/v1/projects/project-bonfire/rulesets  
+
+[debug] [2019-06-28T15:00:19.051Z] <<< HTTP RESPONSE 200
+[debug] [2019-06-28T15:00:19.052Z] [rules] created ruleset projects/project-bonfire/rulesets/a23e75f0-9bf1-497a-8f18-725d58f88fb9
+[info] i  hosting[project-bonfire]: beginning deploy...
+[info] i  hosting[project-bonfire]: found 37 files in build
+[debug] [2019-06-28T15:00:19.077Z] [hosting] hash cache [YnVpbGQ] load error: lines is not defined

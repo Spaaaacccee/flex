@@ -7,6 +7,7 @@ import * as firebaseui from "firebaseui";
 import "../../node_modules/firebaseui/dist/firebaseui.css";
 
 import "./SignIn.css";
+import "./Pattern.css";
 
 /**
  * Sign in screen for signing into the app
@@ -126,7 +127,7 @@ export default class SignIn extends Component {
   render() {
     return (
       <div
-        className="sign-in-wrapper"
+        className="sign-in-wrapper pattern"
         style={
           this.state.signedIn
             ? {
@@ -193,7 +194,7 @@ export default class SignIn extends Component {
                   color: "rgb(42, 166, 253)"
                 }}
               >
-                Docs on Github
+                Docs
               </Button>
             </a>
             <br />

@@ -13,7 +13,7 @@ export default class ProjectIcon extends Component {
   static defaultProps = {
     name: "",
     thumbnail: "",
-    onPress: () => {}, // A callback for when the item is pressed
+    onPress: () => { }, // A callback for when the item is pressed
     selected: false,
     icon: ""
   };
@@ -72,6 +72,7 @@ export default class ProjectIcon extends Component {
    */
   thumbnailToCSS() {
     if (this.state.thumbnail) {
+      return `url(${this.state.thumbnail})`;
       if (this.state.thumbnail.substring(0, 4) === "http") {
         // If the thumbnail starts with http, then return a url css string.
         return `url(${this.state.thumbnail})`;
@@ -96,7 +97,7 @@ export default class ProjectIcon extends Component {
         onTouchStart={this.handlePress.bind(this)}
       >
         {/* Display a badge showing how many notifications there are */}
-        <Badge count={this.state.notificationCount} offset={[0,45]}
+        <Badge count={this.state.notificationCount} offset={[0, 45]}
           style={{
             marginRight: "18px"
           }}>
@@ -109,8 +110,8 @@ export default class ProjectIcon extends Component {
               ) : this.state.name ? (
                 this.state.name.substring(0, 2).trim()
               ) : (
-                <Icon type="fire" theme="filled" />
-              )
+                    <Icon type="fire" theme="filled" />
+                  )
             }
           />
         </Badge>

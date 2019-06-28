@@ -26,6 +26,7 @@ const { Sider } = Layout;
 export default class Main extends Component {
   state = {
     openedProjectID: "", // The project ID of the currently opened, or on-screen project
+    openedProjectIndex: -1,
     navigationCollapsed: true, // Whether the navigation sidebars (left-side) are collapsed
     siderWidth: 64, // The width of the left-most sidebar
     breakpoint: 1280, // The screen-width in which the layout adopt a widescreen format
@@ -147,16 +148,26 @@ export default class Main extends Component {
                   : []
               }
               openedProject={this.state.openedProjectID}
+              openedProjectIndex={this.state.openedProjectIndex}
               onProjectChanged={projectChangedArgs => {
                 // Respond to when the selected project changes by setting the selected item in the component state
                 this.setState({
                   openedProjectID: projectChangedArgs.item
                 });
               }}
-              onUserProfilePress={() => {
+              onHomeButtonPress={() => {
                 // Respond to when the user profile button is pressed by setting the selected item in the component state to null. This will cause the user profile to open
                 this.setState({
-                  openedProjectID: null
+                  openedProjectID: null,
+                  openedProjectIndex: -1
+                });
+              }}
+              onUserButtonPress={() => {
+                // Respond to when the user profile button is pressed by setting the selected item in the component state to null. This will cause the user profile to open
+                this.setState({
+                  openedProjectID: null,
+                  
+                  openedProjectIndex: -2
                 });
               }}
               onAddIconPress={() => {
@@ -212,6 +223,7 @@ export default class Main extends Component {
             hideSideBar={!this.state.openedProjectID}
             // Sync the project ID of the project view with the opened project's ID
             projectID={this.state.openedProjectID}
+            openedProjectIndex={this.state.openedProjectIndex}
           />
         </Layout>
         {/* The sign in splashscreen. Automatically disappears when the user is logged in */}

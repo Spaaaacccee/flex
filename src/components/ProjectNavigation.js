@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import { Menu, Badge, Icon } from "antd";
 
 import ProjectIcon from "./ProjectIcon";
+import BrandIcon from "./BrandIcon";
 import UserIcon from "./UserIcon";
 import AddIcon from "./AddIcon";
 
@@ -12,7 +13,7 @@ import User from "../classes/User";
 import update from "immutability-helper";
 import $ from "../classes/Utils";
 import Notifier from "../classes/Notifier";
-import {Scrollbars} from "react-custom-scrollbars";
+import { Scrollbars } from "react-custom-scrollbars";
 
 /**
  * Represents a single item that can be displayed by the project navigation sidebar
@@ -63,10 +64,10 @@ class itemChangedArgs {
  */
 export default class ProjectNavigation extends Component {
   static defaultProps = {
-    onProjectChanged: () => {},
-    onAddIconPress: () => {},
-    onUserProfilePress: () => {},
-    passMessage: () => {},
+    onProjectChanged: () => { },
+    onAddIconPress: () => { },
+    onHomeButtonPress: () => { },
+    passMessage: () => { },
     items: []
   };
 
@@ -107,7 +108,7 @@ export default class ProjectNavigation extends Component {
         user: props.user,
         openedIndex: props.openedProject
           ? props.items.indexOf(props.openedProject)
-          : -1
+          : props.openedProjectIndex
       },
       () => {
 
@@ -159,7 +160,7 @@ export default class ProjectNavigation extends Component {
   getProjects(newItems, oldItems, userID) {
     // For each new item, add a message and history event listener if an existing one doesn't exist.
     newItems.forEach(projectID => {
-      if (!oldItems.find(x=>x===projectID)) {
+      if (!oldItems.find(x => x === projectID)) {
         // Define a messages listener, to update the messages count.
         Project.get(projectID).then(project => {
           Fetch.getMessagesReference(project.messengerID || project.projectID)
@@ -251,12 +252,20 @@ export default class ProjectNavigation extends Component {
    * @return {void}
    * @memberof ProjectNavigation
    */
-  handleUserProfilePress() {
+  handleHomeButtonPress() {
     this.setState({
-      openedProject: this.state.userPage,
+      openedProject: this.state.homePage,
       openedIndex: -1
     });
-    this.props.onUserProfilePress();
+    this.props.onHomeButtonPress();
+  }
+
+  handleUserButtonPress() {
+    this.setState({
+      openedProject: this.state.userPage,
+      openedIndex: -2
+    });
+    this.props.onUserButtonPress();
   }
 
   handleAddIconPress() {
@@ -267,23 +276,30 @@ export default class ProjectNavigation extends Component {
     return (
       <Scrollbars autoHide hideTracksWhenNotNeeded>
         <Badge
-          offset={[0,43]}
+          offset={[0, 43]}
           style={{
-              marginRight: 19
-            }}
+            marginRight: 19
+          }}
           count={
             !!this.state.userData && !!this.state.userData.pendingInvites
               ? this.state.userData.pendingInvites.length
               : 0
           }
-        > 
+        >
           {/* Display a user icon. */}
-          <UserIcon
-            thumbnail={this.state.user ? this.state.user.photoURL : ""}
-            onPress={this.handleUserProfilePress.bind(this)}
+          <BrandIcon
+            // thumbnail={this.state.user ? this.state.user.photoURL : ""}
+            onPress={this.handleHomeButtonPress.bind(this)}
             selected={this.state.openedIndex === -1}
           />
         </Badge>
+        {/* Display a user icon. */}
+        <UserIcon
+          thumbnail={this.state.user ? this.state.user.photoURL : ""}
+          onPress={this.handleUserButtonPress.bind(this)}
+          selected={this.state.openedIndex === -2}
+        />
+        <div style={{ borderBottom: "2px solid rgba(255,255,255,0.2)", width: 32, margin: "auto" }} />
         {this.state.items ? (
           // Display the list of projects.
           <Menu
@@ -314,8 +330,8 @@ export default class ProjectNavigation extends Component {
             {<AddIcon onPress={this.handleAddIconPress.bind(this)} />}
           </Menu>
         ) : (
-          <ProjectIcon icon={"loading"} />
-        )}
+            <ProjectIcon icon={"loading"} />
+          )}
       </Scrollbars>
     );
   }
