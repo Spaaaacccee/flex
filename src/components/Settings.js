@@ -16,7 +16,7 @@ const { TabPane } = Tabs;
  */
 export default class Settings extends Component {
   static defaultProps = {
-    onClose: () => {}
+    onClose: () => { }
   };
   state = {
     openedTabIndex: "1",
@@ -261,45 +261,47 @@ export default class Settings extends Component {
                 </p>
               </div>
             ) : (
-              <div>
-                <Button
-                  type="danger"
-                  disabled={this.state.saving}
-                  onClick={() => {
-                    this.setState({ saving: true }, () => {
-                      // What to do when leaving a project.
-                      User.getCurrentUser().then(user => {
-                        // Make the current user leave the project.
-                        user.leaveProject(this.state.sourceProject.projectID).then(error => {
-                          if (!error) {
-                            // If no error occured then display a message.
-                            message.success(`Successfully left ${this.state.sourceProject.name}`);
-                          }
-                          this.props.onClose();
+                <div>
+                  <Button
+                    type="danger"
+                    disabled={this.state.saving}
+                    onClick={() => {
+                      this.setState({ saving: true }, () => {
+                        // What to do when leaving a project.
+                        User.getCurrentUser().then(user => {
+                          // Make the current user leave the project.
+                          user.leaveProject(this.state.sourceProject.projectID).then(error => {
+                            if (!error) {
+                              // If no error occured then display a message.
+                              message.success(`Successfully left ${this.state.sourceProject.name}`);
+                            }
+                            this.props.onClose();
+                          });
                         });
                       });
-                    });
-                  }}
-                >
-                  Leave Project
+                    }}
+                  >
+                    Leave Project
                 </Button>
-                <br />
-                <div style={{ height: 10 }} />
-                <p>{"You won't be able to rejoin until someone invites you again."}</p>
-              </div>
-            )}
+                  <br />
+                  <div style={{ height: 10 }} />
+                  <p>{"You won't be able to rejoin until someone invites you again."}</p>
+                </div>
+              )}
           </TabPane>
-          <TabPane
-            tab={
-              <span>
-                <Icon type="api" theme={this.state.openedTabIndex === "5" ? "filled" : null} />
-                {"Debug"}
-              </span>
-            }
-            key="5"
-          >
-            <pre>{formatJSON(this.state.sourceProject)}</pre>
-          </TabPane>
+          {
+            //   <TabPane
+            //   tab={
+            //     <span>
+            //       <Icon type="api" theme={this.state.openedTabIndex === "5" ? "filled" : null} />
+            //       {"Debug"}
+            //     </span>
+            //   }
+            //   key="5"
+            // >
+            //   <pre>{formatJSON(this.state.sourceProject)}</pre>
+            // </TabPane>
+          }
         </Tabs>
         <br />
       </Modal>

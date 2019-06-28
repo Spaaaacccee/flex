@@ -24,7 +24,7 @@ class MESSAGES extends Component {
   state = {
     project: {}, // The source project.
     user: {}, // The current user.
-    inputValue: Mention.toContentState(""), // The content of the message input.
+    inputText: "",
     messenger: null, // The messenger to send and receive messages with.
     messageStatus: {}, // A dictionary that defines whether each message is sent or processing etc.
     orderedMessages: [], // A list of messages to render.
@@ -291,13 +291,13 @@ class MESSAGES extends Component {
         }),
         ...(this.state.consoleStatus === "editing" && msgID === this.state.consoleEditTarget.uid
           ? (() => {
-              // If the console is in edit mode, clear it.
-              this.setInputValue("");
-              return {
-                consoleStatus: "ready",
-                consoleEditTarget: null
-              };
-            })()
+            // If the console is in edit mode, clear it.
+            this.setInputValue("");
+            return {
+              consoleStatus: "ready",
+              consoleEditTarget: null
+            };
+          })()
           : {})
       },
       () => {
@@ -365,7 +365,7 @@ class MESSAGES extends Component {
   handleSend() {
     this.inputElement.focus();
     const maxChars = 2000;
-    let val = Mention.toString(this.state.inputValue).trim();
+    let val = this.state.inputText.trim();
     if (!val) return;
     if (this.state.messenger) {
       // Trim the message if it's too long.
@@ -502,10 +502,12 @@ class MESSAGES extends Component {
    */
   setInputValue(string, callback) {
     this.settingInput = true;
+    string = $.string(string).trimLeft();
+    let inputVal = Mention.toContentState(string);
     // Set the input value.
-    this.setState({ inputValue: Mention.toContentState($.string(string).trimLeft()) }, () => {
-      // Execute the callback if it exists.
-      if (callback) callback();
+    this.setState({ inputText: string }, () => {
+      this.inputElement.mentionEle._editor.SetText(string);
+      if (callback) callback;
       this.settingInput = false;
     });
   }
@@ -589,8 +591,8 @@ class MESSAGES extends Component {
                 this.loadMore();
               } else if (
                 this.scrollElement.getScrollHeight() -
-                  this.scrollElement.getClientHeight() -
-                  this.scrollElement.getScrollTop() <=
+                this.scrollElement.getClientHeight() -
+                this.scrollElement.getScrollTop() <=
                 this.clearMessageTriggerOffset
               ) {
                 this.loadLess();
@@ -608,15 +610,15 @@ class MESSAGES extends Component {
                 Stop scrolling here to load more messages
               </span>
             ) : (
-              !!this.state.orderedMessages.length && (
-                <span>
-                  <p>
-                    <Icon type="message" />
-                  </p>
-                  This marks the beginning of your conversation
+                !!this.state.orderedMessages.length && (
+                  <span>
+                    <p>
+                      <Icon type="message" />
+                    </p>
+                    This marks the beginning of your conversation
                 </span>
-              )
-            )}
+                )
+              )}
           </p>
           {this.state.orderedMessages.length ? (
             <List itemLayout="vertical" style={{ userSelect: "text" }}>
@@ -643,6 +645,7 @@ class MESSAGES extends Component {
                         }
                       );
                       this.inputElement.focus();
+                      this.setState({consoleStatus: "ready"})
                       document.execCommand("selectAll", false, null);
                     }}
                     onEditPressed={() => {
@@ -661,27 +664,27 @@ class MESSAGES extends Component {
                 ))}
             </List>
           ) : (
-            <div style={{ opacity: 0.65, margin: 50, marginTop: "10vh" }}>
-              <Icon type="message" />
-              <br />
-              <br />
-              {this.state.messenger ? (
-                <div>
-                  {"You and your team's messages will appear here."}
-                  <br />
-                  {"Why don't you start a conversation?"}
-                </div>
-              ) : (
-                <div>
-                  {"We're getting Messages ready."}
-                  <br />
-                  {"It won't take too long."}
-                </div>
-              )}
-              <br />
-              <br />
-            </div>
-          )}
+              <div style={{ opacity: 0.65, margin: 50, marginTop: "10vh" }}>
+                <Icon type="message" />
+                <br />
+                <br />
+                {this.state.messenger ? (
+                  <div>
+                    {"You and your team's messages will appear here."}
+                    <br />
+                    {"Why don't you start a conversation?"}
+                  </div>
+                ) : (
+                    <div>
+                      {"We're getting Messages ready."}
+                      <br />
+                      {"It won't take too long."}
+                    </div>
+                  )}
+                <br />
+                <br />
+              </div>
+            )}
         </Scrollbars>
         <div className="message-console" style={{ opacity: this.state.messenger ? 1 : 0 }}>
           <div>
@@ -693,11 +696,11 @@ class MESSAGES extends Component {
                   <div>
                     <List size="small" style={{ margin: "-5px 0" }}>
                       {[
-                        { icon: "file", name: "File", action: () => {} },
-                        { icon: "calendar", name: "Event", action: () => {} },
-                        { icon: "book", name: "History", action: () => {} },
-                        { icon: "user", name: "Member", action: () => {} },
-                        { icon: "tags-o", name: "Role", action: () => {} }
+                        { icon: "file", name: "File", action: () => { } },
+                        { icon: "calendar", name: "Event", action: () => { } },
+                        { icon: "book", name: "History", action: () => { } },
+                        { icon: "user", name: "Member", action: () => { } },
+                        { icon: "tags-o", name: "Role", action: () => { } }
                       ].map((x, i) => (
                         <List.Item key={i}>
                           <a onClick={x.action}>
@@ -758,7 +761,7 @@ class MESSAGES extends Component {
                       .map(item => (
                         <Mention.Nav key={item.uid} value={item.name + "#" + $.id().checkSum(item.uid)} data={item}>
                           <span style={{ color: HSL.toCSSColour(item.color) }}>
-                            <Icon  type="tag" theme="filled" /> {item.name}
+                            <Icon type="tag" theme="filled" /> {item.name}
                           </span>
                         </Mention.Nav>
                       ));
@@ -784,12 +787,12 @@ class MESSAGES extends Component {
                   }}
                   type="email"
                   ref={e => (this.inputElement = e)}
-                  value={this.state.inputValue}
+                  // value={this.state.inputValue}
                   className="input"
                   onChange={e => {
                     if (!this.settingInput) {
                       this.setState({
-                        inputValue: e
+                        inputText: Mention.toString(e)
                       });
                     }
                   }}
@@ -803,7 +806,7 @@ class MESSAGES extends Component {
               style={{ flex: "none" }}
               onClick={(this.state.consoleStatus === "editing" ? this.handleEdit : this.handleSend).bind(this)}
               type="primary"
-              disabled={!this.state.messenger || !Mention.toString(this.state.inputValue).trim()}
+              disabled={!this.state.messenger || !this.state.inputText.trim()}
             >
               {this.state.consoleStatus === "editing" ? "" : "Send"}
             </Button>

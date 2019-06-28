@@ -57,12 +57,12 @@ export default class USER extends Component {
           <div style={{ display: "flex", padding: 24 }}>
             {!!data && !!data.length
               ? data.map((item, index) => (
-                  <div style={{ paddingRight: 20, flex: "none" }} key={index}>
-                    <ContextProvider projectID={item} userID={this.state.user.uid}>
-                      {renderComponent(item)}
-                    </ContextProvider>
-                  </div>
-                ))
+                <div style={{ paddingRight: 20, flex: "none" }} key={index}>
+                  <ContextProvider projectID={item} userID={this.state.user.uid}>
+                    {renderComponent(item)}
+                  </ContextProvider>
+                </div>
+              ))
               : notFoundMessage}
           </div>
         </Scrollbars>
@@ -186,16 +186,12 @@ export default class USER extends Component {
                 />
               )
             )}
-            <br />
-            <Card title="Debug Info">
-              <pre>{formatJSON(this.state.user)}</pre>
-            </Card>
           </div>
         ) : (
-          <div>
-            <Icon type="loading" />
-          </div>
-        )}
+            <div>
+              <Icon type="loading" />
+            </div>
+          )}
       </div>
     );
   }
