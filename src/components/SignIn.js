@@ -16,12 +16,13 @@ import "./SignIn.css";
  */
 export default class SignIn extends Component {
   static defaultProps = {
-    onLogIn: () => {}
+    onLogIn: () => { }
   };
 
   state = {
     signedIn: false, // Whether the user is signed in.
-    loading: false // Whether the sign in screen is currently loading.
+    loading: false, // Whether the sign in screen is currently loading.
+    justClicked: false
   };
 
   /**
@@ -129,19 +130,19 @@ export default class SignIn extends Component {
         style={
           this.state.signedIn
             ? {
-                opacity: 0,
-                pointerEvents: "none"
-              }
+              opacity: 0,
+              pointerEvents: "none"
+            }
             : {
-                opacity: 1,
-                pointerEvents: "all"
-              }
+              opacity: 1,
+              pointerEvents: "all"
+            }
         }
       >
         <div className="sign-in">
           <div className="sign-in-text">
             {/* The logo */}
-            <img src="./icons/icon.png" style={{ width: 50, marginTop: 10 }} />
+            <img src="./icons/icon.png" className="logo-sign-in" />
             {/* The logo title */}
             <div
               style={{
@@ -153,7 +154,7 @@ export default class SignIn extends Component {
                 marginBottom: 30
               }}
             >
-              Bonfire
+              {/* Bonfire*/}
             </div>
             {/* The sign in button */}
             <Button
@@ -163,13 +164,16 @@ export default class SignIn extends Component {
                 padding: "5px 25px",
                 width: 180,
                 textAlign: "center",
-                boxShadow: "rgba(4, 111, 210, 0.24) 0px 5px 20px"
               }}
-              loading={this.state.loading || Fire.firebase().auth().currentUser}
+              loading={this.state.justClicked || this.state.loading || Fire.firebase().auth().currentUser}
               type="primary"
               icon="google"
               size="large"
               onClick={() => {
+                this.setState({justClicked: true});
+                setTimeout(()=>{
+                  this.setState({justClicked: false});
+                },3000)
                 document.querySelector("button.firebaseui-idp-button").click();
               }}
             >
@@ -200,7 +204,8 @@ export default class SignIn extends Component {
               <p
                 style={{
                   color: "black",
-                  opacity: 0.65
+                  opacity: 0.65,
+                  textDecoration:"underline"
                 }}
               >
                 No Google account?

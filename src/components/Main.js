@@ -10,6 +10,7 @@ import Fire from "../classes/Fire";
 import User from "../classes/User";
 import Project from "../classes/Project";
 import Fetch from "../classes/Fetch";
+import firebase from 'firebase';
 
 import "./Main.css";
 
@@ -96,7 +97,7 @@ export default class Main extends Component {
       uid: logInargs.user.uid, // The UID of the user in the database should match the UID of the user from the authentication source
       email: logInargs.user.email || null,
       name: logInargs.user.displayName || null,
-      profilePhoto: logInargs.user.photoURL || null,
+      profilePhoto: firebase.auth().currentUser['providerData'][0]['photoURL'] || null,
       lastLogInTimestamp: Date.now()
     });
     // Add the current user to component state so it could be accessed by children
