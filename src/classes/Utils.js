@@ -272,6 +272,11 @@ class StringUtils {
 }
 
 class ObjectUtils {
+
+  isUndefinedOrEmpty(obj) {
+    return !obj || !Object.keys(obj).length;
+  }
+
   /**
    * Simple object check.
    * @param item
@@ -345,6 +350,7 @@ class $ {
    * @property {()=>boolean} isObject
    * @property {()=>array} values
    * @property {(...sources)=>object} mergeDeep
+   * @property {()=>bool} isUndefinedOrEmpty
    */
 
   /**

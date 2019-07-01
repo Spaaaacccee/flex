@@ -2,6 +2,7 @@ import Project from "./Project";
 import User from "./User";
 import Fire from "./Fire";
 import Messages from "./Messages";
+import Firebase from "firebase";
 
 /**
  * Utilities for getting data from the database

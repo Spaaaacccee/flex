@@ -1,4 +1,6 @@
-import React, { Component } from "react";
+import React, { Component, useContext } from "react";
+
+import PropTypes from 'prop-types';
 
 import { Menu, Badge, Icon } from "antd";
 
@@ -14,6 +16,9 @@ import update from "immutability-helper";
 import $ from "../classes/Utils";
 import Notifier from "../classes/Notifier";
 import { Scrollbars } from "react-custom-scrollbars";
+import Page, { SpecialPages, Pages } from "../classes/Page";
+
+import { UserContext, ProjectContext } from "./Main";
 
 /**
  * Represents a single item that can be displayed by the project navigation sidebar
@@ -38,22 +43,16 @@ class ProjectIconItem {
 }
 
 /**
- * Args for when the item selection has changed
- * @class itemChangedArgs
+ * Gets the notification count, which is simply the sum of messages and history events.
+ * @param  {String} projectID 
+ * @return 
+ * @memberof ProjectNavigation
  */
-class itemChangedArgs {
-  item;
-  index;
-  /**
-   * Creates an instance of itemChangedArgs.
-   * @param  {any} item The ProjectIconItem that was selected
-   * @param  {any} index The index of the item that was selected
-   * @memberof itemChangedArgs
-   */
-  constructor(item, index) {
-    this.item = item;
-    this.index = index;
-  }
+const getNotificationCount = (projectID) => {
+  return (0
+    //Pages.messages || 0) +
+    //((this.state.notificationCount[projectID] || {}).histories || 0)
+  );
 }
 
 /**
@@ -62,277 +61,115 @@ class itemChangedArgs {
  * @class ProjectNavigation
  * @extends Component
  */
-export default class ProjectNavigation extends Component {
-  static defaultProps = {
-    onProjectChanged: () => { },
-    onAddIconPress: () => { },
-    onHomeButtonPress: () => { },
-    passMessage: () => { },
-    items: []
+export default function ProjectNavigation(props) {
+  const { availableProjects, navigation } = props;
+  const handlePress = (navigation) => {
+    props.onNavigation && props.onNavigation(navigation);
   };
-
-  state = {
-    items: [], // The project IDs of the projects to display.
-    openedProject: null, // The opened project.
-    openedIndex: -1, // The index of the currently opened item.
-    user: {}, // Data about the user, from the auth source.
-    userData: {}, // Data about the user, from the database.
-    projects: {}, // The projects to display.
-    notificationCount: {}, // A dictionary of notification counts.
-    pauseUpdate: false // Whether to temporarily stop updating.
-  };
-
-  componentDidMount() {
-    this.componentWillReceiveProps(this.props);
+  const handleAddIconPress = () => {
+    props.onAddIconPress && props.onAddIconPress();
   }
 
-  /**
-   * Sync the state of the component with the properties.
-   * @param  {Object} props Component properties
-   * @return {void}
-   * @memberof ProjectNavigation
-   */
-  componentWillReceiveProps(props) {
-    // If the new properties contain items, then set the new items.
-    if (props.items.length) {
-      Notifier.setProjects(props.items);
-    }
-    // Create a copy of the old items.
-    let oldItems = this.state.items.slice();
+  const user = UserContext.use(this);
+  const project = ProjectContext.use(this);
 
-    // Update the state with new properties.
-    this.setState(
+  return (
+    <Scrollbars autoHide hideTracksWhenNotNeeded>
       {
-        openedProject: props.openedProject,
-        items: props.items,
-        user: props.user,
-        openedIndex: props.openedProject
-          ? props.items.indexOf(props.openedProject)
-          : props.openedProjectIndex
-      },
-      () => {
-
-        // Get the project info.
-        this.getProjects(props.items, oldItems, props.user.uid);
-
-        // Get the user info.
-        User.getCurrentUser().then(user => {
-          this.setState({ userData: user });
-        });
+        SpecialPages.map(page => {
+          const thisNavigation = { type: "special", name: page.name };
+          const isSelected = NavigationData.isEqual(navigation, thisNavigation);
+          const notificationCount = isSelected ? 0 : page.getNotificationCount(project, user)
+          return <div>
+            <Badge
+              offset={[0, 43]}
+              style={{
+                marginRight: 19
+              }}
+              count={notificationCount}
+            >
+              {page.getIcon && page.getIcon(user, project, isSelected, () => {
+                handlePress(thisNavigation);
+              })}
+            </Badge>
+          </div>
+        })
       }
-    );
-  }
+      <div style={{ borderBottom: "2px solid rgba(255,255,255,0.2)", width: 32, margin: "auto" }} />
+      {
+        // Display the list of projects.
+        <Menu
+          style={{
+            background: "transparent",
+            border: "none"
+          }}
+        >
+          {availableProjects
+            .filter(
+              project =>
+                !project.deleted
+            )
+            .map((project, index) => {
+              const thisNavigation = { type: "project", projectID: project.projectID };
+              const isSelected = NavigationData.isEqual(navigation, thisNavigation);
+              const notificationCount = isSelected ? 0 : getNotificationCount(project)
+              return <ProjectIcon
+                notificationCount={notificationCount}
+                key={index}
+                name={project.name || null}
+                onPress={() => {
+                  handlePress(thisNavigation);
+                }}
+                selected={isSelected}
+              />
+            })}
+          {<AddIcon onPress={handleAddIconPress.bind(this)} />}
+        </Menu>
+      }
+    </Scrollbars>
+  );
+}
 
-  shouldComponentUpdate(props, state) {
-    if (props.items !== this.state.items) return true;
-    if (this.state.projects !== state.projects) return true;
-    if (props.openedProject !== this.state.openedProject) return true;
-    if ((props.user || {}).uid !== (this.state.user || {}).uid) return true;
-    if (this.state.openedIndex !== state.openedIndex) return true;
-    if (!User.equal(state.userData, this.state.userData)) return true;
-    if (state.projects !== this.state.projects) return true;
-    if (state.notificationCount !== this.state.notificationCount) return true;
-    // Don't update this component is no properties have changed.
-    return false;
-  }
-
+export class NavigationData {
   /**
-   * Gets the notification count, which is simply the sum of messages and history events.
-   * @param  {String} projectID 
+   * Check if two navigation objects are equal
+   * @param  {NavigationData} navA 
+   * @param  {NavigationData} navB 
    * @return 
    * @memberof ProjectNavigation
    */
-  getNotificationCount(projectID) {
-    return (
-      ((this.state.notificationCount[projectID] || {}).messages || 0) +
-      ((this.state.notificationCount[projectID] || {}).histories || 0)
-    );
+  static isEqual(navA, navB) {
+    if (navA.type !== navB.type) return false;
+    switch(navA.type) {
+      case "project":
+          return (navA.projectID === navB.projectID);
+      case "special":
+        return (navA.name === navB.name);
+    }
+    return true;
   }
 
   /**
-   * Get information about new projects.
-   * @param  {String[]} newItems 
-   * @param  {String[]} oldItems 
-   * @param  {String} userID 
-   * @return {void}
-   * @memberof ProjectNavigation
+   * @type {"special" | "project"}
+   * @memberof NavigationData
    */
-  getProjects(newItems, oldItems, userID) {
-    // For each new item, add a message and history event listener if an existing one doesn't exist.
-    newItems.forEach(projectID => {
-      if (!oldItems.find(x => x === projectID)) {
-        // Define a messages listener, to update the messages count.
-        Project.get(projectID).then(project => {
-          Fetch.getMessagesReference(project.messengerID || project.projectID)
-            .child("messages")
-            .on("value", snapshot => {
-              if (!this.state.items.find(x => x === project.projectID)) {
-                snapshot.ref.off();
-                return;
-              }
-              let messagesCount = (
-                $.object(snapshot.val() || {}).values() || []
-              ).filter(x => x.content && !(x.readBy || {})[userID]).length;
-              if (
-                messagesCount !==
-                (this.state.notificationCount[projectID] || {}).messages
-              ) {
-                this.setState(
-                  update(this.state, {
-                    notificationCount: {
-                      [projectID]: {
-                        $set: {
-                          ...(this.state.notificationCount[projectID] || {}),
-                          messages: messagesCount
-                        }
-                      }
-                    }
-                  })
-                );
-              }
-            });
-        });
-        // Define a project listener, to update the project name and notification count.
-        let projectCallback = snapshot => {
-          if (!this.state.items.find(x => x === projectID))
-            snapshot.ref.off("value", projectCallback);
-          let project = snapshot.val();
-          if (!project) return;
-          if (
-            project.deleted &&
-            this.state.openedProject === project.projectID
-          ) {
-            this.props.onMessage({ type: "switchTo", content: null });
-            snapshot.ref.off("value", projectCallback);
-          }
-          let histories = (project.history || []).filter(
-            x => !(x.readBy || {})[userID]
-          ).length;
-          this.setState({
-            notificationCount: update(this.state.notificationCount || {}, {
-              [projectID]: {
-                $set: {
-                  ...(this.state.notificationCount[projectID] || {}),
-                  histories
-                }
-              }
-            }),
-            projects: update(this.state.projects, {
-              [projectID]: { $set: project.name }
-            })
-          });
-        };
-        // Attach the project listener.
-        Fetch.getProjectReference(projectID).on("value", projectCallback);
-      }
-    });
-  }
-
+  type;
   /**
-   * Respond to when an item from the navigation sidebar is pressed
-   * @param  {Integer} index The index of the pressed item
-   * @return {void}
-   * @memberof ProjectNavigation
+   * @type string
+   * @memberof NavigationData
    */
-  handlePress(index) {
-    // Set internal state
-    this.setState({
-      openedProject: this.state.items[index],
-      openedIndex: index
-    });
-
-    // Notify the parent element
-    this.props.onProjectChanged(
-      new itemChangedArgs(this.state.items[index], index)
-    );
-  }
-
+  projectID;
   /**
-   * Respond to when the user icon is pressed
-   * @return {void}
-   * @memberof ProjectNavigation
+   * @type {string}
+   * @memberof NavigationData
    */
-  handleHomeButtonPress() {
-    this.setState({
-      openedProject: this.state.homePage,
-      openedIndex: -1
-    });
-    this.props.onHomeButtonPress();
-  }
-
-  handleUserButtonPress() {
-    this.setState({
-      openedProject: this.state.userPage,
-      openedIndex: -2
-    });
-    this.props.onUserButtonPress();
-  }
-
-  handleAddIconPress() {
-    this.props.onAddIconPress();
-  }
-
-  render() {
-    return (
-      <Scrollbars autoHide hideTracksWhenNotNeeded>
-        <Badge
-          offset={[0, 43]}
-          style={{
-            marginRight: 19
-          }}
-          count={
-            !!this.state.userData && !!this.state.userData.pendingInvites
-              ? this.state.userData.pendingInvites.length
-              : 0
-          }
-        >
-          {/* Display a user icon. */}
-          <BrandIcon
-            // thumbnail={this.state.user ? this.state.user.photoURL : ""}
-            onPress={this.handleHomeButtonPress.bind(this)}
-            selected={this.state.openedIndex === -1}
-          />
-        </Badge>
-        {/* Display a user icon. */}
-        <UserIcon
-          thumbnail={this.state.user ? this.state.user.photoURL : ""}
-          onPress={this.handleUserButtonPress.bind(this)}
-          selected={this.state.openedIndex === -2}
-        />
-        <div style={{ borderBottom: "2px solid rgba(255,255,255,0.2)", width: 32, margin: "auto" }} />
-        {this.state.items ? (
-          // Display the list of projects.
-          <Menu
-            style={{
-              background: "transparent",
-              border: "none"
-            }}
-          >
-            {this.state.items
-              .filter(
-                item =>
-                  !this.state.projects[item] ||
-                  !this.state.projects[item].deleted
-              )
-              .map((item, index) => (
-                <ProjectIcon
-                  notificationCount={
-                    index === this.state.openedIndex
-                      ? 0
-                      : this.getNotificationCount(item)
-                  }
-                  key={item}
-                  name={this.state.projects[item] || null}
-                  onPress={this.handlePress.bind(this, index)}
-                  selected={index === this.state.openedIndex}
-                />
-              ))}
-            {<AddIcon onPress={this.handleAddIconPress.bind(this)} />}
-          </Menu>
-        ) : (
-            <ProjectIcon icon={"loading"} />
-          )}
-      </Scrollbars>
-    );
-  }
+  name;
+  /**
+   * Creates an instance of NavigationData.
+   * @param  {NavigationData} args 
+   * @memberof NavigationData
+   */
+  constructor(args) {
+    Object.assign(this, args);
+  };
 }

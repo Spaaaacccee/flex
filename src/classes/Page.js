@@ -3,6 +3,8 @@ import React from "react";
 import $ from "./Utils";
 
 import { Icon } from "antd";
+import BrandIcon from "../components/BrandIcon";
+import UserIcon from "../components/UserIcon";
 
 import HOME from "../pages/Home";
 import MEMBERS from "../pages/Members";
@@ -64,9 +66,12 @@ export default class Page {
    * @memberof Page
    */
   requireProject = true;
-  getNotificationCount = () => {
+  getNotificationCount = (project, user, messages) => {
     return 0;
   };
+  getIcon = (user, project, selected, onPress) => {
+    return (<div></div>)
+  }
   /**
    * Creates an instance of Page.
    * @param {Page} args
@@ -137,7 +142,14 @@ export const HomePage = [
     icon: "file",
     content: HOME,
     requireProject: false,
-    topBarMode: "adaptive",
+    topBarMode: "default",
+    getNotificationCount: (project, user, messages) => {
+      return user && user.pendingInvites ? user.pendingInvites.length : 0;
+    },
+    getIcon:(user,project,selected,onPress)=>(<BrandIcon
+      onPress={onPress}
+      selected={selected}
+    />)
   })
 ];
 
@@ -159,7 +171,27 @@ export const UserPage = [
       >
         <Icon type="edit" />
       </a>
+    ),
+    getIcon:(user,project,selected,onPress)=>(
+      <UserIcon
+      thumbnail={user ? user.profilePhoto : ""}
+      onPress={onPress}
+      selected={selected}
+    />
     )
   })
 ];
 
+export const NotFoundPage = [
+  new Page({
+    name: "NotFound",
+    icon: "file",
+    content: <div></div>,
+    requireProject: false,
+    topBarMode: "default"
+  })
+]
+
+export const SpecialPages = [
+  ...HomePage, ...UserPage
+]

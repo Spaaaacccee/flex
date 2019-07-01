@@ -8,9 +8,6 @@ import User from "../classes/User";
 
 import { Button, Icon } from "antd";
 import { Card } from "antd";
-import ProjectInvitation from "../components/ProjectInvitation";
-import ProjectDisplay from "../components/ProjectDisplay";
-import formatJSON from "format-json-pretty";
 import ContextProvider from "../components/ContextProvider";
 import { Scrollbars } from "react-custom-scrollbars";
 

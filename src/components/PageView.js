@@ -5,6 +5,7 @@ import TopBar from "./TopBar";
 import Project from "../classes/Project";
 import "./PageView.css";
 import Page from "../classes/Page";
+import $ from "../classes/Utils";
 
 /**
  * Simply renders content from properties
@@ -15,11 +16,11 @@ import Page from "../classes/Page";
 export default class PageView extends Component {
 
   static defaultProps = {
-    onLoad: () => {},
-    onMessage: () => {},
+    onPageLoad: () => { },
+    onMessage: () => { },
     page: {},
-    onLeftButtonPress: () => {},
-    onContentPress: () => {}
+    onLeftButtonPress: () => { },
+    onContentPress: () => { }
   };
 
   state = {
@@ -30,18 +31,6 @@ export default class PageView extends Component {
     animation: false, // Whether the enter animation is playing.
     scrollPosition: 0 // The current vertical page scroll position.
   };
-
-  shouldComponentUpdate(props, state) {
-    if (props.page !== this.state.page) return true;
-    if (!Project.equal(props.project, this.state.project)) return true;
-    if (!User.equal(state.user, this.state.user)) return true;
-    if (!state.scrollPostion && this.state.scrollPosition) return true;
-    if (state.scrollPostion && !this.state.scrollPosition) return true;
-    if (this.state.animation !== state.animation) return true;
-    if (this.state.loading !== state.loading) return true;
-    // Don't update anything if no properties have changed.
-    return false;
-  }
 
   /**
    * Whether it is currently loading.
@@ -63,42 +52,23 @@ export default class PageView extends Component {
    * @memberof PageView
    */
   isDisplayable(project, page) {
-    return Object.keys(project || {}).length || !page.requireProject;
+    return page && (!$.object(project).isUndefinedOrEmpty() || !page.requireProject);
+  }
+
+  requireRefresh(project, page) {
+    return !Page.equal(page, this.state.page) || project.projectID !== this.state.project.projectID;
   }
 
   componentWillReceiveProps(props) {
     // If the current page cannot be displayed, show the loading icon.
-    if (!this.isDisplayable(props.project, props.page)) {
-      this.setState({ animation: false, loading: true });
-    }
-    this.setState({ project: props.project });
-    // If the page or the project was switched.
-    if (
-      !Page.equal(props.page, this.state.page) ||
-      (props.project.projectID !== this.state.project.projectID && props.project.projectID)
-    ) {
-      // Start the loading timeout. To make sure the app remains performant, we delay the rendering of the page until the page switching animation is finished. This takes 400 milliseconds.
-      this.loadingTimeout = true;
-      if (this.currentTimeout) {
-        clearTimeout(this.currentTimeout);
-        this.currentTimeout = null;
-      }
-      this.setState(
-        {
-          animation: false,
-          loading: true,
-          page: props.page
-        },
-        () => {
-          // Set a timeout, which displays the page after 400 milliseconds has elapsed.
-          this.currentTimeout = setTimeout(() => {
-            this.loadingTimeout = false;
-            if (this.isDisplayable(this.state.project, this.state.page)) {
-              this.setState({ animation: true, loading: false });
-            }
-          }, 400);
-        }
-      );
+    if (this.isDisplayable(props.project, props.page) && this.requireRefresh(props.project, props.page)) {
+      this.setState({ animation: false, loading: true }, () => {
+        setTimeout(() => {
+          this.setState({ animation: true, loading: false, page: props.page, project: props.project }, () => {
+            this.props.onPageLoad(this.state.page);
+          });
+        }, 0)
+      })
     }
 
     // Get a fresh copy of user info if required.
@@ -121,8 +91,8 @@ export default class PageView extends Component {
         ref={e =>
           e
             ? (e.parentNode.onscroll = () => {
-                this.setState({ scrollPosition: e.parentNode.scrollTop });
-              })
+              this.setState({ scrollPosition: e.parentNode.scrollTop });
+            })
             : false
         }
         style={{
@@ -142,7 +112,7 @@ export default class PageView extends Component {
           onLeftButtonPress={this.props.onLeftButtonPress}
           onRightButtonPress={() => {
             // When the top right button is pressed, execute the `onExtrasButtonPress` method on behalf of the page.
-            ((this.pageContentElement || {}).onExtrasButtonPress || (() => {})).apply(this.pageContentElement);
+            ((this.pageContentElement || {}).onExtrasButtonPress || (() => { })).apply(this.pageContentElement);
           }}
           leftButtonType={"menu"}
           rightButtonType={this.state.page.extrasButtonType}
@@ -161,7 +131,7 @@ export default class PageView extends Component {
                   this.props.onMessage(msg);
                 },
                 onLoad: page => {
-                  this.props.onLoad(page);
+                  this.props.onPageLoad(page);
                 }
               })}
               {!(this.state.page || {}).hideFooter && (
@@ -171,12 +141,11 @@ export default class PageView extends Component {
               )}
             </div>
           ) : (
-            // Otherwise display a loading message.
-            <div style={{ opacity: 0.65, margin: 50 }}>
-              <Icon type="loading" style={{ marginTop: "10vh", marginBottom: 50 }} spin />
-              <p>We're working really hard to load this content.</p>
-            </div>
-          )}
+              // Otherwise display a loading message.
+              <div style={{ opacity: 0.65, margin: 50 }}>
+                <Icon type="loading" style={{ marginTop: "10vh", marginBottom: 50 }} spin />
+              </div>
+            )}
         </div>
       </div>
     );

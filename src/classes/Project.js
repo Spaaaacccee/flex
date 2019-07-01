@@ -34,7 +34,7 @@ export default class Project {
     inequality += a.lastUpdatedTimestamp !== b.lastUpdatedTimestamp;
     return !inequality;
   }
-
+  
   /**
    * Check if a project is registered in the database
    * @static
@@ -213,6 +213,10 @@ export default class Project {
    */
   constructor(name) {
     this.name = name || this.name;
+  }
+
+  hasPermission(uid) {
+    return !!uid && (this.permissions[uid] || this.owner === uid);
   }
 
   /**

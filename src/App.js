@@ -10,6 +10,9 @@ import { Scrollbars } from "react-custom-scrollbars";
  * @extends Component
  */
 class App extends Component {
+  componentDidMount() {
+    console.log(`React ${React.version}`)
+  }
   render() {
     return (
       <div className="App">

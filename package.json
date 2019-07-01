@@ -21,11 +21,11 @@
     "moment": "^2.22.2",
     "notifyjs": "^3.0.0",
     "prop-types": "^15.6.1",
-    "react": "^16.4.0",
+    "react": "^16.8.6",
     "react-color": "^2.14.1",
     "react-columns": "^1.2.0",
     "react-custom-scrollbars": "^4.2.1",
-    "react-dom": "^16.4.0",
+    "react-dom": "^16.8.6",
     "react-google-picker": "0.0.8",
     "react-scripts": "1.1.4",
     "shallow-equal": "^1.0.0",
@@ -34,6 +34,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
+    "serve": "set PORT=3000 && serve -s build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "npm run build; firebase deploy"
