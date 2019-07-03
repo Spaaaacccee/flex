@@ -162,7 +162,7 @@ export const UserPage = [
     icon: "file",
     content: USER,
     requireProject: false,
-    topBarMode: "adaptive",
+    topBarMode: "default",
     extrasButtonType: (
       <a
         href="https://myaccount.google.com/"

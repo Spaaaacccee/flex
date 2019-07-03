@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Layout, Modal, Icon, message } from "antd";
 
-import ProjectView from "./ProjectView";
+import ProjectView, { getPages } from "./ProjectView";
 import ProjectNavigation, { NavigationData } from "./ProjectNavigation";
 import SignIn from "./SignIn";
 import CreateProject from "../forms/CreateProject";
@@ -13,8 +13,10 @@ import Fetch from "../classes/Fetch";
 import firebase from 'firebase';
 import $ from '../classes/Utils';
 import AppContext from "../classes/AppContext";
+import Momentum from "../classes/Momentum";
 
 import "./Main.css";
+import Touch from "../classes/Touch";
 
 
 export const ProjectContext = new AppContext({});
@@ -22,6 +24,11 @@ export const UserContext = new AppContext({});
 
 const { Sider } = Layout;
 
+const DEFAULT_SIDER_WIDTH = 64;
+const DEFAULT_PAGE_SIDER_WIDTH = 200;
+
+let ref;
+let projectViewContentRef;
 
 /**
  * The main interface
@@ -32,9 +39,8 @@ const { Sider } = Layout;
 
 export default class Main extends Component {
   state = {
-    // UI
-    navigationCollapsed: true, // Whether the navigation sidebars (left-side) are collapsed
-    siderWidth: 64, // The width of the left-most sidebar
+    siderWidth: DEFAULT_SIDER_WIDTH, // The width of the left-most sidebar
+    pageSiderWidth: DEFAULT_PAGE_SIDER_WIDTH,
     breakpoint: 1280, // The screen-width in which the layout adopt a widescreen format
     currentlyWidescreen: false, // Whether the screen is currently wider than the breakpoint
     offline: false, // Whether the app is currently offline
@@ -48,6 +54,7 @@ export default class Main extends Component {
     user: {}, // The user data of the current user
     project: {}, // The project data of the current user
     availableProjects: [],
+    availableMessengers: {},
 
     // Updates
     useUpdateLoop: false, // An update loop is used to periodically pull data from the database and update the UI. To disable it, set this to false
@@ -92,17 +99,12 @@ export default class Main extends Component {
    * @memberof Main
    */
   relayout() {
-    this.setState(
-      window.innerWidth >= this.state.breakpoint
-        ? {
-          navigationCollapsed: false,
-          currentlyWidescreen: true
-        }
-        : {
-          navigationCollapsed: true,
-          currentlyWidescreen: false
-        }
-    );
+    if (window.innerWidth >= this.state.breakpoint) {
+      this.setState({ widescreen: true });
+      // this.navigationPaneTween.velocity
+    } else {
+      this.setState({ widescreen: false });
+    }
   }
 
   async handleLogIn(logInArgs) {
@@ -128,6 +130,14 @@ export default class Main extends Component {
       });
   }
 
+  recalculateSidersWidth(callback) {
+    this.setState({
+      pageSiderWidth: getPages(this.state.navigation).length - 1 ? DEFAULT_PAGE_SIDER_WIDTH : 0
+    }, () => {
+      callback && callback();
+    })
+  }
+
   /**
    * Takes new navigational data, and sets appropriate project and navigational states
    * @param  {NavigationData} navigationData 
@@ -139,8 +149,15 @@ export default class Main extends Component {
       navigation: navigationData,
       project: navigationData.type === "project"
         ? this.state.availableProjects.find(project => project.projectID === navigationData.projectID)
-        : {}
+        : {},
+    }, () => {
+      this.recalculateSidersWidth(() => {
+        this.navigationPaneMomentum.to = this.state.pageSiderWidth + this.state.siderWidth;
+        this.navigationPaneMomentum.mode = "controlled";
+        this.navigationPaneMomentum.controlledValue = this.navigationPaneMomentum.to;
+      });
     });
+
   }
 
   /**
@@ -200,6 +217,82 @@ export default class Main extends Component {
     });
   }
 
+  projectViewContentRef;
+  projectViewRef;
+  _navTouchRegistered = false;
+  navigationPaneMomentum;
+
+  registerNavTouch(projectViewRef, projectViewContentRef) {
+
+    if (projectViewContentRef && projectViewRef && !this._navTouchRegistered) {
+      const self = this;
+      this._navTouchRegistered = true;
+      this.recalculateSidersWidth(() => {
+        const getTotalSiderWidth = () => self.state.siderWidth + self.state.pageSiderWidth;
+        self.navigationPaneMomentum = new Momentum({
+          mode: "controlled",
+          from: 0,
+          value: 0,
+          to: getTotalSiderWidth(),
+          selectTarget: (to, from, velocity, value) => {
+            if (Math.abs(velocity) > 0.1) {
+              if (velocity > 0) { return to }
+              else { return from; }
+            } else {
+              if (value > (from + to) / 2) { return to; }
+              else { return from; }
+            }
+          },
+          calculateValue: (to, from, controlledValue) => {
+            if (controlledValue > to) return to + Math.pow(controlledValue - to, 0.6);
+            if (controlledValue < from) return from - Math.pow(from - controlledValue, 0.6);
+            return controlledValue;
+          },
+          targets: [
+            (value) => {
+              const totalSiderWidth = getTotalSiderWidth();
+              let projectViewContentPosition = value * (self.state.pageSiderWidth / totalSiderWidth) - self.state.pageSiderWidth;
+              if (projectViewContentPosition > 0) {
+                projectViewContentPosition = 0;
+              }
+              self.projectViewContentRef.style.transform = `translate3d(${projectViewContentPosition}px,0,0)`
+            },
+            (value) => {
+              const totalSiderWidth = getTotalSiderWidth();
+              let projectViewPosition = value * (self.state.siderWidth / totalSiderWidth) - self.state.siderWidth;
+              if (projectViewPosition > 0) {
+                projectViewPosition = value - totalSiderWidth;
+              }
+              self.projectViewRef.style.transform = `translate3d(${projectViewPosition}px,0,0)`;
+            },
+          ]
+        });
+        self.navigationPaneMomentum.broadcastValue();
+        const touchManager = new Touch();
+        let touchEnabled = false;
+        self.projectViewContentRef.addEventListener("touchstart", (e) => {
+          if (e.touches[0].pageX > 64 + getTotalSiderWidth()) return;
+          touchEnabled = true;
+          touchManager.registerTouchStart(e);
+          self.navigationPaneMomentum.mode = "controlled";
+        });
+        self.projectViewContentRef.addEventListener("touchmove", (e) => {
+          if (!touchEnabled) return;
+          touchManager.registerTouchMove(e);
+          self.navigationPaneMomentum.controlledValue += touchManager.getRecentDeltaPosition().x;
+        });
+        self.projectViewContentRef.addEventListener("touchend", (e) => {
+          if (!touchEnabled) return;
+          touchManager.registerTouchEnd(e);
+          self.navigationPaneMomentum.velocity = touchManager.getVelocity().x;
+          self.navigationPaneMomentum.mode = "momentum";
+          touchEnabled = false;
+        });
+      })
+
+    }
+  }
+
   render() {
     const {
       currentlyWidescreen,
@@ -210,9 +303,10 @@ export default class Main extends Component {
       auth,
       breakpoint,
       navigation,
-      navigationCollapsed,
+      navigationOpenMultiplier,
       user,
-      project
+      project,
+      pageSiderWidth
     } = this.state;
     UserContext.provide(user, (a, b) => User.equal(a, b));
     ProjectContext.provide(project, (a, b) => Project.equal(a, b));
@@ -220,7 +314,7 @@ export default class Main extends Component {
       <div style={{ height: "100%", width: "100vw" }} className={currentlyWidescreen ? "widescreen" : ""}>
         <Layout className="main-layout">
           {/* Project navigation bar */}
-          <Sider width={siderWidth} className="project-sider">
+          <Sider width={DEFAULT_SIDER_WIDTH} className="project-sider">
             {/* Project navigation items */}
             <ProjectNavigation
               availableProjects={availableProjects}
@@ -246,46 +340,52 @@ export default class Main extends Component {
             />
           </Sider>
           {/* Secondary navigation bar and main content */}
-          <ProjectView
-            navigation={navigation}
-            onMessage={msg => {
-              switch (msg.type) {
-                case "switchTo":
-                  this.handleNavigation({ type: "project", projectID: msg.content });
-                  break;
-                default:
-                  break;
-              }
-            }}
-            pauseSiderUpdate={this.state.navigationCollapsed}
+          <div ref={(e) => {
+            this.projectViewRef = e;
+            this.registerNavTouch(e, this.projectViewContentRef);
+          }}
             style={{
-              // Move the project view left by the sider width when the screen is too narrow to achieve an effect as if the navigation sidebar collapses. This ensures smooth 60fps animation performance on most devices.
-              transform: "translateX(" + (this.state.navigationCollapsed ? this.state.siderWidth * -1 : 0) + "px)",
-              height: "100%",
-              width: "100%"
-            }}
-            // The project view has its own navigation sidebar. Sync that side bar with the main project sidebar.
-            navigationCollapsed={this.state.navigationCollapsed}
-            // Respond to when the hamburger button is pressed by toggling the navigation sidebar
-            onNavButtonPress={() => {
-              this.setState({
-                navigationCollapsed: !this.state.navigationCollapsed
-              });
-            }}
-            // Respond to when the main content is pressed by collapsing the sidebar, only if it's currently not widescreen
-            onContentPress={() => {
-              this.setState({
-                navigationCollapsed: this.state.currentlyWidescreen ? false : true
-              });
-            }}
-            // Respond to when a drag gesture is used to open the navigation bar
-            onNavDrag={() => {
-              this.setState({
-                navigationCollapsed: false
-              });
-            }}
+              transition: "none !important"
+            }}>
+            <ProjectView
+              siderWidth={DEFAULT_PAGE_SIDER_WIDTH}
+              onProjectViewContentRef={
+                (e) => {
+                  this.projectViewContentRef = e;
+                  this.registerNavTouch(this.projectViewRef, e);
+                }}
+              navigation={navigation}
+              onNavButtonPress={()=>{
+                
+                if(this.navigationPaneMomentum.value === this.navigationPaneMomentum.to) {
+                  this.navigationPaneMomentum.target = this.navigationPaneMomentum.from;
+                } else {
+                  this.navigationPaneMomentum.target = this.navigationPaneMomentum.to;
+                }
+                this.navigationPaneMomentum.mode = "targetedMomentum";
+              }}
+              onContentPress={()=>{
+                this.navigationPaneMomentum.target = this.navigationPaneMomentum.from;
+                this.navigationPaneMomentum.mode = "targetedMomentum";
+              }}
+              onMessage={msg => {
+                switch (msg.type) {
+                  case "switchTo":
+                    this.handleNavigation({ type: "project", projectID: msg.content });
+                    break;
+                  default:
+                    break;
+                }
+              }}
+              pauseSiderUpdate={navigationOpenMultiplier}
+              style={{
+                transition: "none",
+                // Move the project view left by the sider width when the screen is too narrow to achieve an effect as if the navigation sidebar collapses. This ensures smooth 60fps animation performance on most devices.
+                height: "100%",
+                width: "100%"
+              }}
 
-          />
+            /></div>
         </Layout>
         {/* The sign in splashscreen. Automatically disappears when the user is logged in */}
         <SignIn onLogIn={(logInArgs) => { this.handleLogIn(logInArgs) }} />

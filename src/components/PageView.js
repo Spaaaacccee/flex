@@ -118,7 +118,9 @@ export default class PageView extends Component {
           rightButtonType={this.state.page.extrasButtonType}
           heading={this.state.page.name || "Untitled"}
         />
-        <div onMouseUp={this.props.onContentPress} onTouchStart={this.props.onContentPress}>
+        <div onClick={()=>{
+          this.props.onContentPress()
+        }}>
           {displayContent ? (
             // If the content shouold be displayed displayed the page.
             <div className={this.state.animation ? "content-fade-in-up" : ""}>

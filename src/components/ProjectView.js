@@ -9,6 +9,7 @@ import Fetch from "../classes/Fetch";
 import Project from "../classes/Project";
 import { NavigationData } from "./ProjectNavigation";
 import $ from "../classes/Utils";
+import Touch from "../classes/Touch";
 
 import "./ProjectView.css";
 import Settings from "./Settings";
@@ -21,13 +22,14 @@ import { UserContext, ProjectContext } from "./Main";
 const { Sider } = Layout;
 
 const defaultProps = {
+  mainSiderWidth: 64,
   siderWidth: 200,
   onNavButtonPress: () => { }, // A callback for when the expand/collapse navigation button is pressed
   onContentPress: () => { }, // A callback for when the main content area is pressed
   onNavDrag: () => { }, // A callback for when an open navigation gesture is performed
   navigationCollapsed: true,
   style: {},
-  onMessage: () => { }
+  onMessage: () => { },
 }
 
 /**
@@ -37,7 +39,7 @@ const defaultProps = {
  * @return {Page[]}
  * @memberof NavigationData
  */
-const getPages = (navigation) => {
+export const getPages = (navigation) => {
   switch (navigation.type) {
     case "project":
       return Pages;
@@ -54,11 +56,10 @@ export default function ProjectView(props) {
     siderWidth,
     onNavButtonPress,
     onContentPress,
-    onNavDrag,
-    navigationCollapsed,
     style,
     onMessage,
     navigation,
+    onProjectViewContentRef,
   } = allProps;
 
   const project = ProjectContext.use(this);
@@ -136,47 +137,48 @@ export default function ProjectView(props) {
           }}
         />
       </Sider>
-      <Layout
-        className="project-view-content"
-        style={{
-          transform: `translateX(${-1 * navigationCollapsed * siderWidth * !!(allPages.length - 1)}px)`
-        }}
-      >
-        <div
-          className="project-view-inner-content"
+      <div ref={(e) => { onProjectViewContentRef(e) }} style={{
+        transition: "none !important"
+      }}>
+        <Layout
+          className="project-view-content"
         >
-          <Scrollbars autoHide hideTrackWhenNotNeeded>
-            <PageView
-              onLeftButtonPress={onNavButtonPress}
-              onContentPress={onContentPress}
-              project={project}
-              page={allPages[openedIndex]}
-              onPageLoad={pageLoadHandler}
-              onMessage={(msg => {
-                switch (msg.type) {
-                  case "prepare-message":
-                    // If the page asks to prepare a message, switch the page to the messages page.
-                    setOpenedPageIndex(3);
-                    setPageLoadHandler(messagesPage => {
-                      // Send the prepared message once messages loads.
-                      if (messagesPage instanceof MESSAGES) messagesPage.handleSendRaw(msg.content);
-                      setPageLoadHandler(() => { });
-                    });
-                    break;
-                  case "navigate":
-                    // If the page asks to switch the page, change the index to the specified page.
-                    setOpenedPageIndex(msg.content);
-                    break;
-                  default:
-                    // Otherwise, pass the message to the parent component.
-                    onMessage(msg);
-                    break;
-                }
-              }).bind(this)}>
-            </PageView>
-          </Scrollbars>
-        </div>
-      </Layout>
+          <div
+            className="project-view-inner-content"
+          >
+            <Scrollbars autoHide hideTrackWhenNotNeeded>
+              <PageView
+                onLeftButtonPress={onNavButtonPress}
+                onContentPress={onContentPress}
+                project={project}
+                page={allPages[openedIndex]}
+                onPageLoad={pageLoadHandler}
+                onMessage={(msg => {
+                  switch (msg.type) {
+                    case "prepare-message":
+                      // If the page asks to prepare a message, switch the page to the messages page.
+                      setOpenedPageIndex(3);
+                      setPageLoadHandler(messagesPage => {
+                        // Send the prepared message once messages loads.
+                        if (messagesPage instanceof MESSAGES) messagesPage.handleSendRaw(msg.content);
+                        setPageLoadHandler(() => { });
+                      });
+                      break;
+                    case "navigate":
+                      // If the page asks to switch the page, change the index to the specified page.
+                      setOpenedPageIndex(msg.content);
+                      break;
+                    default:
+                      // Otherwise, pass the message to the parent component.
+                      onMessage(msg);
+                      break;
+                  }
+                }).bind(this)}>
+              </PageView>
+            </Scrollbars>
+          </div>
+        </Layout></div>
+
     </Layout>
   </div >)
 }

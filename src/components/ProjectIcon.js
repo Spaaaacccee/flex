@@ -93,8 +93,7 @@ export default class ProjectIcon extends Component {
           ...this.props.style
         }}
         className={"project-icon " + (this.state.selected ? "selected" : "")}
-        onMouseUp={this.handlePress.bind(this)}
-        onTouchStart={this.handlePress.bind(this)}
+        onClick={this.handlePress.bind(this)}
       >
         {/* Display a badge showing how many notifications there are */}
         <Badge count={this.state.notificationCount} offset={[0, 45]}
