@@ -38,7 +38,6 @@ export default class AppContext {
   provide(value, equal) {
     const isEqual = equal ? equal(value, this.value) : Object.is(value, this.value);
     if (!isEqual) {
-      console.log("provided new value of " + value);
       this.value = value;
       this.functionalConsumers.forEach((value,key)=>{
         value && value(this.value);

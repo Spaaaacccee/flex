@@ -1,5 +1,4 @@
 import { EventEmitter } from "./Utils";
-import { message } from 'antd';
 
 export default class Momentum extends EventEmitter {
   /**
@@ -15,8 +14,6 @@ export default class Momentum extends EventEmitter {
   errorMargin = 0.0001;
   intensity = 1;
   controlledValue = 0;
-
-  performanceMode = false;
 
   calculateValue = (to, from, controlledValue) => {
     return controlledValue;
@@ -40,6 +37,7 @@ export default class Momentum extends EventEmitter {
 
   _previousValue;
   _looping = false;
+  _targetFrameTime = 1000 / 55;
 
   startLoop() {
     this.broadcastValue();
@@ -58,25 +56,9 @@ export default class Momentum extends EventEmitter {
 
   _previousTime = Date.now();
 
-  _previousDeltaTimesMaxLength = 50;
-  _previousDeltaTimes = []
-  performanceModeManager(deltaTime) {
-    this._previousDeltaTimes.push(deltaTime < 1000 / 45);
-    if (this._previousDeltaTimes.length > this._previousDeltaTimesMaxLength) this._previousDeltaTimes.shift();
-    if (this._previousDeltaTimes.length >= this._previousDeltaTimesMaxLength) {
-      const avg = this._previousDeltaTimes.reduce((prev, current) => prev + current, 0) / this._previousDeltaTimes.length;
-      if (avg < 0.5) {
-        if (!this.performanceMode) {
-          this.performanceMode = true;
-          message.warn("We simplified some animations because it seems your device is struggling to keep up");
-        }
-      };
-    }
-  }
-
   loop() {
     const timeNow = Date.now();
-    this.performanceModeManager(timeNow - this._previousTime);
+    const deltaTime = timeNow - this._previousTime
     if (this.mode !== "offset" && this._offsetConstant !== null) {
       this.value = this._offsetConstant + this.offset;
       this._offsetConstant = null;
@@ -93,13 +75,14 @@ export default class Momentum extends EventEmitter {
         this.value = (this._offsetConstant + this.offset);
         break;
       case "momentum":
-        this.momentum(timeNow - this._previousTime, this.selectTarget(this.to, this.from, this.velocity, this.value));
+        this._calculateMomentum(deltaTime, this.selectTarget(this.to, this.from, this.velocity, this.value));
         break;
       case "targetedMomentum":
-        this.momentum(timeNow - this._previousTime, this.target)
+        this._calculateMomentum(deltaTime, this.target)
         break;
       case "controlled":
         this.value = this.calculateValue(this.to, this.from, this.controlledValue);
+        this.velocity = this._calculateVelocity(this.value, this._previousValue, deltaTime)
         break;
     }
     if (this._previousValue !== this.value) {
@@ -112,14 +95,18 @@ export default class Momentum extends EventEmitter {
     }
   }
 
-  momentum(deltaTime, target) {
-    this.value = this.lerp(this.value, target, deltaTime * 0.02);
-    if (!this.performanceMode) {
+  _calculateVelocity(thisValue, previousValue, deltaTime) {
+    return (thisValue - previousValue) / deltaTime;
+  }
+
+  _calculateMomentum(deltaTime, target) {
+    const lowPerformance = deltaTime > this._targetFrameTime;
+    this.value = this._lerp(this.value, target, deltaTime * 0.02);
+    if (lowPerformance) {
+      this.value = Math.min(Math.max(this.from, this.value), this.to);
+    } else {
       this.value += this.velocity * deltaTime;
       this.velocity = this.velocity * 0.7;
-    }
-    if (this.performanceMode) {
-      this.value = Math.min(Math.max(this.from, this.value), this.to);
     }
     if (Math.abs(this.value - target) < this.errorMargin) {
       this.value = target;
@@ -129,17 +116,13 @@ export default class Momentum extends EventEmitter {
     // this.velocity = this.lerp(this.velocity, (this.to - this.value), 1 / this.mass);
   }
 
-  lerp(from, to, intensity = 0.5) {
+  _lerp(from, to, intensity = 0.5) {
     return from + (intensity * (to - from));
   }
 
   broadcastValue() {
     this.targets.forEach((target) => {
-      if (this.performanceMode) {
-        target(Math.min(Math.max(this.from, this.value), this.to));
-      } else {
-        target(this.value);
-      }
+      target(this.value);
     })
   }
 

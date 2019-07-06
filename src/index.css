@@ -68,7 +68,7 @@ div.ant-popover-inner {
 }
 
 .ant-card {
-  border: none !important;
+  border: 1px solid #f8f8f8 !important;
   box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.04),
     0px 1px 18px rgba(0, 0, 0, 0.02);
   border-radius: 20px !important;

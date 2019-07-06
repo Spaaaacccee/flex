@@ -17,15 +17,12 @@ import Momentum from "../classes/Momentum";
 
 import "./Main.css";
 import Touch from "../classes/Touch";
-
+import { DEFAULT_PAGE_SIDER_WIDTH, DEFAULT_SIDER_WIDTH } from "../classes/Config";
 
 export const ProjectContext = new AppContext({});
 export const UserContext = new AppContext({});
 
 const { Sider } = Layout;
-
-const DEFAULT_SIDER_WIDTH = 64;
-const DEFAULT_PAGE_SIDER_WIDTH = 200;
 
 let ref;
 let projectViewContentRef;
@@ -42,7 +39,7 @@ export default class Main extends Component {
     siderWidth: DEFAULT_SIDER_WIDTH, // The width of the left-most sidebar
     pageSiderWidth: DEFAULT_PAGE_SIDER_WIDTH,
     breakpoint: 1280, // The screen-width in which the layout adopt a widescreen format
-    currentlyWidescreen: false, // Whether the screen is currently wider than the breakpoint
+    widescreen: false, // Whether the screen is currently wider than the breakpoint
     offline: false, // Whether the app is currently offline
     modal: {
       visible: false // Whether the add project modal is currently visible
@@ -100,10 +97,15 @@ export default class Main extends Component {
    */
   relayout() {
     if (window.innerWidth >= this.state.breakpoint) {
-      this.setState({ widescreen: true });
-      // this.navigationPaneTween.velocity
+      if (!this.state.widescreen) {
+        this.setState({ widescreen: true });
+        this.openNavigation();
+      }
     } else {
-      this.setState({ widescreen: false });
+      if (this.state.widescreen) {
+        this.setState({ widescreen: false });
+        this.closeNavigation();
+      }
     }
   }
 
@@ -138,6 +140,31 @@ export default class Main extends Component {
     })
   }
 
+  openNavigation(immediately) {
+    this.recalculateSidersWidth(() => {
+      this.navigationPaneMomentum.to = this.state.pageSiderWidth + this.state.siderWidth;
+      if (immediately) {
+        this.navigationPaneMomentum.mode = "controlled";
+        this.navigationPaneMomentum.controlledValue = this.navigationPaneMomentum.to;
+      } else {
+        this.navigationPaneMomentum.target = this.navigationPaneMomentum.to;
+        this.navigationPaneMomentum.mode = "targetedMomentum";
+      }
+    });
+  }
+
+  closeNavigation(immediately) {
+    this.recalculateSidersWidth(() => {
+      if (immediately) {
+        this.navigationPaneMomentum.mode = "controlled";
+        this.navigationPaneMomentum.controlledValue = 0;
+      } else {
+        this.navigationPaneMomentum.mode = "targetedMomentum";
+        this.navigationPaneMomentum.target = 0;
+      }
+    });
+  }
+
   /**
    * Takes new navigational data, and sets appropriate project and navigational states
    * @param  {NavigationData} navigationData 
@@ -151,11 +178,7 @@ export default class Main extends Component {
         ? this.state.availableProjects.find(project => project.projectID === navigationData.projectID)
         : {},
     }, () => {
-      this.recalculateSidersWidth(() => {
-        this.navigationPaneMomentum.to = this.state.pageSiderWidth + this.state.siderWidth;
-        this.navigationPaneMomentum.mode = "controlled";
-        this.navigationPaneMomentum.controlledValue = this.navigationPaneMomentum.to;
-      });
+      this.openNavigation(true);
     });
 
   }
@@ -271,7 +294,7 @@ export default class Main extends Component {
         const touchManager = new Touch();
         let touchEnabled = false;
         self.projectViewContentRef.addEventListener("touchstart", (e) => {
-          if (e.touches[0].pageX > 64 + getTotalSiderWidth()) return;
+          if (e.touches[0].pageX > DEFAULT_SIDER_WIDTH + self.navigationPaneMomentum.value) return;
           touchEnabled = true;
           touchManager.registerTouchStart(e);
           self.navigationPaneMomentum.mode = "controlled";
@@ -284,7 +307,6 @@ export default class Main extends Component {
         self.projectViewContentRef.addEventListener("touchend", (e) => {
           if (!touchEnabled) return;
           touchManager.registerTouchEnd(e);
-          self.navigationPaneMomentum.velocity = touchManager.getVelocity().x;
           self.navigationPaneMomentum.mode = "momentum";
           touchEnabled = false;
         });
@@ -295,7 +317,7 @@ export default class Main extends Component {
 
   render() {
     const {
-      currentlyWidescreen,
+      widescreen,
       siderWidth,
       modal,
       offline,
@@ -311,7 +333,7 @@ export default class Main extends Component {
     UserContext.provide(user, (a, b) => User.equal(a, b));
     ProjectContext.provide(project, (a, b) => Project.equal(a, b));
     return (
-      <div style={{ height: "100%", width: "100vw" }} className={currentlyWidescreen ? "widescreen" : ""}>
+      <div style={{ height: "100%", width: "100vw" }} className={widescreen ? "widescreen" : ""}>
         <Layout className="main-layout">
           {/* Project navigation bar */}
           <Sider width={DEFAULT_SIDER_WIDTH} className="project-sider">
@@ -340,10 +362,12 @@ export default class Main extends Component {
             />
           </Sider>
           {/* Secondary navigation bar and main content */}
-          <div ref={(e) => {
-            this.projectViewRef = e;
-            this.registerNavTouch(e, this.projectViewContentRef);
-          }}
+          <div
+            className="project-view-animation-container"
+            ref={(e) => {
+              this.projectViewRef = e;
+              this.registerNavTouch(e, this.projectViewContentRef);
+            }}
             style={{
               transition: "none !important"
             }}>
@@ -355,18 +379,17 @@ export default class Main extends Component {
                   this.registerNavTouch(this.projectViewRef, e);
                 }}
               navigation={navigation}
-              onNavButtonPress={()=>{
-                
-                if(this.navigationPaneMomentum.value === this.navigationPaneMomentum.to) {
-                  this.navigationPaneMomentum.target = this.navigationPaneMomentum.from;
+              onNavButtonPress={() => {
+
+                if (this.navigationPaneMomentum.value === this.navigationPaneMomentum.to) {
+                  this.closeNavigation();
                 } else {
-                  this.navigationPaneMomentum.target = this.navigationPaneMomentum.to;
+                  this.openNavigation();
                 }
                 this.navigationPaneMomentum.mode = "targetedMomentum";
               }}
-              onContentPress={()=>{
-                this.navigationPaneMomentum.target = this.navigationPaneMomentum.from;
-                this.navigationPaneMomentum.mode = "targetedMomentum";
+              onContentPress={() => {
+                this.closeNavigation();
               }}
               onMessage={msg => {
                 switch (msg.type) {

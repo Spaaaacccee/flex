@@ -13,4 +13,7 @@ div.project-sider .project-icon {
     transition: transform 0.4s cubic-bezier(0,.65,.27,1);
     transform: translateZ(0);
   }
-
+.widescreen .project-view-animation-container {
+    flex: 1 1 0%;
+    transform: none !important;
+}

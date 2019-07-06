@@ -1,0 +1,3 @@
+
+export const DEFAULT_SIDER_WIDTH = 64;
+export const DEFAULT_PAGE_SIDER_WIDTH = 200;

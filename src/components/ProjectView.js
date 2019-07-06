@@ -44,7 +44,7 @@ export const getPages = (navigation) => {
     case "project":
       return Pages;
     case "special":
-      return [SpecialPages.find(page => page.name === navigation.name)]
+      return [SpecialPages.find(page => page.name === navigation.name) || NotFoundPage]
     default:
       return [NotFoundPage];
   }
@@ -137,7 +137,9 @@ export default function ProjectView(props) {
           }}
         />
       </Sider>
-      <div ref={(e) => { onProjectViewContentRef(e) }} style={{
+      <div 
+      className="project-view-content-animation-container"
+      ref={(e) => { onProjectViewContentRef(e) }} style={{
         transition: "none !important"
       }}>
         <Layout
@@ -146,7 +148,7 @@ export default function ProjectView(props) {
           <div
             className="project-view-inner-content"
           >
-            <Scrollbars autoHide hideTrackWhenNotNeeded>
+            <Scrollbars autoHide hideTracksWhenNotNeeded>
               <PageView
                 onLeftButtonPress={onNavButtonPress}
                 onContentPress={onContentPress}

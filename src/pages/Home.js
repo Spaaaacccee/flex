@@ -76,6 +76,20 @@ export default class HOME extends Component {
         {this.state.user && this.state.user.uid ? (
           <div style={{ textAlign: "left" }}>
             <Card>
+              <center className="pattern">
+                <br />
+                <br />
+                <Icon type="fire" style={{ fontSize: 47, color: "#282828" }} />
+                <br />
+                <br />
+                <h1>
+                  Cool things are coming soon.
+                  </h1>
+                <br />
+              </center>
+            </Card>
+            <br />
+            <Card>
               <div
                 style={{
                   display: "flex",

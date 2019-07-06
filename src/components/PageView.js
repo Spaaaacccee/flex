@@ -6,6 +6,7 @@ import Project from "../classes/Project";
 import "./PageView.css";
 import Page from "../classes/Page";
 import $ from "../classes/Utils";
+import { DEFAULT_SIDER_WIDTH } from "../classes/Config";
 
 /**
  * Simply renders content from properties
@@ -82,6 +83,11 @@ export default class PageView extends Component {
    * @memberof PageView
    */
   pageContentElement;
+  /**
+   * A reference to the touch area of the page.
+   * @memberof PageView
+   */
+  pageContentTouchElement;
 
   render() {
     const displayContent = !!this.state.page.content && !this.state.loading;
@@ -118,9 +124,18 @@ export default class PageView extends Component {
           rightButtonType={this.state.page.extrasButtonType}
           heading={this.state.page.name || "Untitled"}
         />
-        <div onClick={()=>{
-          this.props.onContentPress()
-        }}>
+        <div
+          ref={(e) => this.pageContentTouchElement = e}
+          onTouchStart={(e) => {
+            if (e.touches[0].clientX > DEFAULT_SIDER_WIDTH + this.pageContentTouchElement.getBoundingClientRect().left) {
+              this.props.onContentPress();
+            }
+          }}
+          onMouseDown={(e) => {
+            if (e.clientX > DEFAULT_SIDER_WIDTH + this.pageContentTouchElement.getBoundingClientRect().left) {
+              this.props.onContentPress();
+            }
+          }}>
           {displayContent ? (
             // If the content shouold be displayed displayed the page.
             <div className={this.state.animation ? "content-fade-in-up" : ""}>
