@@ -27,7 +27,7 @@
     "react-custom-scrollbars": "^4.2.1",
     "react-dom": "^16.8.6",
     "react-google-picker": "0.0.8",
-    "react-scripts": "1.1.4",
+    "react-scripts": "5.0.1",
     "shallow-equal": "^1.0.0",
     "why-did-you-update": "^0.1.1"
   },
